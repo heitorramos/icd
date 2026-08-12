@@ -1,0 +1,57 @@
+---
+title: "Template: Exemplo Documentado"
+---
+
+## Pergunta motivadora
+
+Qual pergunta este exemplo ajuda a investigar?
+
+## Objetivo didatico
+
+Explique o que estudantes devem aprender ao acompanhar este exemplo.
+
+## Dataset
+
+| Campo | Descricao |
+|---|---|
+| Fonte | Link ou referencia da fonte |
+| Unidade observacional | O que cada linha representa |
+| Periodo | Intervalo temporal coberto |
+| Observacoes | Limpeza, limitacoes ou cuidados |
+
+## Conceitos trabalhados
+
+- conceito 1;
+- conceito 2;
+- conceito 3.
+
+## Roteiro de sala
+
+1. Apresentar a pergunta.
+2. Ler a documentacao dos dados.
+3. Inspecionar linhas e colunas.
+4. Criar uma visualizacao ou resumo.
+5. Discutir o que pode e o que nao pode ser concluido.
+
+## Codigo base
+
+```python
+import pandas as pd
+
+dados = pd.DataFrame({
+    "grupo": ["A", "B", "C"],
+    "valor": [10, 15, 12]
+})
+
+dados
+```
+
+## Discussao
+
+Que interpretacoes sao sustentadas pelos dados? Que informacoes adicionais
+seriam necessarias?
+
+## Conexao com exercicios
+
+Descreva como este exemplo pode virar uma lista, um VPL ou uma extensao do
+projeto final.

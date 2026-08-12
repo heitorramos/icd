@@ -1,0 +1,33 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Atkinson Hyperlegible", "Source Sans Pro", Arial, sans-serif;
+$headings-color: #17324d;
+$link-color: #0f6b78;
+$navbar-bg: #17324d;
+
+/*-- scss:rules --*/
+:root {
+  --icd-accent: #d95f02;
+  --icd-ink: #1f2a33;
+  --icd-muted: #5d6b75;
+  --icd-band: #f3f7f7;
+}
+
+body {
+  color: var(--icd-ink);
+}
+
+.navbar {
+  border-bottom: 4px solid var(--icd-accent);
+}
+
+.quarto-title-block .title {
+  letter-spacing: 0;
+}
+
+.grid h3 {
+  margin-top: 0;
+}
+
+table {
+  font-size: 0.95rem;
+}

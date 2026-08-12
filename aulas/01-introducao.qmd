@@ -1,0 +1,50 @@
+---
+title: "Aula 01: O que e Ciencia de Dados?"
+---
+
+## Objetivos
+
+- Apresentar a disciplina e sua organizacao.
+- Discutir o ciclo de trabalho em ciencia de dados.
+- Diferenciar dado, informacao, evidencia e decisao.
+- Mostrar como uma pergunta concreta orienta uma analise.
+
+## Conceitos centrais
+
+- pergunta investigavel;
+- unidade observacional;
+- variavel;
+- dado tabular;
+- analise exploratoria;
+- reprodutibilidade.
+
+## Narrativa da aula
+
+A aula parte de uma pergunta simples e contextualizada: que tipo de evidencia
+seria necessaria para entender um problema publico? A partir dela, introduzimos
+o ciclo de ciencia de dados como uma sequencia iterativa: formular pergunta,
+obter dados, organizar, explorar, modelar, comunicar e revisar.
+
+## Exemplo sugerido
+
+Um exemplo inicial deve usar uma base pequena de dados publicos brasileiros,
+preferencialmente com variaveis compreensiveis sem muito conhecimento previo.
+
+Possiveis temas:
+
+- qualidade do ar ou clima em cidades brasileiras;
+- acidentes de transito;
+- dados de educacao;
+- equipamentos publicos em Belo Horizonte;
+- series historicas simples de indicadores sociais.
+
+## Notas para o professor
+
+Evite abrir a disciplina com algoritmos. O ponto central desta aula e mostrar
+que ciencia de dados comeca com uma pergunta bem formulada e com cuidado sobre
+o que os dados podem ou nao sustentar.
+
+## Conexao com exercicios
+
+A primeira atividade pode pedir que estudantes escolham uma pergunta, identifiquem
+possiveis variaveis e discutam que tipo de dado seria necessario para responde-la.

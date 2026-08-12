@@ -1,0 +1,48 @@
+---
+title: "Introducao a Ciencia de Dados"
+subtitle: "Material aberto para aulas, exemplos, listas e projetos"
+---
+
+Este site organiza o material da disciplina de Introducao a Ciencia de Dados.
+A proposta e manter uma trilha conceitual clara, com exemplos atuais,
+documentados e conectados aos exercicios.
+
+## Organizacao
+
+::: {.grid}
+::: {.g-col-12 .g-col-md-6}
+### Aulas
+
+Roteiros de aula com objetivos, prerequisitos, conceitos centrais e sugestoes de conducao.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Slides
+
+Apresentacoes em Quarto Reveal.js, versionadas junto do restante do curso.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Exemplos
+
+Estudos guiados com pergunta motivadora, dataset, codigo comentado, extensoes e notas didaticas.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Listas e VPLs
+
+Exercicios e avaliacoes automaticas preparadas para Moodle/VPL.
+:::
+:::
+
+## Principios
+
+- exemplos com dados reais sempre que possivel;
+- codigo pequeno o suficiente para caber em aula;
+- documentacao explicita para quem ensina e para quem estuda;
+- material reprodutivel, aberto e facil de atualizar.
+
+## Primeira versao
+
+Esta e uma base inicial do repositorio. A proxima etapa e migrar uma aula piloto
+com seus slides, exemplo e lista de exercicios.

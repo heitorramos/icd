@@ -1,0 +1,101 @@
+---
+title: "Introducao a Ciencia de Dados"
+subtitle: "Aula 01"
+author: "ICD"
+format:
+  revealjs:
+    theme: [default, styles/slides.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "Introducao a Ciencia de Dados"
+execute:
+  echo: true
+---
+
+## Por que estudar ciencia de dados?
+
+Dados aparecem em quase toda decisao contemporanea:
+
+- politicas publicas;
+- produtos digitais;
+- pesquisa cientifica;
+- saude;
+- educacao;
+- mobilidade;
+- comunicacao.
+
+::: notes
+Abrir com exemplos proximos da turma. O objetivo aqui nao e definir a area de
+forma abstrata, mas mostrar situacoes em que evidencia quantitativa muda a
+qualidade da discussao.
+:::
+
+## Uma definicao operacional
+
+Ciencia de dados e o trabalho de transformar perguntas em evidencia usando dados,
+computacao, estatistica e conhecimento de contexto.
+
+::: notes
+Enfatizar "perguntas" e "contexto". A disciplina nao e apenas uma colecao de
+ferramentas; e uma forma de organizar investigacoes.
+:::
+
+## O ciclo de uma analise
+
+1. Formular uma pergunta.
+2. Encontrar ou coletar dados.
+3. Organizar e limpar.
+4. Explorar.
+5. Modelar.
+6. Comunicar.
+7. Revisar a pergunta.
+
+## Exemplo motivador
+
+Pergunta:
+
+> Como poderiamos investigar se ha desigualdade territorial no acesso a um
+> servico publico em uma cidade?
+
+## Antes do codigo
+
+Precisamos decidir:
+
+- qual e a unidade observacional;
+- quais variaveis representam acesso;
+- qual escala geografica faz sentido;
+- que vieses podem existir nos dados;
+- que conclusoes seriam inadequadas.
+
+## Primeiro contato com uma tabela
+
+```python
+import pandas as pd
+
+dados = pd.DataFrame({
+    "bairro": ["Centro", "Serra", "Venda Nova"],
+    "equipamentos": [18, 9, 12],
+    "populacao": [12000, 21000, 48000]
+})
+
+dados["equipamentos_por_10k"] = (
+    dados["equipamentos"] / dados["populacao"] * 10000
+)
+
+dados
+```
+
+## O que esta tabela permite perguntar?
+
+- O que e uma linha?
+- O que e uma coluna?
+- Que variaveis foram medidas?
+- O indicador criado e justo?
+- O que falta para interpretar bem?
+
+## Mensagem da aula
+
+Ciencia de dados nao comeca com o modelo.
+
+Comeca com uma pergunta, uma tabela imperfeita e muitas decisoes explicitas.

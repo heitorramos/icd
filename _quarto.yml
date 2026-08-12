@@ -1,0 +1,64 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "aulas/*.qmd"
+    - "slides/*.qmd"
+    - "exemplos/**/*.qmd"
+    - "listas/*.qmd"
+
+website:
+  title: "Introducao a Ciencia de Dados"
+  site-url: "https://heitorramos.github.io/icd/"
+  repo-url: "https://github.com/heitorramos/icd"
+  repo-actions: [edit, issue]
+  page-navigation: true
+  navbar:
+    background: "#17324d"
+    foreground: "#ffffff"
+    left:
+      - text: "Inicio"
+        href: index.qmd
+      - text: "Programa"
+        href: programa.qmd
+      - text: "Aulas"
+        href: aulas/index.qmd
+      - text: "Slides"
+        href: slides/index.qmd
+      - text: "Exemplos"
+        href: exemplos/index.qmd
+      - text: "Listas"
+        href: listas/index.qmd
+  sidebar:
+    - title: "Aulas"
+      style: docked
+      contents:
+        - aulas/index.qmd
+        - aulas/01-introducao.qmd
+    - title: "Slides"
+      contents:
+        - slides/index.qmd
+        - slides/01-introducao.qmd
+    - title: "Exemplos"
+      contents:
+        - exemplos/index.qmd
+        - exemplos/00-template/exemplo.qmd
+    - title: "Listas"
+      contents:
+        - listas/index.qmd
+        - listas/lista-00-template.qmd
+
+format:
+  html:
+    theme:
+      - cosmo
+      - site/styles/icd.scss
+    toc: true
+    toc-depth: 3
+    lang: pt-BR
+
+execute:
+  freeze: auto
+  warning: false
+  message: false

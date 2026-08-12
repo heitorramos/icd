@@ -1,0 +1,20 @@
+---
+title: "Exemplos"
+---
+
+Cada exemplo deve funcionar como uma pequena investigacao documentada.
+
+## Padrao de documentacao
+
+- pergunta motivadora;
+- objetivo didatico;
+- dataset e fonte;
+- conceitos trabalhados;
+- roteiro de sala;
+- codigo comentado;
+- discussoes e limitacoes;
+- conexao com slides, listas e VPLs.
+
+## Templates
+
+- [Template de exemplo documentado](00-template/exemplo.qmd)

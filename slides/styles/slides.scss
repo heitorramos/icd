@@ -1,0 +1,25 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Atkinson Hyperlegible", "Source Sans Pro", Arial, sans-serif;
+$presentation-heading-color: #17324d;
+$presentation-font-size-root: 34px;
+$link-color: #0f6b78;
+
+/*-- scss:rules --*/
+.reveal .slide-logo {
+  max-height: 2.2rem !important;
+}
+
+.reveal h1,
+.reveal h2 {
+  letter-spacing: 0;
+}
+
+.reveal blockquote {
+  border-left: 0.28rem solid #d95f02;
+  color: #27323a;
+  padding-left: 1rem;
+}
+
+.reveal code {
+  color: #17324d;
+}

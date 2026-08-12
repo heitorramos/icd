@@ -1,0 +1,12 @@
+---
+title: "Aulas"
+---
+
+Esta secao reune os roteiros pedagogicos de cada aula.
+
+Cada roteiro deve indicar objetivos, conceitos, exemplos usados, preparacao
+necessaria, conexao com slides e conexao com exercicios.
+
+## Aulas disponiveis
+
+- [Aula 01: Introducao](01-introducao.qmd)

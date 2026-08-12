@@ -1,0 +1,10 @@
+---
+title: "Listas"
+---
+
+As listas devem combinar perguntas conceituais, leitura de codigo e pequenas
+tarefas praticas.
+
+## Listas disponiveis
+
+- [Template de lista](lista-00-template.qmd)

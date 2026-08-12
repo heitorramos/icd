@@ -1,0 +1,41 @@
+---
+title: "Programa"
+---
+
+## Objetivo geral
+
+Apresentar os fundamentos de ciencia de dados por meio de problemas reais,
+com enfase em formulacao de perguntas, manipulacao de dados, analise exploratoria,
+visualizacao, inferencia, modelagem preditiva e comunicacao de resultados.
+
+## Objetivos de aprendizagem
+
+Ao final da disciplina, estudantes devem ser capazes de:
+
+- formular perguntas investigaveis com dados;
+- reconhecer tipos de dados, variaveis e unidades observacionais;
+- importar, limpar, transformar e combinar bases de dados;
+- produzir visualizacoes apropriadas para exploracao e comunicacao;
+- resumir dados com medidas estatisticas e incerteza;
+- interpretar testes de hipotese e intervalos de confianca;
+- construir modelos simples de regressao e classificacao;
+- avaliar resultados com metricas adequadas;
+- comunicar achados de forma reprodutivel e etica.
+
+## Estrutura sugerida
+
+| Modulo | Tema | Produtos |
+|---|---|---|
+| 1 | Motivacao e ciclo de ciencia de dados | Aula, slides, exemplo inicial |
+| 2 | Dados tabulares e manipulacao | Notebook/Quarto guiado, lista |
+| 3 | Analise exploratoria e visualizacao | Exemplo documentado, VPL |
+| 4 | Probabilidade, amostragem e incerteza | Lista conceitual, simulacoes |
+| 5 | Testes de hipotese | Exercicios e estudo de caso |
+| 6 | Regressao | Slides, exemplos, VPL |
+| 7 | Classificacao e avaliacao de modelos | Exercicios automaticos |
+| 8 | Projeto final | Rubrica, checkpoints, apresentacao |
+
+## Linha editorial dos exemplos
+
+Os exemplos devem priorizar dados publicos, problemas proximos da realidade
+brasileira e discussoes que permitam conectar tecnica, contexto e limitacoes.

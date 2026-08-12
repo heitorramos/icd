@@ -1,0 +1,34 @@
+---
+title: "Template de Lista"
+---
+
+## Objetivos
+
+- objetivo 1;
+- objetivo 2.
+
+## Antes de comecar
+
+Indique leituras, slides e exemplos relacionados.
+
+## Exercicios
+
+### Exercicio 1
+
+Enunciado.
+
+### Exercicio 2
+
+Enunciado.
+
+## Entrega
+
+Explique o formato de entrega esperado.
+
+## Rubrica
+
+| Criterio | Peso |
+|---|---:|
+| Correcao conceitual | 40% |
+| Codigo e reprodutibilidade | 40% |
+| Clareza da comunicacao | 20% |
