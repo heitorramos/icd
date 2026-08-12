@@ -110,7 +110,7 @@ Este exemplo e ficticio, mas desenhado como um estudo realista para a disciplina
 3. Randomizar estudantes entre grupos.
 4. Verificar se os grupos ficaram comparaveis.
 5. Medir diferenca de entrega no prazo.
-6. Estimar incerteza.
+6. Visualizar o resultado.
 7. Comunicar conclusao e limitacoes.
 
 ## Desenho do exemplo
@@ -128,9 +128,9 @@ No notebook da aula, vamos:
 - carregar os dados;
 - comparar covariaveis entre grupos;
 - calcular taxas de entrega;
-- estimar efeito absoluto;
-- usar bootstrap para intervalo de incerteza;
-- escrever uma conclusao cuidadosa.
+- visualizar diferencas entre tratamento e controle;
+- discutir por que a randomizacao importa;
+- escrever uma conclusao cuidadosa, sem exagerar causalidade.
 
 ## O que este exemplo nao resolve?
 

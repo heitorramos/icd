@@ -36,7 +36,7 @@ acontecido em outro cenario.
 Depois disso, a aula apresenta Fisher e a logica do desenho experimental. Um
 experimento A/B ficticio, mas realista, sobre lembretes no Moodle serve como
 pipeline completo: formular pergunta, gerar ou receber dados, verificar
-randomizacao, medir efeito, estimar incerteza e comunicar resultado.
+randomizacao, visualizar grupos, comparar resultados e comunicar limitacoes.
 
 Na segunda metade, a aula discute o limite dos experimentos: muitas vezes nao
 podemos randomizar pessoas, cidades ou politicas. Entram entao os estudos

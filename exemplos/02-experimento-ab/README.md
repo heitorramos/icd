@@ -14,6 +14,6 @@ da pergunta ate a comunicacao.
 - controle;
 - randomizacao;
 - verificacao de balanceamento;
-- efeito absoluto;
-- bootstrap;
+- comparacao visual entre grupos;
+- diferenca de taxas;
 - limitacoes e validade externa.
