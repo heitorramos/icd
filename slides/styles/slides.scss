@@ -23,3 +23,75 @@ $link-color: #0f6b78;
 .reveal code {
   color: #17324d;
 }
+
+.reveal .statement {
+  border-left: 0.35rem solid #d95f02;
+  font-size: 1.2em;
+  font-weight: 700;
+  padding: 0.6rem 0 0.6rem 1rem;
+}
+
+.reveal .muted {
+  color: #5d6b75;
+  font-size: 0.82em;
+}
+
+.reveal .big-list {
+  font-size: 1.15em;
+}
+
+.reveal .icd-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.reveal .icd-card {
+  background: #f5f7f8;
+  border: 1px solid #dbe3e7;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.reveal .icd-card p {
+  margin-bottom: 0;
+}
+
+.reveal .bar-chart {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+}
+
+.reveal .bar-row {
+  align-items: center;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 9rem 1fr 4rem;
+}
+
+.reveal .wide-bars .bar-row {
+  grid-template-columns: 8rem 1fr 4rem;
+}
+
+.reveal .bar {
+  background: #e8eef1;
+  height: 1.2rem;
+}
+
+.reveal .bar > div {
+  background: #0f6b78;
+  height: 100%;
+}
+
+.reveal .bar.orange > div {
+  background: #d95f02;
+}
+
+.reveal .bar.green > div {
+  background: #3a7d44;
+}
+
+.reveal .bar.red > div {
+  background: #b23b3b;
+}

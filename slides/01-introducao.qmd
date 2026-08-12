@@ -1,6 +1,6 @@
 ---
-title: "Introducao a Ciencia de Dados"
-subtitle: "Aula 01: perguntas, dados e evidencia"
+title: "Introdução à Ciência de Dados"
+subtitle: "Aula 01"
 author: "ICD"
 format:
   revealjs:
@@ -8,290 +8,364 @@ format:
     slide-number: true
     chalkboard: true
     preview-links: auto
-    footer: "Introducao a Ciencia de Dados"
+    footer: "Introdução à Ciência de Dados"
 execute:
   echo: false
 ---
 
+## Introdução
+
+Introdução à Ciência de Dados
+
+::: {.muted}
+Material em reconstrução: mesma estrutura pedagógica, exemplos atualizados e
+notebooks documentados para estudo.
+:::
+
+## Professor
+
+- Heitor Ramos
+  - Professor do DCC/UFMG
+  - <http://dcc.ufmg.br/~heitor>
+  - <heitor@dcc.ufmg.br>
+
+## Dúvidas?
+
+- Sala de aula
+- Fórum do Moodle
+- Monitoria
+
+::: {.callout-note}
+Procure ajuda cedo. Em ciência de dados, pequenos bloqueios acumulam rápido.
+:::
+
+## Nosso curso
+
+::: {.columns}
+::: {.column width="50%"}
+**Aulas teóricas**
+
+- conceitos;
+- intuição estatística;
+- solução de problemas;
+- discussão de exemplos.
+:::
+
+::: {.column width="50%"}
+**Aulas práticas**
+
+- programação;
+- notebooks;
+- exercícios no computador;
+- VPLs no Moodle.
+:::
+:::
+
 ## Hoje
 
-- O que e ciencia de dados?
-- O que a area usa, mas nao e?
-- Que tipo de pergunta vamos aprender a responder?
-- Como a disciplina esta organizada?
+- O que é ciência de dados?
+- O que a área usa, mas não é?
+- Exemplos modernos
+- Objetivos do curso
+- Logística
 
-::: notes
-Esta aula substitui a primeira metade do material antigo. A parte de causalidade
-foi movida para a Aula 02.
+## Ciência de Dados
+
+::: {.statement}
+Aplicação de computação e estatística para entender fenômenos do mundo real.
 :::
 
-## Uma definicao para usar no curso
+## Ciência de Dados
 
-Ciencia de dados e a pratica de transformar perguntas em evidencia usando:
-
-- dados;
-- computacao;
-- estatistica;
-- conhecimento de contexto;
-- comunicacao clara.
-
-## O que torna isso dificil?
-
-Dados do mundo real quase nunca chegam prontos.
-
-Eles podem ser incompletos, enviesados, desorganizados, ambíguos ou coletados
-para uma finalidade diferente da nossa pergunta.
-
-## A area aparece em muitos lugares
-
-- politicas publicas;
-- produtos digitais;
-- pesquisa cientifica;
-- saude;
-- educacao;
-- mobilidade;
-- comunicacao.
-
-::: notes
-Abrir com exemplos proximos da turma. O objetivo aqui nao e definir a area de
-forma abstrata, mas mostrar situacoes em que evidencia quantitativa muda a
-qualidade da discussao.
+::: {.statement}
+Transformar perguntas em evidência usando dados, computação, estatística e
+conhecimento de contexto.
 :::
 
-## Ciencia de dados nao e so probabilidade
-
-Probabilidade e uma linguagem para lidar com incerteza.
-
-Ela ajuda a responder perguntas como:
-
-- o que poderia acontecer por acaso?
-- quao surpreendente e este resultado?
-- como modelar variabilidade?
-
-Mas a disciplina nao sera apenas uma disciplina de probabilidade.
-
-## Ciencia de dados nao e so algebra linear
-
-Algebra linear aparece em vetores, matrizes, regressao, reducao de dimensao e
-modelos modernos.
-
-Ela sera uma ferramenta de apoio, nao o ponto de partida.
-
-## Ciencia de dados nao e so aprendizado de maquina
-
-Aprendizado de maquina ajuda em tarefas como previsao, classificacao,
-recomendacao e reconhecimento de padroes.
-
-Mas um modelo sofisticado nao compensa uma pergunta mal formulada ou dados
-mal compreendidos.
-
-## Entao, qual e a receita?
-
-1. Computacao para obter, organizar e transformar dados.
-2. Estatistica para raciocinar com variabilidade e incerteza.
-3. Aprendizado de maquina quando previsao ou classificacao ajudam.
-4. Probabilidade e algebra linear para entender as ferramentas.
-5. Boas perguntas para orientar todo o trabalho.
-
-## Principal: boas perguntas
-
-Uma pergunta boa define:
-
-- qual fenomeno queremos entender;
-- que evidencia seria convincente;
-- que dados precisamos;
-- que comparacao faz sentido;
-- que conclusoes seriam exageradas.
-
-## Exemplo de pergunta ruim
-
-> Temos uma base de dados grande. O que da para fazer com ela?
-
-Essa pergunta parece aberta, mas nao orienta decisao tecnica.
-
-Sem objetivo, qualquer grafico parece possivel e nenhuma conclusao fica clara.
-
-## Exemplo de pergunta melhor
-
-> O acesso a equipamentos publicos varia entre regioes de Belo Horizonte?
-
-Agora podemos discutir:
-
-- unidade de analise;
-- medida de acesso;
-- fonte dos dados;
-- escala geografica;
-- limitacoes da interpretacao.
-
-::: notes
-Enfatizar "perguntas" e "contexto". A disciplina nao e apenas uma colecao de
-ferramentas; e uma forma de organizar investigacoes.
+::: {.muted}
+Essa será a definição operacional do curso.
 :::
 
-## O ciclo de uma analise
+## Probabilidade
 
-1. Formular a pergunta.
-2. Adquirir ou construir dados.
-3. Organizar, limpar e documentar.
-4. Explorar padroes e problemas.
-5. Fazer previsoes ou inferencias.
-6. Comunicar resultados e incertezas.
-7. Revisar a pergunta.
+Ciência de dados **não é** probabilidade.
 
-## Formular perguntas
+::: {.fragment}
+Mas usa probabilidade para lidar com acaso, incerteza e variabilidade.
+:::
 
-Perguntas orientam escolhas tecnicas.
+## Álgebra Linear
 
-Antes de abrir o notebook, tente responder:
+Ciência de dados **não é** álgebra linear.
 
-- qual decisao ou entendimento esta em jogo?
-- quem sao os individuos ou unidades observadas?
-- quais variaveis precisamos medir?
-- qual comparacao seria justa?
+::: {.fragment}
+Mas usa álgebra linear em vetores, matrizes, modelos e representações de dados.
+:::
 
-## Adquirir e organizar dados
+## Aprendizado de Máquina
 
-Nesta etapa aparecem problemas comuns:
+Ciência de dados **não é** aprendizado de máquina.
 
-- formatos diferentes;
-- variaveis com nomes ruins;
-- valores ausentes;
-- duplicatas;
-- codificacoes inconsistentes;
-- ausencia de documentacao.
+::: {.fragment}
+Mas usa aprendizado de máquina para previsão, classificação e descoberta de
+padrões.
+:::
 
-## Analise exploratoria
+## Estatística vs. Ciência de Dados
 
-Explorar dados nao e "fazer graficos aleatorios".
+A diferença foi surgindo ao longo dos anos.
 
-E procurar estrutura:
+- Grandes massas de dados aproximaram estatística e computação.
+- O pensamento computacional virou parte central do trabalho.
+- A pergunta estatística continua importante: o que os dados permitem concluir?
 
-- distribuicoes;
-- tendencias;
-- valores extremos;
-- relacoes entre variaveis;
-- problemas de qualidade;
-- hipoteses para investigar melhor.
+## Historicamente
 
-## Previsao e inferencia
-
-Duas perguntas frequentes:
-
-- consigo prever algo que ainda nao observei?
-- consigo estimar ou comparar algo sobre o processo que gerou os dados?
-
-Essas perguntas exigem cuidado com erro, incerteza e validade.
-
-## Comunicacao
-
-Uma analise que ninguem entende ainda nao terminou.
-
-Comunicar bem inclui:
-
-- explicar a pergunta;
-- mostrar o metodo;
-- apresentar resultados;
-- declarar incertezas;
-- reconhecer limitacoes.
-
-## Exemplo motivador
-
-Pergunta:
-
-> Como poderiamos investigar se ha desigualdade territorial no acesso a um
-> servico publico em uma cidade?
-
-## Antes do codigo: desenho da tabela
-
-Precisamos decidir:
-
-- qual e a unidade observacional;
-- quais variaveis representam acesso;
-- qual escala geografica faz sentido;
-- que vieses podem existir nos dados;
-- que conclusoes seriam inadequadas.
-
-## Primeiro contato com uma tabela simples
-
-```python
-import pandas as pd
-
-dados = pd.DataFrame({
-    "bairro": ["Centro", "Serra", "Venda Nova"],
-    "equipamentos": [18, 9, 12],
-    "populacao": [12000, 21000, 48000]
-})
-
-dados["equipamentos_por_10k"] = (
-    dados["equipamentos"] / dados["populacao"] * 10000
-)
-
-dados
+```{mermaid}
+timeline
+  title Ciência de dados como encontro de áreas
+  Estatística : variabilidade
+  Computação : escala e automação
+  Bancos de dados : organização
+  Aprendizado de máquina : previsão
+  Comunicação : impacto
 ```
 
-## O que esta tabela permite perguntar?
+## Receita
 
-- O que e uma linha?
-- O que e uma coluna?
-- Que variaveis foram medidas?
-- O indicador criado e justo?
-- O que falta para interpretar bem?
+1. Boa computação
+2. Boa estatística
+3. Entendimento e uso de aprendizado de máquina
+4. Entendimento de probabilidade
+5. Entendimento de álgebra linear
 
-## O que esta tabela ainda nao responde?
+::: {.fragment}
+E, acima de tudo: **ótimas perguntas**.
+:::
 
-Ela nao mostra, sozinha:
+## Principal: ótimas perguntas!
 
-- qualidade dos equipamentos;
-- distancia real ate cada servico;
-- desigualdades dentro de cada bairro;
-- demanda da populacao;
-- efeitos causais de uma politica publica.
+::: {.statement}
+Uma pergunta boa organiza dados, métodos, visualizações e conclusões.
+:::
 
-## Como estudar por estes slides
+## Qual o motivo deste curso existir?
 
-Ao final de cada aula, tente produzir tres coisas:
+::: {.statement}
+Ensinar uma base de estatística com ponto de vista prático e computacional.
+:::
 
-1. um resumo em cinco linhas;
-2. uma lista dos conceitos novos;
-3. uma pergunta que os dados da aula nao conseguem responder.
+## O que impulsiona a área?
 
-## Logistica da disciplina
+::: {.icd-grid}
+::: {.icd-card}
+**Dados**
 
-O material do curso sera organizado no hotsite:
+Mais registros digitais.
+:::
+
+::: {.icd-card}
+**Computação**
+
+Mais capacidade de processar.
+:::
+
+::: {.icd-card}
+**Problemas**
+
+Mais decisões mediadas por dados.
+:::
+:::
+
+## O que impulsiona a área?
+
+::: {.bar-chart .wide-bars}
+::: {.bar-row}
+<span>Coleta de dados</span><div class="bar"><div style="width: 95%"></div></div><strong>cresce</strong>
+:::
+::: {.bar-row}
+<span>Ferramentas computacionais</span><div class="bar orange"><div style="width: 88%"></div></div><strong>melhoram</strong>
+:::
+::: {.bar-row}
+<span>Demanda por decisão</span><div class="bar green"><div style="width: 82%"></div></div><strong>aumenta</strong>
+:::
+:::
+
+::: {.muted}
+Figura conceitual: o objetivo é discutir forças que tornaram a área importante.
+:::
+
+## Exemplos
+
+Vamos priorizar exemplos que tenham:
+
+- pergunta clara;
+- dados tabulares;
+- visualização útil;
+- limite interpretativo explícito;
+- conexão com exercícios.
+
+## Exemplo: acesso a serviços
+
+::: {.statement}
+O acesso a equipamentos públicos varia entre regiões?
+:::
+
+Esse exemplo aparece no notebook da Aula 01.
+
+## Visualização inicial
+
+::: {.bar-chart}
+::: {.bar-row}
+<span>Centro-Sul</span><div class="bar"><div style="width: 100%"></div></div><strong>4,9</strong>
+:::
+::: {.bar-row}
+<span>Pampulha</span><div class="bar"><div style="width: 86%"></div></div><strong>4,2</strong>
+:::
+::: {.bar-row}
+<span>Norte</span><div class="bar"><div style="width: 60%"></div></div><strong>2,9</strong>
+:::
+::: {.bar-row}
+<span>Barreiro</span><div class="bar"><div style="width: 59%"></div></div><strong>2,9</strong>
+:::
+::: {.bar-row}
+<span>Venda Nova</span><div class="bar"><div style="width: 58%"></div></div><strong>2,8</strong>
+:::
+:::
+
+Equipamentos por 10 mil habitantes.
+
+## Exemplo: experimento A/B
+
+::: {.statement}
+Um lembrete no Moodle aumenta entregas no prazo?
+:::
+
+Será usado na Aula 02 para discutir tratamento, controle e comparação.
+
+## Exemplo: John Snow
+
+::: {.statement}
+Receber água de uma fonte contaminada aumentava o risco de morrer por cólera?
+:::
+
+Será usado na Aula 02 para discutir estudos observacionais e confundimento.
+
+## Perigos
+
+- Dados podem carregar vieses.
+- Visualizações podem sugerir conclusões exageradas.
+- Correlação não implica causalidade.
+- Modelos podem parecer mais confiáveis do que são.
+
+::: {.callout-warning}
+O curso vai insistir na diferença entre resultado computacional e conclusão
+defensável.
+:::
+
+## Plano de Curso
+
+## Ementa
+
+::: {.columns}
+::: {.column width="50%"}
+**Exploração de Dados**
+
+- tabelas;
+- pandas;
+- tipos de dados;
+- visualização;
+- estatística básica.
+:::
+
+::: {.column width="50%"}
+**Regressão e ML**
+
+- regressão linear;
+- mínimos quadrados;
+- viés e variância;
+- classificação;
+- avaliação de modelos.
+:::
+:::
+
+## Ementa
+
+::: {.columns}
+::: {.column width="50%"}
+**Testes de Hipóteses**
+
+- teorema central do limite;
+- valores-p;
+- intervalos de confiança;
+- simulação;
+- testes de permutação.
+:::
+
+::: {.column width="50%"}
+**Aprendizado de Máquina**
+
+- regressão logística;
+- KNN;
+- treino, validação e teste;
+- regularização.
+:::
+:::
+
+## Material e livros
+
+- Um notebook Jupyter por aula.
+- Slides em Quarto, publicados no hotsite.
+- Listas e VPLs no Moodle.
+- Livros abertos sempre que possível.
+
+## Bibliografia
+
+1. Learning Data Science
+2. OpenIntro Modern Statistics
+3. Computational and Inferential Thinking
+4. Data Science from Scratch
+5. Fundamentos Estatísticos para Ciência da Computação
+6. An Introduction to Statistical Learning
+
+## Formato
+
+Tudo no site:
 
 <https://heitorramos.github.io/icd/>
 
-O Moodle concentra quizzes, listas, entregas e comunicacao operacional.
+- Quizzes: Moodle
+- Listas: Moodle
+- Projeto: entregas parciais e apresentação final
 
-## Como vamos trabalhar
+## Cada aula
 
-- Aulas teoricas para conceitos e discussao de problemas.
-- Aulas praticas para programacao e exercicios.
-- Exemplos documentados para estudo autonomo.
-- Listas e VPLs para praticar com feedback automatico.
+- Aula presencial de 100 minutos.
+- Um notebook documentado por aula.
+- Uma lista aproximadamente a cada duas aulas.
+- Um quiz curto por aula ou módulo.
 
-## Avaliacao
+## Bem-estar
 
-A composicao exata pode mudar por semestre, mas a estrutura prevista combina:
+Cursos de universidade podem gerar um ambiente estressante.
 
-- provas;
-- listas no Moodle;
-- quizzes;
-- projeto final.
+- Não sacrifique bem-estar pelo curso.
+- Comece tarefas cedo.
+- Avise problemas o quanto antes.
+- Use monitoria, fórum e atendimento.
 
-Sempre consulte o Moodle para datas e regras oficiais da turma.
+## Projeto
 
-## Mensagem da aula
+- Equipes de aproximadamente 4 estudantes.
+- Tema definido com antecedência.
+- Entregas parciais.
+- Entrevistas/checkpoints obrigatórios.
+- Produto final com notebook, comunicação e vídeo curto.
 
-Ciencia de dados nao comeca com o modelo.
+## Próxima aula
 
-Comeca com uma pergunta, uma tabela imperfeita e muitas decisoes explicitas.
+::: {.statement}
+Causalidade: quando podemos dizer que X mudou Y?
+:::
 
-## Para a proxima aula
-
-Muitas perguntas importantes tem a forma:
-
-> X causa alguma mudanca em Y?
-
-Na proxima aula, vamos discutir causalidade, experimentos, controle e o caso de
-John Snow.
+Experimentos, estudos observacionais, confundimento e John Snow.
