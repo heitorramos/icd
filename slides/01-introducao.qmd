@@ -15,179 +15,188 @@ execute:
 
 ## Introdução
 
-Introdução à Ciência de Dados
-
-::: {.muted}
-Material em reconstrução: mesma estrutura pedagógica, exemplos atualizados e
-notebooks documentados para estudo.
-:::
+![](assets/original/aula01-01.png){.orig-slide fig-align="center"}
 
 ## Professor
 
-- Heitor Ramos
-  - Professor do DCC/UFMG
-  - <http://dcc.ufmg.br/~heitor>
-  - <heitor@dcc.ufmg.br>
-
-## Dúvidas?
-
-- Sala de aula
-- Fórum do Moodle
-- Monitoria
-
-::: {.callout-note}
-Procure ajuda cedo. Em ciência de dados, pequenos bloqueios acumulam rápido.
-:::
+![](assets/original/aula01-02.png){.orig-slide fig-align="center"}
 
 ## Nosso curso
 
+![](assets/original/aula01-03.png){.orig-slide fig-align="center"}
+
+## Nosso curso: versão 2026
+
 ::: {.columns}
 ::: {.column width="50%"}
-**Aulas teóricas**
+**Teoria**
 
 - conceitos;
-- intuição estatística;
-- solução de problemas;
-- discussão de exemplos.
+- intuição;
+- exemplos;
+- perguntas.
 :::
 
 ::: {.column width="50%"}
-**Aulas práticas**
+**Prática**
 
-- programação;
 - notebooks;
-- exercícios no computador;
-- VPLs no Moodle.
+- VPLs;
+- listas;
+- projeto.
 :::
+:::
+
+::: {.callout-note}
+Cada aula terá um notebook documentado, publicado no hotsite e utilizável em
+sala.
 :::
 
 ## Hoje
 
-- O que é ciência de dados?
-- O que a área usa, mas não é?
-- Exemplos modernos
-- Objetivos do curso
-- Logística
+![](assets/original/aula01-04.png){.orig-slide fig-align="center"}
 
 ## Ciência de Dados
 
-::: {.statement}
-Aplicação de computação e estatística para entender fenômenos do mundo real.
-:::
+![](assets/original/aula01-05.png){.orig-slide fig-align="center"}
 
 ## Ciência de Dados
 
+![](assets/original/aula01-06.png){.orig-slide fig-align="center"}
+
+## Definição operacional
+
 ::: {.statement}
-Transformar perguntas em evidência usando dados, computação, estatística e
-conhecimento de contexto.
+Ciência de dados é a prática de transformar perguntas em evidência usando
+computação, estatística e conhecimento de contexto.
 :::
 
-::: {.muted}
-Essa será a definição operacional do curso.
-:::
+Essa definição é útil porque coloca a pergunta no centro, antes da ferramenta.
 
 ## Probabilidade
 
-Ciência de dados **não é** probabilidade.
+![](assets/original/aula01-07.png){.orig-slide fig-align="center"}
 
-::: {.fragment}
-Mas usa probabilidade para lidar com acaso, incerteza e variabilidade.
-:::
+## Como ler este ponto
+
+Probabilidade aparece o tempo todo no curso:
+
+- incerteza;
+- variabilidade;
+- amostragem;
+- risco;
+- modelos.
+
+Mas a disciplina não é uma sequência abstrata de teoremas de probabilidade.
 
 ## Álgebra Linear
 
-Ciência de dados **não é** álgebra linear.
+![](assets/original/aula01-08.png){.orig-slide fig-align="center"}
 
-::: {.fragment}
-Mas usa álgebra linear em vetores, matrizes, modelos e representações de dados.
-:::
+## Como ler este ponto
+
+Álgebra linear será importante mais adiante:
+
+- vetores;
+- matrizes;
+- regressão;
+- modelos preditivos.
+
+Na primeira parte do curso, a prioridade é entender dados tabulares, perguntas e
+variação.
 
 ## Aprendizado de Máquina
 
-Ciência de dados **não é** aprendizado de máquina.
+![](assets/original/aula01-09.png){.orig-slide fig-align="center"}
 
-::: {.fragment}
-Mas usa aprendizado de máquina para previsão, classificação e descoberta de
-padrões.
-:::
+## Aprendizado de Máquina
+
+![](assets/original/aula01-10.png){.orig-slide fig-align="center"}
+
+## Como ler este ponto
+
+Aprendizado de máquina é uma ferramenta poderosa, mas não substitui:
+
+- pergunta bem formulada;
+- dados bem documentados;
+- avaliação cuidadosa;
+- comunicação honesta.
 
 ## Estatística vs. Ciência de Dados
 
-A diferença foi surgindo ao longo dos anos.
+![](assets/original/aula01-11.png){.orig-slide fig-align="center"}
 
-- Grandes massas de dados aproximaram estatística e computação.
-- O pensamento computacional virou parte central do trabalho.
-- A pergunta estatística continua importante: o que os dados permitem concluir?
+## Atualizando a discussão
 
-## Aprendizado de Máquina
+A ciência de dados se aproximou da computação porque:
 
-![](assets/original/ml-kolter.png){fig-align="center" width="88%"}
+- dados ficaram maiores e mais variados;
+- análises passaram a exigir automação;
+- decisões passaram a depender de sistemas;
+- comunicação virou parte do produto final.
+
+::: {.statement}
+O pensamento computacional é chave.
+:::
 
 ## Historicamente
 
-![](assets/original/historicamente.png){fig-align="center" width="88%"}
-
-## Historicamente
-
-```{mermaid}
-timeline
-  title Ciência de dados como encontro de áreas
-  Estatística : variabilidade
-  Computação : escala e automação
-  Bancos de dados : organização
-  Aprendizado de máquina : previsão
-  Comunicação : impacto
-```
+![](assets/original/aula01-12.png){.orig-slide fig-align="center"}
 
 ## Receita
 
-1. Boa computação
-2. Boa estatística
-3. Entendimento e uso de aprendizado de máquina
-4. Entendimento de probabilidade
-5. Entendimento de álgebra linear
-
-::: {.fragment}
-E, acima de tudo: **ótimas perguntas**.
-:::
+![](assets/original/aula01-13.png){.orig-slide fig-align="center"}
 
 ## Principal: ótimas perguntas!
 
-::: {.statement}
-Uma pergunta boa organiza dados, métodos, visualizações e conclusões.
-:::
+![](assets/original/aula01-14.png){.orig-slide fig-align="center"}
+
+## O que é uma ótima pergunta?
+
+Uma boa pergunta define:
+
+- o fenômeno de interesse;
+- quais dados seriam relevantes;
+- qual comparação faz sentido;
+- quais conclusões seriam exageradas.
 
 ## Qual o motivo deste curso existir?
 
-::: {.statement}
-Ensinar uma base de estatística com ponto de vista prático e computacional.
-:::
+![](assets/original/aula01-15.png){.orig-slide fig-align="center"}
+
+## Qual o motivo deste curso existir?
+
+![](assets/original/aula01-16.png){.orig-slide fig-align="center"}
+
+## Qual o motivo deste curso existir?
+
+![](assets/original/aula01-23.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-01.png){fig-align="center" width="88%"}
+![](assets/original/aula01-17.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-02.png){fig-align="center" width="88%"}
+![](assets/original/aula01-18.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-03.png){fig-align="center" width="88%"}
+![](assets/original/aula01-19.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-04.png){fig-align="center" width="88%"}
+![](assets/original/aula01-20.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-05.png){fig-align="center" width="88%"}
+![](assets/original/aula01-21.png){.orig-slide fig-align="center"}
 
 ## O que impulsiona a área?
 
-![](assets/original/impulsiona-06.png){fig-align="center" width="88%"}
+![](assets/original/aula01-22.png){.orig-slide fig-align="center"}
 
-## O que impulsiona a área?
+## Síntese
 
 ::: {.icd-grid}
 ::: {.icd-card}
@@ -209,57 +218,75 @@ Mais decisões mediadas por dados.
 :::
 :::
 
-## O que impulsiona a área?
-
-::: {.bar-chart .wide-bars}
-::: {.bar-row}
-<span>Coleta de dados</span><div class="bar"><div style="width: 95%"></div></div><strong>cresce</strong>
-:::
-::: {.bar-row}
-<span>Ferramentas computacionais</span><div class="bar orange"><div style="width: 88%"></div></div><strong>melhoram</strong>
-:::
-::: {.bar-row}
-<span>Demanda por decisão</span><div class="bar green"><div style="width: 82%"></div></div><strong>aumenta</strong>
-:::
-:::
-
-::: {.muted}
-Figura conceitual: o objetivo é discutir forças que tornaram a área importante.
-:::
-
 ## Exemplos
 
-Vamos priorizar exemplos que tenham:
-
-- pergunta clara;
-- dados tabulares;
-- visualização útil;
-- limite interpretativo explícito;
-- conexão com exercícios.
+![](assets/original/aula01-24.png){.orig-slide fig-align="center"}
 
 ## Capital dos Candidatos
 
-![](assets/original/capital-candidatos.png){fig-align="center" width="88%"}
+![](assets/original/aula01-25.png){.orig-slide fig-align="center"}
+
+::: notes
+Exemplo preservado do material original. Use para discutir visualização
+interativa, escala logarítmica, transparência pública e perguntas sobre
+patrimônio.
+:::
+
+## Como estudar este exemplo?
+
+Perguntas possíveis:
+
+- O que cada ponto representa?
+- Por que usar escala logarítmica?
+- O que significa estar acima da linha pontilhada?
+- Que conclusões seriam arriscadas?
 
 ## Five Thirty Eight
 
-![](assets/original/fivethirtyeight.png){fig-align="center" width="88%"}
+![](assets/original/aula01-26.png){.orig-slide fig-align="center"}
+
+## Como estudar este exemplo?
+
+O ponto aqui é previsão probabilística.
+
+- O modelo comunica incerteza?
+- O resultado muda quando novos dados chegam?
+- Como separar previsão, explicação e opinião?
 
 ## Gender Bias
 
-![](assets/original/gender-bias.png){fig-align="center" width="88%"}
+![](assets/original/aula01-27.png){.orig-slide fig-align="center"}
+
+## Como estudar este exemplo?
+
+O ponto aqui é linguagem, dados e viés.
+
+- Como transformar texto em dados?
+- Que categorias foram escolhidas?
+- Que vieses podem aparecer na coleta?
+- O que a visualização torna fácil de perceber?
 
 ## Salários
 
-![](assets/original/salarios.png){fig-align="center" width="88%"}
+![](assets/original/aula01-28.png){.orig-slide fig-align="center"}
 
-## Exemplo: acesso a serviços
+## Como estudar este exemplo?
+
+O ponto aqui é desigualdade e comparação.
+
+- Qual é a unidade observacional?
+- Qual variável mede salário?
+- Que grupos estão sendo comparados?
+- Que fatores de confusão podem existir?
+
+## Exemplo novo: acesso a serviços
 
 ::: {.statement}
 O acesso a equipamentos públicos varia entre regiões?
 :::
 
-Esse exemplo aparece no notebook da Aula 01.
+Esse exemplo aparece no notebook da Aula 01 para discutir tabela, variável,
+indicador e visualização.
 
 ## Visualização inicial
 
@@ -283,141 +310,81 @@ Esse exemplo aparece no notebook da Aula 01.
 
 Equipamentos por 10 mil habitantes.
 
-## Exemplo: experimento A/B
+## O que ainda falta?
 
-::: {.statement}
-Um lembrete no Moodle aumenta entregas no prazo?
-:::
-
-Será usado na Aula 02 para discutir tratamento, controle e comparação.
-
-## Exemplo: John Snow
-
-::: {.statement}
-Receber água de uma fonte contaminada aumentava o risco de morrer por cólera?
-:::
-
-Será usado na Aula 02 para discutir estudos observacionais e confundimento.
+- Qualidade dos equipamentos.
+- Distância real até o serviço.
+- Demanda da população.
+- Desigualdade dentro de cada região.
+- Relação causal com políticas públicas.
 
 ## Perigos
 
-![](assets/original/perigos.png){fig-align="center" width="88%"}
+![](assets/original/aula01-29.png){.orig-slide fig-align="center"}
 
-## Perigos
+## Perigos: versão de estudo
 
 - Dados podem carregar vieses.
-- Visualizações podem sugerir conclusões exageradas.
+- Gráficos podem exagerar uma conclusão.
 - Correlação não implica causalidade.
 - Modelos podem parecer mais confiáveis do que são.
-
-::: {.callout-warning}
-O curso vai insistir na diferença entre resultado computacional e conclusão
-defensável.
-:::
+- Uma análise sem contexto pode induzir decisão ruim.
 
 ## Plano de Curso
 
-## Ementa
-
-::: {.columns}
-::: {.column width="50%"}
-**Exploração de Dados**
-
-- tabelas;
-- pandas;
-- tipos de dados;
-- visualização;
-- estatística básica.
-:::
-
-::: {.column width="50%"}
-**Regressão e ML**
-
-- regressão linear;
-- mínimos quadrados;
-- viés e variância;
-- classificação;
-- avaliação de modelos.
-:::
-:::
+![](assets/original/aula01-30.png){.orig-slide fig-align="center"}
 
 ## Ementa
 
-::: {.columns}
-::: {.column width="50%"}
-**Testes de Hipóteses**
+![](assets/original/aula01-31.png){.orig-slide fig-align="center"}
 
-- teorema central do limite;
-- valores-p;
-- intervalos de confiança;
-- simulação;
-- testes de permutação.
-:::
+## Material e Livros
 
-::: {.column width="50%"}
-**Aprendizado de Máquina**
-
-- regressão logística;
-- KNN;
-- treino, validação e teste;
-- regularização.
-:::
-:::
-
-## Material e livros
-
-- Um notebook Jupyter por aula.
-- Slides em Quarto, publicados no hotsite.
-- Listas e VPLs no Moodle.
-- Livros abertos sempre que possível.
+![](assets/original/aula01-32.png){.orig-slide fig-align="center"}
 
 ## Bibliografia
 
-1. Learning Data Science
-2. OpenIntro Modern Statistics
-3. Computational and Inferential Thinking
-4. Data Science from Scratch
-5. Fundamentos Estatísticos para Ciência da Computação
-6. An Introduction to Statistical Learning
+![](assets/original/aula01-33.png){.orig-slide fig-align="center"}
 
-## Formato
+## Plano de Curso: Formato
 
-Tudo no site:
+![](assets/original/aula01-34.png){.orig-slide fig-align="center"}
 
-<https://heitorramos.github.io/icd/>
+## Atualização do formato
 
-- Quizzes: Moodle
-- Listas: Moodle
-- Projeto: entregas parciais e apresentação final
+- Hotsite: <https://heitorramos.github.io/icd/>
+- Slides em Quarto.
+- Um notebook Jupyter documentado por aula.
+- Listas e VPLs no Moodle.
+- Projeto final com checkpoints.
 
-## Cada aula
+## Cada Aula
 
-- Aula presencial de 100 minutos.
-- Um notebook documentado por aula.
-- Uma lista aproximadamente a cada duas aulas.
-- Um quiz curto por aula ou módulo.
+![](assets/original/aula01-35.png){.orig-slide fig-align="center"}
+
+## Dimensionamento de 100 minutos
+
+| Tempo | Atividade |
+|---:|---|
+| 0-15 min | Abertura, dúvidas e retomada |
+| 15-40 min | Conceitos e exemplos |
+| 40-70 min | Notebook ou atividade guiada |
+| 70-90 min | Discussão e exercícios curtos |
+| 90-100 min | Fechamento e próximos passos |
 
 ## Bem-estar
 
-Cursos de universidade podem gerar um ambiente estressante.
-
-- Não sacrifique bem-estar pelo curso.
-- Comece tarefas cedo.
-- Avise problemas o quanto antes.
-- Use monitoria, fórum e atendimento.
+![](assets/original/aula01-36.png){.orig-slide fig-align="center"}
 
 ## Projeto
 
-- Equipes de aproximadamente 4 estudantes.
-- Tema definido com antecedência.
-- Entregas parciais.
-- Entrevistas/checkpoints obrigatórios.
-- Produto final com notebook, comunicação e vídeo curto.
+![](assets/original/aula01-37.png){.orig-slide fig-align="center"}
 
-## Próxima aula
+## Fechamento
 
 ::: {.statement}
-Causalidade: quando podemos dizer que X mudou Y?
+Ciência de dados começa com boas perguntas.
 :::
 
-Experimentos, estudos observacionais, confundimento e John Snow.
+Na próxima aula, vamos discutir causa e efeito: quando uma mudança em `X`
+realmente altera `Y`?

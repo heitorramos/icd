@@ -95,3 +95,10 @@ $link-color: #0f6b78;
 .reveal .bar.red > div {
   background: #b23b3b;
 }
+
+.reveal .orig-slide {
+  border: 1px solid #d7dde1;
+  box-shadow: 0 0.25rem 1rem rgba(23, 50, 77, 0.12);
+  max-height: 68vh;
+  object-fit: contain;
+}
