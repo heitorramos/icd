@@ -119,6 +119,14 @@ A diferença foi surgindo ao longo dos anos.
 - O pensamento computacional virou parte central do trabalho.
 - A pergunta estatística continua importante: o que os dados permitem concluir?
 
+## Aprendizado de Máquina
+
+![](assets/original/ml-kolter.png){fig-align="center" width="88%"}
+
+## Historicamente
+
+![](assets/original/historicamente.png){fig-align="center" width="88%"}
+
 ## Historicamente
 
 ```{mermaid}
@@ -154,6 +162,30 @@ Uma pergunta boa organiza dados, métodos, visualizações e conclusões.
 ::: {.statement}
 Ensinar uma base de estatística com ponto de vista prático e computacional.
 :::
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-01.png){fig-align="center" width="88%"}
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-02.png){fig-align="center" width="88%"}
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-03.png){fig-align="center" width="88%"}
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-04.png){fig-align="center" width="88%"}
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-05.png){fig-align="center" width="88%"}
+
+## O que impulsiona a área?
+
+![](assets/original/impulsiona-06.png){fig-align="center" width="88%"}
 
 ## O que impulsiona a área?
 
@@ -205,6 +237,22 @@ Vamos priorizar exemplos que tenham:
 - limite interpretativo explícito;
 - conexão com exercícios.
 
+## Capital dos Candidatos
+
+![](assets/original/capital-candidatos.png){fig-align="center" width="88%"}
+
+## Five Thirty Eight
+
+![](assets/original/fivethirtyeight.png){fig-align="center" width="88%"}
+
+## Gender Bias
+
+![](assets/original/gender-bias.png){fig-align="center" width="88%"}
+
+## Salários
+
+![](assets/original/salarios.png){fig-align="center" width="88%"}
+
 ## Exemplo: acesso a serviços
 
 ::: {.statement}
@@ -250,6 +298,10 @@ Receber água de uma fonte contaminada aumentava o risco de morrer por cólera?
 :::
 
 Será usado na Aula 02 para discutir estudos observacionais e confundimento.
+
+## Perigos
+
+![](assets/original/perigos.png){fig-align="center" width="88%"}
 
 ## Perigos
 
