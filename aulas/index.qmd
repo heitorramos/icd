@@ -9,4 +9,5 @@ necessaria, conexao com slides e conexao com exercicios.
 
 ## Aulas disponiveis
 
-- [Aula 01: Introducao](01-introducao.qmd)
+- [Aula 01: Introducao a ciencia de dados](01-introducao.qmd)
+- [Aula 02: Causalidade e experimentos](02-causalidade.qmd)

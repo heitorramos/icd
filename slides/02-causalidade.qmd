@@ -1,0 +1,325 @@
+---
+title: "Causalidade e Experimentos"
+subtitle: "Aula 02: causa, efeito e confundimento"
+author: "ICD"
+format:
+  revealjs:
+    theme: [default, styles/slides.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "Introducao a Ciencia de Dados"
+execute:
+  echo: false
+---
+
+## Hoje
+
+- O que significa dizer que X causa Y?
+- Por que experimentos sao tao importantes?
+- O que e um estudo observacional?
+- Por que variaveis de confusao atrapalham?
+- Como um pipeline de experimento A/B funciona?
+- O que John Snow nos ensina sobre evidencia observacional?
+
+## Muitas perguntas sao causais
+
+Exemplos:
+
+- Uma mudanca em uma pagina aumenta compras?
+- Um programa social aumenta frequencia escolar?
+- Uma versao nova deixou o codigo mais rapido?
+- Mais desemprego aumenta crimes?
+- Um lembrete no Moodle aumenta entregas no prazo?
+
+Todas perguntam sobre o efeito de uma mudanca.
+
+## A pergunta escondida
+
+Quando perguntamos "X causa Y?", queremos comparar dois mundos:
+
+- o mundo em que X aconteceu;
+- o mundo em que X nao aconteceu.
+
+O problema e que, para a mesma unidade observacional, geralmente so observamos
+um desses mundos.
+
+## Tratamento e resultado
+
+Em linguagem experimental:
+
+- tratamento e a intervencao ou exposicao de interesse;
+- resultado e a variavel que queremos medir;
+- unidade observacional e quem ou o que recebe o tratamento.
+
+Exemplo: lembrete no Moodle como tratamento, entrega no prazo como resultado,
+estudante como unidade observacional.
+
+## O padrao ouro: experimento
+
+Um experimento tenta construir uma comparacao justa.
+
+Para isso, precisamos de:
+
+- grupo de tratamento;
+- grupo de controle;
+- randomizacao;
+- replicacao;
+- medida clara do resultado.
+
+## Fisher e desenho experimental
+
+Ronald Fisher ajudou a estabelecer principios centrais do desenho de
+experimentos:
+
+- controle: comparar grupos mantendo o resto tao parecido quanto possivel;
+- randomizacao: distribuir unidades sem escolha enviesada;
+- replicacao: repetir observacoes para medir variabilidade.
+
+## Por que randomizar?
+
+A randomizacao nao garante grupos identicos.
+
+Ela ajuda porque torna as diferencas entre grupos trataveis matematicamente.
+Assim, podemos avaliar se uma diferenca observada parece grande demais para ser
+explicada apenas pelo acaso.
+
+## Ensaio randomizado controlado
+
+Um RCT, ou ensaio randomizado controlado, segue a ideia:
+
+1. selecionar unidades elegiveis;
+2. dividir aleatoriamente em grupos;
+3. aplicar tratamento em um grupo;
+4. manter controle ou placebo no outro;
+5. comparar os resultados.
+
+## Exemplo: lembrete no Moodle
+
+Pergunta:
+
+> Enviar um lembrete dois dias antes do prazo aumenta a taxa de entrega de uma
+> lista?
+
+Este exemplo e ficticio, mas desenhado como um estudo realista para a disciplina.
+
+## Pipeline do experimento
+
+1. Formular pergunta causal.
+2. Definir tratamento e resultado.
+3. Randomizar estudantes entre grupos.
+4. Verificar se os grupos ficaram comparaveis.
+5. Medir diferenca de entrega no prazo.
+6. Estimar incerteza.
+7. Comunicar conclusao e limitacoes.
+
+## Desenho do exemplo
+
+- Unidade: estudante.
+- Tratamento: receber lembrete.
+- Controle: nao receber lembrete extra.
+- Resultado: entregou no prazo.
+- Covariaveis: periodo, experiencia previa, carga de disciplinas.
+
+## Analise minima
+
+No notebook da aula, vamos:
+
+- carregar os dados;
+- comparar covariaveis entre grupos;
+- calcular taxas de entrega;
+- estimar efeito absoluto;
+- usar bootstrap para intervalo de incerteza;
+- escrever uma conclusao cuidadosa.
+
+## O que este exemplo nao resolve?
+
+Mesmo com randomizacao, ainda precisamos perguntar:
+
+- o efeito vale em outros semestres?
+- o lembrete ajuda todos os grupos igualmente?
+- ha efeitos indesejados, como dependencia de lembretes?
+- o resultado e importante ou apenas mensuravel?
+
+## Quando nao podemos experimentar?
+
+Muitas perguntas nao permitem randomizacao:
+
+- nao podemos sortear quem mora em uma regiao poluida;
+- nao podemos impor desemprego a algumas pessoas;
+- nao podemos repetir pandemias para testar politicas;
+- nao podemos controlar todos os aspectos de uma cidade.
+
+Nesses casos, trabalhamos com estudos observacionais.
+
+## Estudos observacionais
+
+Em um estudo observacional, o pesquisador nao controla quem recebe o tratamento.
+
+Ele observa dados ja produzidos pelo mundo.
+
+Isso nao torna o estudo inutil, mas muda o tipo de cuidado necessario.
+
+## Onde entra John Snow?
+
+O experimento A/B mostra o caso mais limpo: o pesquisador controla o tratamento.
+
+John Snow mostra uma situacao mais comum em ciencia de dados: o mundo ja gerou
+os dados, e precisamos procurar uma comparacao convincente.
+
+## O problema do confundimento
+
+Uma variavel de confusao afeta, ao mesmo tempo:
+
+- a chance de receber o tratamento;
+- o resultado observado.
+
+Por isso, ela pode criar uma associacao que parece causal, mesmo quando nao e.
+
+## Exemplo simples
+
+Pergunta:
+
+> Chocolate reduz risco de doenca cardiaca?
+
+Possiveis confundidores:
+
+- idade;
+- renda;
+- pratica de exercicio;
+- dieta;
+- acesso a saude.
+
+## Correlacao nao e causalidade
+
+A frase e verdadeira, mas incompleta.
+
+O objetivo nao e abandonar perguntas causais. O objetivo e desenhar estudos e
+analises que deixem claro o que pode ser sustentado pelos dados.
+
+## John Snow
+
+John Snow investigou surtos de colera em Londres no seculo XIX.
+
+Na epoca, uma explicacao dominante era a teoria miasmatica: doencas seriam
+causadas por odores ruins.
+
+Snow suspeitou de outra explicacao: a agua contaminada.
+
+## A pergunta causal de Snow
+
+Uma forma moderna de escrever a pergunta:
+
+> Receber agua de uma fonte contaminada aumentava o risco de morrer por colera?
+
+Tratamento: fonte de agua recebida.
+
+Resultado: morte por colera.
+
+Unidade: domicilio ou morador.
+
+## O desafio
+
+Snow nao podia randomizar a fonte de agua das casas.
+
+Tambem havia confundidores plausiveis:
+
+- pobreza;
+- densidade urbana;
+- saneamento;
+- exposicao a odores;
+- condicoes de moradia.
+
+## O quase experimento
+
+Parte de Londres recebia agua de companhias diferentes.
+
+Se casas parecidas recebiam agua de fontes diferentes, a comparacao se
+aproximava de um experimento natural.
+
+Essa e a ideia central: procurar comparacoes justas dentro de dados
+observacionais.
+
+## Tabela de Snow
+
+| Fonte de agua | Casas | Mortes por colera | Mortes por 10.000 casas |
+|---|---:|---:|---:|
+| Southwark & Vauxhall | 40.046 | 1.263 | 315 |
+| Lambeth | 26.107 | 98 | 37 |
+| Resto de Londres | 256.423 | 1.422 | 59 |
+
+## Como ler a tabela
+
+A taxa de mortes foi muito maior nas casas atendidas pela Southwark & Vauxhall.
+
+Isso nao prova causalidade automaticamente, mas fortalece a hipotese quando
+combinado com:
+
+- mecanismo plausivel;
+- comparacao entre grupos semelhantes;
+- evidencia geografica;
+- consistencia com a transmissao pela agua.
+
+## Desenhando a confusao
+
+```{mermaid}
+flowchart LR
+  A["Fonte da agua"] --> B["Qualidade da agua"]
+  B --> C["Colera"]
+  D["Pobreza, saneamento, densidade"] --> B
+  D --> C
+```
+
+## O que queremos controlar?
+
+Controlar significa comparar unidades que sejam semelhantes nos fatores
+relevantes, exceto pelo tratamento de interesse.
+
+Em experimentos, a randomizacao ajuda a fazer isso.
+
+Em estudos observacionais, precisamos argumentar e testar com mais cuidado.
+
+## Hierarquia de evidencia
+
+Uma leitura comum, do menos ao mais forte:
+
+1. opiniao de especialista ou estudo in vitro;
+2. relatos de caso;
+3. estudos observacionais;
+4. experimentos nao randomizados;
+5. ensaios randomizados controlados;
+6. revisoes sistematicas e meta-analises.
+
+## Mas hierarquia nao e piloto automatico
+
+Estudos no topo podem ser mal desenhados.
+
+Estudos observacionais podem ser decisivos quando experimentos sao impossiveis.
+
+O importante e perguntar: que comparacao foi feita, que vieses restam e qual
+incerteza acompanha a conclusao?
+
+## Checklist para perguntas causais
+
+Para estudar uma pergunta causal, identifique:
+
+- tratamento;
+- resultado;
+- unidade observacional;
+- grupo de comparacao;
+- possiveis confundidores;
+- mecanismo plausivel;
+- limitacoes do desenho.
+
+## Resumo
+
+- Causalidade compara o que aconteceu com o que teria acontecido.
+- Experimentos ajudam a criar comparacoes justas.
+- Estudos observacionais exigem cuidado com confundidores.
+- John Snow mostra que dados observacionais podem gerar evidencia causal forte.
+- Boas perguntas continuam sendo o centro da ciencia de dados.
+
+## Leituras
+
+- Computational and Inferential Thinking, capitulo 2: Causality and Experiments.
+- Judea Pearl e Dana Mackenzie. The Book of Why, 2018.

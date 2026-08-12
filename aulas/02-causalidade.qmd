@@ -1,0 +1,88 @@
+---
+title: "Aula 02: Causalidade e Experimentos"
+---
+
+## Objetivos
+
+- Explicar por que muitas perguntas em ciencia de dados sao perguntas de causa
+  e efeito.
+- Diferenciar associacao, correlacao e causalidade.
+- Apresentar os elementos de um experimento: tratamento, controle,
+  randomizacao e replicacao.
+- Discutir por que estudos observacionais exigem cuidado com variaveis de
+  confusao.
+- Usar um experimento A/B como pipeline completo de estudo causal simples.
+- Usar John Snow como estudo de caso sobre evidencia causal em dados
+  observacionais.
+
+## Conceitos centrais
+
+- causa e efeito;
+- tratamento;
+- grupo de controle;
+- ensaio randomizado controlado;
+- estudo observacional;
+- variavel de confusao;
+- experimento natural;
+- hierarquia de evidencia.
+
+## Narrativa da aula
+
+A aula comeca com perguntas que parecem simples: um lembrete aumenta entregas?
+Uma mudanca em um sistema melhorou desempenho? Uma politica publica aumentou a
+frequencia escolar? Todas tentam comparar o que aconteceu com o que teria
+acontecido em outro cenario.
+
+Depois disso, a aula apresenta Fisher e a logica do desenho experimental. Um
+experimento A/B ficticio, mas realista, sobre lembretes no Moodle serve como
+pipeline completo: formular pergunta, gerar ou receber dados, verificar
+randomizacao, medir efeito, estimar incerteza e comunicar resultado.
+
+Na segunda metade, a aula discute o limite dos experimentos: muitas vezes nao
+podemos randomizar pessoas, cidades ou politicas. Entram entao os estudos
+observacionais, o problema do confundimento e o caso de John Snow.
+
+## Exemplo principal
+
+O exemplo computacional principal e [Pipeline de experimento A/B](../exemplos/02-experimento-ab/notebook.ipynb).
+Ele deve ser usado em aula para mostrar a diferenca entre "olhar medias" e
+conduzir uma analise causal minima com verificacoes.
+
+## Dimensionamento para 100 minutos
+
+| Tempo | Atividade |
+|---:|---|
+| 0-10 min | Retomada: boas perguntas e perguntas causais |
+| 10-25 min | Tratamento, resultado, unidade e comparacao contrafactual |
+| 25-40 min | Fisher, controle, randomizacao e replicacao |
+| 40-65 min | Notebook: pipeline de experimento A/B |
+| 65-75 min | Discussao: limites do experimento e validade externa |
+| 75-90 min | John Snow, estudo observacional e confundimento |
+| 90-100 min | Checklist causal e atividade curta |
+
+## Estudo de caso complementar
+
+O estudo de John Snow sobre colera em Londres complementa o exemplo A/B. Ele
+permite discutir:
+
+- uma pergunta causal clara;
+- uma hipotese dominante errada, a teoria miasmatica;
+- uma variavel de confusao plausivel, como pobreza e condicoes urbanas;
+- um quase experimento produzido pela distribuicao de fontes de agua;
+- uma tabela simples que resume uma diferenca enorme de mortalidade.
+
+Veja o exemplo documentado em [John Snow e colera em Londres](../exemplos/01-john-snow/exemplo.qmd).
+
+## Notas para o professor
+
+O objetivo nao e ensinar inferencia causal formal nesta aula. O objetivo e dar
+linguagem para que estudantes reconhecam por que "correlacao nao e causalidade"
+e uma frase correta, mas insuficiente. O ponto mais importante e mostrar que o
+desenho da pergunta e dos dados decide o que a analise consegue sustentar.
+
+## Conexao com exercicios
+
+Uma boa atividade curta e apresentar tres perguntas e pedir que estudantes
+classifiquem cada uma como descritiva, preditiva ou causal. Depois, para cada
+pergunta causal, pedir que indiquem tratamento, resultado, unidade observacional,
+possiveis confundidores e um desenho de estudo plausivel.

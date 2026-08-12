@@ -1,6 +1,6 @@
 ---
 title: "Introducao a Ciencia de Dados"
-subtitle: "Aula 01"
+subtitle: "Aula 01: perguntas, dados e evidencia"
 author: "ICD"
 format:
   revealjs:
@@ -10,12 +10,39 @@ format:
     preview-links: auto
     footer: "Introducao a Ciencia de Dados"
 execute:
-  echo: true
+  echo: false
 ---
 
-## Por que estudar ciencia de dados?
+## Hoje
 
-Dados aparecem em quase toda decisao contemporanea:
+- O que e ciencia de dados?
+- O que a area usa, mas nao e?
+- Que tipo de pergunta vamos aprender a responder?
+- Como a disciplina esta organizada?
+
+::: notes
+Esta aula substitui a primeira metade do material antigo. A parte de causalidade
+foi movida para a Aula 02.
+:::
+
+## Uma definicao para usar no curso
+
+Ciencia de dados e a pratica de transformar perguntas em evidencia usando:
+
+- dados;
+- computacao;
+- estatistica;
+- conhecimento de contexto;
+- comunicacao clara.
+
+## O que torna isso dificil?
+
+Dados do mundo real quase nunca chegam prontos.
+
+Eles podem ser incompletos, enviesados, desorganizados, ambíguos ou coletados
+para uma finalidade diferente da nossa pergunta.
+
+## A area aparece em muitos lugares
 
 - politicas publicas;
 - produtos digitais;
@@ -31,10 +58,70 @@ forma abstrata, mas mostrar situacoes em que evidencia quantitativa muda a
 qualidade da discussao.
 :::
 
-## Uma definicao operacional
+## Ciencia de dados nao e so probabilidade
 
-Ciencia de dados e o trabalho de transformar perguntas em evidencia usando dados,
-computacao, estatistica e conhecimento de contexto.
+Probabilidade e uma linguagem para lidar com incerteza.
+
+Ela ajuda a responder perguntas como:
+
+- o que poderia acontecer por acaso?
+- quao surpreendente e este resultado?
+- como modelar variabilidade?
+
+Mas a disciplina nao sera apenas uma disciplina de probabilidade.
+
+## Ciencia de dados nao e so algebra linear
+
+Algebra linear aparece em vetores, matrizes, regressao, reducao de dimensao e
+modelos modernos.
+
+Ela sera uma ferramenta de apoio, nao o ponto de partida.
+
+## Ciencia de dados nao e so aprendizado de maquina
+
+Aprendizado de maquina ajuda em tarefas como previsao, classificacao,
+recomendacao e reconhecimento de padroes.
+
+Mas um modelo sofisticado nao compensa uma pergunta mal formulada ou dados
+mal compreendidos.
+
+## Entao, qual e a receita?
+
+1. Computacao para obter, organizar e transformar dados.
+2. Estatistica para raciocinar com variabilidade e incerteza.
+3. Aprendizado de maquina quando previsao ou classificacao ajudam.
+4. Probabilidade e algebra linear para entender as ferramentas.
+5. Boas perguntas para orientar todo o trabalho.
+
+## Principal: boas perguntas
+
+Uma pergunta boa define:
+
+- qual fenomeno queremos entender;
+- que evidencia seria convincente;
+- que dados precisamos;
+- que comparacao faz sentido;
+- que conclusoes seriam exageradas.
+
+## Exemplo de pergunta ruim
+
+> Temos uma base de dados grande. O que da para fazer com ela?
+
+Essa pergunta parece aberta, mas nao orienta decisao tecnica.
+
+Sem objetivo, qualquer grafico parece possivel e nenhuma conclusao fica clara.
+
+## Exemplo de pergunta melhor
+
+> O acesso a equipamentos publicos varia entre regioes de Belo Horizonte?
+
+Agora podemos discutir:
+
+- unidade de analise;
+- medida de acesso;
+- fonte dos dados;
+- escala geografica;
+- limitacoes da interpretacao.
 
 ::: notes
 Enfatizar "perguntas" e "contexto". A disciplina nao e apenas uma colecao de
@@ -43,13 +130,69 @@ ferramentas; e uma forma de organizar investigacoes.
 
 ## O ciclo de uma analise
 
-1. Formular uma pergunta.
-2. Encontrar ou coletar dados.
-3. Organizar e limpar.
-4. Explorar.
-5. Modelar.
-6. Comunicar.
+1. Formular a pergunta.
+2. Adquirir ou construir dados.
+3. Organizar, limpar e documentar.
+4. Explorar padroes e problemas.
+5. Fazer previsoes ou inferencias.
+6. Comunicar resultados e incertezas.
 7. Revisar a pergunta.
+
+## Formular perguntas
+
+Perguntas orientam escolhas tecnicas.
+
+Antes de abrir o notebook, tente responder:
+
+- qual decisao ou entendimento esta em jogo?
+- quem sao os individuos ou unidades observadas?
+- quais variaveis precisamos medir?
+- qual comparacao seria justa?
+
+## Adquirir e organizar dados
+
+Nesta etapa aparecem problemas comuns:
+
+- formatos diferentes;
+- variaveis com nomes ruins;
+- valores ausentes;
+- duplicatas;
+- codificacoes inconsistentes;
+- ausencia de documentacao.
+
+## Analise exploratoria
+
+Explorar dados nao e "fazer graficos aleatorios".
+
+E procurar estrutura:
+
+- distribuicoes;
+- tendencias;
+- valores extremos;
+- relacoes entre variaveis;
+- problemas de qualidade;
+- hipoteses para investigar melhor.
+
+## Previsao e inferencia
+
+Duas perguntas frequentes:
+
+- consigo prever algo que ainda nao observei?
+- consigo estimar ou comparar algo sobre o processo que gerou os dados?
+
+Essas perguntas exigem cuidado com erro, incerteza e validade.
+
+## Comunicacao
+
+Uma analise que ninguem entende ainda nao terminou.
+
+Comunicar bem inclui:
+
+- explicar a pergunta;
+- mostrar o metodo;
+- apresentar resultados;
+- declarar incertezas;
+- reconhecer limitacoes.
 
 ## Exemplo motivador
 
@@ -58,7 +201,7 @@ Pergunta:
 > Como poderiamos investigar se ha desigualdade territorial no acesso a um
 > servico publico em uma cidade?
 
-## Antes do codigo
+## Antes do codigo: desenho da tabela
 
 Precisamos decidir:
 
@@ -68,7 +211,7 @@ Precisamos decidir:
 - que vieses podem existir nos dados;
 - que conclusoes seriam inadequadas.
 
-## Primeiro contato com uma tabela
+## Primeiro contato com uma tabela simples
 
 ```python
 import pandas as pd
@@ -94,8 +237,61 @@ dados
 - O indicador criado e justo?
 - O que falta para interpretar bem?
 
+## O que esta tabela ainda nao responde?
+
+Ela nao mostra, sozinha:
+
+- qualidade dos equipamentos;
+- distancia real ate cada servico;
+- desigualdades dentro de cada bairro;
+- demanda da populacao;
+- efeitos causais de uma politica publica.
+
+## Como estudar por estes slides
+
+Ao final de cada aula, tente produzir tres coisas:
+
+1. um resumo em cinco linhas;
+2. uma lista dos conceitos novos;
+3. uma pergunta que os dados da aula nao conseguem responder.
+
+## Logistica da disciplina
+
+O material do curso sera organizado no hotsite:
+
+<https://heitorramos.github.io/icd/>
+
+O Moodle concentra quizzes, listas, entregas e comunicacao operacional.
+
+## Como vamos trabalhar
+
+- Aulas teoricas para conceitos e discussao de problemas.
+- Aulas praticas para programacao e exercicios.
+- Exemplos documentados para estudo autonomo.
+- Listas e VPLs para praticar com feedback automatico.
+
+## Avaliacao
+
+A composicao exata pode mudar por semestre, mas a estrutura prevista combina:
+
+- provas;
+- listas no Moodle;
+- quizzes;
+- projeto final.
+
+Sempre consulte o Moodle para datas e regras oficiais da turma.
+
 ## Mensagem da aula
 
 Ciencia de dados nao comeca com o modelo.
 
 Comeca com uma pergunta, uma tabela imperfeita e muitas decisoes explicitas.
+
+## Para a proxima aula
+
+Muitas perguntas importantes tem a forma:
+
+> X causa alguma mudanca em Y?
+
+Na proxima aula, vamos discutir causalidade, experimentos, controle e o caso de
+John Snow.

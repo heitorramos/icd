@@ -6,6 +6,7 @@ project:
     - "aulas/*.qmd"
     - "slides/*.qmd"
     - "exemplos/**/*.qmd"
+    - "exemplos/**/*.ipynb"
     - "listas/*.qmd"
 
 website:
@@ -36,14 +37,19 @@ website:
       contents:
         - aulas/index.qmd
         - aulas/01-introducao.qmd
+        - aulas/02-causalidade.qmd
     - title: "Slides"
       contents:
         - slides/index.qmd
         - slides/01-introducao.qmd
+        - slides/02-causalidade.qmd
     - title: "Exemplos"
       contents:
         - exemplos/index.qmd
         - exemplos/00-template/exemplo.qmd
+        - exemplos/01-introducao-dados/notebook.ipynb
+        - exemplos/01-john-snow/exemplo.qmd
+        - exemplos/02-experimento-ab/notebook.ipynb
     - title: "Listas"
       contents:
         - listas/index.qmd

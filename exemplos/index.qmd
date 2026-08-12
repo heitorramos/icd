@@ -18,3 +18,9 @@ Cada exemplo deve funcionar como uma pequena investigacao documentada.
 ## Templates
 
 - [Template de exemplo documentado](00-template/exemplo.qmd)
+
+## Exemplos disponiveis
+
+- [Aula 01: uma primeira tabela](01-introducao-dados/notebook.ipynb)
+- [John Snow e colera em Londres](01-john-snow/exemplo.qmd)
+- [Aula 02: pipeline de experimento A/B](02-experimento-ab/notebook.ipynb)
