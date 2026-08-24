@@ -105,10 +105,11 @@ $link-color: #0f6b78;
 
 .reveal .sample-figure {
   display: grid;
+  grid-template-rows: 13.5rem auto;
   grid-template-columns: 1fr;
   justify-items: center;
   margin-top: 0.5rem;
-  position: relative;
+  row-gap: 0.6rem;
 }
 
 .reveal .population-bubble {
@@ -119,10 +120,14 @@ $link-color: #0f6b78;
   color: #17324d;
   display: flex;
   flex-direction: column;
-  height: 16rem;
+  grid-column: 1;
+  grid-row: 1;
+  height: 13rem;
   justify-content: center;
+  line-height: 1.15;
+  padding: 0 2.2rem;
   text-align: center;
-  width: 30rem;
+  width: min(26rem, 92%);
 }
 
 .reveal .sample-bubble {
@@ -133,19 +138,25 @@ $link-color: #0f6b78;
   color: #17324d;
   display: flex;
   flex-direction: column;
-  height: 7rem;
+  grid-column: 1;
+  grid-row: 1;
+  height: 5.6rem;
   justify-content: center;
-  margin-top: -8.5rem;
+  line-height: 1.1;
+  margin-top: 3.7rem;
+  padding: 0 1rem;
   text-align: center;
-  width: 13rem;
+  width: min(11.5rem, 48%);
 }
 
 .reveal .sample-caption {
   color: #27323a;
-  font-size: 0.78em;
+  font-size: 0.72em;
+  grid-column: 1;
+  grid-row: 2;
   line-height: 1.25;
-  margin-top: 1.2rem;
-  max-width: 30rem;
+  margin-top: 0;
+  max-width: 28rem;
   text-align: center;
 }
 
