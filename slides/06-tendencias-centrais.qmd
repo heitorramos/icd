@@ -62,12 +62,44 @@ Fonte: Kaggle, `dem0nking/billboard-hits-songs-dataset`.
 
 ![](assets/aula06-billboard/descritiva-resumo.png){fig-alt="Resumo descritivo do dataset Billboard com número de linhas, colunas, gêneros, duração média, duração mediana e popularidade média."}
 
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+metrics = [
+    ("linhas", len(songs)),
+    ("colunas", songs.shape[1]),
+    ("gêneros", songs["Genre"].nunique()),
+    ("duração média", f"{songs['duration_min'].mean():.2f} min"),
+    ("duração mediana", f"{songs['duration_min'].median():.2f} min"),
+    ("popularidade média", f"{songs['Popularity'].mean():.1f}"),
+]
+```
+
+</details>
+
 Antes de calcular qualquer resumo, precisamos saber o tamanho, as variáveis e as
 unidades da base.
 
 ## Diagnóstico inicial
 
 ![](assets/aula06-billboard/descritiva-generos-ausentes.png){fig-alt="Gráficos de barras com número de músicas por gênero e valores ausentes por coluna."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(10, 4.6))
+
+songs["Genre"].value_counts().sort_values().plot.barh(
+    ax=axes[0], color="#0f6b78"
+)
+raw.isna().sum().sort_values().plot.barh(
+    ax=axes[1], color="#d95f02"
+)
+```
+
+</details>
 
 Análise descritiva começa com perguntas simples: há categorias dominantes? Há
 valores ausentes? A variável numérica está na unidade certa?
@@ -129,12 +161,13 @@ flowchart LR
 
 ![](assets/aula06-billboard/histograma-duracao.png){fig-alt="Histograma da duração das músicas do dataset Billboard."}
 
-Um histograma conta quantas observações caem em cada faixa de valores.
-
-## Histograma em Python
+<details class="code-fold">
+<summary>Código do gráfico</summary>
 
 ```python
-ax = songs["duration_min"].plot.hist(
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.hist(
+    songs["duration_min"],
     bins=16,
     color="#0f6b78",
     edgecolor="white"
@@ -142,6 +175,10 @@ ax = songs["duration_min"].plot.hist(
 ax.set_xlabel("duração (minutos)")
 ax.set_ylabel("número de músicas")
 ```
+
+</details>
+
+Um histograma conta quantas observações caem em cada faixa de valores.
 
 ## Lendo um histograma
 
@@ -155,6 +192,19 @@ ax.set_ylabel("número de músicas")
 
 ![](assets/aula06-billboard/bins-comparacao.png){fig-alt="Dois histogramas da duração das músicas usando poucos bins e muitos bins."}
 
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+
+for ax, bins, title in zip(axes, [6, 28], ["Poucos bins", "Muitos bins"]):
+    ax.hist(songs["duration_min"], bins=bins, color="#0f6b78", edgecolor="white")
+    ax.set_title(title)
+```
+
+</details>
+
 Quando os bins mudam a história, complemente com CDF e quantis.
 
 ## CDF empírica
@@ -167,20 +217,25 @@ flowchart LR
 
 A CDF responde perguntas do tipo: "qual fração das músicas dura até 4 minutos?".
 
-## CDF em Python
+## Lendo a CDF
+
+![](assets/aula06-billboard/cdf-duracao.png){fig-alt="CDF empírica da duração das músicas com marcação em 4 minutos."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
 
 ```python
 x = np.sort(songs["duration_min"])
 y = np.arange(1, len(x) + 1) / len(x)
 
-ax = pd.Series(y, index=x).plot(color="#d95f02")
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.plot(x, y, color="#d95f02", linewidth=2.5)
+ax.axvline(4, color="#17324d", linestyle="--")
 ax.set_xlabel("duração (minutos)")
 ax.set_ylabel("fração acumulada")
 ```
 
-## Lendo a CDF
-
-![](assets/aula06-billboard/cdf-duracao.png){fig-alt="CDF empírica da duração das músicas com marcação em 4 minutos."}
+</details>
 
 Leitura: a curva mostra diretamente a fração acumulada até cada duração.
 
@@ -196,6 +251,22 @@ Duas respostas comuns:
 ## Média
 
 ![](assets/aula06-billboard/media-mediana.png){fig-alt="Histograma da duração com linhas verticais marcando média e mediana."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+mean_duration = songs["duration_min"].mean()
+median_duration = songs["duration_min"].median()
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.hist(songs["duration_min"], bins=16, color="#dbe3e7", edgecolor="white")
+ax.axvline(mean_duration, color="#0f6b78", linewidth=3, label="média")
+ax.axvline(median_duration, color="#d95f02", linewidth=3, label="mediana")
+ax.legend()
+```
+
+</details>
 
 A média é o ponto de equilíbrio aritmético dos dados.
 
@@ -223,19 +294,31 @@ Valores extremos puxam a média muito mais do que a mediana.
 
 ![](assets/aula06-billboard/outlier-media-mediana.png){fig-alt="Barras comparando média e mediana antes e depois de adicionar uma música de 45 minutos."}
 
-O problema não é o outlier existir. O problema é resumi-lo sem perceber.
-
-## Média e mediana em Python
+<details class="code-fold">
+<summary>Código do gráfico</summary>
 
 ```python
-media = songs["duration_min"].mean()
-mediana = songs["duration_min"].median()
+with_outlier = pd.concat(
+    [songs["duration_min"], pd.Series([45.0])],
+    ignore_index=True
+)
 
-ax = songs["duration_min"].plot.hist(bins=16)
-ax.axvline(media, color="red", label="média")
-ax.axvline(mediana, color="blue", label="mediana")
-ax.legend()
+outlier_summary = pd.DataFrame({
+    "Resumo": ["Média", "Mediana"] * 2,
+    "Cenário": ["sem outlier", "sem outlier", "com faixa de 45 min", "com faixa de 45 min"],
+    "Valor": [
+        songs["duration_min"].mean(),
+        songs["duration_min"].median(),
+        with_outlier.mean(),
+        with_outlier.median(),
+    ],
+})
+sns.barplot(data=outlier_summary, x="Resumo", y="Valor", hue="Cenário")
 ```
+
+</details>
+
+O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 ## Regra de leitura
 
@@ -258,25 +341,44 @@ Quartis separam os dados ordenados em quatro partes.
 
 ![](assets/aula06-billboard/boxplot-duracao.png){fig-alt="Boxplot horizontal da duração das músicas."}
 
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+fig, ax = plt.subplots(figsize=(8, 2.8))
+sns.boxplot(data=songs, x="duration_min", color="#dbe3e7", ax=ax)
+ax.set_xlabel("duração (minutos)")
+```
+
+</details>
+
 Boxplot mostra centro, dispersão e possíveis valores extremos.
 
 ## Boxplot por grupo
 
 ![](assets/aula06-billboard/boxplot-genero.png){fig-alt="Boxplots da duração das músicas por gênero."}
 
-Compare distribuições, não apenas médias.
-
-## Boxplot em Python
+<details class="code-fold">
+<summary>Código do gráfico</summary>
 
 ```python
-ax = sns.boxplot(
+order = songs["Genre"].value_counts().index
+
+fig, ax = plt.subplots(figsize=(9, 4.8))
+sns.boxplot(
     data=songs,
     x="Genre",
     y="duration_min",
-    color="#dbe3e7"
+    order=order,
+    color="#dbe3e7",
+    ax=ax
 )
 ax.set_ylabel("duração (minutos)")
 ```
+
+</details>
+
+Compare distribuições, não apenas médias.
 
 ## Quantis
 
@@ -290,6 +392,25 @@ Quantis generalizam quartis.
 ## Dispersão
 
 ![](assets/aula06-billboard/dispersao-genero.png){fig-alt="Gráfico de pontos mostrando o espalhamento das durações por gênero."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+order = songs["Genre"].value_counts().index
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+sns.stripplot(
+    data=songs,
+    x="Genre",
+    y="duration_min",
+    order=order,
+    jitter=0.25,
+    ax=ax
+)
+```
+
+</details>
 
 Duas amostras podem ter centros parecidos e dispersões muito diferentes.
 
@@ -328,23 +449,42 @@ Em casos extremos, a escala original pode esconder estrutura.
 
 ![](assets/aula06-billboard/log-duracao.png){fig-alt="Comparação entre histograma da duração em escala original e histograma de log10 da duração."}
 
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+
+axes[0].hist(songs["duration_min"], bins=16)
+axes[0].set_title("Escala original")
+
+axes[1].hist(np.log10(songs["duration_min"]), bins=16)
+axes[1].set_title("log10(duração)")
+```
+
+</details>
+
 Log é monotônico: preserva a ordem, mas muda a leitura visual das distâncias.
 
 ## Popularidade
 
 ![](assets/aula06-billboard/popularidade.png){fig-alt="Histograma da popularidade das músicas com linhas de média e mediana."}
 
-O mesmo roteiro vale para outra variável numérica: visualize, calcule resumos e
-compare média e mediana.
-
-## Popularidade em Python
+<details class="code-fold">
+<summary>Código do gráfico</summary>
 
 ```python
-ax = songs["Popularity"].plot.hist(bins=14)
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.hist(songs["Popularity"], bins=14, color="#3a7d44", edgecolor="white")
 ax.axvline(songs["Popularity"].mean(), label="média")
 ax.axvline(songs["Popularity"].median(), label="mediana")
 ax.legend()
 ```
+
+</details>
+
+O mesmo roteiro vale para outra variável numérica: visualize, calcule resumos e
+compare média e mediana.
 
 ## Outras médias
 
