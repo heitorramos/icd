@@ -1,7 +1,7 @@
 ---
 title: "Tendências Centrais"
 subtitle: "Aula 06"
-author: "ICD"
+author: "Heitor Ramos <heitor@dcc.ufmg.br>"
 format:
   revealjs:
     theme: [default, styles/slides.scss]
