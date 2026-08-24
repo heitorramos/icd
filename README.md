@@ -1,15 +1,15 @@
-# Introducao a Ciencia de Dados
+# Introdução à Ciência de Dados
 
-Repositorio da disciplina de Introducao a Ciencia de Dados.
+Repositório da disciplina de Introdução à Ciência de Dados.
 
 ## Estrutura
 
-- `aulas/`: roteiros pedagogicos.
+- `aulas/`: roteiros pedagógicos.
 - `slides/`: slides em Quarto Reveal.js.
-- `exemplos/`: exemplos documentados com dados, codigo e discussoes.
-- `listas/`: listas de exercicios.
-- `vpl/`: templates e exercicios para Moodle/VPL.
-- `.github/workflows/publish.yml`: publicacao automatica no GitHub Pages.
+- `exemplos/`: exemplos documentados com dados, código e discussões.
+- `listas/`: listas de exercícios.
+- `vpl/`: templates e exercícios para Moodle/VPL.
+- `.github/workflows/publish.yml`: publicação automática no GitHub Pages.
 
 ## Desenvolvimento local
 
@@ -17,19 +17,19 @@ Repositorio da disciplina de Introducao a Ciencia de Dados.
 quarto preview
 ```
 
-## Publicacao no GitHub
+## Publicação no GitHub
 
-1. Crie um repositorio vazio chamado `icd` no GitHub.
+1. Crie um repositório vazio chamado `icd` no GitHub.
 2. Atualize `site-url` e `repo-url` em `_quarto.yml`.
-3. Envie o conteudo para o repositorio.
-4. Em `Settings > Pages`, selecione `GitHub Actions` como fonte de publicacao.
+3. Envie o conteúdo para o repositório.
+4. Em `Settings > Pages`, selecione `GitHub Actions` como fonte de publicação.
 
-Depois do primeiro push na branch `main`, o site ficara disponivel em:
+Depois do primeiro push na branch `main`, o site ficará disponível em:
 
 ```text
 https://heitorramos.github.io/icd/
 ```
 
-## Proxima etapa
+## Próxima etapa
 
-Escolher uma aula piloto e substituir os templates por conteudo real.
+Escolher uma aula piloto e substituir os templates por conteúdo real.

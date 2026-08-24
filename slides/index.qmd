@@ -2,10 +2,10 @@
 title: "Slides"
 ---
 
-Os slides sao escritos em Quarto Reveal.js.
+Os slides são escritos em Quarto Reveal.js.
 
-## Slides disponiveis
+## Slides disponíveis
 
-- [Aula 01: Introducao a ciencia de dados](01-introducao.html)
+- [Aula 01: Introdução à ciência de dados](01-introducao.html)
 - [Aula 02: Causalidade e experimentos](02-causalidade.html)
 - [Aula 06: Tendências centrais](06-tendencias-centrais.html)

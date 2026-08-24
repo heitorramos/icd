@@ -4,14 +4,14 @@ Use esta pasta como ponto de partida para cada exemplo da disciplina.
 
 ## Estrutura esperada
 
-- `exemplo.qmd`: narrativa, codigo e discussao.
-- `dados/`: dados pequenos ou scripts de obtencao.
-- `README.md`: resumo do exemplo para manutencao.
+- `exemplo.qmd`: narrativa, código e discussão.
+- `dados/`: dados pequenos ou scripts de obtenção.
+- `README.md`: resumo do exemplo para manutenção.
 
 ## Checklist
 
-- [ ] A pergunta e compreensivel antes do codigo.
+- [ ] A pergunta é compreensível antes do código.
 - [ ] O dataset tem fonte documentada.
-- [ ] As transformacoes principais sao explicadas.
-- [ ] O exemplo explicita limitacoes.
-- [ ] Ha conexao clara com uma lista ou VPL.
+- [ ] As transformações principais são explicadas.
+- [ ] O exemplo explicita limitações.
+- [ ] Há conexão clara com uma lista ou VPL.

@@ -10,7 +10,7 @@ project:
     - "listas/*.qmd"
 
 website:
-  title: "Introducao a Ciencia de Dados"
+  title: "Introdução à Ciência de Dados"
   site-url: "https://heitorramos.github.io/icd/"
   repo-url: "https://github.com/heitorramos/icd"
   repo-actions: [edit, issue]
@@ -19,7 +19,7 @@ website:
     background: "#17324d"
     foreground: "#ffffff"
     left:
-      - text: "Inicio"
+      - text: "Início"
         href: index.qmd
       - text: "Programa"
         href: programa.qmd

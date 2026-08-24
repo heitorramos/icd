@@ -1,43 +1,43 @@
 ---
-title: "Exemplo: John Snow e colera em Londres"
+title: "Exemplo: John Snow e cólera em Londres"
 ---
 
 ## Pergunta motivadora
 
-Receber agua de uma fonte contaminada aumentava o risco de morrer por colera em
-Londres no seculo XIX?
+Receber água de uma fonte contaminada aumentava o risco de morrer por cólera em
+Londres no século XIX?
 
-## Objetivo didatico
+## Objetivo didático
 
-Este exemplo mostra como raciocinar sobre causalidade quando nao podemos fazer
-um experimento controlado. A ideia central e procurar uma comparacao justa em
+Este exemplo mostra como raciocinar sobre causalidade quando não podemos fazer
+um experimento controlado. A ideia central é procurar uma comparação justa em
 dados observacionais.
 
 ## Contexto
 
-Na epoca de John Snow, uma explicacao comum para a colera era a teoria
-miasmatica: doencas seriam causadas por odores ruins. Snow suspeitou que a
-transmissao estivesse relacionada a agua contaminada.
+Na época de John Snow, uma explicação comum para a cólera era a teoria
+miasmática: doenças seriam causadas por odores ruins. Snow suspeitou que a
+transmissão estivesse relacionada à água contaminada.
 
 ## Elementos da pergunta causal
 
 | Elemento | Neste exemplo |
 |---|---|
-| Tratamento | Fonte de agua recebida |
-| Resultado | Morte por colera |
-| Unidade observacional | Casa, domicilio ou morador |
-| Comparacao | Casas atendidas por diferentes companhias de agua |
-| Possiveis confundidores | Pobreza, densidade urbana, saneamento, condicoes de moradia |
+| Tratamento | Fonte de água recebida |
+| Resultado | Morte por cólera |
+| Unidade observacional | Casa, domicílio ou morador |
+| Comparação | Casas atendidas por diferentes companhias de água |
+| Possíveis confundidores | Pobreza, densidade urbana, saneamento, condições de moradia |
 
 ## Dados resumidos
 
-| Fonte de agua | Casas | Mortes por colera | Mortes por 10.000 casas |
+| Fonte de água | Casas | Mortes por cólera | Mortes por 10.000 casas |
 |---|---:|---:|---:|
 | Southwark & Vauxhall | 40.046 | 1.263 | 315 |
 | Lambeth | 26.107 | 98 | 37 |
 | Resto de Londres | 256.423 | 1.422 | 59 |
 
-## Codigo
+## Código
 
 ```python
 import pandas as pd
@@ -52,38 +52,38 @@ snow["mortes_por_10k"] = snow["mortes_colera"] / snow["casas"] * 10000
 snow
 ```
 
-## Interpretacao
+## Interpretação
 
-A taxa de mortes por 10.000 casas e muito maior no grupo atendido pela
+A taxa de mortes por 10.000 casas é muito maior no grupo atendido pela
 Southwark & Vauxhall do que no grupo atendido pela Lambeth.
 
-Essa diferenca sugere uma associacao forte entre fonte de agua e colera. Para
+Essa diferença sugere uma associação forte entre fonte de água e cólera. Para
 argumentar causalmente, precisamos discutir se os grupos comparados eram
 semelhantes em outros fatores importantes.
 
 ## Confundimento
 
-Uma variavel de confusao pode afetar tanto a fonte de agua quanto a morte por
-colera. Por exemplo, bairros mais pobres poderiam ter piores condicoes de
-moradia, maior exposicao a agua ruim e maior mortalidade por varios motivos.
+Uma variável de confusão pode afetar tanto a fonte de água quanto a morte por
+cólera. Por exemplo, bairros mais pobres poderiam ter piores condições de
+moradia, maior exposição à água ruim e maior mortalidade por vários motivos.
 
-O argumento de Snow fica mais forte quando a distribuicao das companhias de agua
-gera uma comparacao entre casas parecidas, mas com fontes de agua diferentes.
+O argumento de Snow fica mais forte quando a distribuição das companhias de água
+gera uma comparação entre casas parecidas, mas com fontes de água diferentes.
 
-## Conexao com os slides
+## Conexão com os slides
 
 Este exemplo deve ser usado depois dos slides sobre:
 
 - tratamento e resultado;
 - estudos observacionais;
-- variaveis de confusao;
+- variáveis de confusão;
 - quase experimentos.
 
-## Extensoes para exercicio
+## Extensões para exercício
 
-1. Calcular a razao entre as taxas de mortes dos grupos.
-2. Propor pelo menos tres confundidores plausiveis.
-3. Desenhar um pequeno grafo causal com fonte de agua, qualidade da agua,
-   pobreza e colera.
-4. Explicar, em um paragrafo, por que esta evidencia e mais forte que uma
-   correlacao qualquer.
+1. Calcular a razão entre as taxas de mortes dos grupos.
+2. Propor pelo menos três confundidores plausíveis.
+3. Desenhar um pequeno grafo causal com fonte de água, qualidade da água,
+   pobreza e cólera.
+4. Explicar, em um parágrafo, por que esta evidência é mais forte que uma
+   correlação qualquer.

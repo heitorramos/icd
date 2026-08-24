@@ -2,13 +2,13 @@
 title: "Aulas"
 ---
 
-Esta secao reune os roteiros pedagogicos de cada aula.
+Esta seção reúne os roteiros pedagógicos de cada aula.
 
-Cada roteiro deve indicar objetivos, conceitos, exemplos usados, preparacao
-necessaria, conexao com slides e conexao com exercicios.
+Cada roteiro deve indicar objetivos, conceitos, exemplos usados, preparação
+necessária, conexão com slides e conexão com exercícios.
 
-## Aulas disponiveis
+## Aulas disponíveis
 
-- [Aula 01: Introducao a ciencia de dados](01-introducao.qmd)
+- [Aula 01: Introdução à ciência de dados](01-introducao.qmd)
 - [Aula 02: Causalidade e experimentos](02-causalidade.qmd)
 - [Aula 06: Tendências centrais](06-tendencias-centrais.qmd)

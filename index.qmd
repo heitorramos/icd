@@ -1,48 +1,48 @@
 ---
-title: "Introducao a Ciencia de Dados"
+title: "Introdução à Ciência de Dados"
 subtitle: "Material aberto para aulas, exemplos, listas e projetos"
 ---
 
-Este site organiza o material da disciplina de Introducao a Ciencia de Dados.
-A proposta e manter uma trilha conceitual clara, com exemplos atuais,
-documentados e conectados aos exercicios.
+Este site organiza o material da disciplina de Introdução à Ciência de Dados.
+A proposta é manter uma trilha conceitual clara, com exemplos atuais,
+documentados e conectados aos exercícios.
 
-## Organizacao
+## Organização
 
 ::: {.grid}
 ::: {.g-col-12 .g-col-md-6}
 ### Aulas
 
-Roteiros de aula com objetivos, prerequisitos, conceitos centrais e sugestoes de conducao.
+Roteiros de aula com objetivos, pré-requisitos, conceitos centrais e sugestões de condução.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### Slides
 
-Apresentacoes em Quarto Reveal.js, versionadas junto do restante do curso.
+Apresentações em Quarto Reveal.js, versionadas junto do restante do curso.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### Exemplos
 
-Estudos guiados com pergunta motivadora, dataset, codigo comentado, extensoes e notas didaticas.
+Estudos guiados com pergunta motivadora, dataset, código comentado, extensões e notas didáticas.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### Listas e VPLs
 
-Exercicios e avaliacoes automaticas preparadas para Moodle/VPL.
+Exercícios e avaliações automáticas preparadas para Moodle/VPL.
 :::
 :::
 
-## Principios
+## Princípios
 
-- exemplos com dados reais sempre que possivel;
-- codigo pequeno o suficiente para caber em aula;
-- documentacao explicita para quem ensina e para quem estuda;
-- material reprodutivel, aberto e facil de atualizar.
+- exemplos com dados reais sempre que possível;
+- código pequeno o suficiente para caber em aula;
+- documentação explícita para quem ensina e para quem estuda;
+- material reprodutível, aberto e fácil de atualizar.
 
-## Primeira versao
+## Primeira versão
 
-Esta e uma base inicial do repositorio. A proxima etapa e migrar uma aula piloto
-com seus slides, exemplo e lista de exercicios.
+Esta é uma base inicial do repositório. A próxima etapa é migrar uma aula piloto
+com seus slides, exemplo e lista de exercícios.

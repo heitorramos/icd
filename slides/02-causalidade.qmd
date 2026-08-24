@@ -338,19 +338,19 @@ Mortes por 10.000 casas.
 - A hipótese da água demorou a convencer.
 - A ciência é lenta, mas acumula evidências.
 
-## Scientific Evidence Level
+## Níveis de evidência científica
 
 ![](assets/original/evidence-levels.png){fig-align="center" width="80%"}
 
-## Scientific Project Design
+## Desenho de projeto científico
 
 ![](assets/original/scientific-project-design.png){fig-align="center" width="80%"}
 
-## Experimental Science
+## Ciência experimental
 
 ![](assets/original/evidence-flow.png){fig-align="center" width="80%"}
 
-## Typical Scenario
+## Cenário típico
 
 ![](assets/original/experimental-science.png){fig-align="center" width="80%"}
 

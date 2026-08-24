@@ -7,17 +7,17 @@ title: "Template de Lista"
 - objetivo 1;
 - objetivo 2.
 
-## Antes de comecar
+## Antes de começar
 
 Indique leituras, slides e exemplos relacionados.
 
-## Exercicios
+## Exercícios
 
-### Exercicio 1
+### Exercício 1
 
 Enunciado.
 
-### Exercicio 2
+### Exercício 2
 
 Enunciado.
 
@@ -27,8 +27,8 @@ Explique o formato de entrega esperado.
 
 ## Rubrica
 
-| Criterio | Peso |
+| Critério | Peso |
 |---|---:|
-| Correcao conceitual | 40% |
-| Codigo e reprodutibilidade | 40% |
-| Clareza da comunicacao | 20% |
+| Correção conceitual | 40% |
+| Código e reprodutibilidade | 40% |
+| Clareza da comunicação | 20% |

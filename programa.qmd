@@ -4,39 +4,39 @@ title: "Programa"
 
 ## Objetivo geral
 
-Apresentar os fundamentos de ciencia de dados por meio de problemas reais,
-com enfase em formulacao de perguntas, manipulacao de dados, analise exploratoria,
-visualizacao, inferencia, modelagem preditiva e comunicacao de resultados.
+Apresentar os fundamentos de ciência de dados por meio de problemas reais,
+com ênfase em formulação de perguntas, manipulação de dados, análise exploratória,
+visualização, inferência, modelagem preditiva e comunicação de resultados.
 
 ## Objetivos de aprendizagem
 
 Ao final da disciplina, estudantes devem ser capazes de:
 
-- formular perguntas investigaveis com dados;
-- reconhecer tipos de dados, variaveis e unidades observacionais;
+- formular perguntas investigáveis com dados;
+- reconhecer tipos de dados, variáveis e unidades observacionais;
 - importar, limpar, transformar e combinar bases de dados;
-- produzir visualizacoes apropriadas para exploracao e comunicacao;
-- resumir dados com medidas estatisticas e incerteza;
-- interpretar testes de hipotese e intervalos de confianca;
-- construir modelos simples de regressao e classificacao;
-- avaliar resultados com metricas adequadas;
-- comunicar achados de forma reprodutivel e etica.
+- produzir visualizações apropriadas para exploração e comunicação;
+- resumir dados com medidas estatísticas e incerteza;
+- interpretar testes de hipótese e intervalos de confiança;
+- construir modelos simples de regressão e classificação;
+- avaliar resultados com métricas adequadas;
+- comunicar achados de forma reprodutível e ética.
 
 ## Estrutura sugerida
 
-| Modulo | Tema | Produtos |
+| Módulo | Tema | Produtos |
 |---|---|---|
-| 1 | Motivacao e ciclo de ciencia de dados | Aula, slides, exemplo inicial |
+| 1 | Motivação e ciclo de ciência de dados | Aula, slides, exemplo inicial |
 | 2 | Causalidade, experimentos e estudos observacionais | Slides, estudo de caso |
-| 3 | Dados tabulares e manipulacao | Notebook/Quarto guiado, lista |
-| 4 | Analise exploratoria e visualizacao | Exemplo documentado, VPL |
-| 5 | Probabilidade, amostragem e incerteza | Lista conceitual, simulacoes |
-| 6 | Testes de hipotese | Exercicios e estudo de caso |
-| 7 | Regressao | Slides, exemplos, VPL |
-| 8 | Classificacao e avaliacao de modelos | Exercicios automaticos |
-| 9 | Projeto final | Rubrica, checkpoints, apresentacao |
+| 3 | Dados tabulares e manipulação | Notebook/Quarto guiado, lista |
+| 4 | Análise exploratória e visualização | Exemplo documentado, VPL |
+| 5 | Probabilidade, amostragem e incerteza | Lista conceitual, simulações |
+| 6 | Testes de hipótese | Exercícios e estudo de caso |
+| 7 | Regressão | Slides, exemplos, VPL |
+| 8 | Classificação e avaliação de modelos | Exercícios automáticos |
+| 9 | Projeto final | Rubrica, checkpoints, apresentação |
 
 ## Linha editorial dos exemplos
 
-Os exemplos devem priorizar dados publicos, problemas proximos da realidade
-brasileira e discussoes que permitam conectar tecnica, contexto e limitacoes.
+Os exemplos devem priorizar dados públicos, problemas próximos da realidade
+brasileira e discussões que permitam conectar técnica, contexto e limitações.

@@ -2,9 +2,9 @@
 title: "Listas"
 ---
 
-As listas devem combinar perguntas conceituais, leitura de codigo e pequenas
-tarefas praticas.
+As listas devem combinar perguntas conceituais, leitura de código e pequenas
+tarefas práticas.
 
-## Listas disponiveis
+## Listas disponíveis
 
 - [Template de lista](lista-00-template.qmd)

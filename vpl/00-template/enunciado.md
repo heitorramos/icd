@@ -2,22 +2,22 @@
 
 ## Objetivo
 
-Descreva o objetivo do exercicio automatico.
+Descreva o objetivo do exercício automático.
 
 ## Tarefa
 
-Implemente as funcoes indicadas em `template.py`.
+Implemente as funções indicadas em `template.py`.
 
 ## Entrada
 
 Explique os argumentos ou arquivos de entrada.
 
-## Saida esperada
+## Saída esperada
 
 Explique o retorno esperado.
 
-## Criterios de avaliacao
+## Critérios de avaliação
 
-- casos publicos verificam comportamento basico;
-- casos ocultos verificam generalizacao;
-- a solucao deve evitar valores fixos dependentes do exemplo.
+- casos públicos verificam comportamento básico;
+- casos ocultos verificam generalização;
+- a solução deve evitar valores fixos dependentes do exemplo.

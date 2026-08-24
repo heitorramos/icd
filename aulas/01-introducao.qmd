@@ -1,76 +1,76 @@
 ---
-title: "Aula 01: Introducao a Ciencia de Dados"
+title: "Aula 01: Introdução à Ciência de Dados"
 ---
 
 ## Objetivos
 
-- Apresentar a disciplina, sua logistica e sua forma de trabalho.
-- Definir ciencia de dados como uma pratica que combina perguntas, dados,
-  computacao, estatistica e contexto.
-- Diferenciar ferramentas da area de objetivos da area.
-- Introduzir o ciclo de trabalho de uma analise.
+- Apresentar a disciplina, sua logística e sua forma de trabalho.
+- Definir ciência de dados como uma prática que combina perguntas, dados,
+  computação, estatística e contexto.
+- Diferenciar ferramentas da área de objetivos da área.
+- Introduzir o ciclo de trabalho de uma análise.
 - Mostrar que boas perguntas organizam todo o restante do curso.
 
 ## Conceitos centrais
 
-- pergunta investigavel;
-- evidencia;
-- computacao;
-- estatistica;
+- pergunta investigável;
+- evidência;
+- computação;
+- estatística;
 - pensamento computacional;
-- analise exploratoria;
-- previsao e inferencia;
-- comunicacao.
+- análise exploratória;
+- previsão e inferência;
+- comunicação.
 
 ## Narrativa da aula
 
-A aula abre a disciplina e apresenta a ciencia de dados como uma pratica
-orientada por perguntas. A primeira decisao didatica e separar a area de suas
-ferramentas: ciencia de dados usa probabilidade, algebra linear, estatistica e
-aprendizado de maquina, mas nao se reduz a nenhuma delas.
+A aula abre a disciplina e apresenta a ciência de dados como uma prática
+orientada por perguntas. A primeira decisão didática é separar a área de suas
+ferramentas: ciência de dados usa probabilidade, álgebra linear, estatística e
+aprendizado de máquina, mas não se reduz a nenhuma delas.
 
-Em seguida, a aula apresenta a "receita" do curso: computacao para trabalhar
-com dados, estatistica para lidar com variabilidade e incerteza, aprendizado de
-maquina como ferramenta, e boas perguntas como eixo central.
+Em seguida, a aula apresenta a "receita" do curso: computação para trabalhar
+com dados, estatística para lidar com variabilidade e incerteza, aprendizado de
+máquina como ferramenta, e boas perguntas como eixo central.
 
 ## Dimensionamento para 100 minutos
 
 | Tempo | Atividade |
 |---:|---|
-| 0-10 min | Apresentacao do professor, do curso e combinados iniciais |
-| 10-25 min | O que e ciencia de dados e o que a area usa |
-| 25-40 min | Discussao guiada: exemplos de boas e mas perguntas |
-| 40-60 min | Ciclo de uma analise de dados |
+| 0-10 min | Apresentação do professor, do curso e combinados iniciais |
+| 10-25 min | O que é ciência de dados e o que a área usa |
+| 25-40 min | Discussão guiada: exemplos de boas e más perguntas |
+| 40-60 min | Ciclo de uma análise de dados |
 | 60-80 min | Exemplo em notebook: primeira tabela e indicador simples |
-| 80-95 min | Logistica da disciplina, avaliacoes e projeto |
-| 95-100 min | Fechamento e pergunta para a proxima aula |
+| 80-95 min | Logística da disciplina, avaliações e projeto |
+| 95-100 min | Fechamento e pergunta para a próxima aula |
 
 ## Exemplo sugerido
 
-Um exemplo inicial deve usar uma base pequena de dados publicos brasileiros,
-preferencialmente com variaveis compreensiveis sem muito conhecimento previo.
+Um exemplo inicial deve usar uma base pequena de dados públicos brasileiros,
+preferencialmente com variáveis compreensíveis sem muito conhecimento prévio.
 
-Possiveis temas:
+Possíveis temas:
 
 - qualidade do ar ou clima em cidades brasileiras;
-- acidentes de transito;
-- dados de educacao;
-- equipamentos publicos em Belo Horizonte;
-- series historicas simples de indicadores sociais.
+- acidentes de trânsito;
+- dados de educação;
+- equipamentos públicos em Belo Horizonte;
+- séries históricas simples de indicadores sociais.
 
-O notebook piloto esta em [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.ipynb).
+O notebook piloto está em [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.ipynb).
 
 ## Notas para o professor
 
-Evite abrir a disciplina com algoritmos. O ponto central desta aula e mostrar
-que ciencia de dados comeca com uma pergunta bem formulada e com cuidado sobre
-o que os dados podem ou nao sustentar.
+Evite abrir a disciplina com algoritmos. O ponto central desta aula é mostrar
+que ciência de dados começa com uma pergunta bem formulada e com cuidado sobre
+o que os dados podem ou não sustentar.
 
 A parte de causalidade que aparecia no material antigo foi separada para a
 Aula 02. Nesta aula, basta preparar a ideia de que muitas perguntas importantes
-tem forma causal, sem ainda discutir desenho experimental em detalhe.
+têm forma causal, sem ainda discutir desenho experimental em detalhe.
 
-## Conexao com exercicios
+## Conexão com exercícios
 
 A primeira atividade pode pedir que estudantes escolham uma pergunta, identifiquem
-possiveis variaveis e discutam que tipo de dado seria necessario para responde-la.
+possíveis variáveis e discutam que tipo de dado seria necessário para respondê-la.
