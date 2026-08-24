@@ -47,10 +47,24 @@ gênero e popularidade.
 
 ## Amostras e População
 
-- Quase nunca temos dados de toda a população.
-- Trabalhamos com uma amostra.
-- A amostra pode ou não representar bem a população.
-- Hoje vamos descrever tendências **da amostra**.
+::: {.sample-figure}
+::: {.population-bubble}
+**População**
+
+Todas as músicas possíveis
+:::
+
+::: {.sample-bubble}
+**Amostra**
+
+Faixas observadas
+:::
+
+::: {.sample-caption}
+Quase nunca observamos toda a população. Hoje vamos descrever tendências da
+amostra e perguntar quando elas podem representar algo maior.
+:::
+:::
 
 ## O grande problema
 

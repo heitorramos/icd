@@ -102,3 +102,49 @@ $link-color: #0f6b78;
   max-height: 68vh;
   object-fit: contain;
 }
+
+.reveal .sample-figure {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.reveal .population-bubble {
+  align-items: center;
+  background: #eef6f7;
+  border: 0.18rem solid #0f6b78;
+  border-radius: 999px;
+  color: #17324d;
+  display: flex;
+  flex-direction: column;
+  height: 16rem;
+  justify-content: center;
+  text-align: center;
+  width: 30rem;
+}
+
+.reveal .sample-bubble {
+  align-items: center;
+  background: #fff5ed;
+  border: 0.18rem solid #d95f02;
+  border-radius: 999px;
+  color: #17324d;
+  display: flex;
+  flex-direction: column;
+  height: 7rem;
+  justify-content: center;
+  margin-top: -8.5rem;
+  text-align: center;
+  width: 13rem;
+}
+
+.reveal .sample-caption {
+  color: #27323a;
+  font-size: 0.78em;
+  line-height: 1.25;
+  margin-top: 1.2rem;
+  max-width: 30rem;
+  text-align: center;
+}
