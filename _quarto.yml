@@ -38,11 +38,13 @@ website:
         - aulas/index.qmd
         - aulas/01-introducao.qmd
         - aulas/02-causalidade.qmd
+        - aulas/06-tendencias-centrais.qmd
     - title: "Slides"
       contents:
         - slides/index.qmd
         - slides/01-introducao.qmd
         - slides/02-causalidade.qmd
+        - slides/06-tendencias-centrais.qmd
     - title: "Exemplos"
       contents:
         - exemplos/index.qmd
@@ -50,6 +52,7 @@ website:
         - exemplos/01-introducao-dados/notebook.ipynb
         - exemplos/01-john-snow/exemplo.qmd
         - exemplos/02-experimento-ab/notebook.ipynb
+        - exemplos/06-tendencias-centrais/notebook.ipynb
     - title: "Listas"
       contents:
         - listas/index.qmd

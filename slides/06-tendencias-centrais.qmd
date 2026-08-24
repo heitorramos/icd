@@ -1,0 +1,260 @@
+---
+title: "Tendências Centrais"
+subtitle: "Aula 06"
+author: "ICD"
+format:
+  revealjs:
+    theme: [default, styles/slides.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "Introdução à Ciência de Dados"
+execute:
+  echo: false
+---
+
+## Tendências Centrais
+
+Introdução à Ciência de Dados
+
+::: {.muted}
+Conteúdo preservado da aula original, com fluxo atualizado e exemplo em Python
+para dados didáticos de streaming.
+:::
+
+## Hoje
+
+- Amostra e população
+- Histograma e CDF empírica
+- Média e mediana
+- Quartis, quantis e boxplot
+- Dispersão
+- Transformações
+- Outras médias
+
+## A duração das músicas
+
+::: {.statement}
+Como resumir a duração das faixas de uma coleção sem esconder a distribuição?
+:::
+
+No notebook da aula, vamos criar uma base didática de streaming com duração,
+gênero e popularidade.
+
+## Amostras e População
+
+![](assets/aula06/amostra-populacao-billboard.png){.orig-slide fig-align="center"}
+
+## Amostras e População
+
+- Quase nunca temos dados de toda a população.
+- Trabalhamos com uma amostra.
+- A amostra pode ou não representar bem a população.
+- Hoje vamos descrever tendências **da amostra**.
+
+## O grande problema
+
+::: {.statement}
+As estimativas feitas na amostra capturam tendências populacionais?
+:::
+
+Hoje vamos construir as primeiras medidas. Depois discutiremos incerteza,
+amostragem e generalização.
+
+## Sempre visualize seus dados!
+
+![](assets/aula06/visualize-seus-dados.png){.orig-slide fig-align="center"}
+
+## Histogramas
+
+![](assets/aula06/histograma-bins.png){.orig-slide fig-align="center"}
+
+## Histograma
+
+![](assets/aula06/histograma-musicas.png){.orig-slide fig-align="center"}
+
+## Histograma em Python
+
+```python
+ax = faixas["duracao_min"].plot.hist(
+    bins=30,
+    color="#0f6b78",
+    edgecolor="white"
+)
+ax.set_xlabel("duração (minutos)")
+ax.set_ylabel("número de faixas")
+```
+
+::: {.muted}
+No notebook, vamos variar `bins` e observar como a leitura muda.
+:::
+
+## Lendo um histograma
+
+- Onde os dados se concentram?
+- Há caudas?
+- Há valores muito extremos?
+- Existe truncamento natural?
+- O formato sugere média e mediana próximas ou distantes?
+
+## Como escolher o número de bins?
+
+![](assets/aula06/escolha-bins.png){.orig-slide fig-align="center"}
+
+## CDF Empírica
+
+![](assets/aula06/ecdf-algoritmo.png){.orig-slide fig-align="center"}
+
+## CDF em Python
+
+```python
+x = np.sort(faixas["duracao_min"])
+y = np.arange(1, len(x) + 1) / len(x)
+
+ax = pd.Series(y, index=x).plot(color="#d95f02")
+ax.set_xlabel("duração (minutos)")
+ax.set_ylabel("fração acumulada")
+```
+
+## Leitura da CDF
+
+![](assets/aula06/cdf-leitura-100.png){.orig-slide fig-align="center"}
+
+## Tendências Centrais
+
+Normalmente queremos saber onde nossos dados estão centralizados.
+
+Vamos começar com:
+
+- média;
+- mediana.
+
+## Média
+
+![](assets/aula06/media-musicas.png){.orig-slide fig-align="center"}
+
+## Mediana
+
+![](assets/aula06/mediana-definicao.png){.orig-slide fig-align="center"}
+
+## Mediana vs. média
+
+![](assets/aula06/mediana-vs-media-outlier.png){.orig-slide fig-align="center"}
+
+## O caso Michael Jordan
+
+![](assets/aula06/michael-jordan-outlier.png){.orig-slide fig-align="center"}
+
+## Música gigantesca
+
+![](assets/aula06/musica-gigantesca.png){.orig-slide fig-align="center"}
+
+## Média e mediana em Python
+
+```python
+media = faixas["duracao_min"].mean()
+mediana = faixas["duracao_min"].median()
+
+ax = faixas["duracao_min"].plot.hist(bins=30)
+ax.axvline(media, color="red", label="média")
+ax.axvline(mediana, color="blue", label="mediana")
+ax.legend()
+```
+
+## Regra de leitura
+
+- Média e mediana próximas sugerem distribuição mais equilibrada.
+- Média muito maior que mediana sugere cauda à direita.
+- Mediana é mais robusta a valores extremos.
+- Média usa todos os valores e é mais sensível.
+
+## Quartis
+
+![](assets/aula06/quartis.png){.orig-slide fig-align="center"}
+
+## Boxplot
+
+![](assets/aula06/boxplot.png){.orig-slide fig-align="center"}
+
+## Boxplot das músicas
+
+![](assets/aula06/boxplot-musicas.png){.orig-slide fig-align="center"}
+
+## Boxplot em Python
+
+```python
+ax = sns.boxplot(
+    data=faixas,
+    x="genero",
+    y="duracao_min",
+    color="#dbe3e7"
+)
+ax.set_ylabel("duração (minutos)")
+```
+
+## Quantil
+
+![](assets/aula06/quantis.png){.orig-slide fig-align="center"}
+
+## Dispersão
+
+![](assets/aula06/dispersao.png){.orig-slide fig-align="center"}
+
+## Intervalo
+
+![](assets/aula06/intervalo-range.png){.orig-slide fig-align="center"}
+
+## Variância da amostra
+
+![](assets/aula06/variancia-formula.png){.orig-slide fig-align="center"}
+
+## Desvio padrão da amostra
+
+![](assets/aula06/desvio-padrao.png){.orig-slide fig-align="center"}
+
+## Sempre plote antes
+
+![](assets/aula06/sempre-plote.png){.orig-slide fig-align="center"}
+
+## Transformadas
+
+![](assets/aula06/transformadas-02.png){.orig-slide fig-align="center"}
+
+## Novo problema: palavras em músicas
+
+![](assets/aula06/palavras-musicas.png){.orig-slide fig-align="center"}
+
+## Log ajuda a ler
+
+![](assets/aula06/log-log-palavras.png){.orig-slide fig-align="center"}
+
+## Outras médias
+
+![](assets/aula06/outras-medias.png){.orig-slide fig-align="center"}
+
+## Média geométrica
+
+![](assets/aula06/geometrica-rating.png){.orig-slide fig-align="center"}
+
+## Média harmônica
+
+![](assets/aula06/harmonica-carro.png){.orig-slide fig-align="center"}
+
+## Quando usar cada uma?
+
+![](assets/aula06/quando-usar-medias.png){.orig-slide fig-align="center"}
+
+## Fechamento
+
+Para resumir dados, pergunte:
+
+- visualizei a distribuição?
+- há outliers?
+- média e mediana contam histórias diferentes?
+- preciso comunicar centro, dispersão ou ambos?
+- a escala original é adequada?
+
+## Referências
+
+- Computational and Inferential Thinking, capítulo 10: Sampling and Empirical Distributions.
+- Fundamentos Estatísticos de Ciência dos Dados, capítulos 2 e 4.

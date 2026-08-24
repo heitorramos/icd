@@ -11,3 +11,4 @@ necessaria, conexao com slides e conexao com exercicios.
 
 - [Aula 01: Introducao a ciencia de dados](01-introducao.qmd)
 - [Aula 02: Causalidade e experimentos](02-causalidade.qmd)
+- [Aula 06: Tendências centrais](06-tendencias-centrais.qmd)

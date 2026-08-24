@@ -1,0 +1,85 @@
+---
+title: "Aula 06: Tendências Centrais"
+---
+
+## Objetivos
+
+- Diferenciar população e amostra em uma análise descritiva.
+- Reforçar a regra: visualizar antes de agregar.
+- Ler histogramas e CDFs empíricas.
+- Interpretar média, mediana, quartis e quantis.
+- Comparar média e mediana em presença de outliers.
+- Introduzir medidas de dispersão: intervalo, variância e desvio padrão.
+- Discutir transformações e escalas logarítmicas.
+- Apresentar, como extensão, médias geométrica e harmônica.
+
+## Conceitos centrais
+
+- população;
+- amostra;
+- histograma;
+- CDF empírica;
+- média;
+- mediana;
+- quartis;
+- boxplot;
+- quantis;
+- dispersão;
+- intervalo;
+- variância;
+- desvio padrão;
+- transformações logarítmicas;
+- média geométrica;
+- média harmônica.
+
+## Narrativa da aula
+
+A aula mantém a estrutura conceitual do material original, mas atualiza o
+exemplo central. Em vez de depender apenas da base antiga da Billboard, usamos
+um conjunto didático de faixas de streaming. O objetivo continua o mesmo:
+entender como resumir uma coluna numérica sem esconder sua distribuição.
+
+A primeira metade da aula insiste em visualização: histograma, CDF empírica e
+leitura de proporções acumuladas. A segunda metade discute medidas de resumo:
+média, mediana, quartis, boxplot e dispersão. No final, entram transformações e
+outras médias como material extra.
+
+## Dimensionamento para 100 minutos
+
+| Tempo | Atividade |
+|---:|---|
+| 0-10 min | Retomada: amostra, população e objetivo da aula |
+| 10-25 min | Histograma e escolha de bins |
+| 25-40 min | CDF empírica e leitura de percentuais |
+| 40-60 min | Média, mediana e efeito de outliers |
+| 60-75 min | Quartis, boxplot e quantis |
+| 75-90 min | Dispersão, variância e desvio padrão |
+| 90-100 min | Transformações e médias geométrica/harmônica |
+
+## Exemplo da aula
+
+O notebook usa dados didáticos de faixas de streaming, com duração, gênero,
+popularidade e contagens simuladas. Ele foi desenhado para permitir:
+
+- visualizar a distribuição das durações;
+- comparar média e mediana;
+- adicionar uma faixa muito longa e observar o efeito no resumo;
+- construir CDF empírica;
+- ler quartis e boxplots;
+- discutir quando uma escala logarítmica ajuda.
+
+Veja [Aula 06: tendências centrais em dados de streaming](../exemplos/06-tendencias-centrais/notebook.ipynb).
+
+## Notas para o professor
+
+Esta aula não deve virar uma lista de fórmulas. O eixo principal é a pergunta:
+"o que perdemos quando resumimos uma distribuição por um único número?".
+
+Use a média e a mediana como contraste narrativo. Depois use quartis, boxplots e
+desvio padrão como formas de recuperar parte da informação perdida.
+
+## Conexão com exercícios
+
+Uma boa lista pode pedir que estudantes escolham uma coluna numérica, façam
+histograma e CDF, calculem média/mediana/quartis e escrevam uma recomendação
+sobre qual resumo é mais adequado para comunicação.
