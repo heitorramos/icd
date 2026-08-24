@@ -8,3 +8,4 @@ tarefas práticas.
 ## Listas disponíveis
 
 - [Template de lista](lista-00-template.qmd)
+- [Lista 06: tendências centrais](lista-06-tendencias-centrais.qmd)

@@ -69,10 +69,26 @@ duração, álbum e popularidade. Ele foi desenhado para permitir:
 - comparar média e mediana;
 - adicionar uma faixa muito longa e observar o efeito no resumo;
 - construir CDF empírica;
-- ler quartis e boxplots;
+- ler quartis, quantis e boxplots;
+- interpretar a regra de 1,5 vezes o IQR;
+- comparar dispersões e visualizar variância;
 - discutir quando uma escala logarítmica ajuda.
 
 Veja [Aula 06: tendências centrais com dados do Billboard](../exemplos/06-tendencias-centrais/notebook.ipynb).
+
+## Lista e VPL
+
+A lista da aula transforma os conceitos do notebook em funções pequenas de
+Python: conversão de duração, média, mediana, quantis, quartis e resumo
+descritivo.
+
+Veja [Lista 06: tendências centrais](../listas/lista-06-tendencias-centrais.qmd).
+
+Arquivos para Moodle VPL:
+
+- [enunciado.md](../vpl/06-tendencias-centrais/enunciado.md);
+- [template.py](../vpl/06-tendencias-centrais/template.py);
+- [test_public.py](../vpl/06-tendencias-centrais/test_public.py).
 
 ## Notas para o professor
 

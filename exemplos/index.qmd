@@ -45,8 +45,9 @@ Notebook renderizado com estimativas, comparações e gráficos.
 
 [Tendências centrais com dados do Billboard](06-tendencias-centrais/notebook.ipynb)
 
-Notebook renderizado com download do Kaggle, análise descritiva, tabelas e
-gráficos de histograma, CDF, média, mediana, boxplot e popularidade.
+Notebook renderizado com download do Kaggle, análise descritiva, pipeline,
+histograma, CDF, média, mediana, quartis, quantis, boxplot, dispersão,
+transformações e médias geométrica/harmônica.
 :::
 
 ::: {.g-col-12 .g-col-md-6}

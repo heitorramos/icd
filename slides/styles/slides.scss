@@ -24,6 +24,27 @@ $link-color: #0f6b78;
   color: #17324d;
 }
 
+.reveal section > p:has(> img:only-child) {
+  margin: 0.8rem auto;
+  text-align: center;
+}
+
+.reveal section > p > img:only-child {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 23.5rem;
+  max-width: min(100%, 30rem);
+  object-fit: contain;
+}
+
+.reveal section > img.r-stretch {
+  display: block;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  object-fit: contain;
+}
+
 .reveal .statement {
   border-left: 0.35rem solid #d95f02;
   font-size: 1.2em;

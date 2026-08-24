@@ -150,13 +150,9 @@ Agregações são úteis, mas escondem forma, caudas e valores extremos.
 
 ## Pipeline descritivo
 
-```{mermaid}
-flowchart LR
-  A["Escolher coluna"] --> B["Visualizar distribuição"]
-  B --> C["Calcular resumos"]
-  C --> D["Comparar resumos"]
-  D --> E["Comunicar com limites"]
-```
+![](assets/aula06-billboard/pipeline-descritivo.png){fig-alt="Pipeline descritivo em cinco etapas: escolher coluna, visualizar distribuição, calcular resumos, comparar resumos e comunicar com limites."}
+
+O resumo final depende das escolhas feitas antes dele.
 
 ## Histograma
 
@@ -280,9 +276,31 @@ A média é o ponto de equilíbrio aritmético dos dados.
 
 ## Mediana
 
-::: {.ordered-list-figure}
-<span>1</span><span>2</span><span>3</span><span class="center">4</span><span>5</span><span>99</span><span>100</span>
-:::
+![](assets/aula06-billboard/mediana-vs-media.png){fig-alt="Comparação entre mediana e média no conjunto de valores 1, 2, 3, 4, 5, 99 e 100. A mediana é 4, no centro dos dados ordenados; a média é 30,6, puxada pelos valores extremos."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+valores = np.array([1, 2, 3, 4, 5, 99, 100])
+media = valores.mean()
+mediana = np.median(valores)
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 4.8))
+
+# Mediana: ordene os valores e escolha o centro.
+for i, valor in enumerate(valores):
+    destaque = valor == mediana
+    ax1.text(i, 0, valor, ha="center", va="center",
+             fontweight="bold" if destaque else "normal")
+
+# Média: ponto de equilíbrio aritmético.
+ax2.scatter(valores, np.zeros_like(valores))
+ax2.axvline(mediana, label=f"mediana = {mediana:.0f}")
+ax2.axvline(media, label=f"média = {media:.1f}")
+```
+
+</details>
 
 A mediana divide os dados ordenados em duas metades.
 
@@ -354,11 +372,34 @@ O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 ## Quartis
 
-::: {.quantile-strip}
-<span>min</span><span>Q1</span><span>mediana</span><span>Q3</span><span>max</span>
-<div class="quantile-line"></div>
-<i style="left: 0%"></i><i style="left: 25%"></i><i style="left: 50%"></i><i style="left: 75%"></i><i style="left: 100%"></i>
-:::
+![](assets/aula06-billboard/quartis-duracao.png){fig-alt="Histograma e régua ordenada da duração das músicas, com Q1, mediana e Q3 dividindo os dados em quatro partes com aproximadamente 25% das observações."}
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+x = songs["duration_min"].dropna().sort_values().to_numpy()
+q1, mediana, q3 = np.quantile(x, [0.25, 0.50, 0.75])
+
+fig, (ax, ax2) = plt.subplots(
+    2, 1, figsize=(10, 5.4), height_ratios=[2, 1.2], sharex=True
+)
+
+for lo, hi in [(x.min(), q1), (q1, mediana), (mediana, q3), (q3, x.max())]:
+    ax.axvspan(lo, hi, alpha=0.7)
+
+ax.hist(x, bins=18, edgecolor="white")
+
+for value, label in [(q1, "Q1"), (mediana, "mediana"), (q3, "Q3")]:
+    ax.axvline(value)
+    ax.text(value, ax.get_ylim()[1], f"{label}\n{value:.2f} min")
+
+quartis = np.searchsorted([q1, mediana, q3], x, side="right")
+ax2.scatter(x, np.zeros_like(x), c=quartis)
+ax2.set_xlabel("duração da música (minutos)")
+```
+
+</details>
 
 Quartis separam os dados ordenados em quatro partes.
 
@@ -414,12 +455,32 @@ Compare distribuições, não apenas médias.
 
 ## Quantis
 
-Quantis generalizam quartis.
+![](assets/aula06-billboard/quantis-cdf.png){fig-alt="CDF empírica da duração das músicas com marcações em P10, Q1, mediana, Q3 e P90."}
 
-- percentis: 100 partes;
-- decis: 10 partes;
-- quintis: 5 partes;
-- quartis: 4 partes.
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+x = np.sort(songs["duration_min"].dropna().to_numpy())
+y = np.arange(1, len(x) + 1) / len(x)
+
+ps = np.array([0.10, 0.25, 0.50, 0.75, 0.90])
+qs = np.quantile(x, ps)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.step(x, y, where="post", label="CDF empírica")
+
+for p, q in zip(ps, qs):
+    ax.plot([x.min(), q], [p, p], linestyle="--")
+    ax.plot([q, q], [0, p], linestyle="--")
+    ax.scatter(q, p)
+    ax.text(q, p, f"P{int(p * 100)}\n{q:.2f} min")
+```
+
+</details>
+
+Quantis generalizam quartis: para um percentual `p`, como 25%, 50% ou 90%, o
+quantil é o valor abaixo do qual está essa fração da amostra.
 
 ## Dispersão
 

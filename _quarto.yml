@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: _site
+  resources:
+    - "vpl/**"
   render:
     - "*.qmd"
     - "aulas/*.qmd"
@@ -57,6 +59,7 @@ website:
       contents:
         - listas/index.qmd
         - listas/lista-00-template.qmd
+        - listas/lista-06-tendencias-centrais.qmd
 
 format:
   html:

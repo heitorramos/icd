@@ -16,11 +16,19 @@ O CSV não é redistribuído neste repositório. O notebook baixa a base com
 
 - amostra e população;
 - análise descritiva básica;
+- pipeline descritivo;
 - histograma;
 - CDF empírica;
 - média e mediana;
+- comparação entre média e mediana;
 - outliers;
-- quartis e boxplot;
+- quartis, quantis e boxplot;
 - dispersão;
+- intervalo, variância e desvio padrão;
 - escala logarítmica;
 - médias geométrica e harmônica.
+
+## Exercícios relacionados
+
+- Lista 06: `listas/lista-06-tendencias-centrais.qmd`
+- VPL Moodle: `vpl/06-tendencias-centrais`
