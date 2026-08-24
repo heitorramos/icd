@@ -1,7 +1,7 @@
 ---
 title: "Introdução à Ciência de Dados"
 subtitle: "Aula 01"
-author: "Heitor Ramos <heitor@dcc.ufmg.br>"
+author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 format:
   revealjs:
     theme: [default, styles/slides.scss]

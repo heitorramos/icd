@@ -1,7 +1,7 @@
 ---
 title: "Tendências Centrais"
 subtitle: "Aula 06"
-author: "Heitor Ramos <heitor@dcc.ufmg.br>"
+author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 format:
   revealjs:
     theme: [default, styles/slides.scss]
@@ -210,13 +210,20 @@ Quando os bins mudam a história, complemente com CDF e quantis.
 
 ## CDF empírica
 
-```{mermaid}
-flowchart LR
-  A["Ordenar dados"] --> B["Calcular fração acumulada"]
-  B --> C["Plotar x contra P(X <= x)"]
+```text
+entrada: valores x_1, x_2, ..., x_n
+
+1. ordenar os valores: x_(1) <= x_(2) <= ... <= x_(n)
+2. para cada posição i, calcular p_i = i / n
+3. plotar os pontos (x_(i), p_i)
+4. ler p_i como a fração da amostra com valor <= x_(i)
 ```
 
-A CDF responde perguntas do tipo: "qual fração das músicas dura até 4 minutos?".
+A CDF empírica transforma cada valor observado em uma pergunta acumulada:
+"que fração da amostra já apareceu até aqui?".
+
+Ela não mostra quantas músicas existem em cada intervalo, como o histograma.
+Ela mostra a fração de músicas com duração menor ou igual a cada ponto.
 
 ## Lendo a CDF
 
