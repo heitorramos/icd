@@ -27,12 +27,6 @@ website:
         href: programa.qmd
       - text: "Aulas"
         href: aulas/index.qmd
-      - text: "Slides"
-        href: slides/index.qmd
-      - text: "Exemplos"
-        href: exemplos/index.qmd
-      - text: "Listas"
-        href: listas/index.qmd
   sidebar:
     - title: "Aulas"
       style: docked
@@ -41,25 +35,6 @@ website:
         - aulas/01-introducao.qmd
         - aulas/02-causalidade.qmd
         - aulas/06-tendencias-centrais.qmd
-    - title: "Slides"
-      contents:
-        - slides/index.qmd
-        - slides/01-introducao.qmd
-        - slides/02-causalidade.qmd
-        - slides/06-tendencias-centrais.qmd
-    - title: "Exemplos"
-      contents:
-        - exemplos/index.qmd
-        - exemplos/00-template/exemplo.qmd
-        - exemplos/01-introducao-dados/notebook.ipynb
-        - exemplos/01-john-snow/exemplo.qmd
-        - exemplos/02-experimento-ab/notebook.ipynb
-        - exemplos/06-tendencias-centrais/notebook.ipynb
-    - title: "Listas"
-      contents:
-        - listas/index.qmd
-        - listas/lista-00-template.qmd
-        - listas/lista-06-tendencias-centrais.qmd
 
 format:
   html:

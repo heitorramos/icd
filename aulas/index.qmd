@@ -4,11 +4,45 @@ title: "Aulas"
 
 Esta seção reúne os roteiros pedagógicos de cada aula.
 
-Cada roteiro deve indicar objetivos, conceitos, exemplos usados, preparação
-necessária, conexão com slides e conexão com exercícios.
+Escolha uma aula para acessar, em um só lugar, o material de estudo, os slides,
+os exemplos e as listas de exercícios.
 
 ## Aulas disponíveis
 
-- [Aula 01: Introdução à ciência de dados](01-introducao.qmd)
-- [Aula 02: Causalidade e experimentos](02-causalidade.qmd)
-- [Aula 06: Tendências centrais](06-tendencias-centrais.qmd)
+::: {.grid .aulas-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 01
+
+## Introdução à ciência de dados
+
+Perguntas, evidências e o ciclo de trabalho de uma análise de dados.
+
+[Abrir a aula](01-introducao.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 02
+
+## Causalidade e experimentos
+
+Associação, causa e efeito, experimentos e estudos observacionais.
+
+[Abrir a aula](02-causalidade.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 06
+
+## Tendências centrais
+
+Distribuições, média, mediana, quartis, dispersão e transformações.
+
+[Abrir a aula](06-tendencias-centrais.qmd){.btn .btn-primary}
+:::
+:::
+:::

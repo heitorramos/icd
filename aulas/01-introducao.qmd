@@ -2,6 +2,38 @@
 title: "Aula 01: Introdução à Ciência de Dados"
 ---
 
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Apresentação usada em sala.
+
+[Abrir slides](../slides/01-introducao.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Exemplo
+
+Primeiro contato com uma tabela de dados.
+
+[Abrir notebook](../exemplos/01-introducao-dados/notebook.ipynb){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card .recurso-indisponivel}
+### Lista
+
+Ainda não disponível para esta aula.
+:::
+:::
+:::
+
 ## Objetivos
 
 - Apresentar a disciplina, sua logística e sua forma de trabalho.
@@ -59,16 +91,6 @@ Possíveis temas:
 - séries históricas simples de indicadores sociais.
 
 O notebook piloto está em [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.ipynb).
-
-## Notas para o professor
-
-Evite abrir a disciplina com algoritmos. O ponto central desta aula é mostrar
-que ciência de dados começa com uma pergunta bem formulada e com cuidado sobre
-o que os dados podem ou não sustentar.
-
-A parte de causalidade que aparecia no material antigo foi separada para a
-Aula 02. Nesta aula, basta preparar a ideia de que muitas perguntas importantes
-têm forma causal, sem ainda discutir desenho experimental em detalhe.
 
 ## Conexão com exercícios
 

@@ -2,6 +2,39 @@
 title: "Aula 02: Causalidade e Experimentos"
 ---
 
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Apresentação usada em sala.
+
+[Abrir slides](../slides/02-causalidade.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Exemplos
+
+Experimento A/B e o estudo de John Snow.
+
+[Experimento A/B](../exemplos/02-experimento-ab/notebook.ipynb){.btn .btn-outline-primary}
+[John Snow](../exemplos/01-john-snow/exemplo.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card .recurso-indisponivel}
+### Lista
+
+Ainda não disponível para esta aula.
+:::
+:::
+:::
+
 ## Objetivos
 
 - Explicar por que muitas perguntas em ciência de dados são perguntas de causa
@@ -72,13 +105,6 @@ permite discutir:
 - uma tabela simples que resume uma diferença enorme de mortalidade.
 
 Veja o exemplo documentado em [John Snow e cólera em Londres](../exemplos/01-john-snow/exemplo.qmd).
-
-## Notas para o professor
-
-O objetivo não é ensinar inferência causal formal nesta aula. O objetivo é dar
-linguagem para que estudantes reconheçam por que "correlação não é causalidade"
-é uma frase correta, mas insuficiente. O ponto mais importante é mostrar que o
-desenho da pergunta e dos dados decide o que a análise consegue sustentar.
 
 ## Conexão com exercícios
 

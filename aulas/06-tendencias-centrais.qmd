@@ -2,6 +2,40 @@
 title: "Aula 06: Tendências Centrais"
 ---
 
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Apresentação usada em sala.
+
+[Abrir slides](../slides/06-tendencias-centrais.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Exemplo
+
+Análise guiada do dataset Billboard.
+
+[Abrir notebook](../exemplos/06-tendencias-centrais/notebook.ipynb){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Lista
+
+Exercícios e arquivos para o Moodle VPL.
+
+[Abrir lista](../listas/lista-06-tendencias-centrais.qmd){.btn .btn-outline-primary}
+:::
+:::
+:::
+
 ## Objetivos
 
 - Diferenciar população e amostra em uma análise descritiva.
@@ -89,14 +123,6 @@ Arquivos para Moodle VPL:
 - [enunciado.md](../vpl/06-tendencias-centrais/enunciado.md);
 - [template.py](../vpl/06-tendencias-centrais/template.py);
 - [test_public.py](../vpl/06-tendencias-centrais/test_public.py).
-
-## Notas para o professor
-
-Esta aula não deve virar uma lista de fórmulas. O eixo principal é a pergunta:
-"o que perdemos quando resumimos uma distribuição por um único número?".
-
-Use a média e a mediana como contraste narrativo. Depois use quartis, boxplots e
-desvio padrão como formas de recuperar parte da informação perdida.
 
 ## Conexão com exercícios
 
