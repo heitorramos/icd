@@ -1,11 +1,13 @@
 # Aula 06: tendências centrais
 
-Notebook documentado para a aula de tendências centrais.
+Notebook documentado para a Aula 06, usado como exemplo oficial de sala e como
+material de estudo para os alunos.
 
 ## Papel didático
 
 O exemplo usa uma base didática de faixas de streaming para discutir como
-visualizar uma coluna numérica e escolher resumos adequados.
+visualizar uma coluna numérica e escolher resumos adequados sem depender das
+figuras do material antigo.
 
 ## Conceitos
 

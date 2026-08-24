@@ -34,10 +34,9 @@ title: "Aula 06: Tendências Centrais"
 
 ## Narrativa da aula
 
-A aula mantém a estrutura conceitual do material original, mas atualiza o
-exemplo central. Em vez de depender apenas da base antiga da Billboard, usamos
-um conjunto didático de faixas de streaming. O objetivo continua o mesmo:
-entender como resumir uma coluna numérica sem esconder sua distribuição.
+A aula mantém o conteúdo conceitual previsto para tendências centrais, mas usa
+um exemplo central novo: uma coleção didática de faixas de streaming. O objetivo
+é entender como resumir uma coluna numérica sem esconder sua distribuição.
 
 A primeira metade da aula insiste em visualização: histograma, CDF empírica e
 leitura de proporções acumuladas. A segunda metade discute medidas de resumo:

@@ -15,43 +15,52 @@ execute:
 
 ## Tendências Centrais
 
-Introdução à Ciência de Dados
-
-::: {.muted}
-Conteúdo preservado da aula original, com fluxo atualizado e exemplo em Python
-para dados didáticos de streaming.
+::: {.statement}
+Como resumir uma coluna numérica sem apagar a história que ela conta?
 :::
+
+Exemplo da aula: duração de faixas em uma coleção didática de streaming.
 
 ## Hoje
 
 - Amostra e população
+- Visualização antes de agregação
 - Histograma e CDF empírica
-- Média e mediana
-- Quartis, quantis e boxplot
+- Média, mediana e outliers
+- Quartis, boxplot e quantis
 - Dispersão
 - Transformações
-- Outras médias
+- Médias geométrica e harmônica
 
-## A duração das músicas
+## O problema da aula
+
+Queremos responder:
 
 ::: {.statement}
-Como resumir a duração das faixas de uma coleção sem esconder a distribuição?
+Qual é uma duração "típica" de uma faixa?
 :::
 
-No notebook da aula, vamos criar uma base didática de streaming com duração,
-gênero e popularidade.
+Parece simples, mas depende da distribuição, dos outliers e da pergunta de
+comunicação.
 
-## Amostras e População
+## Exemplo central
 
-![](assets/aula06/amostra-populacao-billboard.png){.orig-slide fig-align="center"}
+No notebook, cada linha é uma faixa.
 
-## Amostras e População
+| coluna | significado |
+|---|---|
+| `faixa` | identificador da música |
+| `genero` | gênero musical |
+| `duracao_min` | duração em minutos |
+| `popularidade` | escore didático de 1 a 100 |
+
+## Amostra e população
 
 ::: {.sample-figure}
 ::: {.population-bubble}
 **População**
 
-Todas as músicas possíveis
+Todas as faixas que gostaríamos de entender
 :::
 
 ::: {.sample-bubble}
@@ -61,31 +70,61 @@ Faixas observadas
 :::
 
 ::: {.sample-caption}
-Quase nunca observamos toda a população. Hoje vamos descrever tendências da
-amostra e perguntar quando elas podem representar algo maior.
+Hoje descrevemos a amostra. Em aulas futuras, perguntaremos quando ela permite
+generalizar para a população.
 :::
 :::
 
-## O grande problema
+## A grande pergunta estatística
 
 ::: {.statement}
 As estimativas feitas na amostra capturam tendências populacionais?
 :::
 
-Hoje vamos construir as primeiras medidas. Depois discutiremos incerteza,
-amostragem e generalização.
+Antes de generalizar, precisamos aprender a descrever bem a amostra.
 
-## Sempre visualize seus dados!
+## Regra da aula
 
-![](assets/aula06/visualize-seus-dados.png){.orig-slide fig-align="center"}
+::: {.viz-rule}
+::: {.viz-rule-main}
+**Visualize primeiro**
+:::
 
-## Histogramas
+::: {.viz-rule-side}
+Depois calcule médias, medianas, quartis e desvios.
+:::
+:::
 
-![](assets/aula06/histograma-bins.png){.orig-slide fig-align="center"}
+Agregações são úteis, mas escondem forma, caudas e valores extremos.
+
+## Pipeline descritivo
+
+```{mermaid}
+flowchart LR
+  A["Escolher coluna"] --> B["Visualizar distribuição"]
+  B --> C["Calcular resumos"]
+  C --> D["Comparar resumos"]
+  D --> E["Comunicar com limites"]
+```
 
 ## Histograma
 
-![](assets/aula06/histograma-musicas.png){.orig-slide fig-align="center"}
+::: {.hist-figure}
+<div style="height: 10%"></div>
+<div style="height: 24%"></div>
+<div style="height: 48%"></div>
+<div style="height: 80%"></div>
+<div style="height: 100%"></div>
+<div style="height: 90%"></div>
+<div style="height: 62%"></div>
+<div style="height: 36%"></div>
+<div style="height: 20%"></div>
+<div style="height: 12%"></div>
+<div style="height: 7%"></div>
+<div style="height: 4%"></div>
+:::
+
+Um histograma conta quantas observações caem em cada faixa de valores.
 
 ## Histograma em Python
 
@@ -99,25 +138,45 @@ ax.set_xlabel("duração (minutos)")
 ax.set_ylabel("número de faixas")
 ```
 
-::: {.muted}
-No notebook, vamos variar `bins` e observar como a leitura muda.
-:::
-
 ## Lendo um histograma
 
 - Onde os dados se concentram?
-- Há caudas?
-- Há valores muito extremos?
-- Existe truncamento natural?
-- O formato sugere média e mediana próximas ou distantes?
+- Há cauda à direita ou à esquerda?
+- Há valores extremos?
+- O zero tem significado?
+- O resumo por um número parece razoável?
 
-## Como escolher o número de bins?
+## Escolha de bins
 
-![](assets/aula06/escolha-bins.png){.orig-slide fig-align="center"}
+::: {.columns}
+::: {.column width="50%"}
+Poucos bins:
 
-## CDF Empírica
+::: {.mini-hist .few}
+<div></div><div></div><div></div><div></div>
+:::
+:::
 
-![](assets/aula06/ecdf-algoritmo.png){.orig-slide fig-align="center"}
+::: {.column width="50%"}
+Muitos bins:
+
+::: {.mini-hist .many}
+<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+:::
+:::
+:::
+
+Quando os bins mudam a história, complemente com CDF e quantis.
+
+## CDF empírica
+
+```{mermaid}
+flowchart LR
+  A["Ordenar dados"] --> B["Calcular fração acumulada"]
+  B --> C["Plotar x contra P(X <= x)"]
+```
+
+A CDF responde perguntas do tipo: "qual fração das faixas dura até 4 minutos?".
 
 ## CDF em Python
 
@@ -130,38 +189,83 @@ ax.set_xlabel("duração (minutos)")
 ax.set_ylabel("fração acumulada")
 ```
 
-## Leitura da CDF
+## Lendo a CDF
 
-![](assets/aula06/cdf-leitura-100.png){.orig-slide fig-align="center"}
+::: {.ecdf-figure}
+<svg viewBox="0 0 520 280" role="img" aria-label="CDF empírica">
+  <line x1="50" y1="230" x2="480" y2="230" class="axis"/>
+  <line x1="50" y1="230" x2="50" y2="30" class="axis"/>
+  <path d="M55 225 C120 218, 160 190, 200 150 S270 78, 350 55 S430 42, 475 38" class="curve"/>
+  <line x1="50" y1="110" x2="250" y2="110" class="guide"/>
+  <line x1="250" y1="230" x2="250" y2="110" class="guide"/>
+  <text x="62" y="102">60%</text>
+  <text x="222" y="252">4,2 min</text>
+  <text x="310" y="70">quase 100%</text>
+</svg>
+:::
 
-## Tendências Centrais
+Leitura: cerca de 60% das faixas duram até 4,2 minutos.
 
-Normalmente queremos saber onde nossos dados estão centralizados.
+## Centro dos dados
 
-Vamos começar com:
+Normalmente queremos dizer onde os dados estão centralizados.
+
+Duas respostas comuns:
 
 - média;
 - mediana.
 
 ## Média
 
-![](assets/aula06/media-musicas.png){.orig-slide fig-align="center"}
+::: {.mean-figure}
+<div class="dot-strip">
+  <span style="left: 8%"></span><span style="left: 18%"></span><span style="left: 31%"></span>
+  <span style="left: 45%"></span><span style="left: 55%"></span><span style="left: 73%"></span>
+  <span style="left: 88%"></span>
+</div>
+<div class="mean-line" style="left: 47%"></div>
+<div class="mean-label" style="left: 41%">média</div>
+:::
+
+A média é o ponto de equilíbrio aritmético dos dados.
 
 ## Mediana
 
-![](assets/aula06/mediana-definicao.png){.orig-slide fig-align="center"}
+::: {.ordered-list-figure}
+<span>1</span><span>2</span><span>3</span><span class="center">4</span><span>5</span><span>99</span><span>100</span>
+:::
 
-## Mediana vs. média
+A mediana divide os dados ordenados em duas metades.
 
-![](assets/aula06/mediana-vs-media-outlier.png){.orig-slide fig-align="center"}
+## Média vs. mediana
 
-## O caso Michael Jordan
+::: {.comparison-table}
+| dados | média | mediana |
+|---|---:|---:|
+| 1, 2, 3, 4, 5, 6 | 3,5 | 3,5 |
+| 1, 2, 3, 4, 5, 99 | 19,0 | 3,5 |
+| 1, 2, 3, 4, 5, 99, 100 | 30,6 | 4,0 |
+:::
 
-![](assets/aula06/michael-jordan-outlier.png){.orig-slide fig-align="center"}
+Valores extremos puxam a média muito mais do que a mediana.
 
-## Música gigantesca
+## Outlier
 
-![](assets/aula06/musica-gigantesca.png){.orig-slide fig-align="center"}
+::: {.before-after}
+::: {.before-box}
+**Sem faixa gigante**
+
+média ≈ mediana
+:::
+
+::: {.after-box}
+**Com faixa de 45 min**
+
+média sobe; mediana quase não muda
+:::
+:::
+
+O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 ## Média e mediana em Python
 
@@ -178,21 +282,43 @@ ax.legend()
 ## Regra de leitura
 
 - Média e mediana próximas sugerem distribuição mais equilibrada.
-- Média muito maior que mediana sugere cauda à direita.
+- Média maior que mediana sugere cauda à direita.
 - Mediana é mais robusta a valores extremos.
 - Média usa todos os valores e é mais sensível.
 
 ## Quartis
 
-![](assets/aula06/quartis.png){.orig-slide fig-align="center"}
+::: {.quantile-strip}
+<span>min</span><span>Q1</span><span>mediana</span><span>Q3</span><span>max</span>
+<div class="quantile-line"></div>
+<i style="left: 0%"></i><i style="left: 25%"></i><i style="left: 50%"></i><i style="left: 75%"></i><i style="left: 100%"></i>
+:::
+
+Quartis separam os dados ordenados em quatro partes.
 
 ## Boxplot
 
-![](assets/aula06/boxplot.png){.orig-slide fig-align="center"}
+::: {.boxplot-figure}
+<div class="whisker"></div>
+<div class="box"></div>
+<div class="median"></div>
+<div class="point" style="left: 86%"></div>
+<div class="point" style="left: 91%"></div>
+<div class="labels"><span>min</span><span>Q1</span><span>Q2</span><span>Q3</span><span>outliers</span></div>
+:::
 
-## Boxplot das músicas
+Boxplot mostra centro, dispersão e possíveis valores extremos.
 
-![](assets/aula06/boxplot-musicas.png){.orig-slide fig-align="center"}
+## Boxplot por grupo
+
+::: {.group-boxplots}
+<div><span>pop</span><b style="left: 28%; width: 24%"></b><i style="left: 40%"></i></div>
+<div><span>rap</span><b style="left: 18%; width: 20%"></b><i style="left: 29%"></i></div>
+<div><span>rock</span><b style="left: 30%; width: 25%"></b><i style="left: 42%"></i></div>
+<div><span>eletrônica</span><b style="left: 44%; width: 28%"></b><i style="left: 58%"></i></div>
+:::
+
+Compare distribuições, não apenas médias.
 
 ## Boxplot em Python
 
@@ -206,57 +332,119 @@ ax = sns.boxplot(
 ax.set_ylabel("duração (minutos)")
 ```
 
-## Quantil
+## Quantis
 
-![](assets/aula06/quantis.png){.orig-slide fig-align="center"}
+Quantis generalizam quartis.
+
+- percentis: 100 partes;
+- decis: 10 partes;
+- quintis: 5 partes;
+- quartis: 4 partes.
 
 ## Dispersão
 
-![](assets/aula06/dispersao.png){.orig-slide fig-align="center"}
+::: {.spread-figure}
+<div class="spread-row compact"><span></span><span></span><span></span><span></span><span></span></div>
+<div class="spread-row wide"><span></span><span></span><span></span><span></span><span></span></div>
+:::
+
+Duas amostras podem ter centros parecidos e dispersões muito diferentes.
 
 ## Intervalo
 
-![](assets/aula06/intervalo-range.png){.orig-slide fig-align="center"}
+::: {.range-figure}
+<span class="min">mínimo</span>
+<span class="max">máximo</span>
+<div></div>
+<strong>range = máximo - mínimo</strong>
+:::
 
-## Variância da amostra
+Simples, mas depende apenas de dois valores.
 
-![](assets/aula06/variancia-formula.png){.orig-slide fig-align="center"}
+## Variância
 
-## Desvio padrão da amostra
+::: {.variance-figure}
+<div class="mean-v"></div>
+<span style="left: 16%"></span><span style="left: 28%"></span><span style="left: 46%"></span><span style="left: 70%"></span><span style="left: 84%"></span>
+<i style="left: 16%; width: 29%"></i><i style="left: 28%; width: 17%"></i><i style="left: 46%; width: 1%"></i><i style="left: 46%; width: 24%"></i><i style="left: 46%; width: 38%"></i>
+:::
 
-![](assets/aula06/desvio-padrao.png){.orig-slide fig-align="center"}
+A variância resume desvios quadráticos em relação à média.
 
-## Sempre plote antes
+## Desvio padrão
 
-![](assets/aula06/sempre-plote.png){.orig-slide fig-align="center"}
+::: {.statement}
+O desvio padrão volta para a unidade original dos dados.
+:::
 
-## Transformadas
+Se a duração está em minutos, o desvio padrão também está em minutos.
 
-![](assets/aula06/transformadas-02.png){.orig-slide fig-align="center"}
+## Transformações
 
-## Novo problema: palavras em músicas
+Em casos extremos, a escala original pode esconder estrutura.
 
-![](assets/aula06/palavras-musicas.png){.orig-slide fig-align="center"}
+::: {.log-panels}
+<div><strong>escala original</strong><span class="long-tail"></span></div>
+<div><strong>escala log-log</strong><span class="linear-tail"></span></div>
+:::
 
-## Log ajuda a ler
+Log é monotônico: preserva a ordem, mas muda a leitura visual das distâncias.
 
-![](assets/aula06/log-log-palavras.png){.orig-slide fig-align="center"}
+## Palavras em músicas
+
+::: {.word-rank}
+<span style="height: 100%"></span><span style="height: 70%"></span><span style="height: 48%"></span><span style="height: 35%"></span><span style="height: 25%"></span><span style="height: 17%"></span><span style="height: 12%"></span><span style="height: 8%"></span>
+:::
+
+Algumas palavras aparecem em muitas faixas; a maioria aparece em poucas.
+
+## Escala log em Python
+
+```python
+palavras["rank"] = np.arange(1, len(palavras) + 1)
+ax = palavras.plot.scatter(
+    x="rank",
+    y="num_faixas",
+    logx=True,
+    logy=True
+)
+```
 
 ## Outras médias
 
-![](assets/aula06/outras-medias.png){.orig-slide fig-align="center"}
+Além da média aritmética:
+
+- média geométrica;
+- média harmônica.
+
+Elas respondem a perguntas diferentes.
 
 ## Média geométrica
 
-![](assets/aula06/geometrica-rating.png){.orig-slide fig-align="center"}
+::: {.rating-figure}
+<div><strong>Amazon</strong><span>3/5 = 60%</span></div>
+<div><strong>Netflix</strong><span>70% likes</span></div>
+<div class="merge"><strong>combinar escalas</strong></div>
+:::
+
+Boa para valores normalizados ou grandezas multiplicativas.
 
 ## Média harmônica
 
-![](assets/aula06/harmonica-carro.png){.orig-slide fig-align="center"}
+::: {.road-figure}
+<div>20 km a 20 km/h</div>
+<div>20 km a 30 km/h</div>
+<strong>velocidade média = 24 km/h</strong>
+:::
+
+Boa para taxas quando as distâncias ou quantidades-base são comparáveis.
 
 ## Quando usar cada uma?
 
-![](assets/aula06/quando-usar-medias.png){.orig-slide fig-align="center"}
+- Soma na mesma unidade: média aritmética ou mediana.
+- Dados com outliers: prefira mediana.
+- Escalas normalizadas ou crescimento: média geométrica.
+- Taxas: média harmônica.
 
 ## Fechamento
 
