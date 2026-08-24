@@ -631,7 +631,7 @@ $link-color: #0f6b78;
 .reveal .rating-figure div,
 .reveal .road-figure div,
 .reveal .rating-figure .merge,
-.reveal .road-figure strong {
+.reveal .road-figure .result {
   background: #eef6f7;
   border: 1px solid #b9cbd1;
   border-radius: 8px;
@@ -640,7 +640,7 @@ $link-color: #0f6b78;
 }
 
 .reveal .rating-figure .merge,
-.reveal .road-figure strong {
+.reveal .road-figure .result {
   background: #fff5ed;
   border-color: #d95f02;
   grid-column: 1 / span 2;

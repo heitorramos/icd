@@ -9,7 +9,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: "Introdução à Ciência de Dados"
+    footer: '<a href="../index.html">Introdução à Ciência de Dados</a>'
 execute:
   echo: false
 ---
@@ -628,7 +628,7 @@ Boa para valores normalizados ou grandezas multiplicativas.
 ::: {.road-figure}
 <div>20 km a 20 km/h</div>
 <div>20 km a 30 km/h</div>
-<strong>velocidade média = 24 km/h</strong>
+<div class="result"><strong>velocidade média = 24 km/h</strong></div>
 :::
 
 $$
