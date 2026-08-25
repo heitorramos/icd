@@ -413,6 +413,30 @@ $link-color: #0f6b78;
   margin-bottom: 0;
 }
 
+.reveal .theorem-grid {
+  grid-template-columns: 1fr 1fr;
+  margin: 0.6rem 0 0.8rem;
+}
+
+.reveal .theorem-grid .icd-card {
+  border-top: 0.28rem solid #0f6b78;
+  font-size: 0.82em;
+  min-height: 17rem;
+  padding: 0.8rem 1rem;
+}
+
+.reveal .theorem-grid .tcl-card {
+  border-top-color: #d95f02;
+}
+
+.reveal .theorem-grid h3 {
+  margin: 0 0 0.35rem;
+}
+
+.reveal .theorem-grid p {
+  margin: 0.4rem 0;
+}
+
 .reveal .table-unit-row {
   gap: 0.55rem;
   justify-content: space-between;

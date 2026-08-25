@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<a href="../index.html">Introdução à Ciência de Dados</a>'
+    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados</a>'
 execute:
   enabled: false
   echo: false
@@ -198,18 +198,34 @@ O centro permanece em $\mu$; a dispersão diminui.
 
 ## LGN e TCL respondem perguntas diferentes
 
-::: {.columns}
-::: {.column width="48%"}
+::: {.icd-grid .theorem-grid}
+::: {.icd-card .lgn-card}
 ### Lei dos Grandes Números
 
-$\bar{X}$ se aproxima de $\mu$ quando $n$ cresce.
+$${\bar X}_n \xrightarrow{P} \mu$$
+
+**Pergunta:** para onde a média amostral vai?
+
+**Resposta:** $\bar X_n$ se aproxima de $\mu$ quando $n$ cresce.
+
+**Não informa:** o formato aproximado da distribuição de $\bar X_n$.
 :::
 
-::: {.column width="48%"}
+::: {.icd-card .tcl-card}
 ### Teorema Central do Limite
 
-Descreve o formato e a escala da distribuição de $\bar{X}$.
+$$\frac{\bar X_n-\mu}{\sigma/\sqrt n}\xrightarrow{d}N(0,1)$$
+
+**Pergunta:** como $\bar X_n$ oscila ao redor de $\mu$?
+
+**Resposta:** descreve o formato aproximadamente Normal e a escala $\sigma/\sqrt n$.
+
+**Não afirma:** que os dados originais sejam Normais.
 :::
+:::
+
+::: {.statement}
+LGN fala de **convergência ao alvo**; TCL, da **distribuição do erro**.
 :::
 
 ## O Teorema Central do Limite
