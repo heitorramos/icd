@@ -17,7 +17,7 @@ Apresentação usada em sala.
 
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
-### Exemplos
+### Material de apoio
 
 Experimento A/B e o estudo de John Snow.
 
@@ -26,13 +26,6 @@ Experimento A/B e o estudo de John Snow.
 :::
 :::
 
-::: {.g-col-12 .g-col-md-4}
-::: {.recurso-card .recurso-indisponivel}
-### Lista
-
-Ainda não disponível para esta aula.
-:::
-:::
 :::
 
 ## Objetivos
@@ -75,7 +68,7 @@ Na segunda metade, a aula discute o limite dos experimentos: muitas vezes não
 podemos randomizar pessoas, cidades ou políticas. Entram então os estudos
 observacionais, o problema do confundimento e o caso de John Snow.
 
-## Exemplo principal
+## Material de apoio principal
 
 O exemplo computacional principal é [Pipeline de experimento A/B](../exemplos/02-experimento-ab/notebook.ipynb).
 Ele deve ser usado em aula para mostrar a diferença entre "olhar médias" e

@@ -1,22 +1,283 @@
 ---
 title: "Introdução à Ciência de Dados"
-subtitle: "Material aberto para a disciplina"
+subtitle: "Fundamentos estatísticos, análise reprodutível e decisões orientadas por dados"
+page-layout: full
+toc: true
+toc-title: "Nesta página"
 ---
 
-Este site organiza o material da disciplina de Introdução à Ciência de Dados.
-A proposta é manter uma trilha conceitual clara, com exemplos atuais,
-documentados e conectados aos exercícios.
+::: {.home-intro}
+Ciência de dados começa com uma boa pergunta — e termina com uma resposta que
+possa ser compreendida, verificada e usada com responsabilidade.
 
-## Aulas
+Nesta disciplina, conceitos estatísticos são desenvolvidos por meio de bases
+reais, simulações, visualizações e notebooks reproduzíveis.
 
-Todo o conteúdo está organizado por aula. Em cada página você encontra o
-material de estudo, os slides, os exemplos e as listas disponíveis.
+[Acessar as aulas](aulas/index.qmd){.btn .btn-primary .btn-lg}
+[Consultar o programa](programa.qmd){.btn .btn-outline-primary .btn-lg}
+:::
 
-[Ver todas as aulas](aulas/index.qmd){.btn .btn-primary .btn-lg}
+::: {.mock-notice}
+**Conteúdo provisório:** os campos marcados com **[SUBSTITUIR]** são exemplos de
+informações administrativas que poderão ser atualizadas posteriormente.
+:::
 
-## Princípios
+## Informações rápidas
 
-- exemplos com dados reais sempre que possível;
-- código pequeno o suficiente para caber em aula;
-- explicações claras e recursos organizados para estudo;
-- material reprodutível, aberto e fácil de atualizar.
+::: {.grid .home-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card}
+### Professor
+
+**Heitor Ramos**<br>
+Departamento de Ciência da Computação — UFMG<br>
+[heitor@dcc.ufmg.br](mailto:heitor@dcc.ufmg.br)
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card .mock-card}
+### Horário e sala
+
+**[SUBSTITUIR]**<br>
+Terças e quintas, 14h55–16h35<br>
+Sala 0000 — prédio do ICEx
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card .mock-card}
+### Atendimento
+
+**[SUBSTITUIR]**<br>
+Quarta-feira, 14h–16h<br>
+Sala do professor ou encontro remoto
+:::
+:::
+:::
+
+## Sobre a disciplina
+
+Introdução à Ciência de Dados apresenta ideias e ferramentas para transformar
+dados em evidência. O curso percorre o ciclo completo de uma investigação:
+formular perguntas, compreender e preparar bases, visualizar padrões, quantificar
+incerteza, testar hipóteses e comunicar conclusões.
+
+O foco não é apenas executar métodos. Ao longo das aulas, discutimos **por que um
+método funciona**, **quais suposições ele exige** e **quando uma conclusão não é
+sustentada pelos dados**.
+
+::: {.grid .home-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.feature-card}
+### Dados reais
+
+Cada sequência conceitual é guiada por uma base pública, com contexto, descrição
+das variáveis e análise exploratória.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.feature-card}
+### Código reprodutível
+
+Os gráficos apresentam seu código, e os notebooks ampliam a aula com explicações,
+simulações e exercícios.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.feature-card}
+### Leitura crítica
+
+Resultados são acompanhados por suposições, limitações e uma tradução para a
+decisão que motivou a análise.
+:::
+:::
+:::
+
+## Ementa
+
+Dados e unidades observacionais. Estudos experimentais e observacionais.
+Organização, transformação e visualização de dados. Medidas de posição e
+dispersão. Amostragem e distribuições amostrais. Estimadores, viés, variância e
+funções de perda. Teorema Central do Limite. Intervalos de confiança. Testes de
+hipóteses, bootstrap e testes de permutação. Introdução à modelagem e comunicação
+reprodutível de resultados.
+
+## Objetivos de aprendizagem
+
+Ao final da disciplina, espera-se que estudantes consigam:
+
+::: {.grid .objectives-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.objective-block}
+### Investigar
+
+- formular perguntas que possam ser respondidas com dados;
+- reconhecer unidade observacional, variáveis e população-alvo;
+- descrever uma base antes de iniciar a modelagem;
+- identificar problemas de qualidade e limites de mensuração.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.objective-block}
+### Analisar e comunicar
+
+- produzir resumos e visualizações adequados;
+- quantificar variabilidade e incerteza;
+- interpretar intervalos, testes e tamanhos de efeito;
+- comunicar resultados de forma reprodutível e responsável.
+:::
+:::
+:::
+
+## Percurso de aprendizagem
+
+::: {.course-path}
+::: {.path-step}
+**1 · Perguntas e causalidade**<br>
+Como transformar uma questão ampla em uma investigação e separar associação de
+efeito causal.
+:::
+
+::: {.path-step}
+**2 · Descrever distribuições**<br>
+Como enxergar centro, dispersão, assimetria, valores extremos e diferenças entre
+grupos.
+:::
+
+::: {.path-step}
+**3 · Da amostra à população**<br>
+Como estimadores variam, por que o tamanho da amostra importa e como o TCL sustenta
+a inferência.
+:::
+
+::: {.path-step}
+**4 · Incerteza e decisões**<br>
+Como intervalos, testes de hipóteses, bootstrap e permutação transformam acaso em
+uma análise verificável.
+:::
+:::
+
+## Cronograma
+
+As datas abaixo são provisórias. Os títulos e materiais já disponíveis levam à
+página de cada aula.
+
+| Aula | Data | Conteúdo | Material |
+|---:|:---:|---|---|
+| 01 | **[SUBSTITUIR]** | Introdução à ciência de dados | [Acessar](aulas/01-introducao.qmd) |
+| 02 | **[SUBSTITUIR]** | Causalidade e experimentos | [Acessar](aulas/02-causalidade.qmd) |
+| 03–05 | **[SUBSTITUIR]** | Dados tabulares, preparação e visualização | Em preparação |
+| 06 | **[SUBSTITUIR]** | Tendências centrais e dispersão | [Acessar](aulas/06-tendencias-centrais.qmd) |
+| 07 | **[SUBSTITUIR]** | Estimadores | [Acessar](aulas/07-estimadores.qmd) |
+| 08 | **[SUBSTITUIR]** | Escolha de estimadores e funções de perda | [Acessar](aulas/08-risco-estimadores.qmd) |
+| 09 | **[SUBSTITUIR]** | Teorema Central do Limite e intervalos | [Acessar](aulas/09-tcl-intervalos.qmd) |
+| 10 | **[SUBSTITUIR]** | Testes de hipóteses | [Acessar](aulas/10-testes-hipoteses.qmd) |
+| 11 | **[SUBSTITUIR]** | Bootstrap | [Acessar](aulas/11-bootstrap.qmd) |
+| 12 | **[SUBSTITUIR]** | Testes de permutação | [Acessar](aulas/12-testes-permutacao.qmd) |
+| 13 | **[SUBSTITUIR]** | Permutação: extensões e validade | [Acessar](aulas/13-permutacao-avancada.qmd) |
+| 14 | **[SUBSTITUIR]** | Poder e múltiplos testes | [Acessar](aulas/14-poder-multiplos.qmd) |
+| 15+ | **[SUBSTITUIR]** | Modelagem, avaliação e comunicação | Em preparação |
+
+## Dinâmica das aulas
+
+::: {.grid .home-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card}
+### Antes da aula
+
+Consulte a pergunta motivadora e, quando indicado, faça uma leitura ou exploração
+curta da base.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card}
+### Durante a aula
+
+Conceitos, derivações e simulações são conectados a um estudo de caso que guia o
+deck inteiro.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.info-card}
+### Depois da aula
+
+Use o notebook como material de estudo: reproduza os resultados, altere parâmetros
+e responda às questões propostas.
+:::
+:::
+:::
+
+## Avaliação da aprendizagem
+
+::: {.mock-section}
+**[SUBSTITUIR — proposta ilustrativa]**
+
+| Componente | Peso sugerido |
+|---|---:|
+| Atividades práticas e notebooks | 30% |
+| Avaliações individuais | 40% |
+| Projeto de análise de dados | 30% |
+
+Os critérios definitivos, datas, política de recuperação e regras de entrega
+serão publicados pelo professor no início do semestre.
+:::
+
+## Material de apoio e ferramentas
+
+::: {.grid .home-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.resource-block}
+### Aulas
+
+Roteiro central com acesso aos slides e notebooks de cada encontro.
+
+[Abrir aulas](aulas/index.qmd)
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.resource-block}
+### Ambiente computacional
+
+Python, Jupyter e bibliotecas de análise e visualização. As instruções de
+instalação serão adicionadas conforme a necessidade.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.resource-block .mock-card}
+### Ambiente institucional
+
+**[SUBSTITUIR]** Link para Moodle, Teams ou outro espaço usado para avisos,
+entregas e notas.
+:::
+:::
+:::
+
+## Bibliografia
+
+::: {.mock-section}
+**[SUBSTITUIR — seleção inicial]**
+
+- Ani Adhikari, John DeNero e David Wagner. *Computational and Inferential Thinking*.
+- Allen B. Downey. *Think Stats: Exploratory Data Analysis*.
+- Peter Bruce, Andrew Bruce e Peter Gedeck. *Practical Statistics for Data Scientists*.
+- Wes McKinney. *Python for Data Analysis*.
+
+A bibliografia oficial e as edições recomendadas serão confirmadas no plano de
+ensino.
+:::
+
+## Por onde começar
+
+Se esta é sua primeira visita, comece pela página de aulas e siga a sequência da
+disciplina. Cada página reúne o que deve ser lido, projetado e executado.
+
+[Começar pela Aula 01](aulas/01-introducao.qmd){.btn .btn-primary .btn-lg}
+[Ver todas as aulas](aulas/index.qmd){.btn .btn-outline-primary .btn-lg}

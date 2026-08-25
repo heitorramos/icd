@@ -1,0 +1,69 @@
+---
+title: "Aula 07: Estimadores"
+subtitle: "Da população à estimativa"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+População, amostra, distribuição amostral, viés e variância.
+
+[Abrir slides](../slides/07-estimadores.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Simulações com a base Palmer Penguins.
+
+[Abrir notebook](../exemplos/07-estimadores/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+:::
+
+## Objetivos
+
+- Distinguir população, amostra e mecanismo de amostragem.
+- Diferenciar parâmetro, estimador e estimativa.
+- Construir e interpretar uma distribuição amostral.
+- Definir viés, variância e erro padrão de um estimador.
+- Explicar como o tamanho da amostra afeta a precisão.
+- Interpretar a Lei dos Grandes Números e o Teorema Central do Limite.
+
+## Conceitos centrais
+
+- população e amostra;
+- parâmetro e estatística;
+- estimador e estimativa;
+- distribuição amostral;
+- viés e variância;
+- erro padrão;
+- Lei dos Grandes Números;
+- Teorema Central do Limite.
+
+## Estudo de caso
+
+A aula usa a base Palmer Penguins, disponível no Kaggle sob licença CC0. Para
+fins didáticos, os registros completos formam uma população conhecida. A partir
+dela, retiramos muitas amostras para observar como a média amostral varia e como
+se aproxima da média populacional.
+
+## Pergunta da aula
+
+> Como aprender sobre uma população observando apenas uma amostra?
+
+O exemplo principal estima a massa corporal média dos pinguins e compara
+amostras aleatórias com uma coleta enviesada que observa apenas uma espécie.
+
+## Conexão com exercícios
+
+No notebook, altere o tamanho das amostras e compare o erro padrão empírico com
+$\sigma/\sqrt{n}$. Depois restrinja a coleta a uma espécie e explique por que
+aumentar $n$ não elimina o viés de seleção.

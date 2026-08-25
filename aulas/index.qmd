@@ -4,8 +4,8 @@ title: "Aulas"
 
 Esta seção reúne os roteiros pedagógicos de cada aula.
 
-Escolha uma aula para acessar, em um só lugar, o material de estudo, os slides,
-os exemplos e as listas de exercícios.
+Escolha uma aula para acessar, em um só lugar, o material de estudo, os slides
+e os notebooks com exemplos reproduzíveis.
 
 ## Aulas disponíveis
 
@@ -43,6 +43,102 @@ Associação, causa e efeito, experimentos e estudos observacionais.
 Distribuições, média, mediana, quartis, dispersão e transformações.
 
 [Abrir a aula](06-tendencias-centrais.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 07
+
+## Estimadores
+
+População, amostra, distribuição amostral, viés, variância e erro padrão.
+
+[Abrir a aula](07-estimadores.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 08
+
+## Escolhendo estimadores
+
+Funções de perda, robustez, risco e trade-off viés-variância.
+
+[Abrir a aula](08-risco-estimadores.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 09
+
+## Teorema Central do Limite
+
+Distribuições amostrais, erro padrão e intervalos de confiança.
+
+[Abrir a aula](09-tcl-intervalos.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 10
+
+## Testes de hipóteses
+
+Hipóteses, p-valores, erros tipo I e II e poder estatístico.
+
+[Abrir a aula](10-testes-hipoteses.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 11
+
+## Bootstrap
+
+Distribuição empírica, reamostragem, intervalos e condições de validade.
+
+[Abrir a aula](11-bootstrap.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 12
+
+## Testes de permutação
+
+Modelo nulo, troca de rótulos, distribuição nula e valores-p em um A/B real.
+
+[Abrir a aula](12-testes-permutacao.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 13
+
+## Permutação além do caso básico
+
+Estatísticas robustas, estratos, pares, clusters, multiplicidade e validade.
+
+[Abrir a aula](13-permutacao-avancada.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 14
+
+## Poder e múltiplos testes
+
+Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
+
+[Abrir a aula](14-poder-multiplos.qmd){.btn .btn-primary}
 :::
 :::
 :::

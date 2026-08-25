@@ -7,7 +7,6 @@ Repositório da disciplina de Introdução à Ciência de Dados.
 - `aulas/`: roteiros pedagógicos.
 - `slides/`: slides em Quarto Reveal.js.
 - `exemplos/`: exemplos documentados com dados, código e discussões.
-- `listas/`: listas de exercícios.
 - `vpl/`: templates e exercícios para Moodle/VPL.
 - `.github/workflows/publish.yml`: publicação automática no GitHub Pages.
 
@@ -16,6 +15,20 @@ Repositório da disciplina de Introdução à Ciência de Dados.
 ```bash
 quarto preview
 ```
+
+## Padrão para bases de dados nas aulas
+
+Toda aula que utilizar uma base de dados deve apresentar, antes da análise
+principal, uma descrição curta contendo:
+
+- origem, contexto e objetivo da base;
+- unidade de observação;
+- principais colunas utilizadas e seus significados;
+- tamanho, valores ausentes e categorias relevantes;
+- uma ou duas visualizações ou estatísticas descritivas ligadas à pergunta da aula.
+
+Esse panorama deve ocupar normalmente um ou dois slides. Toda figura deve incluir
+um bloco recolhível **Código do gráfico** com o trecho que a produziu.
 
 ## Publicação no GitHub
 

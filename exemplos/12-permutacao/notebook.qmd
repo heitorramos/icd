@@ -1,0 +1,252 @@
+---
+title: "Testes de permutação em um experimento A/B"
+subtitle: "Notebook de estudo das Aulas 12 e 13"
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+execute:
+  enabled: false
+---
+
+# Objetivos
+
+Este notebook usa uma única campanha A/B para construir o teste de permutação,
+auditar suas hipóteses e avançar para estatísticas robustas e permutações
+estratificadas. Ao final, você deverá saber **o que pode ser permutado e por quê**.
+
+# 1. Download da base
+
+```{python}
+import kagglehub
+from pathlib import Path
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+path = kagglehub.dataset_download("faviovaz/marketing-ab-testing")
+csv_path = next(Path(path).rglob("marketing_AB.csv"))
+df = pd.read_csv(csv_path).drop(columns=["Unnamed: 0"])
+df.head()
+```
+
+# 2. O que é a base?
+
+A unidade observacional é um usuário. `test group` registra a atribuição ao
+anúncio comercial (`ad`, tratamento) ou PSA (`psa`, controle); `converted` é a
+resposta primária. `total ads`, `most ads day` e `most ads hour` descrevem a
+exposição registrada durante a campanha.
+
+```{python}
+print(df.shape)
+print(df.isna().sum())
+print("IDs duplicados:", df["user id"].duplicated().sum())
+df.groupby("test group").agg(
+    n=("converted", "size"),
+    conversoes=("converted", "sum"),
+    taxa=("converted", "mean"),
+    media_exposicoes=("total ads", "mean"),
+    mediana_exposicoes=("total ads", "median"),
+)
+```
+
+# 3. Análise descritiva
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+df["test group"].value_counts().plot.bar(ax=axes[0])
+df.groupby("test group")["converted"].mean().mul(100).plot.bar(ax=axes[1])
+axes[0].set_title("Tamanho dos grupos")
+axes[1].set_title("Conversão observada")
+axes[1].set_ylabel("Conversão (%)")
+plt.show()
+```
+
+O forte desbalanceamento não prova falha de randomização, mas reduz a precisão
+do controle. A documentação pública afirma que se trata de um A/B, porém não
+detalha o algoritmo de atribuição; registre essa limitação.
+
+# 4. Efeito observado
+
+```{python}
+rates = df.groupby("test group")["converted"].mean()
+observed = rates["ad"] - rates["psa"]
+relative = rates["ad"] / rates["psa"] - 1
+print(f"Diferença absoluta: {observed:.4%}")
+print(f"Uplift relativo: {relative:.1%}")
+```
+
+# 5. Uma função geral de permutação
+
+```{python}
+rng = np.random.default_rng(1213)
+
+def difference_in_means(y, group):
+    return y[group == "ad"].mean() - y[group == "psa"].mean()
+
+def permutation_test(y, group, statistic=difference_in_means,
+                     B=5000, alternative="two-sided", seed=1213):
+    local_rng = np.random.default_rng(seed)
+    observed = statistic(y, group)
+    null = np.array([
+        statistic(y, local_rng.permutation(group))
+        for _ in range(B)
+    ])
+    if alternative == "greater":
+        extreme = null >= observed
+    elif alternative == "less":
+        extreme = null <= observed
+    else:
+        extreme = np.abs(null) >= abs(observed)
+    p_value = (extreme.sum() + 1) / (B + 1)
+    return observed, null, p_value
+```
+
+# 6. Teste da conversão
+
+Para execução rápida em computadores modestos, retire uma amostra estratificada.
+Depois compare com a versão eficiente da seção seguinte.
+
+```{python}
+small = df.groupby("test group", group_keys=False).sample(n=10000, random_state=12)
+y = small["converted"].astype(float).to_numpy()
+g = small["test group"].to_numpy()
+t_obs, null, p_value = permutation_test(y, g, B=5000)
+print(t_obs, p_value)
+
+sns.histplot(null, bins=40)
+plt.axvline(t_obs, color="darkorange", linewidth=3)
+plt.xlabel("Diferença de conversão sob H0")
+plt.show()
+```
+
+# 7. Atalho exato para uma resposta binária
+
+Condicionado ao número total de conversões e aos tamanhos dos grupos, o número
+de conversões atribuídas a `ad` segue uma distribuição hipergeométrica.
+
+```{python}
+n_ad = (df["test group"] == "ad").sum()
+n_total = len(df)
+n_conv = df["converted"].sum()
+B = 100_000
+conv_ad = rng.hypergeometric(n_conv, n_total-n_conv, n_ad, size=B)
+null_fast = conv_ad/n_ad - (n_conv-conv_ad)/(n_total-n_ad)
+p_fast = (1 + np.sum(np.abs(null_fast) >= abs(observed))) / (B+1)
+print(p_fast)
+```
+
+# 8. Uma ou duas caudas
+
+```{python}
+p_greater = (1 + np.sum(null_fast >= observed)) / (B+1)
+p_two = (1 + np.sum(np.abs(null_fast) >= abs(observed))) / (B+1)
+print({"unilateral": p_greater, "bilateral": p_two})
+```
+
+Defina a direção antes de olhar os resultados. Não selecione unilateral apenas
+porque o efeito observado ficou na direção desejada.
+
+# 9. Uma métrica assimétrica
+
+```{python}
+cap = df["total ads"].quantile(.995)
+exposure = df[df["total ads"] <= cap].copy()
+sns.boxplot(data=exposure, x="test group", y="total ads", showfliers=False)
+plt.show()
+
+exposure.groupby("test group")["total ads"].agg(["mean", "median", "std"])
+```
+
+Compare diferenças de média, mediana e média aparada. Explique qual aspecto de
+comportamento cada estatística representa. Lembre que exposição pode ser uma
+variável pós-tratamento: esta análise é descritiva, não um ajuste causal.
+
+# 10. Estatísticas robustas
+
+```{python}
+from scipy.stats import trim_mean
+
+def median_difference(y, group):
+    return np.median(y[group == "ad"]) - np.median(y[group == "psa"])
+
+def trimmed_difference(y, group):
+    return trim_mean(y[group == "ad"], .10) - trim_mean(y[group == "psa"], .10)
+
+sample = exposure.groupby("test group", group_keys=False).sample(n=5000, random_state=13)
+y_ads = sample["total ads"].to_numpy()
+g_ads = sample["test group"].to_numpy()
+
+for statistic in [difference_in_means, median_difference, trimmed_difference]:
+    result = permutation_test(y_ads, g_ads, statistic=statistic, B=2000)
+    print(statistic.__name__, result[0], result[2])
+```
+
+# 11. Permutação estratificada
+
+O código abaixo embaralha rótulos apenas dentro do dia. Use esse método somente
+se o desenho permitir trocas dentro desses estratos.
+
+```{python}
+def stratified_stat(frame, label_col="permuted"):
+    pieces = frame.groupby("most ads day").apply(
+        lambda x: x.loc[x[label_col] == "ad", "converted"].mean()
+                - x.loc[x[label_col] == "psa", "converted"].mean(),
+        include_groups=False,
+    )
+    weights = frame["most ads day"].value_counts(normalize=True)
+    return np.sum(pieces * weights[pieces.index])
+
+work = df[["most ads day", "test group", "converted"]].copy()
+work["permuted"] = work["test group"]
+observed_strat = stratified_stat(work)
+
+null_strat = []
+for _ in range(1000):
+    work["permuted"] = work.groupby("most ads day")["test group"].transform(
+        lambda x: rng.permutation(x.to_numpy())
+    )
+    null_strat.append(stratified_stat(work))
+```
+
+# 12. Poder por simulação
+
+```{python}
+def power_for_effect(p0=.018, effect=.008, n_each=5000, reps=3000):
+    control = rng.binomial(n_each, p0, size=reps) / n_each
+    treatment = rng.binomial(n_each, p0+effect, size=reps) / n_each
+    se0 = np.sqrt(2*p0*(1-p0)/n_each)
+    return np.mean(np.abs(treatment-control) > 1.96*se0)
+
+for n in [1000, 2500, 5000, 10000, 25000]:
+    print(n, power_for_effect(n_each=n))
+```
+
+# 13. Checklist de validade
+
+Antes de interpretar causalmente:
+
+1. confirme a unidade e a probabilidade de randomização;
+2. verifique duplicatas, perdas e desvio da alocação planejada;
+3. preserve blocos, pares ou clusters na permutação;
+4. não ajuste ingenuamente por variáveis pós-tratamento;
+5. defina métrica primária, cauda e regra de parada;
+6. controle multiplicidade em subgrupos.
+
+# 14. Exercícios
+
+1. Refaça o teste usando risco relativo em vez de diferença absoluta.
+2. Compare o resultado com um teste-z de duas proporções.
+3. Estime a diferença de conversão em cada dia e teste uma interação.
+4. Simule um experimento em clusters e mostre por que permutar pessoas é errado.
+5. Crie um cenário em que média e mediana levem a conclusões diferentes.
+6. Explique a diferença entre a nula aguda de Fisher e efeito médio zero.
+
+# Fonte e limites
+
+Marketing A/B Testing, Kaggle, `faviovaz/marketing-ab-testing`, licença CC0.
+A base é adequada para ensino, mas a documentação disponível não informa todos
+os detalhes operacionais da randomização. Essa ausência deve acompanhar qualquer
+afirmação causal.
+

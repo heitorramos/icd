@@ -9,7 +9,6 @@ project:
     - "slides/*.qmd"
     - "exemplos/**/*.qmd"
     - "exemplos/**/*.ipynb"
-    - "listas/*.qmd"
 
 website:
   title: "Introdução à Ciência de Dados"
@@ -35,6 +34,14 @@ website:
         - aulas/01-introducao.qmd
         - aulas/02-causalidade.qmd
         - aulas/06-tendencias-centrais.qmd
+        - aulas/07-estimadores.qmd
+        - aulas/08-risco-estimadores.qmd
+        - aulas/09-tcl-intervalos.qmd
+        - aulas/10-testes-hipoteses.qmd
+        - aulas/11-bootstrap.qmd
+        - aulas/12-testes-permutacao.qmd
+        - aulas/13-permutacao-avancada.qmd
+        - aulas/14-poder-multiplos.qmd
 
 format:
   html:

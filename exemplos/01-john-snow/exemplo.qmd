@@ -1,5 +1,5 @@
 ---
-title: "Exemplo: John Snow e cólera em Londres"
+title: "Material de apoio: John Snow e cólera em Londres"
 ---
 
 ## Pergunta motivadora

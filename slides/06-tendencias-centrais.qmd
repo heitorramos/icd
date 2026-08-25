@@ -2,6 +2,7 @@
 title: "Tendências Centrais"
 subtitle: "Aula 06"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
+institute: '<div class="title-brand-lockup"><img class="brand-dcc" src="assets/brand/dcc-ufmg-fundo-escuro.png" alt="DCC"><img class="brand-ufmg" src="assets/brand/ufmg-branca-vermelha.png" alt="UFMG"></div>'
 format:
   revealjs:
     theme: [default, styles/slides.scss]
@@ -541,6 +542,94 @@ for valores in [baixa, alta]:
 </details>
 
 A variância cresce quando os valores ficam, em média, mais longe da média.
+
+## População e amostra: variâncias diferentes
+
+Se conhecemos toda a população de tamanho $N$:
+
+$$
+\sigma^2=\frac{1}{N}\sum_{i=1}^{N}(x_i-\mu)^2.
+$$
+
+Se temos uma amostra de tamanho $n$ e queremos estimar $\sigma^2$:
+
+$$
+s^2=\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2.
+$$
+
+A troca de $n$ por $n-1$ corrige o uso da média estimada $\bar{x}$ no lugar da média desconhecida $\mu$.
+
+## Caminho 1: um grau de liberdade a menos
+
+Depois de calcular $\bar{x}$, os desvios obedecem:
+
+$$
+\sum_{i=1}^{n}(x_i-\bar{x})=0.
+$$
+
+Se conhecemos $n-1$ desvios, o último já está determinado para que a soma seja zero.
+
+::: {.statement}
+Há apenas $n-1$ desvios livres para estimar a dispersão.
+:::
+
+Por isso dividimos a soma dos quadrados por $n-1$.
+
+## Caminho 2: decomponha os desvios
+
+A média populacional $\mu$ permite escrever:
+
+$$
+X_i-\bar X=(X_i-\mu)-(\bar X-\mu).
+$$
+
+Expandindo os quadrados e usando
+$\sum_i(X_i-\mu)=n(\bar X-\mu)$:
+
+$$
+\sum_{i=1}^{n}(X_i-\bar X)^2
+=
+\sum_{i=1}^{n}(X_i-\mu)^2
+-n(\bar X-\mu)^2.
+$$
+
+A dispersão em torno de $\bar X$ é menor: ajustar a média aos próprios dados subtrai o segundo termo.
+
+## Tomar a esperança revela n − 1
+
+Para observações i.i.d. com variância $\sigma^2$:
+
+$$
+\mathbb E\!\left[\sum_{i=1}^{n}(X_i-\mu)^2\right]=n\sigma^2
+$$
+
+e, como $\mathbb E[\bar X]=\mu$ e $\operatorname{Var}(\bar X)=\sigma^2/n$:
+
+$$
+\mathbb E\!\left[n(\bar X-\mu)^2\right]
+=n\operatorname{Var}(\bar X)=\sigma^2.
+$$
+
+Portanto, $n\sigma^2-\sigma^2=(n-1)\sigma^2$.
+
+## A correção remove o viés para baixo
+
+Se dividíssemos por $n$:
+
+$$
+\mathbb E\!\left[\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar X)^2\right]
+=\frac{n-1}{n}\sigma^2<\sigma^2.
+$$
+
+Mas, dividindo por $n-1$:
+
+$$
+\mathbb E[s^2]
+=\frac{1}{n-1}(n-1)\sigma^2
+=\sigma^2.
+$$
+
+Essa é a correção de Bessel.
 
 ## Desvio padrão
 

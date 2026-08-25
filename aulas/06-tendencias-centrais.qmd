@@ -17,7 +17,7 @@ Apresentação usada em sala.
 
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
-### Exemplo
+### Material de apoio
 
 Análise guiada do dataset Billboard.
 
@@ -25,15 +25,6 @@ Análise guiada do dataset Billboard.
 :::
 :::
 
-::: {.g-col-12 .g-col-md-4}
-::: {.recurso-card}
-### Lista
-
-Exercícios e arquivos para o Moodle VPL.
-
-[Abrir lista](../listas/lista-06-tendencias-centrais.qmd){.btn .btn-outline-primary}
-:::
-:::
 :::
 
 ## Objetivos
@@ -92,7 +83,7 @@ final, entram transformações e outras médias como material extra.
 | 80-90 min | Dispersão, variância e desvio padrão |
 | 90-100 min | Transformações e médias geométrica/harmônica |
 
-## Exemplo da aula
+## Material de apoio da aula
 
 O notebook usa o dataset Billboard Hits Songs, com título, artista, gênero,
 duração, álbum e popularidade. Ele foi desenhado para permitir:
@@ -110,13 +101,7 @@ duração, álbum e popularidade. Ele foi desenhado para permitir:
 
 Veja [Aula 06: tendências centrais com dados do Billboard](../exemplos/06-tendencias-centrais/notebook.ipynb).
 
-## Lista e VPL
-
-A lista da aula transforma os conceitos do notebook em funções pequenas de
-Python: conversão de duração, média, mediana, quantis, quartis e resumo
-descritivo.
-
-Veja [Lista 06: tendências centrais](../listas/lista-06-tendencias-centrais.qmd).
+## Prática no Moodle
 
 Arquivos para Moodle VPL:
 
@@ -124,8 +109,4 @@ Arquivos para Moodle VPL:
 - [template.py](../vpl/06-tendencias-centrais/template.py);
 - [test_public.py](../vpl/06-tendencias-centrais/test_public.py).
 
-## Conexão com exercícios
-
-Uma boa lista pode pedir que estudantes escolham uma coluna numérica, façam
-histograma e CDF, calculem média/mediana/quartis e escrevam uma recomendação
-sobre qual resumo é mais adequado para comunicação.
+O notebook também termina com propostas de investigação para estudo autônomo.

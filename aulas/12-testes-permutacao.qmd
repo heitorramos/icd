@@ -1,0 +1,43 @@
+---
+title: "Aula 12: Testes de Permutação"
+subtitle: "O acaso como modelo nulo"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.recurso-card}
+### Slides
+
+Construção do teste de permutação em uma campanha A/B real.
+
+[Abrir slides](../slides/12-testes-permutacao.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.recurso-card}
+### Notebook
+
+Análise reprodutível, simulação da distribuição nula e exercícios.
+
+[Abrir notebook](../exemplos/12-permutacao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- descrever e auditar uma base de experimento A/B;
+- formular hipóteses nula e alternativa;
+- construir uma distribuição nula por permutação;
+- calcular valores-p unilateral e bilateral;
+- distinguir significância estatística e importância prática;
+- reconhecer as condições de validade do teste.
+
+## Estudo de caso
+
+A base Marketing A/B Testing compara a conversão de 588.101 usuários expostos
+a um anúncio comercial ou a um PSA. A aula pergunta se a diferença observada de
+conversão pode ser explicada apenas pela atribuição aleatória dos grupos.
+

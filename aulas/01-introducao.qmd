@@ -17,7 +17,7 @@ Apresentação usada em sala.
 
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
-### Exemplo
+### Material de apoio
 
 Primeiro contato com uma tabela de dados.
 
@@ -25,13 +25,6 @@ Primeiro contato com uma tabela de dados.
 :::
 :::
 
-::: {.g-col-12 .g-col-md-4}
-::: {.recurso-card .recurso-indisponivel}
-### Lista
-
-Ainda não disponível para esta aula.
-:::
-:::
 :::
 
 ## Objetivos
@@ -73,11 +66,11 @@ máquina como ferramenta, e boas perguntas como eixo central.
 | 10-25 min | O que é ciência de dados e o que a área usa |
 | 25-40 min | Discussão guiada: exemplos de boas e más perguntas |
 | 40-60 min | Ciclo de uma análise de dados |
-| 60-80 min | Exemplo em notebook: primeira tabela e indicador simples |
+| 60-80 min | Material de apoio em notebook: primeira tabela e indicador simples |
 | 80-95 min | Logística da disciplina, avaliações e projeto |
 | 95-100 min | Fechamento e pergunta para a próxima aula |
 
-## Exemplo sugerido
+## Material de apoio sugerido
 
 Um exemplo inicial deve usar uma base pequena de dados públicos brasileiros,
 preferencialmente com variáveis compreensíveis sem muito conhecimento prévio.

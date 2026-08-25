@@ -77,3 +77,130 @@ table {
   background: var(--icd-band);
   box-shadow: none;
 }
+
+.home-intro {
+  margin: 0 0 1.5rem;
+  padding: 2rem;
+  border-left: 0.35rem solid var(--icd-accent);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #f3f7f7, #fffaf5);
+  font-size: 1.15rem;
+}
+
+.home-intro p:first-child {
+  max-width: 58rem;
+  margin-top: 0;
+  color: #17324d;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.home-intro .btn {
+  margin-top: 0.65rem;
+  margin-right: 0.4rem;
+}
+
+.mock-notice,
+.mock-section {
+  padding: 1rem 1.2rem;
+  border: 1px dashed #d9a06f;
+  border-radius: 0.65rem;
+  background: #fffaf5;
+}
+
+.home-grid,
+.objectives-grid {
+  align-items: stretch;
+}
+
+.home-grid > div,
+.objectives-grid > div {
+  display: flex;
+}
+
+.info-card,
+.feature-card,
+.objective-block,
+.resource-block {
+  width: 100%;
+  padding: 1.35rem;
+  border: 1px solid #dbe4e8;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 0.2rem 0.75rem rgb(23 50 77 / 6%);
+}
+
+.info-card h3,
+.feature-card h3,
+.objective-block h3,
+.resource-block h3 {
+  margin-top: 0;
+  color: #17324d;
+}
+
+.feature-card {
+  border-top: 0.25rem solid #0f6b78;
+}
+
+.objective-block {
+  background: var(--icd-band);
+  box-shadow: none;
+}
+
+.resource-block {
+  border-top: 0.25rem solid var(--icd-accent);
+}
+
+.mock-card {
+  background: #fffaf5;
+  border-style: dashed;
+  border-color: #d9a06f;
+  box-shadow: none;
+}
+
+.course-path {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.path-step {
+  min-height: 9rem;
+  padding: 1.15rem;
+  border-top: 0.3rem solid #0f6b78;
+  border-radius: 0.5rem;
+  background: var(--icd-band);
+}
+
+.path-step p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .course-path {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-intro {
+    padding: 1.35rem;
+  }
+
+  .course-path {
+    grid-template-columns: 1fr;
+  }
+
+  main table {
+    width: 100%;
+    font-size: 0.78rem;
+    table-layout: fixed;
+  }
+
+  main table th,
+  main table td {
+    padding: 0.35rem 0.25rem;
+    overflow-wrap: anywhere;
+  }
+}

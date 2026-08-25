@@ -9,6 +9,69 @@ $link-color: #0f6b78;
   max-height: 2.2rem !important;
 }
 
+.reveal #title-slide {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(15, 107, 120, 0.10) 0 7rem, transparent 7.1rem),
+    linear-gradient(180deg, #fffdf8 0%, #f6f8f8 100%);
+  border-top: 0.18rem solid #d95f02;
+  box-sizing: border-box;
+  color: #17324d;
+  padding: 2.3rem 2.8rem;
+}
+
+.reveal #title-slide .title,
+.reveal #title-slide .subtitle,
+.reveal #title-slide .author,
+.reveal #title-slide .institute {
+  color: #17324d;
+}
+
+.reveal #title-slide .title {
+  margin-top: 0;
+  position: relative;
+}
+
+.reveal #title-slide .title::after {
+  background: #d95f02;
+  content: "";
+  display: block;
+  height: 0.16rem;
+  margin: 0.7rem auto 0;
+  width: 3.2rem;
+}
+
+.reveal #title-slide .title-brand-lockup,
+.reveal #title-slide .quarto-title-affiliation {
+  align-items: center;
+  background: #17324d;
+  border-radius: 0.35rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 1.35rem auto 0;
+  max-width: 18rem;
+  padding: 0.55rem 1rem;
+  box-shadow: 0 0.2rem 0.7rem rgba(23, 50, 77, 0.12);
+}
+
+.reveal #title-slide .title-brand-lockup img,
+.reveal #title-slide .quarto-title-affiliation img {
+  display: block;
+  margin: 0;
+  object-fit: contain;
+  width: auto;
+}
+
+.reveal #title-slide .title-brand-lockup .brand-dcc,
+.reveal #title-slide .quarto-title-affiliation .brand-dcc {
+  height: 2.6rem;
+}
+
+.reveal #title-slide .title-brand-lockup .brand-ufmg,
+.reveal #title-slide .quarto-title-affiliation .brand-ufmg {
+  height: 1.55rem;
+}
+
 .reveal h1,
 .reveal h2 {
   letter-spacing: 0;
@@ -40,9 +103,23 @@ $link-color: #0f6b78;
 
 .reveal section > img.r-stretch {
   display: block;
+  height: auto !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  max-height: 21rem !important;
+  max-width: min(100%, 30rem) !important;
+  width: auto !important;
   object-fit: contain;
+}
+
+.reveal section > img.r-stretch.wide-chart {
+  max-height: 22rem !important;
+  max-width: min(100%, 38rem) !important;
+}
+
+.reveal section > img.r-stretch[src*="tres-distribuicoes"] {
+  max-height: 22rem !important;
+  max-width: min(100%, 38rem) !important;
 }
 
 .reveal .statement {

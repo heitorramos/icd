@@ -2,6 +2,7 @@
 title: "Causa e Efeito"
 subtitle: "Aula 02"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
+institute: '<div class="title-brand-lockup"><img class="brand-dcc" src="assets/brand/dcc-ufmg-fundo-escuro.png" alt="DCC"><img class="brand-ufmg" src="assets/brand/ufmg-branca-vermelha.png" alt="UFMG"></div>'
 format:
   revealjs:
     theme: [default, styles/slides.scss]

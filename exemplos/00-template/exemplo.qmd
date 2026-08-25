@@ -1,5 +1,5 @@
 ---
-title: "Template: Exemplo Documentado"
+title: "Template: Material de Apoio Documentado"
 ---
 
 ## Pergunta motivadora

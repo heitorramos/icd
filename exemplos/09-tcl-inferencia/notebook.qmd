@@ -1,0 +1,256 @@
+---
+title: "TCL, intervalos e testes com dados Olist"
+subtitle: "Notebook das Aulas 09 e 10"
+format:
+  html:
+    code-fold: true
+    code-summary: "Mostrar código"
+execute:
+  enabled: false
+---
+
+# Objetivos
+
+Este notebook usa pedidos reais do e-commerce brasileiro Olist para conectar
+distribuições amostrais, Teorema Central do Limite, intervalos de confiança e
+testes de hipóteses.
+
+Ao final, você deve conseguir:
+
+- simular a distribuição amostral de uma média ou proporção;
+- comparar erro padrão empírico e teórico;
+- construir e interpretar intervalos de confiança;
+- simular a cobertura de um procedimento;
+- formular hipóteses e calcular uma estatística de teste;
+- estimar um p-valor por aproximação e por simulação;
+- investigar erros tipo I e poder estatístico.
+
+# 1. Download da base
+
+```{python}
+import kagglehub
+
+path = kagglehub.dataset_download("olistbr/brazilian-ecommerce")
+print(path)
+```
+
+# 2. Preparação
+
+```{python}
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from scipy.stats import binom, norm
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260824)
+
+orders_path = next(Path(path).rglob("olist_orders_dataset.csv"))
+orders = pd.read_csv(orders_path)
+
+date_cols = [
+    "order_purchase_timestamp",
+    "order_delivered_customer_date",
+    "order_estimated_delivery_date",
+]
+orders[date_cols] = orders[date_cols].apply(pd.to_datetime)
+orders = orders.dropna(subset=date_cols).copy()
+
+orders["delivery_days"] = (
+    orders["order_delivered_customer_date"]
+    - orders["order_purchase_timestamp"]
+).dt.total_seconds() / 86400
+
+orders["delay_days"] = (
+    orders["order_delivered_customer_date"]
+    - orders["order_estimated_delivery_date"]
+).dt.total_seconds() / 86400
+
+orders["late"] = (orders["delay_days"] > 0).astype(int)
+orders[["delivery_days", "delay_days", "late"]].describe()
+```
+
+# 3. População didática
+
+```{python}
+delivery = orders["delivery_days"].to_numpy()
+late = orders["late"].to_numpy()
+
+mu = delivery.mean()
+sigma = delivery.std(ddof=0)
+p_late = late.mean()
+
+print(f"Pedidos válidos: {len(orders):,}")
+print(f"Tempo médio: {mu:.2f} dias")
+print(f"Desvio padrão: {sigma:.2f} dias")
+print(f"Taxa de atraso: {p_late:.2%}")
+```
+
+![](../../slides/assets/aula09-tcl-inferencia/populacao-entrega.png){fig-alt="Distribuição populacional do tempo de entrega."}
+
+# 4. Distribuição amostral da média
+
+```{python}
+def sample_means(values, n, reps=5000):
+    return np.array([
+        rng.choice(values, size=n, replace=True).mean()
+        for _ in range(reps)
+    ])
+
+for n in [10, 50, 200]:
+    means = sample_means(delivery, n)
+    sns.kdeplot(means, label=f"n = {n}")
+
+plt.axvline(mu, color="black", linestyle="--")
+plt.xlabel("Média amostral do tempo de entrega")
+plt.legend()
+plt.show()
+```
+
+Compare o erro padrão empírico com $\sigma/\sqrt{n}$:
+
+```{python}
+for n in [10, 50, 200, 1000]:
+    empirical = sample_means(delivery, n).std(ddof=1)
+    theoretical = sigma / np.sqrt(n)
+    print(f"n={n:>4}: simulado={empirical:.3f} | teórico={theoretical:.3f}")
+```
+
+# 5. Padronização
+
+```{python}
+n = 50
+means = sample_means(delivery, n)
+z = (means - mu) / (sigma / np.sqrt(n))
+
+sns.histplot(z, bins=35, stat="density")
+x = np.linspace(-4, 4, 400)
+plt.plot(x, norm.pdf(x), color="darkorange", linewidth=3)
+plt.xlabel("Médias padronizadas")
+plt.show()
+```
+
+# 6. Um intervalo de confiança
+
+```{python}
+sample = rng.choice(delivery, size=100, replace=False)
+x_bar = sample.mean()
+s = sample.std(ddof=1)
+se = s / np.sqrt(len(sample))
+lower = x_bar - 1.96 * se
+upper = x_bar + 1.96 * se
+
+print(f"Média amostral: {x_bar:.2f}")
+print(f"Erro padrão: {se:.2f}")
+print(f"IC 95%: [{lower:.2f}, {upper:.2f}]")
+```
+
+# 7. Cobertura
+
+```{python}
+def confidence_interval(values, n=100, z_star=1.96):
+    sample = rng.choice(values, size=n, replace=True)
+    mean = sample.mean()
+    se = sample.std(ddof=1) / np.sqrt(n)
+    return mean - z_star * se, mean + z_star * se
+
+intervals = [confidence_interval(delivery) for _ in range(5000)]
+coverage = np.mean([lower <= mu <= upper for lower, upper in intervals])
+print(f"Cobertura simulada: {coverage:.2%}")
+```
+
+Altere `z_star` para 1,645 e 2,576. Compare cobertura e largura média.
+
+# 8. Planejamento amostral
+
+```{python}
+def required_n(sigma, margin, z_star=1.96):
+    return int(np.ceil((z_star * sigma / margin) ** 2))
+
+for margin in [2.0, 1.0, 0.5]:
+    print(margin, required_n(sigma, margin))
+```
+
+# 9. Testando a taxa de atraso
+
+Usaremos a pergunta:
+
+$$
+H_0:p=0{,}08
+\qquad\text{contra}\qquad
+H_1:p>0{,}08
+$$
+
+```{python}
+sample = np.random.default_rng(13).choice(late, size=1200, replace=False)
+n = len(sample)
+k = sample.sum()
+p_hat = sample.mean()
+p0 = 0.08
+se0 = np.sqrt(p0 * (1 - p0) / n)
+z = (p_hat - p0) / se0
+p_value_normal = norm.sf(z)
+
+print(f"n={n}, atrasos={k}, p̂={p_hat:.4f}")
+print(f"z={z:.3f}, p-valor Normal={p_value_normal:.4f}")
+```
+
+# 10. P-valor exato
+
+```{python}
+p_value_exact = binom.sf(k - 1, n=n, p=p0)
+print(f"p-valor Binomial exato: {p_value_exact:.4f}")
+```
+
+# 11. P-valor por simulação
+
+```{python}
+null_proportions = rng.binomial(n=n, p=p0, size=100_000) / n
+p_value_simulated = np.mean(null_proportions >= p_hat)
+print(f"p-valor simulado: {p_value_simulated:.4f}")
+```
+
+# 12. Erro tipo I
+
+```{python}
+alpha = 0.05
+rejections = []
+
+for _ in range(10_000):
+    k_sim = rng.binomial(n=n, p=p0)
+    p_sim = binom.sf(k_sim - 1, n=n, p=p0)
+    rejections.append(p_sim < alpha)
+
+print(f"Taxa simulada de erro tipo I: {np.mean(rejections):.3f}")
+```
+
+# 13. Poder
+
+```{python}
+def simulated_power(true_p, n=1200, alpha=0.05, reps=5000):
+    counts = rng.binomial(n=n, p=true_p, size=reps)
+    p_values = binom.sf(counts - 1, n=n, p=0.08)
+    return np.mean(p_values < alpha)
+
+for true_p in [0.08, 0.085, 0.09, 0.10, 0.12]:
+    print(true_p, simulated_power(true_p))
+```
+
+# 14. Investigue
+
+1. Como a distribuição amostral muda para $n=10$, 50 e 200?
+2. Qual tamanho amostral fornece margem de erro de meio dia?
+3. Compare intervalos de 90%, 95% e 99%.
+4. Compare os p-valores exato, Normal e simulado.
+5. Como o poder muda com $n$ e com a taxa verdadeira?
+6. Repita o teste bilateral e explique a diferença.
+
+# Fonte
+
+Brazilian E-Commerce Public Dataset by Olist, disponibilizado no Kaggle em
+`olistbr/brazilian-ecommerce`. O conjunto reúne cerca de 100 mil pedidos reais,
+anonimizados, realizados entre 2016 e 2018.
+

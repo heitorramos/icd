@@ -30,5 +30,4 @@ O CSV não é redistribuído neste repositório. O notebook baixa a base com
 
 ## Exercícios relacionados
 
-- Lista 06: `listas/lista-06-tendencias-centrais.qmd`
 - VPL Moodle: `vpl/06-tendencias-centrais`

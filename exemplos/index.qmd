@@ -1,8 +1,8 @@
 ---
-title: "Exemplos"
+title: "Materiais de apoio"
 ---
 
-Cada exemplo funciona como uma pequena investigação documentada. Os notebooks
+Cada material funciona como uma pequena investigação documentada. Os notebooks
 são publicados no site já executados, com tabelas, valores numéricos e gráficos
 visíveis abaixo das células de código.
 
@@ -15,13 +15,13 @@ visíveis abaixo das células de código.
 - roteiro de sala;
 - código comentado;
 - discussões e limitações;
-- conexão com slides, listas e VPLs.
+- conexão com os slides e atividades de prática.
 
 ## Templates
 
 - [Template de exemplo documentado](00-template/exemplo.qmd)
 
-## Exemplos disponíveis
+## Materiais disponíveis
 
 ::: {.grid}
 ::: {.g-col-12 .g-col-md-6}
@@ -51,10 +51,63 @@ transformações e médias geométrica/harmônica.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Exemplo histórico
+### Aulas 07 e 08
+
+[Estimadores com Palmer Penguins](07-estimadores/notebook.qmd)
+
+Notebook de estudo sobre amostragem, distribuições amostrais, correção $n-1$,
+viés, variância, perdas, robustez e risco.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aulas 09 e 10
+
+[TCL, intervalos e testes com dados Olist](09-tcl-inferencia/notebook.qmd)
+
+Simulações guiadas de erro padrão, cobertura, planejamento amostral, p-valores,
+erros tipo I e poder estatístico.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aula 11
+
+[Bootstrap com dados Airbnb NYC](11-bootstrap/notebook.qmd)
+
+Material sobre distribuição empírica, reamostragem, intervalos, validade,
+dependência e bootstrap por agrupamentos.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aula 10
+
+[Testes de hipóteses com dados Olist](10-testes-hipoteses/notebook.qmd)
+
+Material dedicado à formulação de hipóteses, valores-p, erro tipo I e poder.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aulas 12 e 13
+
+[Testes de permutação em um experimento A/B](12-permutacao/notebook.qmd)
+
+Campanha real do Kaggle, descrição da base, permutação básica, estatísticas
+robustas, estratos, validade e exercícios.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aula 14
+
+[Poder e múltiplos testes com Cookie Cats](14-poder-multiplos/notebook.qmd)
+
+Permutação e bootstrap sob $H_0$, bootstrap sob $H_A$, curvas de poder,
+Bonferroni, Holm, Benjamini–Hochberg e exercícios.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Material histórico
 
 [John Snow e cólera em Londres](01-john-snow/exemplo.qmd)
 
-Exemplo narrativo em Quarto sobre dados, visualização e investigação.
+Material narrativo em Quarto sobre dados, visualização e investigação.
 :::
 :::
