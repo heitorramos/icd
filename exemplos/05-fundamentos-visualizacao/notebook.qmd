@@ -30,6 +30,11 @@ penguins["sex"] = penguins["sex"].replace(".", pd.NA)
 datasaurus = pd.read_csv(DATA / "datasaurus.tsv", sep="\t")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Objetivos), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ## Conhecendo a base Palmer Penguins
 
 Uma linha representa um pinguim observado. As colunas registram espécie, ilha, sexo e medidas corporais. A base foi criada para estudar variação morfológica entre espécies no arquipélago Palmer.
@@ -38,13 +43,28 @@ Uma linha representa um pinguim observado. As colunas registram espécie, ilha, 
 penguins.shape, penguins.head()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Conhecendo a base Palmer Penguins), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ```{python}
 penguins.info()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Conhecendo a base Palmer Penguins), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ```{python}
 penguins.isna().sum().sort_values(ascending=False)
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Conhecendo a base Palmer Penguins), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ```{python}
 penguins.groupby("species").agg(
@@ -55,6 +75,11 @@ penguins.groupby("species").agg(
 ).round(1)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Conhecendo a base Palmer Penguins), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ## Variáveis categóricas
 
 ```{python}
@@ -62,6 +87,11 @@ ordem = penguins["species"].value_counts().index
 sns.countplot(data=penguins, y="species", order=ordem, color="#176b87")
 plt.xlabel("pinguins"); plt.ylabel(""); plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Variáveis categóricas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ### Exercício 1
 
@@ -75,6 +105,11 @@ sns.countplot(data=penguins, y="island",
 plt.xlabel("observações"); plt.ylabel(""); plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Exercício 1), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 A base descreve a amostra coletada, não um censo de todos os pinguins.
 
 ## Distribuições numéricas
@@ -87,10 +122,20 @@ for ax, bins in zip(axes, [6, 15, 35]):
 plt.tight_layout(); plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuições numéricas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ```{python}
 sns.ecdfplot(data=penguins, x="body_mass_g", hue="species")
 plt.xlabel("massa corporal (g)"); plt.ylabel("proporção acumulada"); plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuições numéricas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ### Estimativa de densidade por kernel (KDE)
 
@@ -105,6 +150,11 @@ for ax, adjust in zip(axes, [0.25, 1, 2.5]):
     ax.set_title(f"bw_adjust = {adjust}")
 plt.tight_layout(); plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Estimativa de densidade por kernel (KDE)), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 O cálculo abaixo explicita a soma de kernels gaussianos para cinco observações.
 
@@ -122,6 +172,11 @@ plt.plot(x_obs, np.zeros_like(x_obs), "|", color="#b23b3b", ms=14)
 plt.xlabel("massa corporal (g)"); plt.ylabel("densidade"); plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Estimativa de densidade por kernel (KDE)), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ### Exercício: suavização é uma escolha
 
 Repita a KDE por espécie com `hue="species"`. Teste ao menos três valores de `bw_adjust` e registre quais características persistem.
@@ -133,6 +188,11 @@ sns.violinplot(data=penguins, x="species", y="body_mass_g", inner="quart", ax=ax
 plt.tight_layout(); plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Exercício: suavização é uma escolha), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ### Exercício 2
 
 Calcule, usando a ECDF, a proporção de pinguins com massa de até 4.000 g e confira diretamente com uma expressão booleana.
@@ -140,6 +200,11 @@ Calcule, usando a ECDF, a proporção de pinguins com massa de até 4.000 g e co
 ```{python}
 (penguins["body_mass_g"] <= 4000).mean()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Exercício 2), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ## Relações entre duas medidas
 
@@ -149,6 +214,11 @@ sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
 plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Relações entre duas medidas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ```{python}
 penguins[["flipper_length_mm", "body_mass_g"]].corr()
 ```
@@ -156,6 +226,11 @@ penguins[["flipper_length_mm", "body_mass_g"]].corr()
 ```{python}
 penguins.groupby("species")[["flipper_length_mm", "body_mass_g"]].corr().iloc[0::2, -1]
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Relações entre duas medidas), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 O valor agregado mistura diferenças entre espécies com relações dentro de cada espécie. O gráfico torna essa estrutura visível.
 
@@ -166,6 +241,11 @@ Cada conjunto possui 142 pontos. A pergunta é se seus resumos bastam para descr
 ```{python}
 datasaurus.shape, datasaurus["dataset"].value_counts().head()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Datasaurus Dozen), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ```{python}
 resumo = datasaurus.groupby("dataset").apply(
@@ -178,12 +258,22 @@ resumo = datasaurus.groupby("dataset").apply(
 resumo
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Datasaurus Dozen), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
+
 ```{python}
 g = sns.relplot(data=datasaurus, x="x", y="y", col="dataset",
                 col_wrap=4, height=2.1, color="#176b87")
 g.set_axis_labels("", "")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Datasaurus Dozen), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Discuta o gráfico como uma escolha de codificação visual: o padrão percebido depende de eixo, escala, geometria e agrupamento, não apenas dos dados brutos.
+:::
+
 
 ### Exercício 3
 
@@ -212,6 +302,7 @@ def visualizar_variavel(df, coluna):
 
 visualizar_variavel(penguins, "bill_length_mm")
 ```
+
 
 ## Para guardar
 

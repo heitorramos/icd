@@ -31,6 +31,11 @@ df = pd.read_csv(csv_path).drop(columns=["Unnamed: 0"])
 df.head()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (1. Download da base), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
+
 # 2. O que é a base?
 
 A unidade observacional é um usuário. `test group` registra a atribuição ao
@@ -51,6 +56,11 @@ df.groupby("test group").agg(
 )
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (2. O que é a base?), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
+
 # 3. Análise descritiva
 
 ```{python}
@@ -62,6 +72,11 @@ axes[1].set_title("Conversão observada")
 axes[1].set_ylabel("Conversão (%)")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (3. Análise descritiva), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
 
 O forte desbalanceamento não prova falha de randomização, mas reduz a precisão
 do controle. A documentação pública afirma que se trata de um A/B, porém não
@@ -76,6 +91,11 @@ relative = rates["ad"] / rates["psa"] - 1
 print(f"Diferença absoluta: {observed:.4%}")
 print(f"Uplift relativo: {relative:.1%}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (4. Efeito observado), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
 
 # 5. Uma função geral de permutação
 
@@ -103,6 +123,11 @@ def permutation_test(y, group, statistic=difference_in_means,
     return observed, null, p_value
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (5. Uma função geral de permutação), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
+
 # 6. Teste da conversão
 
 Para execução rápida em computadores modestos, retire uma amostra estratificada.
@@ -120,6 +145,11 @@ plt.axvline(t_obs, color="darkorange", linewidth=3)
 plt.xlabel("Diferença de conversão sob H0")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (6. Teste da conversão), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
 
 # 7. Atalho exato para uma resposta binária
 
@@ -159,6 +189,11 @@ plt.show()
 exposure.groupby("test group")["total ads"].agg(["mean", "median", "std"])
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (9. Uma métrica assimétrica), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
+
 Compare diferenças de média, mediana e média aparada. Explique qual aspecto de
 comportamento cada estatística representa. Lembre que exposição pode ser uma
 variável pós-tratamento: esta análise é descritiva, não um ajuste causal.
@@ -182,6 +217,11 @@ for statistic in [difference_in_means, median_difference, trimmed_difference]:
     result = permutation_test(y_ads, g_ads, statistic=statistic, B=2000)
     print(statistic.__name__, result[0], result[2])
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (10. Estatísticas robustas), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+:::
+
 
 # 11. Permutação estratificada
 
@@ -210,6 +250,7 @@ for _ in range(1000):
     null_strat.append(stratified_stat(work))
 ```
 
+
 # 12. Poder por simulação
 
 ```{python}
@@ -222,6 +263,7 @@ def power_for_effect(p0=.018, effect=.008, n_each=5000, reps=3000):
 for n in [1000, 2500, 5000, 10000, 25000]:
     print(n, power_for_effect(n_each=n))
 ```
+
 
 # 13. Checklist de validade
 

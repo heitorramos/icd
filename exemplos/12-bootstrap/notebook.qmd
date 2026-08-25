@@ -30,19 +30,39 @@ airbnb = pd.read_csv(f"{path}/AB_NYC_2019.csv")
 airbnb.shape
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (A base), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
+
 ## Panorama descritivo
 
 ```{python}
 airbnb[["price", "minimum_nights", "availability_365"]].describe()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Panorama descritivo), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
+
 ```{python}
 airbnb["neighbourhood_group"].value_counts()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Panorama descritivo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
+
 ```{python}
 airbnb[["price", "neighbourhood_group", "room_type", "host_id"]].isna().sum()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Panorama descritivo), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
 
 ## Limpeza e população-alvo
 
@@ -63,6 +83,11 @@ sample = focus.groupby("neighbourhood_group", group_keys=False).sample(
 )
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Limpeza e população-alvo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
+
 ## Estimativa observada
 
 ```{python}
@@ -77,6 +102,11 @@ theta_hat = (
 )
 theta_hat
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Estimativa observada), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
 
 ## Réplicas bootstrap
 
@@ -100,6 +130,11 @@ for b in range(B):
     replicas[b] = np.median(manhattan_star) - np.median(brooklyn_star)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Réplicas bootstrap), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
+
 ## Erro padrão e intervalo percentil
 
 ```{python}
@@ -107,6 +142,11 @@ se_boot = replicas.std(ddof=1)
 ci_percentil = np.quantile(replicas, [.025, .975])
 se_boot, ci_percentil
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Erro padrão e intervalo percentil), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
 
 O erro padrão descreve quanto a estatística varia entre réplicas. O intervalo
 percentil usa diretamente os quantis 2,5% e 97,5%. Sua interpretação é sobre o
@@ -120,6 +160,11 @@ plt.axvline(ci_percentil[1], color="tab:orange", linestyle="--")
 plt.xlabel("Diferença de medianas (US$)")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Erro padrão e intervalo percentil), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+:::
+
 
 ## Bootstrap por anfitrião
 
@@ -135,6 +180,7 @@ def cluster_sample(group, rng):
         group[group["host_id"].eq(host)] for host in chosen
     ], ignore_index=True)
 ```
+
 
 ## Quando o bootstrap é válido?
 

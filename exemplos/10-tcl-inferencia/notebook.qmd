@@ -73,6 +73,11 @@ orders["late"] = (orders["delay_days"] > 0).astype(int)
 orders[["delivery_days", "delay_days", "late"]].describe()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (2. Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
+
 # 3. População didática
 
 ```{python}
@@ -88,6 +93,11 @@ print(f"Tempo médio: {mu:.2f} dias")
 print(f"Desvio padrão: {sigma:.2f} dias")
 print(f"Taxa de atraso: {p_late:.2%}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (3. População didática), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
 
 ![](../../slides/assets/aula10-tcl-inferencia/populacao-entrega.png){fig-alt="Distribuição populacional do tempo de entrega."}
 
@@ -110,6 +120,7 @@ plt.legend()
 plt.show()
 ```
 
+
 Compare o erro padrão empírico com $\sigma/\sqrt{n}$:
 
 ```{python}
@@ -118,6 +129,11 @@ for n in [10, 50, 200, 1000]:
     theoretical = sigma / np.sqrt(n)
     print(f"n={n:>4}: simulado={empirical:.3f} | teórico={theoretical:.3f}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (4. Distribuição amostral da média), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
 
 # 5. Padronização
 
@@ -132,6 +148,11 @@ plt.plot(x, norm.pdf(x), color="darkorange", linewidth=3)
 plt.xlabel("Médias padronizadas")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (5. Padronização), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
 
 # 6. Um intervalo de confiança
 
@@ -148,6 +169,11 @@ print(f"Erro padrão: {se:.2f}")
 print(f"IC 95%: [{lower:.2f}, {upper:.2f}]")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (6. Um intervalo de confiança), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
+
 # 7. Cobertura
 
 ```{python}
@@ -161,6 +187,7 @@ intervals = [confidence_interval(delivery) for _ in range(5000)]
 coverage = np.mean([lower <= mu <= upper for lower, upper in intervals])
 print(f"Cobertura simulada: {coverage:.2%}")
 ```
+
 
 Altere `z_star` para 1,645 e 2,576. Compare cobertura e largura média.
 
@@ -198,12 +225,18 @@ print(f"n={n}, atrasos={k}, p̂={p_hat:.4f}")
 print(f"z={z:.3f}, p-valor Normal={p_value_normal:.4f}")
 ```
 
+
 # 10. P-valor exato
 
 ```{python}
 p_value_exact = binom.sf(k - 1, n=n, p=p0)
 print(f"p-valor Binomial exato: {p_value_exact:.4f}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (10. P-valor exato), o resultado deve ser lido como comparação com um mundo nulo construído por rearranjo dos rótulos; discuta se esse mundo nulo é plausível para o desenho do estudo. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
 
 # 11. P-valor por simulação
 
@@ -212,6 +245,11 @@ null_proportions = rng.binomial(n=n, p=p0, size=100_000) / n
 p_value_simulated = np.mean(null_proportions >= p_hat)
 print(f"p-valor simulado: {p_value_simulated:.4f}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (11. P-valor por simulação), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
 
 # 12. Erro tipo I
 
@@ -227,6 +265,11 @@ for _ in range(10_000):
 print(f"Taxa simulada de erro tipo I: {np.mean(rejections):.3f}")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (12. Erro tipo I), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+:::
+
+
 # 13. Poder
 
 ```{python}
@@ -238,6 +281,7 @@ def simulated_power(true_p, n=1200, alpha=0.05, reps=5000):
 for true_p in [0.08, 0.085, 0.09, 0.10, 0.12]:
     print(true_p, simulated_power(true_p))
 ```
+
 
 # 14. Investigue
 

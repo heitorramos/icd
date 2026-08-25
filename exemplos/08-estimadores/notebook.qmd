@@ -63,6 +63,11 @@ penguins = penguins.dropna(subset=["body_mass_g", "species", "island"])
 penguins.head()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (2. Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
+
 # 3. Conhecendo a população didática
 
 Nesta atividade, trataremos todos os registros válidos como uma população
@@ -78,6 +83,11 @@ print(f"Média populacional: {mu:.1f} g")
 print(f"Desvio padrão populacional: {sigma:.1f} g")
 penguins.groupby("species")["body_mass_g"].agg(["count", "mean", "std"])
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (3. Conhecendo a população didática), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
 
 ![](../../slides/assets/aula08-estimadores/populacao-massa.png){fig-alt="Distribuição da massa corporal dos pinguins por espécie."}
 
@@ -108,6 +118,11 @@ print("Dividindo por n:   ", amostra_variancia.var(ddof=0))
 print("Dividindo por n-1: ", amostra_variancia.var(ddof=1))
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Variância populacional e amostral), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
+
 # 4. Uma amostra, uma estimativa
 
 ```{python}
@@ -118,6 +133,11 @@ print(f"Parâmetro μ: {mu:.1f} g")
 print(f"Estimativa x̄: {x_barra:.1f} g")
 print(f"Erro observado: {x_barra - mu:.1f} g")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (4. Uma amostra, uma estimativa), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
 
 Execute a célula novamente com outra semente. A estimativa muda porque a
 amostra muda; o parâmetro permanece fixo.
@@ -139,6 +159,7 @@ plt.xlabel("Média amostral (g)")
 plt.show()
 ```
 
+
 ```{python}
 vies = medias_30.mean() - mu
 variancia = medias_30.var(ddof=1)
@@ -148,6 +169,11 @@ print(f"Viés estimado: {vies:.1f} g")
 print(f"Variância estimada: {variancia:.1f} g²")
 print(f"Erro padrão estimado: {erro_padrao:.1f} g")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (5. Distribuição amostral), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
 
 # 6. Tamanho da amostra
 
@@ -162,6 +188,11 @@ plt.legend()
 plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (6. Tamanho da amostra), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
+
 Compare o erro padrão empírico com a fórmula:
 
 ```{python}
@@ -170,6 +201,11 @@ for n in [10, 30, 80]:
     teorico = sigma / np.sqrt(n)
     print(f"n={n:>2}: empírico={empirico:6.1f} | σ/√n={teorico:6.1f}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (6. Tamanho da amostra), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
 
 # 7. Uma amostra maior pode continuar enviesada
 
@@ -189,6 +225,11 @@ print(f"Centro das amostras Gentoo: {enviesadas.mean():.1f} g")
 print(f"Parâmetro de interesse: {mu:.1f} g")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (7. Uma amostra maior pode continuar enviesada), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
+
 ![](../../slides/assets/aula08-estimadores/amostragem-enviesada.png){fig-alt="Comparação entre amostragem aleatória e amostragem restrita a Gentoo."}
 
 # 8. Funções de perda
@@ -205,6 +246,11 @@ def perda_absoluta(theta, valores):
 print(f"Média: {dados.mean():.1f} g")
 print(f"Mediana: {np.median(dados):.1f} g")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (8. Funções de perda), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+:::
+
 
 Para a perda quadrática,
 
@@ -251,6 +297,7 @@ for nome, valores in estimadores.items():
 
 pd.DataFrame(resultados)
 ```
+
 
 # 10. Investigue
 

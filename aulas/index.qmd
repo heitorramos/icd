@@ -4,6 +4,10 @@ title: "Aulas"
 
 Esta seção reúne os roteiros pedagógicos, slides e notebooks da disciplina.
 
+Em cada aula, os materiais de apoio seguem o padrão **código → resultado →
+discussão**. A discussão interpreta o que a saída mostra, quais escolhas da
+análise afetam a leitura e quais limitações devem acompanhar a conclusão.
+
 ::: {.modulo-bloco .modulo-0}
 ::: {.modulo-cabecalho}
 ## Módulo 0 · Motivação

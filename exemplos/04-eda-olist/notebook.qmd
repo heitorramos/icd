@@ -43,6 +43,11 @@ pd.set_option("display.max_columns", 30)
 pd.set_option("display.float_format", lambda x: f"{x:,.2f}")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 DATA = next(path for path in [
     Path("data"),
@@ -77,6 +82,11 @@ pd.DataFrame({
 })
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Leitura das cinco tabelas), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Dicionário mínimo
 
 | tabela | unidade de observação | colunas centrais |
@@ -97,9 +107,19 @@ orders.head(3)
 orders.info()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Primeira inspeção), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 orders.describe(include="all").T
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Primeira inspeção), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Função reutilizável de auditoria
 
@@ -115,6 +135,7 @@ def audit_table(df, keys=None):
         print("duplicatas pela chave:", df.duplicated(keys).sum())
     return result.sort_values("missing", ascending=False)
 ```
+
 
 ```{python}
 audit_table(orders, ["order_id"])
@@ -150,6 +171,11 @@ pd.DataFrame({
 })
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Quantas linhas existem por pedido?), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 fig, axes = plt.subplots(1, 3, figsize=(14, 3.5))
 for ax, values, title in [
@@ -163,12 +189,22 @@ for ax, values, title in [
 plt.tight_layout()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Quantas linhas existem por pedido?), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Por que o merge ingênuo é perigoso?
 
 ```{python}
 naive = orders.merge(items, on="order_id", how="inner")
 orders.shape, naive.shape
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Por que o merge ingênuo é perigoso?), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 O merge não está tecnicamente errado. Ele apenas muda a unidade de observação: cada linha passa a ser um item do pedido.
 
@@ -189,6 +225,11 @@ pd.Series({
 })
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (O erro de contagem), a discussão deve verificar se a junção preservou a unidade observacional desejada; uma associação aparente pode surgir apenas por duplicação ou perda de linhas. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Agregando itens na granularidade de pedido
 
 ```{python}
@@ -206,9 +247,19 @@ item_agg = (
 item_agg.head()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Agregando itens na granularidade de pedido), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 item_agg["order_id"].is_unique, item_agg.shape
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Agregando itens na granularidade de pedido), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Agregando pagamentos e avaliações
 
@@ -224,6 +275,11 @@ payment_agg = (
 )
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Agregando pagamentos e avaliações), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 review_agg = (
     reviews.groupby("order_id")
@@ -235,6 +291,11 @@ review_agg = (
     .reset_index()
 )
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Agregando pagamentos e avaliações), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Merge com validação explícita
 
@@ -250,6 +311,11 @@ analysis = (
 analysis.shape
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Merge com validação explícita), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 assert len(analysis) == len(orders)
 assert analysis["order_id"].is_unique
@@ -264,6 +330,11 @@ analysis["valor_esperado"] = analysis["valor_produtos"] + analysis["frete"]
 analysis["diferenca_pagamento"] = analysis["valor_pago"] - analysis["valor_esperado"]
 analysis["diferenca_pagamento"].describe()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Verificando reconciliação financeira), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Conversão das datas
 
@@ -305,6 +376,11 @@ monthly = analysis.groupby("mes").size()
 monthly.tail(8)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Escopo temporal), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 monthly.plot(figsize=(11, 4), color="#0f6b78", linewidth=2.5)
 plt.title("Pedidos por mês")
@@ -313,6 +389,11 @@ plt.ylabel("pedidos")
 plt.xticks(rotation=45)
 plt.tight_layout()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Escopo temporal), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 Os últimos meses possuem cobertura parcial. Uma comparação direta entre agosto e setembro de 2018 seria enganosa.
 
@@ -326,6 +407,11 @@ missing = pd.DataFrame({
 missing
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Dados ausentes), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 missing.head(12).sort_values("n").plot.barh(y="n", legend=False, figsize=(9, 5), color="#d95f02")
 plt.title("Valores ausentes após o merge")
@@ -333,6 +419,11 @@ plt.xlabel("valores ausentes")
 plt.ylabel("")
 plt.tight_layout()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Dados ausentes), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Ausência condicionada ao status
 
@@ -344,6 +435,11 @@ pd.crosstab(
 ).rename(columns={False: "tem entrega", True: "sem entrega"}).round(3)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Ausência condicionada ao status), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 Pedidos interrompidos normalmente não possuem data de entrega. Preencher essa ausência com zero dias inventaria um evento que não ocorreu.
 
 ## Comentário ausente não é nota ausente
@@ -351,6 +447,11 @@ Pedidos interrompidos normalmente não possuem data de entrega. Preencher essa a
 ```{python}
 reviews[["review_score", "review_comment_message"]].isna().mean().mul(100).round(1)
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Comentário ausente não é nota ausente), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 Muitos clientes atribuem uma nota sem escrever um comentário. As duas ausências têm mecanismos diferentes.
 
@@ -373,6 +474,11 @@ checks
 analysis["valor_produtos"].describe(percentiles=[.5, .9, .95, .99])
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição do valor do pedido), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 fig, axes = plt.subplots(1, 2, figsize=(13, 4))
 sns.histplot(analysis["valor_produtos"], bins=70, ax=axes[0], color="#0f6b78")
@@ -384,6 +490,11 @@ for ax in axes:
     ax.set_xlabel("valor dos produtos")
 plt.tight_layout()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição do valor do pedido), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## O que torna um valor extremo?
 
@@ -402,6 +513,11 @@ delivered = analysis.query("order_status == 'delivered'").copy()
 delivered["entrega_dias"].describe(percentiles=[.5, .9, .95, .99])
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição do prazo de entrega), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 sns.histplot(delivered["entrega_dias"], bins=55, color="#0f6b78")
 plt.axvline(delivered["entrega_dias"].median(), color="#d95f02", linestyle="--")
@@ -410,21 +526,41 @@ plt.xlabel("dias")
 plt.tight_layout()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição do prazo de entrega), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Taxa de atraso
 
 ```{python}
 delivered["atrasou"].value_counts(normalize=True).rename("proporção")
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Taxa de atraso), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 delivered.groupby("atrasou")["atraso_dias"].describe()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Taxa de atraso), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Distribuição das avaliações
 
 ```{python}
 reviews["review_score"].value_counts(normalize=True).sort_index().rename("proporção")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição das avaliações), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ```{python}
 sns.countplot(data=reviews, x="review_score", color="#3a7d44")
@@ -434,12 +570,22 @@ plt.ylabel("avaliações")
 plt.tight_layout()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Distribuição das avaliações), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Atraso e avaliação
 
 ```{python}
 score_by_delay = delivered.groupby("atrasou")["nota"].agg(["count", "mean", "median"])
 score_by_delay
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Atraso e avaliação), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ```{python}
 sns.barplot(data=score_by_delay.reset_index(), x="atrasou", y="mean", color="#0f6b78")
@@ -449,6 +595,11 @@ plt.xlabel("pedido atrasou?")
 plt.ylabel("nota média")
 plt.tight_layout()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Atraso e avaliação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 Esta associação não demonstra que o atraso, isoladamente, causou a diferença. Distância, vendedor, produto e período podem afetar os dois lados.
 
@@ -469,6 +620,11 @@ state_summary = (
 state_summary.head(12)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Análise por estado), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Relação entre frete e valor
 
 ```{python}
@@ -479,6 +635,11 @@ plt.ylim(0, 150)
 plt.title("Frete e valor do pedido")
 plt.tight_layout()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Relação entre frete e valor), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Uma tabela analítica final
 
@@ -496,6 +657,11 @@ analytic.head()
 analytic.shape, analytic["order_id"].is_unique
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Uma tabela analítica final), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ## Exercícios
 
 1. Compare a mediana do frete entre os cinco estados com mais pedidos.
@@ -512,9 +678,19 @@ top_states = analytic["customer_state"].value_counts().head(5).index
 analytic.query("customer_state in @top_states").groupby("customer_state")["frete"].median().sort_values()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Respostas sugeridas — 1 e 2), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 analytic["itens"].gt(1).mean()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Respostas sugeridas — 1 e 2), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Respostas sugeridas — 3 e 4
 
@@ -524,11 +700,21 @@ analysis.assign(multiplos_pagamentos=analysis["formas_pagamento"].gt(1)).groupby
 )["valor_produtos"].median()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Respostas sugeridas — 3 e 4), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
+
 ```{python}
 reviews.assign(tem_comentario=reviews["review_comment_message"].notna()).groupby(
     "review_score"
 )["tem_comentario"].mean().loc[[1, 5]]
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Respostas sugeridas — 3 e 4), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Resposta sugerida — 5
 
@@ -536,6 +722,11 @@ reviews.assign(tem_comentario=reviews["review_comment_message"].notna()).groupby
 complete = delivered.query("order_purchase_timestamp < '2018-09-01'")
 complete["atrasou"].mean(), delivered["atrasou"].mean()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (Resposta sugerida — 5), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. A leitura deve separar qualidade da base e fenômeno substantivo: antes de interpretar um padrão de negócio, confira granularidade, chaves, ausências e possíveis duplicações criadas por merges.
+:::
+
 
 ## Resposta conceitual — 6
 

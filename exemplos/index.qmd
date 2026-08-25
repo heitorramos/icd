@@ -6,6 +6,10 @@ Cada material funciona como uma pequena investigação documentada. Os notebooks
 são publicados no site já executados, com tabelas, valores numéricos e gráficos
 visíveis abaixo das células de código.
 
+Além do código, cada análise deve trazer uma discussão curta sobre a leitura do
+resultado: o que observar, o que não concluir automaticamente e quais escolhas
+de dados, escala, amostragem ou desenho do estudo condicionam a interpretação.
+
 ## Padrão de documentação
 
 - pergunta motivadora;

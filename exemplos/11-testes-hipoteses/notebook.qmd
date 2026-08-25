@@ -49,11 +49,21 @@ orders["delay_days"] = (
 orders["late"] = (orders["delay_days"] > 0).astype(int)
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (2. Download e preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
+
 # 3. Descrição rápida
 
 ```{python}
 orders[["delay_days", "late"]].describe()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (3. Descrição rápida), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
 
 ```{python}
 sns.histplot(orders["delay_days"], bins=80)
@@ -62,6 +72,11 @@ plt.xlim(-40, 30)
 plt.xlabel("Dias após a data prevista")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (3. Descrição rápida), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
 
 Interprete a unidade: `late=1` indica pedido entregue depois da previsão, e não
 pedido cancelado ou ainda em trânsito. Observe também que a base contém apenas
@@ -81,6 +96,11 @@ k = int(sample.sum())
 p_hat = sample.mean()
 print(f"n={n}; atrasados={k}; taxa={p_hat:.2%}")
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (4. População didática e amostra), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
 
 # 5. Hipóteses e estatística
 
@@ -107,6 +127,11 @@ plt.legend()
 plt.show()
 ```
 
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (6. Distribuição nula por simulação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
+
 # 7. Três p-valores
 
 ```{python}
@@ -119,6 +144,11 @@ p_normal = norm.sf(z)
 pd.Series({"simulação": p_sim, "Binomial exata": p_exact,
            "aproximação Normal": p_normal})
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (7. Três p-valores), a discussão deve conectar a aproximação usada às condições da amostra: tamanho, independência, variabilidade e forma da distribuição afetam a confiabilidade da inferência. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
 
 Explique por que os resultados são próximos e em quais amostras a aproximação
 Normal poderia falhar.
@@ -146,6 +176,7 @@ def rejection_rate(true_p, n=1200, reps=10000, alpha=.05):
 print("Erro tipo I sob p=8%:", rejection_rate(.08))
 ```
 
+
 # 10. Poder
 
 ```{python}
@@ -157,6 +188,11 @@ plt.xlabel("Taxa verdadeira de atraso (%)")
 plt.ylabel("Poder")
 plt.show()
 ```
+
+::: {.callout-note title="Discussão da análise"}
+Nesta análise (10. Poder), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+:::
+
 
 # 11. Significância e relevância
 
