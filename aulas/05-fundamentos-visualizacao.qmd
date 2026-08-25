@@ -1,0 +1,51 @@
+---
+title: "Aula 05: Fundamentos de Visualização"
+subtitle: "Percepção, marcas, canais e distribuições"
+---
+
+## Pergunta da aula
+
+::: {.callout-important}
+Como transformar dados em comparações que o sistema perceptivo humano consegue realizar com precisão?
+:::
+
+## Materiais
+
+::: {.grid .aulas-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Slides
+
+Fundamentos de visualização, percepção, histogramas, ECDF, KDE, Palmer Penguins e Datasaurus animado.
+
+[Abrir slides](../slides/05-fundamentos-visualizacao.html){.btn .btn-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Material de apoio
+
+Notebook executado com código, resultados, exercícios e respostas sugeridas.
+
+[Abrir notebook](../exemplos/05-fundamentos-visualizacao/notebook.qmd){.btn .btn-primary}
+:::
+:::
+:::
+
+## Bases utilizadas
+
+### Palmer Penguins
+
+Uma linha representa um pinguim observado no arquipélago Palmer entre 2007 e 2009. As principais colunas registram espécie, ilha, sexo, massa corporal e medidas do bico e da nadadeira. A base permite estudar distribuições, relações e diferenças entre grupos.
+
+Fonte: [Palmer Penguins no Kaggle](https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data).
+
+### Datasaurus Dozen
+
+Treze conjuntos sintéticos possuem médias, variâncias e correlações quase idênticas, mas formas muito diferentes. O GIF animado torna visível a informação perdida pelos resumos.
+
+Fonte: [Same Stats, Different Graphs](https://www.autodesk.com/research/publications/same-stats-different-graphs).
+
+## Objetivos de aprendizagem
+
+Ao final da aula, você deverá conseguir associar perguntas a representações, distinguir marcas e canais visuais, interpretar histogramas, ECDFs e KDEs — incluindo o efeito da largura de banda — e justificar por que posição e comprimento sustentam comparações mais precisas que área, ângulo ou volume.

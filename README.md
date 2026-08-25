@@ -7,7 +7,6 @@ Repositório da disciplina de Introdução à Ciência de Dados.
 - `aulas/`: roteiros pedagógicos.
 - `slides/`: slides em Quarto Reveal.js.
 - `exemplos/`: exemplos documentados com dados, código e discussões.
-- `vpl/`: templates e exercícios para Moodle/VPL.
 - `.github/workflows/publish.yml`: publicação automática no GitHub Pages.
 
 ## Desenvolvimento local

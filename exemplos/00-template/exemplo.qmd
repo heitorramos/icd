@@ -53,5 +53,5 @@ seriam necessárias?
 
 ## Conexão com exercícios
 
-Descreva como este exemplo pode virar uma lista, um VPL ou uma extensão do
+Descreva como este exemplo pode virar um exercício ou uma extensão do
 projeto final.

@@ -1,0 +1,104 @@
+---
+title: "Aula 07: Tendências Centrais"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Apresentação usada em sala.
+
+[Abrir slides](../slides/07-tendencias-centrais.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Análise guiada do dataset Billboard.
+
+[Abrir notebook](../exemplos/07-tendencias-centrais/notebook.ipynb){.btn .btn-outline-primary}
+:::
+:::
+
+:::
+
+## Objetivos
+
+- Diferenciar população e amostra em uma análise descritiva.
+- Reforçar a regra: visualizar antes de agregar.
+- Ler histogramas e CDFs empíricas.
+- Interpretar média, mediana, quartis e quantis.
+- Comparar média e mediana em presença de outliers.
+- Introduzir medidas de dispersão: intervalo, variância e desvio padrão.
+- Discutir transformações e escalas logarítmicas.
+- Apresentar, como extensão, médias geométrica e harmônica.
+
+## Conceitos centrais
+
+- população;
+- amostra;
+- histograma;
+- CDF empírica;
+- média;
+- mediana;
+- quartis;
+- boxplot;
+- quantis;
+- dispersão;
+- intervalo;
+- variância;
+- desvio padrão;
+- transformações logarítmicas;
+- média geométrica;
+- média harmônica.
+
+## Narrativa da aula
+
+A aula mantém o conteúdo conceitual previsto para tendências centrais, mas usa
+um exemplo central novo: o dataset Billboard Hits Songs, disponível no Kaggle em
+`dem0nking/billboard-hits-songs-dataset`. O objetivo é entender como resumir uma
+coluna numérica sem esconder sua distribuição.
+
+A aula começa com uma análise descritiva básica da base: dimensões, colunas,
+valores ausentes, categorias e unidades. Depois insiste em visualização:
+histograma, CDF empírica e leitura de proporções acumuladas. A segunda metade
+discute medidas de resumo: média, mediana, quartis, boxplot e dispersão. No
+final, entram transformações e outras médias como material extra.
+
+## Dimensionamento para 100 minutos
+
+| Tempo | Atividade |
+|---:|---|
+| 0-10 min | Dataset Billboard, amostra, população e objetivo da aula |
+| 10-20 min | Análise descritiva inicial da base |
+| 20-35 min | Histograma e escolha de bins |
+| 35-50 min | CDF empírica e leitura de percentuais |
+| 50-65 min | Média, mediana e efeito de outliers |
+| 65-80 min | Quartis, boxplot e quantis |
+| 80-90 min | Dispersão, variância e desvio padrão |
+| 90-100 min | Transformações e médias geométrica/harmônica |
+
+## Material de apoio da aula
+
+O notebook usa o dataset Billboard Hits Songs, com título, artista, gênero,
+duração, álbum e popularidade. Ele foi desenhado para permitir:
+
+- baixar a base diretamente do Kaggle com `kagglehub`;
+- fazer uma análise descritiva básica antes dos resumos;
+- visualizar a distribuição das durações;
+- comparar média e mediana;
+- adicionar uma faixa muito longa e observar o efeito no resumo;
+- construir CDF empírica;
+- ler quartis, quantis e boxplots;
+- interpretar a regra de 1,5 vezes o IQR;
+- comparar dispersões e visualizar variância;
+- discutir quando uma escala logarítmica ajuda.
+
+Veja [Aula 07: tendências centrais com dados do Billboard](../exemplos/07-tendencias-centrais/notebook.ipynb).
+
+O notebook também termina com propostas de investigação para estudo autônomo.

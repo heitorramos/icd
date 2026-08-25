@@ -1,0 +1,47 @@
+---
+title: "Aula 06: Visualização — Boas Práticas"
+subtitle: "Escala, contexto, cor, destaque e comunicação"
+---
+
+## Pergunta da aula
+
+::: {.callout-important}
+Como tornar a comparação correta mais fácil e reduzir interpretações produzidas pelo próprio desenho do gráfico?
+:::
+
+## Materiais
+
+::: {.grid .aulas-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Slides
+
+Escalas, condicionamento, cor, transformações, contexto, ruído e ética da comunicação visual.
+
+[Abrir slides](../slides/06-boas-praticas-visualizacao.html){.btn .btn-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Material de apoio
+
+Notebook executado com comparações, redesenhos e exercícios de crítica visual.
+
+[Abrir notebook](../exemplos/06-boas-praticas-visualizacao/notebook.qmd){.btn .btn-primary}
+:::
+:::
+:::
+
+## A base
+
+Usamos o **TMDB 5000 Movie Dataset**, com 4.803 filmes. Uma linha representa um filme; as principais colunas descrevem lançamento, gênero, orçamento, receita, popularidade, média e quantidade de votos. Valores financeiros iguais a zero exigem cautela porque podem representar informação indisponível.
+
+Fonte: [TMDB 5000 no Kaggle](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata).
+
+## Objetivos de aprendizagem
+
+Ao final da aula, você deverá conseguir escolher escalas honestas, ordenar categorias, usar transformações logarítmicas, selecionar paletas coerentes, destacar uma mensagem, acrescentar contexto e criticar um gráfico a partir da tarefa perceptiva — não apenas de sua aparência.
+
+## Fechamento do módulo
+
+Esta aula encerra o **Módulo 1 — Análise Exploratória**, formado pelas aulas 03–06: tabelas e tipos de dados, EDA, fundamentos de visualização e boas práticas de comunicação visual.

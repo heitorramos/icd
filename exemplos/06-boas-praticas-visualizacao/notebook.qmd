@@ -1,0 +1,281 @@
+---
+title: "Material de apoio — Boas práticas de visualização"
+subtitle: "TMDB 5000 Movie Dataset"
+jupyter: python3
+format: ipynb
+execute:
+  echo: true
+  warning: false
+---
+
+## Objetivos
+
+Neste notebook, a mesma base será representada de maneiras diferentes. O objetivo é justificar escolhas de escala, ordem, cor, destaque, contexto e transformação.
+
+```{python}
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+movies = pd.read_csv(Path("data") / "tmdb_movies.csv")
+movies["release_date"] = pd.to_datetime(movies["release_date"], errors="coerce")
+movies["year"] = movies["release_date"].dt.year
+movies["profit"] = movies["revenue"] - movies["budget"]
+movies["roi"] = movies["revenue"] / movies["budget"]
+
+def first_genre(value):
+    try:
+        genres = json.loads(value)
+        return genres[0]["name"] if genres else "Sem gênero"
+    except Exception:
+        return "Sem gênero"
+
+movies["main_genre"] = movies["genres"].map(first_genre)
+valid = movies.query("budget > 100000 and revenue > 100000").copy()
+
+olist_orders = pd.read_csv(Path("data") / "olist_orders.csv",
+                           parse_dates=["order_purchase_timestamp"])
+olist_customers = pd.read_csv(Path("data") / "olist_customers.csv")
+olist = olist_orders.merge(olist_customers, on="customer_id", validate="many_to_one")
+```
+
+## O que é a base?
+
+Uma linha representa um filme. A base reúne metadados do TMDB sobre produção e recepção: título, lançamento, gênero, orçamento, receita, duração, popularidade, média e quantidade de votos.
+
+```{python}
+movies.shape, movies[["original_title", "year", "main_genre", "budget", "revenue", "vote_average"]].head()
+```
+
+```{python}
+movies[["budget", "revenue", "vote_average", "vote_count"]].describe().T
+```
+
+```{python}
+movies[["budget", "revenue", "runtime", "release_date"]].isna().mean().sort_values(ascending=False)
+```
+
+Valores financeiros iguais a zero devem ser tratados com cautela: frequentemente significam informação não disponível.
+
+## Ordem e comparação
+
+```{python}
+top = movies["main_genre"].value_counts().head(10)
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+top.plot.bar(ax=axes[0], color="#176b87", title="Ordem de aparição")
+top.sort_values().plot.barh(ax=axes[1], color="#176b87", title="Ordem por valor")
+plt.tight_layout(); plt.show()
+```
+
+### Exercício 1
+
+Qual versão permite localizar mais rapidamente o terceiro gênero mais frequente? Explique usando a ideia de posição e comprimento alinhados.
+
+## Eixo truncado
+
+```{python}
+small = top.tail(5).sort_values()
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+small.plot.barh(ax=axes[0], color="#176b87", title="Zero visível")
+small.plot.barh(ax=axes[1], color="#b23b3b", title="Eixo truncado")
+axes[1].set_xlim(small.min() * .96, small.max() * 1.01)
+plt.tight_layout(); plt.show()
+```
+
+O segundo painel exagera razões porque exibe apenas a extremidade das barras.
+
+## Escalas duplas
+
+Quando duas séries usam eixos verticais independentes, a escolha de orientação e domínio pode fabricar uma impressão de concordância. Nos painéis abaixo, os dados são idênticos; somente o segundo eixo foi invertido.
+
+```{python}
+annual_dual = (movies.query("1980 <= year <= 2016")
+               .groupby("year")
+               .agg(filmes=("id", "size"), nota=("vote_average", "mean"))
+               .reset_index())
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+for ax, invert, title in zip(
+    axes,
+    [False, True],
+    ["Eixo usual: curvas se opõem", "Eixo invertido: curvas acompanham"],
+):
+    ax2 = ax.twinx()
+    ax.plot(annual_dual["year"], annual_dual["filmes"], color="#176b87")
+    ax2.plot(annual_dual["year"], annual_dual["nota"], color="#d97727")
+    if invert:
+        ax2.invert_yaxis()
+    ax.set_title(title)
+    ax.set_ylabel("filmes", color="#176b87")
+    ax2.set_ylabel("nota média", color="#d97727")
+plt.tight_layout(); plt.show()
+```
+
+Prefira painéis alinhados com escalas declaradas, índices com uma base comum ou uma dispersão que represente diretamente a relação entre as variáveis.
+
+## Transformações logarítmicas
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+sns.scatterplot(data=valid, x="budget", y="revenue", alpha=.3, ax=axes[0])
+sns.scatterplot(data=valid, x="budget", y="revenue", alpha=.3, ax=axes[1])
+axes[1].set(xscale="log", yscale="log")
+axes[0].set_title("Linear"); axes[1].set_title("Log-log")
+plt.tight_layout(); plt.show()
+```
+
+```{python}
+valid[["budget", "revenue"]].corr(), np.log10(valid[["budget", "revenue"]]).corr()
+```
+
+### Exercício 2
+
+Adicione a linha `revenue = budget`. Interprete pontos acima e abaixo dela na escala log-log.
+
+```{python}
+ax = sns.scatterplot(data=valid, x="budget", y="revenue", alpha=.3)
+lims = [1e5, 3e9]
+ax.plot(lims, lims, "--", color="#d97727", label="receita = orçamento")
+ax.set(xscale="log", yscale="log", xlim=lims, ylim=lims)
+ax.legend(); plt.show()
+```
+
+## Distribuições por grupo
+
+```{python}
+genres = movies["main_genre"].value_counts().head(5).index
+d = movies[movies["main_genre"].isin(genres)]
+order = d.groupby("main_genre")["vote_average"].median().sort_values().index
+sns.boxplot(data=d, x="vote_average", y="main_genre", order=order, color="#176b87")
+plt.show()
+```
+
+```{python}
+d.groupby("main_genre")["vote_average"].agg(["count", "mean", "median", "std"]).round(2)
+```
+
+## Tempo e cobertura
+
+```{python}
+annual = movies.groupby("year").size()
+annual.loc[1980:2016].plot(figsize=(10, 4), color="#176b87")
+plt.ylabel("filmes na base"); plt.show()
+```
+
+O gráfico descreve a cobertura do conjunto, não necessariamente toda a produção cinematográfica mundial.
+
+## Condicionamento: contagem, razão e justaposição
+
+```{python}
+annual_genres = (movies.query("1980 <= year <= 2016 and main_genre in ['Drama', 'Comedy']")
+                 .groupby(["year", "main_genre"]).size().rename("filmes").reset_index())
+wide = annual_genres.pivot(index="year", columns="main_genre", values="filmes").fillna(0)
+wide["razao_drama_comedia"] = wide["Drama"] / wide["Comedy"].replace(0, np.nan)
+wide.tail()
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+sns.lineplot(data=annual_genres, x="year", y="filmes", hue="main_genre", ax=axes[0])
+axes[1].plot(wide.index, wide["razao_drama_comedia"], color="#b23b3b")
+axes[1].axhline(1, color="#737b83", linestyle="--")
+axes[0].set_title("Contagens"); axes[1].set_title("Razão Drama / Comédia")
+plt.tight_layout(); plt.show()
+```
+
+Contagens medem volume; razões medem composição. São perguntas diferentes, embora usem as mesmas observações.
+
+## Condicionamento por espaço e tempo
+
+A amostra Olist permite observar o estado do cliente e o trimestre da compra. Uma linha continua representando um pedido.
+
+```{python}
+olist_2017 = olist[olist["order_purchase_timestamp"].dt.year.eq(2017)].copy()
+olist_2017["trimestre"] = "T" + olist_2017["order_purchase_timestamp"].dt.quarter.astype(str)
+estado_trimestre = (olist_2017.groupby(["trimestre", "customer_state"])
+                    .size().rename("pedidos").reset_index())
+estado_trimestre.sort_values("pedidos", ascending=False).head(12)
+```
+
+```{python}
+g = sns.catplot(data=estado_trimestre.query("customer_state in ['SP','RJ','MG','RS','PR']"),
+                x="customer_state", y="pedidos", col="trimestre",
+                kind="bar", color="#176b87", sharey=True)
+g.set_axis_labels("UF", "pedidos na amostra")
+plt.show()
+```
+
+O mapa usado nos slides substitui as barras por posição geográfica, mantendo o mesmo domínio de cores nos quatro trimestres. Assim conseguimos comparar **onde** e **quando** os pedidos se concentram.
+
+## Cor e destaque
+
+```{python}
+best = valid.query("vote_count >= 500").nlargest(10, "profit").sort_values("profit")
+colors = ["#b7c4ca"] * 9 + ["#d97727"]
+plt.barh(best["original_title"], best["profit"] / 1e9, color=colors)
+plt.xlabel("lucro nominal (US$ bilhões)"); plt.show()
+```
+
+```{python}
+plt.scatter(valid["budget"], valid["revenue"],
+            c=np.log10(valid["vote_count"].clip(lower=1)),
+            cmap="viridis", alpha=.5, s=22)
+plt.xscale("log"); plt.yscale("log")
+plt.colorbar(label="log10(votos)"); plt.show()
+```
+
+### Exercício 3
+
+Troque `viridis` por uma paleta qualitativa. Por que ela comunica pior uma variável ordenada?
+
+## Anotações e contexto
+
+```{python}
+row = valid.loc[valid["profit"].idxmax()]
+ax = sns.scatterplot(data=valid, x="budget", y="revenue", alpha=.25, color="#737b83")
+ax.scatter(row.budget, row.revenue, color="#d97727", s=80)
+ax.annotate(row.original_title, (row.budget, row.revenue), xytext=(8, 8), textcoords="offset points")
+ax.set(xscale="log", yscale="log", title="Um destaque ligado à mensagem",
+       xlabel="orçamento informado (US$)", ylabel="receita informada (US$)")
+plt.show()
+```
+
+## Auditoria de um gráfico
+
+Use a função abaixo como checklist textual antes de publicar.
+
+```{python}
+def auditar_grafico(pergunta, unidade, periodo, filtros, mensagem):
+    return pd.Series({
+        "pergunta": pergunta,
+        "unidade de observação": unidade,
+        "período": periodo,
+        "filtros": filtros,
+        "mensagem verificável": mensagem,
+    })
+
+auditar_grafico(
+    "Como orçamento e receita se relacionam?",
+    "filme",
+    "datas presentes na base TMDB 5000",
+    "orçamento e receita > US$ 100 mil",
+    "A relação positiva aparece melhor em escala log-log",
+)
+```
+
+## Desafio final
+
+Escolha uma pergunta sobre gênero, tempo ou finanças. Produza duas versões:
+
+1. uma versão deliberadamente ruim;
+2. uma versão revisada com comparação, escala, contexto e destaque coerentes.
+
+Escreva três frases justificando cada mudança.
+
+## Para guardar
+
+Boas práticas não são uma lista de proibições. Elas derivam da tarefa perceptiva, da pergunta e do compromisso de representar dados com transparência.

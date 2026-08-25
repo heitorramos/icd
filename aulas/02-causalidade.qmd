@@ -1,5 +1,6 @@
 ---
 title: "Aula 02: Causalidade e Experimentos"
+subtitle: "Módulo 0 — Motivação"
 ---
 
 ## Materiais da aula
@@ -32,12 +33,15 @@ Experimento A/B e o estudo de John Snow.
 
 - Explicar por que muitas perguntas em ciência de dados são perguntas de causa
   e efeito.
+- Formular uma pergunta causal com resultados potenciais e contrafactual.
 - Diferenciar associação, correlação e causalidade.
 - Apresentar os elementos de um experimento: tratamento, controle,
   randomização e replicação.
 - Discutir por que estudos observacionais exigem cuidado com variáveis de
   confusão.
 - Usar um experimento A/B como pipeline completo de estudo causal simples.
+- Discutir o ensaio da vacina de Salk como exemplo histórico de randomização,
+  placebo, controles observados e ética.
 - Usar John Snow como estudo de caso sobre evidência causal em dados
   observacionais.
 
@@ -51,15 +55,20 @@ Experimento A/B e o estudo de John Snow.
 - variável de confusão;
 - experimento natural;
 - hierarquia de evidência.
+- resultados potenciais e contrafactual;
+- validade interna e externa.
 
 ## Narrativa da aula
 
-A aula começa com perguntas que parecem simples: um lembrete aumenta entregas?
+A aula, integrante do **Módulo 0 — Motivação**, começa com perguntas que parecem simples: um lembrete aumenta entregas?
 Uma mudança em um sistema melhorou desempenho? Uma política pública aumentou a
 frequência escolar? Todas tentam comparar o que aconteceu com o que teria
 acontecido em outro cenário.
 
-Depois disso, a aula apresenta Fisher e a lógica do desenho experimental. Um
+Depois disso, a aula apresenta resultados potenciais, o contrafactual, Fisher e
+a lógica do desenho experimental. O ensaio da vacina de Salk mostra como
+randomização e placebo constroem uma comparação mais convincente — e por que
+ética, validade e execução continuam importantes. Um
 experimento A/B fictício, mas realista, sobre lembretes no Moodle serve como
 pipeline completo: formular pergunta, gerar ou receber dados, verificar
 randomização, visualizar grupos, comparar resultados e comunicar limitações.

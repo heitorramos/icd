@@ -1,0 +1,65 @@
+---
+title: "Aula 09: Escolhendo Estimadores"
+subtitle: "Perda, risco, viés e variância"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Perda, robustez, risco e trade-off viés-variância.
+
+[Abrir slides](../slides/09-risco-estimadores.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Comparação de estimadores com Palmer Penguins.
+
+[Abrir notebook](../exemplos/08-estimadores/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+:::
+
+## Objetivos
+
+- Entender por que escolher um estimador exige uma função de perda.
+- Relacionar erro quadrático à média e erro absoluto à mediana.
+- Comparar sensibilidade e robustez a valores extremos.
+- Definir risco sob perda quadrática.
+- Decompor o MSE em variância e viés ao quadrado.
+- Comparar média, mediana e média aparada por simulação.
+
+## Conceitos centrais
+
+- função de perda;
+- erro quadrático e erro absoluto;
+- robustez;
+- média aparada;
+- risco;
+- erro quadrático médio (MSE);
+- decomposição viés-variância.
+
+## Estudo de caso
+
+A aula continua com a massa corporal dos pinguins Palmer. Muitas amostras são
+usadas para comparar as distribuições produzidas pela média, mediana e média
+aparada. O objetivo não é declarar um vencedor universal, mas explicitar como o
+parâmetro, a perda e possíveis valores extremos mudam a escolha.
+
+## Pergunta da aula
+
+> O que significa dizer que um estimador é “melhor”?
+
+## Conexão com exercícios
+
+No notebook, compare os estimadores sob diferentes tamanhos de amostra. Depois
+adicione contaminação por valores extremos e verifique quando a escolha de menor
+risco deixa de ser a média.

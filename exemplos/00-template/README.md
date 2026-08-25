@@ -14,4 +14,4 @@ Use esta pasta como ponto de partida para cada exemplo da disciplina.
 - [ ] O dataset tem fonte documentada.
 - [ ] As transformações principais são explicadas.
 - [ ] O exemplo explicita limitações.
-- [ ] Há conexão clara com uma lista ou VPL.
+- [ ] Há conexão clara com um exercício ou investigação adicional.

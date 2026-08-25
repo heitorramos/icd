@@ -1,0 +1,571 @@
+---
+title: "Aula 04 — Análise Exploratória com a Olist"
+subtitle: "Estrutura, granularidade, escopo, temporalidade e corretude"
+author: "Introdução à Ciência de Dados — DCC/UFMG"
+format: ipynb
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Objetivos
+
+Este material desenvolve uma auditoria exploratória completa de uma base relacional. Ao final, você deverá conseguir:
+
+1. identificar a unidade de observação de cada tabela;
+2. verificar chaves e cardinalidades;
+3. realizar `merge` sem multiplicar observações indevidamente;
+4. interpretar ausências à luz do processo de geração dos dados;
+5. avaliar escopo, temporalidade e regras de validade;
+6. produzir uma análise descritiva reproduzível.
+
+## A base Olist
+
+O conjunto original, publicado pela Olist no Kaggle, descreve aproximadamente 100 mil pedidos feitos em marketplaces brasileiros entre 2016 e 2018. Ele possui tabelas separadas para pedidos, clientes, itens, pagamentos, produtos, vendedores e avaliações.
+
+Neste notebook usamos uma amostra reprodutível de 20 mil pedidos e todas as linhas relacionadas a eles. Isso mantém o notebook leve sem eliminar o principal desafio: cada tabela possui uma granularidade diferente.
+
+Fonte: <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>
+
+## Preparação
+
+```{python}
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+pd.set_option("display.max_columns", 30)
+pd.set_option("display.float_format", lambda x: f"{x:,.2f}")
+```
+
+```{python}
+DATA = next(path for path in [
+    Path("data"),
+    Path("exemplos/04-eda-olist/data"),
+] if path.exists())
+
+DATA
+```
+
+## Leitura das cinco tabelas
+
+```{python}
+orders = pd.read_csv(DATA / "orders.csv")
+customers = pd.read_csv(DATA / "customers.csv")
+items = pd.read_csv(DATA / "order_items.csv")
+payments = pd.read_csv(DATA / "order_payments.csv")
+reviews = pd.read_csv(DATA / "order_reviews.csv")
+```
+
+```{python}
+tables = {
+    "orders": orders,
+    "customers": customers,
+    "items": items,
+    "payments": payments,
+    "reviews": reviews,
+}
+
+pd.DataFrame({
+    "linhas": {name: len(df) for name, df in tables.items()},
+    "colunas": {name: df.shape[1] for name, df in tables.items()},
+})
+```
+
+## Dicionário mínimo
+
+| tabela | unidade de observação | colunas centrais |
+|---|---|---|
+| `orders` | pedido | status e cinco datas do ciclo do pedido |
+| `customers` | identificador de cliente associado a um pedido | cidade, estado e identificador persistente |
+| `items` | item numerado dentro de um pedido | produto, vendedor, preço e frete |
+| `payments` | parcela ou forma de pagamento | tipo, prestações e valor |
+| `reviews` | avaliação registrada | nota, comentário e datas |
+
+## Primeira inspeção
+
+```{python}
+orders.head(3)
+```
+
+```{python}
+orders.info()
+```
+
+```{python}
+orders.describe(include="all").T
+```
+
+## Função reutilizável de auditoria
+
+```{python}
+def audit_table(df, keys=None):
+    result = pd.DataFrame({
+        "dtype": df.dtypes.astype(str),
+        "missing": df.isna().sum(),
+        "missing_pct": df.isna().mean().mul(100).round(2),
+        "unique": df.nunique(dropna=True),
+    })
+    if keys:
+        print("duplicatas pela chave:", df.duplicated(keys).sum())
+    return result.sort_values("missing", ascending=False)
+```
+
+```{python}
+audit_table(orders, ["order_id"])
+```
+
+## Granularidade e chaves
+
+Uma chave candidata deve ser única na granularidade declarada.
+
+```{python}
+key_tests = pd.Series({
+    "orders.order_id": orders["order_id"].is_unique,
+    "customers.customer_id": customers["customer_id"].is_unique,
+    "items.order_id": items["order_id"].is_unique,
+    "items.(order_id, order_item_id)": ~items.duplicated(["order_id", "order_item_id"]).any(),
+    "payments.(order_id, payment_sequential)": ~payments.duplicated(["order_id", "payment_sequential"]).any(),
+    "reviews.review_id": reviews["review_id"].is_unique,
+})
+key_tests
+```
+
+## Quantas linhas existem por pedido?
+
+```{python}
+items_per_order = items.groupby("order_id").size()
+payments_per_order = payments.groupby("order_id").size()
+reviews_per_order = reviews.groupby("order_id").size()
+
+pd.DataFrame({
+    "itens": items_per_order.describe(),
+    "pagamentos": payments_per_order.describe(),
+    "avaliações": reviews_per_order.describe(),
+})
+```
+
+```{python}
+fig, axes = plt.subplots(1, 3, figsize=(14, 3.5))
+for ax, values, title in [
+    (axes[0], items_per_order, "Itens"),
+    (axes[1], payments_per_order, "Pagamentos"),
+    (axes[2], reviews_per_order, "Avaliações"),
+]:
+    sns.countplot(x=values.clip(upper=5), ax=ax, color="#0f6b78")
+    ax.set_title(title)
+    ax.set_xlabel("linhas por pedido (5 = cinco ou mais)")
+plt.tight_layout()
+```
+
+## Por que o merge ingênuo é perigoso?
+
+```{python}
+naive = orders.merge(items, on="order_id", how="inner")
+orders.shape, naive.shape
+```
+
+O merge não está tecnicamente errado. Ele apenas muda a unidade de observação: cada linha passa a ser um item do pedido.
+
+```{python}
+naive["order_id"].nunique(), len(naive)
+```
+
+## O erro de contagem
+
+```{python}
+true_orders = orders["order_id"].nunique()
+rows_after_merge = len(naive)
+
+pd.Series({
+    "pedidos únicos": true_orders,
+    "linhas após merge": rows_after_merge,
+    "excesso de contagem": rows_after_merge - true_orders,
+})
+```
+
+## Agregando itens na granularidade de pedido
+
+```{python}
+item_agg = (
+    items.groupby("order_id")
+    .agg(
+        itens=("order_item_id", "size"),
+        valor_produtos=("price", "sum"),
+        frete=("freight_value", "sum"),
+        vendedores=("seller_id", "nunique"),
+    )
+    .reset_index()
+)
+
+item_agg.head()
+```
+
+```{python}
+item_agg["order_id"].is_unique, item_agg.shape
+```
+
+## Agregando pagamentos e avaliações
+
+```{python}
+payment_agg = (
+    payments.groupby("order_id")
+    .agg(
+        valor_pago=("payment_value", "sum"),
+        parcelas_max=("payment_installments", "max"),
+        formas_pagamento=("payment_type", "nunique"),
+    )
+    .reset_index()
+)
+```
+
+```{python}
+review_agg = (
+    reviews.groupby("order_id")
+    .agg(
+        nota=("review_score", "mean"),
+        n_reviews=("review_id", "size"),
+        tem_comentario=("review_comment_message", lambda x: x.notna().any()),
+    )
+    .reset_index()
+)
+```
+
+## Merge com validação explícita
+
+```{python}
+analysis = (
+    orders
+    .merge(customers, on="customer_id", how="left", validate="many_to_one")
+    .merge(item_agg, on="order_id", how="left", validate="one_to_one")
+    .merge(payment_agg, on="order_id", how="left", validate="one_to_one")
+    .merge(review_agg, on="order_id", how="left", validate="one_to_one")
+)
+
+analysis.shape
+```
+
+```{python}
+assert len(analysis) == len(orders)
+assert analysis["order_id"].is_unique
+```
+
+## Verificando reconciliação financeira
+
+O valor pago inclui produtos e frete, mas pode conter diferenças ligadas a descontos ou regras comerciais. A comparação é uma auditoria, não uma igualdade garantida.
+
+```{python}
+analysis["valor_esperado"] = analysis["valor_produtos"] + analysis["frete"]
+analysis["diferenca_pagamento"] = analysis["valor_pago"] - analysis["valor_esperado"]
+analysis["diferenca_pagamento"].describe()
+```
+
+## Conversão das datas
+
+```{python}
+date_cols = [
+    "order_purchase_timestamp",
+    "order_approved_at",
+    "order_delivered_carrier_date",
+    "order_delivered_customer_date",
+    "order_estimated_delivery_date",
+]
+
+analysis[date_cols] = analysis[date_cols].apply(pd.to_datetime)
+```
+
+```{python}
+analysis[date_cols].agg(["min", "max"])
+```
+
+## Variáveis temporais derivadas
+
+```{python}
+analysis = analysis.assign(
+    entrega_dias=lambda d: (
+        d.order_delivered_customer_date - d.order_purchase_timestamp
+    ).dt.total_seconds() / 86400,
+    atraso_dias=lambda d: (
+        d.order_delivered_customer_date - d.order_estimated_delivery_date
+    ).dt.total_seconds() / 86400,
+    mes=lambda d: d.order_purchase_timestamp.dt.to_period("M").astype(str),
+)
+analysis["atrasou"] = analysis["atraso_dias"].gt(0)
+```
+
+## Escopo temporal
+
+```{python}
+monthly = analysis.groupby("mes").size()
+monthly.tail(8)
+```
+
+```{python}
+monthly.plot(figsize=(11, 4), color="#0f6b78", linewidth=2.5)
+plt.title("Pedidos por mês")
+plt.xlabel("")
+plt.ylabel("pedidos")
+plt.xticks(rotation=45)
+plt.tight_layout()
+```
+
+Os últimos meses possuem cobertura parcial. Uma comparação direta entre agosto e setembro de 2018 seria enganosa.
+
+## Dados ausentes
+
+```{python}
+missing = pd.DataFrame({
+    "n": analysis.isna().sum(),
+    "pct": analysis.isna().mean().mul(100),
+}).query("n > 0").sort_values("n", ascending=False)
+missing
+```
+
+```{python}
+missing.head(12).sort_values("n").plot.barh(y="n", legend=False, figsize=(9, 5), color="#d95f02")
+plt.title("Valores ausentes após o merge")
+plt.xlabel("valores ausentes")
+plt.ylabel("")
+plt.tight_layout()
+```
+
+## Ausência condicionada ao status
+
+```{python}
+pd.crosstab(
+    analysis["order_status"],
+    analysis["order_delivered_customer_date"].isna(),
+    normalize="index",
+).rename(columns={False: "tem entrega", True: "sem entrega"}).round(3)
+```
+
+Pedidos interrompidos normalmente não possuem data de entrega. Preencher essa ausência com zero dias inventaria um evento que não ocorreu.
+
+## Comentário ausente não é nota ausente
+
+```{python}
+reviews[["review_score", "review_comment_message"]].isna().mean().mul(100).round(1)
+```
+
+Muitos clientes atribuem uma nota sem escrever um comentário. As duas ausências têm mecanismos diferentes.
+
+## Regras de corretude
+
+```{python}
+checks = pd.Series({
+    "order_id único": analysis["order_id"].is_unique,
+    "preço não negativo": items["price"].ge(0).all(),
+    "frete não negativo": items["freight_value"].ge(0).all(),
+    "nota entre 1 e 5": reviews["review_score"].between(1, 5).all(),
+    "item começa em 1": items["order_item_id"].ge(1).all(),
+})
+checks
+```
+
+## Distribuição do valor do pedido
+
+```{python}
+analysis["valor_produtos"].describe(percentiles=[.5, .9, .95, .99])
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(13, 4))
+sns.histplot(analysis["valor_produtos"], bins=70, ax=axes[0], color="#0f6b78")
+sns.histplot(analysis.query("valor_produtos <= 500")["valor_produtos"], bins=50,
+             ax=axes[1], color="#0f6b78")
+axes[0].set_title("Escala completa")
+axes[1].set_title("Zoom até R$ 500")
+for ax in axes:
+    ax.set_xlabel("valor dos produtos")
+plt.tight_layout()
+```
+
+## O que torna um valor extremo?
+
+```{python}
+analysis.nlargest(10, "valor_produtos")[[
+    "order_id", "valor_produtos", "itens", "frete", "customer_state"
+]]
+```
+
+Valores extremos podem resultar de muitos itens, produtos caros ou regras comerciais. Investigue antes de excluir.
+
+## Distribuição do prazo de entrega
+
+```{python}
+delivered = analysis.query("order_status == 'delivered'").copy()
+delivered["entrega_dias"].describe(percentiles=[.5, .9, .95, .99])
+```
+
+```{python}
+sns.histplot(delivered["entrega_dias"], bins=55, color="#0f6b78")
+plt.axvline(delivered["entrega_dias"].median(), color="#d95f02", linestyle="--")
+plt.title("Tempo entre compra e entrega")
+plt.xlabel("dias")
+plt.tight_layout()
+```
+
+## Taxa de atraso
+
+```{python}
+delivered["atrasou"].value_counts(normalize=True).rename("proporção")
+```
+
+```{python}
+delivered.groupby("atrasou")["atraso_dias"].describe()
+```
+
+## Distribuição das avaliações
+
+```{python}
+reviews["review_score"].value_counts(normalize=True).sort_index().rename("proporção")
+```
+
+```{python}
+sns.countplot(data=reviews, x="review_score", color="#3a7d44")
+plt.title("Distribuição das notas")
+plt.xlabel("nota")
+plt.ylabel("avaliações")
+plt.tight_layout()
+```
+
+## Atraso e avaliação
+
+```{python}
+score_by_delay = delivered.groupby("atrasou")["nota"].agg(["count", "mean", "median"])
+score_by_delay
+```
+
+```{python}
+sns.barplot(data=score_by_delay.reset_index(), x="atrasou", y="mean", color="#0f6b78")
+plt.ylim(0, 5)
+plt.title("Nota média segundo atraso")
+plt.xlabel("pedido atrasou?")
+plt.ylabel("nota média")
+plt.tight_layout()
+```
+
+Esta associação não demonstra que o atraso, isoladamente, causou a diferença. Distância, vendedor, produto e período podem afetar os dois lados.
+
+## Análise por estado
+
+```{python}
+state_summary = (
+    delivered.groupby("customer_state")
+    .agg(
+        pedidos=("order_id", "size"),
+        entrega_mediana=("entrega_dias", "median"),
+        taxa_atraso=("atrasou", "mean"),
+        nota_media=("nota", "mean"),
+    )
+    .query("pedidos >= 100")
+    .sort_values("pedidos", ascending=False)
+)
+state_summary.head(12)
+```
+
+## Relação entre frete e valor
+
+```{python}
+sample_plot = delivered.sample(min(5000, len(delivered)), random_state=42)
+sns.scatterplot(data=sample_plot, x="valor_produtos", y="frete", alpha=.25, s=18)
+plt.xlim(0, 600)
+plt.ylim(0, 150)
+plt.title("Frete e valor do pedido")
+plt.tight_layout()
+```
+
+## Uma tabela analítica final
+
+```{python}
+analytic_cols = [
+    "order_id", "customer_unique_id", "customer_state", "order_status",
+    "order_purchase_timestamp", "itens", "valor_produtos", "frete",
+    "valor_pago", "nota", "entrega_dias", "atraso_dias", "atrasou",
+]
+analytic = analysis[analytic_cols].copy()
+analytic.head()
+```
+
+```{python}
+analytic.shape, analytic["order_id"].is_unique
+```
+
+## Exercícios
+
+1. Compare a mediana do frete entre os cinco estados com mais pedidos.
+2. Calcule a proporção de pedidos com mais de um item.
+3. Verifique se pedidos com mais de um pagamento possuem maior valor mediano.
+4. Compare a taxa de comentários escritos entre notas 1 e 5.
+5. Refaça a análise de atraso excluindo os meses incompletos de 2018.
+6. Explique por que juntar `items` e `payments` diretamente pode criar uma relação muitos-para-muitos.
+
+## Respostas sugeridas — 1 e 2
+
+```{python}
+top_states = analytic["customer_state"].value_counts().head(5).index
+analytic.query("customer_state in @top_states").groupby("customer_state")["frete"].median().sort_values()
+```
+
+```{python}
+analytic["itens"].gt(1).mean()
+```
+
+## Respostas sugeridas — 3 e 4
+
+```{python}
+analysis.assign(multiplos_pagamentos=analysis["formas_pagamento"].gt(1)).groupby(
+    "multiplos_pagamentos"
+)["valor_produtos"].median()
+```
+
+```{python}
+reviews.assign(tem_comentario=reviews["review_comment_message"].notna()).groupby(
+    "review_score"
+)["tem_comentario"].mean().loc[[1, 5]]
+```
+
+## Resposta sugerida — 5
+
+```{python}
+complete = delivered.query("order_purchase_timestamp < '2018-09-01'")
+complete["atrasou"].mean(), delivered["atrasou"].mean()
+```
+
+## Resposta conceitual — 6
+
+Se um pedido possui dois itens e três pagamentos, um merge direto entre as duas tabelas produz seis combinações. Isso é um produto cartesiano dentro do pedido. Valores de item e pagamento seriam repetidos.
+
+O caminho seguro é agregar cada tabela à granularidade de pedido antes de juntá-las.
+
+## Desafios adicionais
+
+1. Construa um indicador de frete como proporção do valor total.
+2. Compare atrasos por trimestre, descartando períodos incompletos.
+3. Investigue pedidos sem item associado e seus status.
+4. Crie uma função que valide chaves e cardinalidades antes de qualquer merge.
+5. Compare nota média por quintil de tempo de entrega.
+6. Escreva um parágrafo sobre limites de representatividade da base.
+
+## Leituras adicionais
+
+- Kaggle: Brazilian E-Commerce Public Dataset by Olist.
+- *Computational and Inferential Thinking*, capítulo de visualização.
+- Documentação do pandas: `merge`, `groupby`, `resample`, dados ausentes.
+- Wickham e Grolemund, *R for Data Science*, capítulos sobre dados relacionais e transformação — conceitos transferíveis para pandas.
+
+## Checklist final
+
+- [ ] Declarei a unidade de observação.
+- [ ] Testei a unicidade das chaves.
+- [ ] Verifiquei a cardinalidade dos merges.
+- [ ] Mantive a granularidade necessária à pergunta.
+- [ ] Interpretei ausências pelo processo.
+- [ ] Avaliei cobertura temporal e escopo.
+- [ ] Testei regras de validade.
+- [ ] Diferenciei associação de causalidade.

@@ -1,0 +1,99 @@
+---
+title: "Aula 03: Tabelas e Tipos de Dados"
+subtitle: "Módulo 1 — Análise Exploratória"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Tabelas, tipos semânticos, pandas, validação e operações agrupadas.
+
+[Abrir slides](../slides/03-tabelas-tipos.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Estudo completo e reproduzível da base Airbnb NYC 2019.
+
+[Abrir notebook](../exemplos/03-tabelas-tipos/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Base de dados
+
+Usaremos **New York City Airbnb Open Data (2019)**, disponível no Kaggle. Cada
+linha representa um anúncio e as 16 colunas descrevem identificadores,
+localização, tipo de acomodação, preço, avaliações e disponibilidade.
+
+- 48.895 anúncios;
+- cinco distritos de Nova York;
+- três tipos de acomodação;
+- datas, texto, categorias, coordenadas, contagens e valores ausentes;
+- fonte: [Kaggle — Airbnb in NYC](https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview).
+
+## Objetivos
+
+- Reconhecer linha, coluna, célula e unidade observacional.
+- Diferenciar população, amostra e processo de coleta.
+- Distinguir tipo computacional e tipo semântico.
+- Trabalhar com identificadores, categorias, quantidades, datas, texto e
+  coordenadas.
+- Diagnosticar ausências, duplicatas e valores inválidos.
+- Selecionar, filtrar e transformar dados com pandas.
+- Resumir grupos com `groupby`, `agg` e encadeamento de métodos.
+
+## Narrativa da aula
+
+A aula começa com a pergunta “quanto custa ficar em Nova York?”. Antes de
+calcular uma média, a turma precisa descobrir o que a tabela realmente mede.
+O dataset permite mostrar que um número pode ser identificador, contagem,
+coordenada ou quantidade; e que uma data pode chegar do CSV como texto.
+
+Depois da descrição da base, a aula acompanha um pipeline mínimo de qualidade:
+ler, inspecionar, converter tipos, compreender ausências, validar intervalos,
+selecionar linhas e colunas, criar variáveis e agrupar. A comparação final de
+preços por distrito e tipo de acomodação mostra como uma pergunta se transforma
+em operações tabulares verificáveis.
+
+## Dimensionamento para 100 minutos
+
+| Tempo | Atividade |
+|---:|---|
+| 0–15 min | Base Airbnb, unidade observacional, coleta e amostragem |
+| 15–35 min | Anatomia da tabela e tipos semânticos |
+| 35–50 min | CSV, pandas e diagnóstico inicial |
+| 50–65 min | Ausências, duplicatas, validade e preço |
+| 65–82 min | Seleção, filtros, cópia e vetorização |
+| 82–95 min | `groupby`, agregação e encadeamento |
+| 95–100 min | Checklist e atividade de classificação |
+
+## Material de estudo
+
+O notebook vai além dos slides e inclui:
+
+- dicionário de dados e diagnóstico reproduzível;
+- conversão de categorias e datas;
+- investigação do padrão de valores ausentes;
+- validações de domínio e indicadores de qualidade;
+- seleção com `loc`, `iloc` e `query`;
+- tabelas cruzadas e proporções condicionais;
+- índices hierárquicos, `stack`, `unstack` e formato longo;
+- função reutilizável de auditoria;
+- depuração de erros frequentes;
+- miniestudo guiado e exercícios com respostas sugeridas.
+
+## Preparação
+
+O arquivo da base está incluído no material. Para executar o notebook, são
+necessários Python, pandas, NumPy, Matplotlib e Seaborn.
+
+Recomendação: execute as células em ordem uma primeira vez; depois reinicie o
+kernel e tente responder aos exercícios sem consultar as soluções.

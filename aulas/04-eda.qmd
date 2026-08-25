@@ -1,0 +1,94 @@
+---
+title: "Aula 04: Análise Exploratória de Dados"
+subtitle: "Estrutura, granularidade, escopo, temporalidade e corretude"
+---
+
+## Pergunta da aula
+
+::: {.callout-important}
+Como transformar tabelas de pedidos, itens, clientes e avaliações em uma análise que preserve o significado de cada linha?
+:::
+
+## Materiais
+
+::: {.grid .aulas-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Slides
+
+Deck com 45 slides, códigos abertos, resultados e gráficos construídos com a base Olist.
+
+[Abrir slides](../slides/04-eda.html){.btn .btn-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Material de apoio
+
+Notebook executado com auditoria, merges, exercícios e respostas comentadas.
+
+[Abrir notebook](../exemplos/04-eda-olist/notebook.qmd){.btn .btn-primary}
+:::
+:::
+:::
+
+## A base
+
+Usamos o **Brazilian E-Commerce Public Dataset by Olist**, disponível no Kaggle. O conjunto original contém aproximadamente 100 mil pedidos brasileiros realizados entre 2016 e 2018 e permite observar pedidos por múltiplas dimensões: clientes, itens, pagamentos, entregas e avaliações.
+
+Para o material didático, foi criada uma amostra reprodutível de 20 mil pedidos, mantendo todas as linhas relacionadas nas demais tabelas.
+
+### Unidade de observação
+
+Cada arquivo possui uma granularidade diferente:
+
+- `orders`: um pedido;
+- `customers`: um identificador de cliente associado ao pedido;
+- `order_items`: um item dentro do pedido;
+- `order_payments`: uma parcela ou forma de pagamento;
+- `order_reviews`: uma avaliação registrada.
+
+Fonte: [Kaggle — Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
+
+## Objetivos de aprendizagem
+
+Ao final da aula, você deverá conseguir:
+
+1. reconhecer estrutura e granularidade de tabelas relacionadas;
+2. testar chaves e cardinalidades antes de um `merge`;
+3. preservar a unidade de observação durante a preparação dos dados;
+4. interpretar ausências pelo processo de geração dos registros;
+5. avaliar escopo, cobertura temporal e regras de validade;
+6. distinguir padrões exploratórios de conclusões causais.
+
+## Fio condutor
+
+A aula começa observando que pedidos atrasados possuem notas médias menores. Em seguida, voltamos ao processo necessário para confiar nessa comparação:
+
+1. identificar a granularidade de cada tabela;
+2. agregar itens, pagamentos e avaliações por pedido;
+3. validar os merges;
+4. interpretar datas e ausências;
+5. examinar distribuições e valores extremos;
+6. retornar à associação entre atraso e avaliação, agora com limites explícitos.
+
+## Material de estudos
+
+O notebook inclui:
+
+- função reutilizável de auditoria de tabelas;
+- testes de chaves simples e compostas;
+- demonstração do erro de contagem após merge ingênuo;
+- agregações seguras por pedido;
+- validação `many_to_one` e `one_to_one`;
+- reconciliação de valores financeiros;
+- análise de ausências condicionada ao status;
+- auditoria temporal e identificação de meses incompletos;
+- distribuições de valor, frete, prazo e avaliações;
+- exercícios, respostas sugeridas e desafios adicionais.
+
+## Leitura adicional
+
+- [Olist no Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+- [Pandas — Merge, join, concatenate and compare](https://pandas.pydata.org/docs/user_guide/merging.html)
+- [Computational and Inferential Thinking — Visualization](https://inferentialthinking.com/chapters/07/Visualization.html)

@@ -39,9 +39,8 @@ Departamento de Ciência da Computação — UFMG<br>
 ::: {.info-card .mock-card}
 ### Horário e sala
 
-**[SUBSTITUIR]**<br>
-Terças e quintas, 14h55–16h35<br>
-Sala 0000 — prédio do ICEx
+Terças e quintas, 17h0–18h40<br>
+Sala 406 — CAD3
 :::
 :::
 
@@ -49,9 +48,7 @@ Sala 0000 — prédio do ICEx
 ::: {.info-card .mock-card}
 ### Atendimento
 
-**[SUBSTITUIR]**<br>
-Quarta-feira, 14h–16h<br>
-Sala do professor ou encontro remoto
+**[SUBSTITUIR]** Horários e local de atendimento aos estudantes.
 :::
 :::
 :::
@@ -133,31 +130,33 @@ Ao final da disciplina, espera-se que estudantes consigam:
 :::
 :::
 
-## Percurso de aprendizagem
+## Módulos do curso
+
+O conteúdo segue a organização modular da disciplina. O Módulo 2 já reúne as
+Aulas 07–15; o Módulo 3 terá seus novos materiais produzidos nas Aulas 16–26.
 
 ::: {.course-path}
 ::: {.path-step}
-**1 · Perguntas e causalidade**<br>
-Como transformar uma questão ampla em uma investigação e separar associação de
-efeito causal.
+**Módulo 0 · Motivação**<br>
+Ciência de dados, perguntas, responsabilidade, correlações espúrias e causalidade.
 :::
 
 ::: {.path-step}
-**2 · Descrever distribuições**<br>
-Como enxergar centro, dispersão, assimetria, valores extremos e diferenças entre
-grupos.
+**Módulo 1 · Análise Exploratória**<br>
+ Aulas 03–06: tabelas, tipos de dados, EDA, fundamentos de visualização,
+ percepção e boas práticas. O módulo se encerra na Aula 06.
 :::
 
 ::: {.path-step}
-**3 · Da amostra à população**<br>
-Como estimadores variam, por que o tamanho da amostra importa e como o TCL sustenta
-a inferência.
+**Módulo 2 · Inferência Estatística**<br>
+Aulas 07–15: tendências centrais, estimadores, intervalos, testes, bootstrap,
+permutação, poder e múltiplos testes.
 :::
 
-::: {.path-step}
-**4 · Incerteza e decisões**<br>
-Como intervalos, testes de hipóteses, bootstrap e permutação transformam acaso em
-uma análise verificável.
+::: {.path-step .mock-card}
+**Módulo 3 · Aulas 16–26 — em preparação**<br>
+Correlação, regressão e aprendizado de máquina, da modelagem linear à
+classificação e aos métodos não supervisionados.
 :::
 :::
 
@@ -168,19 +167,25 @@ página de cada aula.
 
 | Aula | Data | Conteúdo | Material |
 |---:|:---:|---|---|
+| **Módulo 0** |  | **Motivação** |  |
 | 01 | **[SUBSTITUIR]** | Introdução à ciência de dados | [Acessar](aulas/01-introducao.qmd) |
 | 02 | **[SUBSTITUIR]** | Causalidade e experimentos | [Acessar](aulas/02-causalidade.qmd) |
-| 03–05 | **[SUBSTITUIR]** | Dados tabulares, preparação e visualização | Em preparação |
-| 06 | **[SUBSTITUIR]** | Tendências centrais e dispersão | [Acessar](aulas/06-tendencias-centrais.qmd) |
-| 07 | **[SUBSTITUIR]** | Estimadores | [Acessar](aulas/07-estimadores.qmd) |
-| 08 | **[SUBSTITUIR]** | Escolha de estimadores e funções de perda | [Acessar](aulas/08-risco-estimadores.qmd) |
-| 09 | **[SUBSTITUIR]** | Teorema Central do Limite e intervalos | [Acessar](aulas/09-tcl-intervalos.qmd) |
-| 10 | **[SUBSTITUIR]** | Testes de hipóteses | [Acessar](aulas/10-testes-hipoteses.qmd) |
-| 11 | **[SUBSTITUIR]** | Bootstrap | [Acessar](aulas/11-bootstrap.qmd) |
-| 12 | **[SUBSTITUIR]** | Testes de permutação | [Acessar](aulas/12-testes-permutacao.qmd) |
-| 13 | **[SUBSTITUIR]** | Permutação: extensões e validade | [Acessar](aulas/13-permutacao-avancada.qmd) |
-| 14 | **[SUBSTITUIR]** | Poder e múltiplos testes | [Acessar](aulas/14-poder-multiplos.qmd) |
-| 15+ | **[SUBSTITUIR]** | Modelagem, avaliação e comunicação | Em preparação |
+| **Módulo 1** |  | **Análise Exploratória** |  |
+| 03 | **[SUBSTITUIR]** | Tabelas e tipos de dados | [Acessar](aulas/03-tabelas-tipos.qmd) |
+| 04 | **[SUBSTITUIR]** | Análise exploratória de dados | [Acessar](aulas/04-eda.qmd) |
+| 05 | **[SUBSTITUIR]** | Fundamentos de visualização e percepção | [Acessar](aulas/05-fundamentos-visualizacao.qmd) |
+| 06 | **[SUBSTITUIR]** | Visualização: boas práticas | [Acessar](aulas/06-boas-praticas-visualizacao.qmd) |
+| **Módulo 2** |  | **Inferência Estatística** |  |
+| 07 | **[SUBSTITUIR]** | Tendências centrais e dispersão | [Acessar](aulas/07-tendencias-centrais.qmd) |
+| 08 | **[SUBSTITUIR]** | Estimadores | [Acessar](aulas/08-estimadores.qmd) |
+| 09 | **[SUBSTITUIR]** | Escolha de estimadores e funções de perda | [Acessar](aulas/09-risco-estimadores.qmd) |
+| 10 | **[SUBSTITUIR]** | Teorema Central do Limite e intervalos | [Acessar](aulas/10-tcl-intervalos.qmd) |
+| 11 | **[SUBSTITUIR]** | Testes de hipóteses | [Acessar](aulas/11-testes-hipoteses.qmd) |
+| 12 | **[SUBSTITUIR]** | Bootstrap | [Acessar](aulas/12-bootstrap.qmd) |
+| 13 | **[SUBSTITUIR]** | Testes de permutação | [Acessar](aulas/13-testes-permutacao.qmd) |
+| 14 | **[SUBSTITUIR]** | Permutação: extensões e validade | [Acessar](aulas/14-permutacao-avancada.qmd) |
+| 15 | **[SUBSTITUIR]** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
+| **Módulo 3** |  | **Aulas 16–26: correlação, regressão e ML** | Em preparação |
 
 ## Dinâmica das aulas
 
@@ -215,18 +220,25 @@ e responda às questões propostas.
 
 ## Avaliação da aprendizagem
 
-::: {.mock-section}
-**[SUBSTITUIR — proposta ilustrativa]**
-
-| Componente | Peso sugerido |
+| Componente | Peso |
 |---|---:|
-| Atividades práticas e notebooks | 30% |
-| Avaliações individuais | 40% |
-| Projeto de análise de dados | 30% |
+| Prova 1 | 30% |
+| Prova 2 | 30% |
+| Listas (Moodle/VPL) | 10% |
+| Projeto final (TP) | 30% |
 
-Os critérios definitivos, datas, política de recuperação e regras de entrega
-serão publicados pelo professor no início do semestre.
-:::
+As datas, a política de recuperação e as regras de entrega serão publicadas no
+Moodle e no cronograma da disciplina.
+
+### Etapas do projeto final
+
+| Etapa | Entrega |
+|---:|---|
+| 01 | Definição da equipe e do tema |
+| 02 | Entrevista parcial 01 |
+| 03 | Entrevista parcial 02 |
+| 04 | Entrevista parcial 03 |
+| 05 | Vídeo e notebook final |
 
 ## Material de apoio e ferramentas
 
@@ -262,17 +274,15 @@ entregas e notas.
 
 ## Bibliografia
 
-::: {.mock-section}
-**[SUBSTITUIR — seleção inicial]**
+1. Sam Lau, Joey Gonzalez e Deb Nolan. [*Learning Data Science*](https://learningds.org/) — inglês, acesso aberto.
+2. Mine Çetinkaya-Rundel e Johanna Hardin. [*Introduction to Modern Statistics*](https://openintro-ims.netlify.app/) — inglês, acesso aberto.
+3. Ani Adhikari, John DeNero e David Wagner. [*Computational and Inferential Thinking*](https://inferentialthinking.com/) — inglês, acesso aberto.
+4. Joel Grus. *Data Science from Scratch* — disponível também em português.
+5. Renato Assunção. *Fundamentos Estatísticos para Ciência da Computação* — português.
+6. Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani e Jonathan Taylor. [*An Introduction to Statistical Learning*](https://www.statlearning.com/) — inglês, acesso aberto.
+7. [Hotsite desta disciplina](https://heitorramos.github.io/icd/) — slides, notebooks e materiais de apoio.
 
-- Ani Adhikari, John DeNero e David Wagner. *Computational and Inferential Thinking*.
-- Allen B. Downey. *Think Stats: Exploratory Data Analysis*.
-- Peter Bruce, Andrew Bruce e Peter Gedeck. *Practical Statistics for Data Scientists*.
-- Wes McKinney. *Python for Data Analysis*.
-
-A bibliografia oficial e as edições recomendadas serão confirmadas no plano de
-ensino.
-:::
+O item 7 substitui o hotsite antigo indicado no material original.
 
 ## Por onde começar
 

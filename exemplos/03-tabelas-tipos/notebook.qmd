@@ -1,0 +1,713 @@
+---
+title: "Aula 03 — Tabelas e tipos de dados com Airbnb NYC"
+subtitle: "Material de estudo"
+format: ipynb
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Objetivos
+
+Este notebook usa a base **New York City Airbnb Open Data (2019)**, publicada
+no Kaggle. Cada linha representa um anúncio e as colunas descrevem localização,
+tipo de acomodação, preço, avaliações e disponibilidade.
+
+Ao final, você deverá conseguir:
+
+- explicar o que representa uma linha da tabela;
+- diferenciar tipo computacional e tipo semântico;
+- inspecionar dimensões, colunas, ausências e duplicatas;
+- converter categorias e datas;
+- construir regras simples de validade;
+- selecionar linhas e colunas com `loc`, `iloc` e `query`;
+- criar colunas vetorizadas;
+- resumir grupos com `groupby` e `agg`;
+- documentar decisões de limpeza.
+
+Fonte: <https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview>.
+
+# 1. Preparação
+
+```{python}
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+sns.set_theme(style="whitegrid")
+pd.set_option("display.max_columns", 30)
+
+DATA = next(path for path in [
+    Path("data/AB_NYC_2019.csv"),
+    Path("exemplos/03-tabelas-tipos/data/AB_NYC_2019.csv"),
+] if path.exists())
+```
+
+# 2. Leitura e unidade observacional
+
+```{python}
+airbnb = pd.read_csv(DATA)
+airbnb.head(3)
+```
+
+**Unidade observacional:** um anúncio publicado na plataforma. A tabela não
+registra diretamente reservas, hóspedes ou faturamento realizado.
+
+```{python}
+airbnb.shape
+```
+
+```{python}
+airbnb.columns.tolist()
+```
+
+## Dicionário das principais variáveis
+
+| coluna | significado | tipo semântico |
+|---|---|---|
+| `id` | identificador do anúncio | identificador |
+| `host_id` | identificador do anfitrião | identificador |
+| `neighbourhood_group` | distrito | categoria nominal |
+| `neighbourhood` | bairro | categoria nominal |
+| `latitude`, `longitude` | posição geográfica | coordenadas |
+| `room_type` | modalidade do anúncio | categoria nominal |
+| `price` | preço anunciado por noite em US$ | quantidade |
+| `minimum_nights` | mínimo de noites | contagem |
+| `number_of_reviews` | total de avaliações | contagem |
+| `last_review` | data da avaliação mais recente | data |
+| `reviews_per_month` | média mensal de avaliações | taxa |
+| `availability_365` | dias disponíveis no ano | contagem limitada |
+
+# 3. Diagnóstico inicial
+
+```{python}
+airbnb.info()
+```
+
+Observe que `last_review` chegou como `object`. O pandas conhece a representação
+inicial, mas não conhece automaticamente todo o significado da variável.
+
+```{python}
+diagnostico = pd.DataFrame({
+    "dtype": airbnb.dtypes.astype(str),
+    "ausentes": airbnb.isna().sum(),
+    "unicos": airbnb.nunique(dropna=True),
+})
+diagnostico
+```
+
+## Pergunta de estudo 1
+
+Por que `id` e `host_id`, embora armazenados como inteiros, não são variáveis
+quantitativas? Tente explicar antes de abrir a resposta.
+
+<details>
+<summary>Resposta sugerida</summary>
+
+Os números funcionam como rótulos. Somar, calcular a média ou multiplicar IDs
+não produz uma quantidade interpretável.
+</details>
+
+# 4. Tipos mais adequados
+
+```{python}
+categoricas = ["neighbourhood_group", "neighbourhood", "room_type"]
+airbnb[categoricas] = airbnb[categoricas].astype("category")
+
+airbnb["last_review"] = pd.to_datetime(
+    airbnb["last_review"], errors="coerce"
+)
+
+airbnb[categoricas + ["last_review"]].dtypes
+```
+
+## Datas permitem novas perguntas
+
+```{python}
+airbnb["review_year"] = airbnb["last_review"].dt.year.astype("Int64")
+airbnb["review_month"] = airbnb["last_review"].dt.month.astype("Int64")
+
+airbnb[["last_review", "review_year", "review_month"]].head()
+```
+
+# 5. Valores ausentes
+
+```{python}
+missing = airbnb.isna().sum().sort_values(ascending=False)
+missing[missing > 0]
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 4))
+missing[missing > 0].sort_values().plot.barh(ax=ax, color="#0f6b78")
+ax.set(title="Valores ausentes por coluna", xlabel="ausentes", ylabel="")
+plt.show()
+```
+
+`last_review` e `reviews_per_month` faltam nas mesmas 10.052 linhas. Vamos
+verificar se os padrões coincidem.
+
+```{python}
+mesmo_padrao = airbnb["last_review"].isna().equals(
+    airbnb["reviews_per_month"].isna()
+)
+mesmo_padrao
+```
+
+```{python}
+pd.crosstab(
+    airbnb["number_of_reviews"].eq(0),
+    airbnb["last_review"].isna(),
+    rownames=["zero avaliações"],
+    colnames=["data ausente"],
+)
+```
+
+**Interpretação:** a ausência parece estrutural. Sem avaliações, não existe
+uma “última avaliação”. Preencher a data com zero seria conceitualmente errado.
+
+# 6. Identificadores e duplicatas
+
+```{python}
+pd.Series({
+    "linhas duplicadas": airbnb.duplicated().sum(),
+    "IDs duplicados": airbnb["id"].duplicated().sum(),
+    "ID é único": airbnb["id"].is_unique,
+})
+```
+
+Anúncios com nomes iguais não são necessariamente duplicatas: pessoas distintas
+podem usar títulos genéricos como “Cozy apartment”.
+
+# 7. Regras de validade
+
+```{python}
+validacoes = pd.Series({
+    "preço positivo": airbnb["price"].gt(0).mean(),
+    "disponibilidade entre 0 e 365": airbnb["availability_365"].between(0, 365).mean(),
+    "latitude plausível": airbnb["latitude"].between(40, 41).mean(),
+    "longitude plausível": airbnb["longitude"].between(-75, -73).mean(),
+})
+validacoes
+```
+
+```{python}
+airbnb.loc[airbnb["price"].eq(0), [
+    "id", "name", "neighbourhood_group", "room_type", "price"
+]].head()
+```
+
+Não vamos apagar automaticamente esses registros. Primeiro os marcamos para que
+a decisão seja auditável.
+
+```{python}
+airbnb["price_valid"] = airbnb["price"].gt(0)
+airbnb["price_extreme"] = airbnb["price"].gt(1000)
+airbnb[["price_valid", "price_extreme"]].mean()
+```
+
+# 8. Distribuição do preço
+
+```{python}
+airbnb["price"].describe(percentiles=[.5, .9, .95, .99])
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.histplot(airbnb["price"], bins=60, ax=axes[0], color="#d95f02")
+axes[0].set(title="Escala completa", xlabel="US$ por noite")
+
+sns.histplot(
+    airbnb.loc[airbnb["price"].between(1, 500), "price"],
+    bins=50, ax=axes[1], color="#0f6b78"
+)
+axes[1].set(title="Zoom entre US$ 1 e 500", xlabel="US$ por noite")
+plt.tight_layout()
+plt.show()
+```
+
+O zoom deve ser declarado: ele melhora a leitura da região densa, mas não pode
+ser usado para fingir que os valores extremos não existem.
+
+# 9. Seleção de colunas e linhas
+
+```{python}
+airbnb["price"].head()  # Series
+```
+
+```{python}
+airbnb[["neighbourhood_group", "room_type", "price"]].head()  # DataFrame
+```
+
+```{python}
+airbnb.iloc[0:3, 0:5]
+```
+
+```{python}
+airbnb.loc[0:2, ["id", "room_type", "price"]]
+```
+
+## Filtros legíveis
+
+```{python}
+recorte = airbnb.query(
+    "neighbourhood_group == 'Manhattan' and "
+    "room_type == 'Entire home/apt' and 0 < price <= 500"
+).copy()
+
+recorte.shape
+```
+
+Usamos `.copy()` porque criaremos novas colunas no recorte.
+
+# 10. Operações vetorizadas
+
+```{python}
+recorte["price_brl_example"] = recorte["price"] * 5.0
+recorte["potentially_unavailable_days"] = 365 - recorte["availability_365"]
+recorte[["price", "price_brl_example", "availability_365",
+         "potentially_unavailable_days"]].head()
+```
+
+A cotação de 5 reais por dólar é apenas didática. Em uma análise real, registre
+a fonte e a data da taxa de câmbio.
+
+# 11. Categorias e contagens
+
+```{python}
+airbnb["neighbourhood_group"].value_counts()
+```
+
+```{python}
+airbnb["room_type"].value_counts(normalize=True).mul(100).round(1)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+airbnb["neighbourhood_group"].value_counts().sort_values().plot.barh(
+    ax=axes[0], color="#0f6b78"
+)
+airbnb["room_type"].value_counts().sort_values().plot.barh(
+    ax=axes[1], color="#16826c"
+)
+axes[0].set(title="Anúncios por distrito", ylabel="")
+axes[1].set(title="Anúncios por tipo", ylabel="")
+plt.tight_layout()
+plt.show()
+```
+
+# 12. Groupby: dividir, aplicar e combinar
+
+```{python}
+airbnb.groupby("room_type", observed=True)["price"].median()
+```
+
+```{python}
+resumo_tipo = (
+    airbnb
+    .query("price > 0")
+    .groupby("room_type", observed=True)
+    .agg(
+        anuncios=("id", "size"),
+        preco_mediano=("price", "median"),
+        preco_medio=("price", "mean"),
+        disponibilidade_mediana=("availability_365", "median"),
+    )
+    .sort_values("preco_mediano", ascending=False)
+)
+resumo_tipo
+```
+
+Observe como média e mediana diferem. Os valores extremos puxam a média para
+cima.
+
+## Duas categorias
+
+```{python}
+medianas = (
+    airbnb
+    .query("price > 0")
+    .groupby(["neighbourhood_group", "room_type"], observed=True)
+    ["price"].median()
+    .unstack()
+)
+medianas
+```
+
+```{python}
+ax = medianas.plot.bar(figsize=(10, 5), color=["#0f6b78", "#d95f02", "#16826c"])
+ax.set(title="Preço mediano por distrito e tipo", xlabel="", ylabel="US$ por noite")
+ax.legend(title="tipo de acomodação", frameon=False)
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+```
+
+# 13. Encadeamento documentado
+
+```{python}
+resultado = (
+    airbnb
+    .query("price > 0 and price <= 500")
+    .assign(
+        reviewed=lambda d: d["number_of_reviews"].gt(0),
+        recent_review=lambda d: d["last_review"].ge("2019-01-01"),
+    )
+    .groupby(["neighbourhood_group", "room_type"], observed=True)
+    .agg(
+        n=("id", "size"),
+        median_price=("price", "median"),
+        reviewed_share=("reviewed", "mean"),
+        recent_share=("recent_review", "mean"),
+    )
+    .reset_index()
+    .sort_values(["median_price", "n"], ascending=[False, False])
+)
+resultado.head(10)
+```
+
+Cada etapa corresponde a uma decisão: filtrar preços, criar indicadores,
+agrupar, agregar, recuperar colunas e ordenar.
+
+# 14. Exercícios
+
+## Exercício A — tipos
+
+Classifique `minimum_nights`, `host_id`, `room_type`, `last_review` e
+`reviews_per_month` em tipos computacionais e semânticos.
+
+## Exercício B — validação
+
+Crie indicadores para:
+
+- `minimum_nights` entre 1 e 365;
+- `reviews_per_month` não negativo quando presente;
+- `availability_365` entre 0 e 365.
+
+```{python}
+# Escreva sua solução aqui.
+```
+
+## Exercício C — pergunta agrupada
+
+Calcule, por distrito:
+
+- número de anúncios;
+- preço mediano entre US$ 1 e 500;
+- proporção de anúncios com pelo menos uma avaliação.
+
+```{python}
+# Escreva sua solução aqui.
+```
+
+# 15. Respostas sugeridas
+
+```{python}
+checks = airbnb.assign(
+    valid_minimum_nights=airbnb["minimum_nights"].between(1, 365),
+    valid_reviews_per_month=airbnb["reviews_per_month"].ge(0) |
+                              airbnb["reviews_per_month"].isna(),
+    valid_availability=airbnb["availability_365"].between(0, 365),
+)
+
+checks[["valid_minimum_nights", "valid_reviews_per_month",
+        "valid_availability"]].mean()
+```
+
+```{python}
+resposta_c = (
+    airbnb
+    .query("0 < price <= 500")
+    .assign(reviewed=lambda d: d["number_of_reviews"].gt(0))
+    .groupby("neighbourhood_group", observed=True)
+    .agg(
+        anuncios=("id", "size"),
+        preco_mediano=("price", "median"),
+        proporcao_com_review=("reviewed", "mean"),
+    )
+)
+resposta_c
+```
+
+# 16. Checklist final
+
+Antes de analisar uma tabela, registre:
+
+1. unidade observacional e população-alvo;
+2. origem e processo de coleta;
+3. significado, unidade e tipo de cada coluna;
+4. ausências, duplicatas e regras de validade;
+5. filtros e transformações aplicados;
+6. limitações que permanecem.
+
+Uma análise reprodutível não é apenas código que executa: é uma sequência de
+decisões que outra pessoa consegue compreender, verificar e questionar.
+
+# 17. Função reutilizável de auditoria
+
+Uma boa prática é transformar verificações recorrentes em uma função. Isso não
+substitui o conhecimento do domínio, mas reduz esquecimentos.
+
+```{python}
+def audit_table(df, id_column=None):
+    """Produz um diagnóstico compacto de uma tabela."""
+    report = pd.DataFrame({
+        "dtype": df.dtypes.astype(str),
+        "missing_n": df.isna().sum(),
+        "missing_pct": df.isna().mean().mul(100).round(2),
+        "unique_n": df.nunique(dropna=True),
+    })
+
+    summary = {
+        "rows": len(df),
+        "columns": df.shape[1],
+        "duplicate_rows": int(df.duplicated().sum()),
+    }
+
+    if id_column is not None:
+        summary["duplicate_ids"] = int(df[id_column].duplicated().sum())
+        summary["missing_ids"] = int(df[id_column].isna().sum())
+
+    return summary, report.sort_values("missing_pct", ascending=False)
+
+
+summary, column_report = audit_table(airbnb, id_column="id")
+summary
+```
+
+```{python}
+column_report.head(10)
+```
+
+## Extensão
+
+Modifique `audit_table` para receber um dicionário de intervalos válidos, por
+exemplo `{"availability_365": (0, 365), "price": (0, 10_000)}`, e contar
+violações.
+
+# 18. Tabelas cruzadas e proporções condicionais
+
+Uma contagem simples pode esconder que grupos têm tamanhos muito diferentes.
+
+```{python}
+counts = pd.crosstab(
+    airbnb["neighbourhood_group"],
+    airbnb["room_type"],
+)
+counts
+```
+
+Agora normalizamos cada linha para responder: “dentro de cada distrito, qual é
+a composição por tipo de acomodação?”.
+
+```{python}
+row_percent = pd.crosstab(
+    airbnb["neighbourhood_group"],
+    airbnb["room_type"],
+    normalize="index",
+).mul(100).round(1)
+row_percent
+```
+
+```{python}
+ax = row_percent.plot.bar(
+    stacked=True,
+    figsize=(10, 4.8),
+    color=["#0f6b78", "#d95f02", "#16826c"],
+)
+ax.set(title="Composição dos anúncios dentro de cada distrito",
+       xlabel="", ylabel="percentual")
+ax.legend(title="tipo", bbox_to_anchor=(1.02, 1), frameon=False)
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+```
+
+## Cuidado com o denominador
+
+- `normalize="index"`: percentual dentro de cada linha;
+- `normalize="columns"`: percentual dentro de cada coluna;
+- `normalize="all"`: percentual do total da tabela.
+
+Sempre declare qual denominador gera a porcentagem.
+
+# 19. Índices hierárquicos e reshape
+
+Agrupar por duas colunas produz um índice com dois níveis.
+
+```{python}
+grouped = (
+    airbnb
+    .query("price > 0")
+    .groupby(["neighbourhood_group", "room_type"], observed=True)
+    ["price"].median()
+)
+grouped.head(8)
+```
+
+`unstack` move um nível do índice para as colunas.
+
+```{python}
+wide = grouped.unstack("room_type")
+wide
+```
+
+`stack` faz o caminho inverso.
+
+```{python}
+wide.stack(future_stack=True).head(8)
+```
+
+## Formato largo e formato longo
+
+- **Largo:** uma coluna para cada tipo de acomodação; útil para leitura humana.
+- **Longo:** uma linha para cada combinação; útil para gráficos e modelagem.
+
+```{python}
+long = wide.reset_index().melt(
+    id_vars="neighbourhood_group",
+    var_name="room_type",
+    value_name="median_price",
+)
+long.head()
+```
+
+# 20. Depuração de erros frequentes
+
+## Erro 1 — usar `and` em Series
+
+Este código falha:
+
+```python
+airbnb[(airbnb["price"] > 0) and (airbnb["price"] <= 500)]
+```
+
+Use `&` e parênteses:
+
+```{python}
+airbnb[(airbnb["price"] > 0) & (airbnb["price"] <= 500)].shape
+```
+
+## Erro 2 — selecionar Series quando esperava DataFrame
+
+```{python}
+type(airbnb["price"]), type(airbnb[["price"]])
+```
+
+## Erro 3 — ordenar sem guardar o resultado
+
+Muitos métodos retornam um novo objeto.
+
+```{python}
+sorted_prices = airbnb.sort_values("price", ascending=False)
+sorted_prices[["id", "price"]].head()
+```
+
+## Erro 4 — converter datas silenciosamente
+
+`errors="coerce"` transforma datas inválidas em `NaT`. Sempre conte quantos
+valores foram perdidos durante a conversão.
+
+```{python}
+raw_dates = pd.read_csv(DATA, usecols=["last_review"])["last_review"]
+parsed_dates = pd.to_datetime(raw_dates, errors="coerce")
+
+pd.Series({
+    "ausentes antes": raw_dates.isna().sum(),
+    "ausentes depois": parsed_dates.isna().sum(),
+})
+```
+
+# 21. Miniestudo guiado
+
+## Pergunta
+
+Entre anúncios com preço entre US$ 1 e 500, como preço e disponibilidade
+variam entre distritos e tipos de acomodação?
+
+## Plano
+
+1. Definir a unidade: anúncio.
+2. Declarar o filtro de validade do preço.
+3. Descrever tamanhos dos grupos.
+4. Comparar medianas, não apenas médias.
+5. Visualizar a distribuição.
+6. Comunicar limitações.
+
+```{python}
+study = (
+    airbnb
+    .query("1 <= price <= 500")
+    .dropna(subset=["neighbourhood_group", "room_type"])
+    .copy()
+)
+
+study.shape
+```
+
+```{python}
+study_summary = (
+    study
+    .groupby(["neighbourhood_group", "room_type"], observed=True)
+    .agg(
+        n=("id", "size"),
+        median_price=("price", "median"),
+        q1_price=("price", lambda x: x.quantile(.25)),
+        q3_price=("price", lambda x: x.quantile(.75)),
+        median_availability=("availability_365", "median"),
+    )
+    .reset_index()
+)
+study_summary.head(10)
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(11, 5))
+sns.boxplot(
+    data=study,
+    x="neighbourhood_group",
+    y="price",
+    hue="room_type",
+    showfliers=False,
+    ax=ax,
+)
+ax.set(title="Preço por distrito e tipo — outliers ocultados apenas na visualização",
+       xlabel="", ylabel="US$ por noite")
+ax.legend(title="tipo", frameon=False)
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+```
+
+## Interpretação responsável
+
+- Manhattan apresenta preços anunciados maiores em vários tipos.
+- Apartamentos/casas inteiros tendem a custar mais que quartos privados.
+- O gráfico descreve anúncios publicados, não preços efetivamente pagos.
+- Ausência de ocupação e características do imóvel impede explicar causalmente
+  as diferenças.
+
+# 22. Desafios adicionais
+
+1. Encontre os cinco bairros com mais anúncios, mas exija pelo menos 100 linhas.
+2. Compare média e mediana do preço em cada tipo de acomodação.
+3. Calcule a proporção de anúncios sem avaliação por distrito.
+4. Crie uma coluna `availability_band` com faixas `0`, `1–90`, `91–180`,
+   `181–365` dias.
+5. Investigue anfitriões com muitos anúncios usando
+   `calculated_host_listings_count`.
+6. Refaça o miniestudo usando somente anúncios com avaliação em 2019 e discuta
+   como o filtro muda a população analisada.
+
+# 23. Leituras adicionais
+
+- [Pandas User Guide — 10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html)
+- [Pandas User Guide — Working with missing data](https://pandas.pydata.org/docs/user_guide/missing_data.html)
+- [Pandas User Guide — Group by](https://pandas.pydata.org/docs/user_guide/groupby.html)
+- [Tidy Data, Hadley Wickham](https://vita.had.co.nz/papers/tidy-data.pdf)
+- [Kaggle — Airbnb in NYC](https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview)

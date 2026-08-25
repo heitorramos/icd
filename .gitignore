@@ -4,6 +4,7 @@
 /work/
 /tmp/
 /data/
+/vpl/
 __pycache__/
 .DS_Store
 *.pyc

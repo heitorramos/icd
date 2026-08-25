@@ -1,0 +1,55 @@
+---
+title: "Aula 11: Testes de Hipóteses"
+subtitle: "Evidência, p-valores e decisões"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Hipóteses, p-valores, erros e poder estatístico.
+
+[Abrir slides](../slides/11-testes-hipoteses.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Teste da taxa de atraso nos pedidos Olist.
+
+[Abrir notebook](../exemplos/11-testes-hipoteses/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+:::
+
+## Objetivos
+
+- Formular hipótese nula e alternativa.
+- Construir e interpretar uma distribuição nula.
+- Calcular uma estatística de teste e um p-valor.
+- Diferenciar significância estatística e importância prática.
+- Interpretar erros tipo I e II.
+- Relacionar poder, tamanho amostral e tamanho do efeito.
+- Comparar teste exato, aproximação Normal e simulação.
+
+## Estudo de caso
+
+A aula investiga se a taxa de pedidos entregues depois da data prevista excede
+um limite operacional de 8%. O conjunto completo permite simular tanto o
+comportamento do teste sob a hipótese nula quanto seu poder sob alternativas.
+
+## Pergunta da aula
+
+> Há evidência de que a taxa de atrasos excede 8%?
+
+## Conexão com exercícios
+
+No notebook, compare p-valores calculados pela Binomial exata, pela aproximação
+Normal e por simulação. Depois altere o tamanho amostral e a taxa verdadeira
+para construir uma curva de poder.

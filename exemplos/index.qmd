@@ -41,9 +41,9 @@ Notebook renderizado com estimativas, comparações e gráficos.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aula 06
+### Aula 07
 
-[Tendências centrais com dados do Billboard](06-tendencias-centrais/notebook.ipynb)
+[Tendências centrais com dados do Billboard](07-tendencias-centrais/notebook.ipynb)
 
 Notebook renderizado com download do Kaggle, análise descritiva, pipeline,
 histograma, CDF, média, mediana, quartis, quantis, boxplot, dispersão,
@@ -51,18 +51,18 @@ transformações e médias geométrica/harmônica.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aulas 07 e 08
+### Aulas 08 e 09
 
-[Estimadores com Palmer Penguins](07-estimadores/notebook.qmd)
+[Estimadores com Palmer Penguins](08-estimadores/notebook.qmd)
 
 Notebook de estudo sobre amostragem, distribuições amostrais, correção $n-1$,
 viés, variância, perdas, robustez e risco.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aulas 09 e 10
+### Aulas 10 e 11
 
-[TCL, intervalos e testes com dados Olist](09-tcl-inferencia/notebook.qmd)
+[TCL, intervalos e testes com dados Olist](10-tcl-inferencia/notebook.qmd)
 
 Simulações guiadas de erro padrão, cobertura, planejamento amostral, p-valores,
 erros tipo I e poder estatístico.
@@ -71,33 +71,33 @@ erros tipo I e poder estatístico.
 ::: {.g-col-12 .g-col-md-6}
 ### Aula 11
 
-[Bootstrap com dados Airbnb NYC](11-bootstrap/notebook.qmd)
+[Testes de hipóteses com dados Olist](11-testes-hipoteses/notebook.qmd)
+
+Material dedicado à formulação de hipóteses, valores-p, erro tipo I e poder.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Aula 12
+
+[Bootstrap com dados Airbnb NYC](12-bootstrap/notebook.qmd)
 
 Material sobre distribuição empírica, reamostragem, intervalos, validade,
 dependência e bootstrap por agrupamentos.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aula 10
+### Aulas 13 e 14
 
-[Testes de hipóteses com dados Olist](10-testes-hipoteses/notebook.qmd)
-
-Material dedicado à formulação de hipóteses, valores-p, erro tipo I e poder.
-:::
-
-::: {.g-col-12 .g-col-md-6}
-### Aulas 12 e 13
-
-[Testes de permutação em um experimento A/B](12-permutacao/notebook.qmd)
+[Testes de permutação em um experimento A/B](13-permutacao/notebook.qmd)
 
 Campanha real do Kaggle, descrição da base, permutação básica, estatísticas
 robustas, estratos, validade e exercícios.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aula 14
+### Aula 15
 
-[Poder e múltiplos testes com Cookie Cats](14-poder-multiplos/notebook.qmd)
+[Poder e múltiplos testes com Cookie Cats](15-poder-multiplos/notebook.qmd)
 
 Permutação e bootstrap sob $H_0$, bootstrap sob $H_A$, curvas de poder,
 Bonferroni, Holm, Benjamini–Hochberg e exercícios.

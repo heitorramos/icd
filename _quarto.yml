@@ -31,17 +31,27 @@ website:
       style: docked
       contents:
         - aulas/index.qmd
-        - aulas/01-introducao.qmd
-        - aulas/02-causalidade.qmd
-        - aulas/06-tendencias-centrais.qmd
-        - aulas/07-estimadores.qmd
-        - aulas/08-risco-estimadores.qmd
-        - aulas/09-tcl-intervalos.qmd
-        - aulas/10-testes-hipoteses.qmd
-        - aulas/11-bootstrap.qmd
-        - aulas/12-testes-permutacao.qmd
-        - aulas/13-permutacao-avancada.qmd
-        - aulas/14-poder-multiplos.qmd
+        - section: "Módulo 0 · Motivação"
+          contents:
+            - aulas/01-introducao.qmd
+            - aulas/02-causalidade.qmd
+        - section: "Módulo 1 · Análise Exploratória"
+          contents:
+            - aulas/03-tabelas-tipos.qmd
+            - aulas/04-eda.qmd
+            - aulas/05-fundamentos-visualizacao.qmd
+            - aulas/06-boas-praticas-visualizacao.qmd
+        - section: "Módulo 2 · Inferência Estatística"
+          contents:
+            - aulas/07-tendencias-centrais.qmd
+            - aulas/08-estimadores.qmd
+            - aulas/09-risco-estimadores.qmd
+            - aulas/10-tcl-intervalos.qmd
+            - aulas/11-testes-hipoteses.qmd
+            - aulas/12-bootstrap.qmd
+            - aulas/13-testes-permutacao.qmd
+            - aulas/14-permutacao-avancada.qmd
+            - aulas/15-poder-multiplos.qmd
 
 format:
   html:

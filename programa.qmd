@@ -29,10 +29,10 @@ Ao final da disciplina, estudantes devem ser capazes de:
 | 1 | Motivação e ciclo de ciência de dados | Aula, slides, exemplo inicial |
 | 2 | Causalidade, experimentos e estudos observacionais | Slides, estudo de caso |
 | 3 | Dados tabulares e manipulação | Notebook/Quarto guiado |
-| 4 | Análise exploratória e visualização | Exemplo documentado, VPL |
+| 4 | Análise exploratória e visualização | Slides e material de apoio |
 | 5 | Probabilidade, amostragem e incerteza | Notebook conceitual, simulações |
 | 6 | Testes de hipótese | Exercícios e estudo de caso |
-| 7 | Regressão | Slides, exemplos, VPL |
+| 7 | Regressão | Slides e material de apoio |
 | 8 | Classificação e avaliação de modelos | Exercícios automáticos |
 | 9 | Projeto final | Rubrica, checkpoints, apresentação |
 

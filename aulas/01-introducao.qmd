@@ -29,12 +29,13 @@ Primeiro contato com uma tabela de dados.
 
 ## Objetivos
 
+- Motivar a ciência de dados por meio de aplicações reais e visualmente
+  marcantes, sem pressupor conhecimento técnico.
+- Mostrar como perguntas, dados, métodos, contexto e comunicação se conectam.
+- Diferenciar descrição, previsão e explicação por meio de situações concretas.
+- Introduzir responsabilidade, representatividade e consequências das decisões
+  baseadas em dados.
 - Apresentar a disciplina, sua logística e sua forma de trabalho.
-- Definir ciência de dados como uma prática que combina perguntas, dados,
-  computação, estatística e contexto.
-- Diferenciar ferramentas da área de objetivos da área.
-- Introduzir o ciclo de trabalho de uma análise.
-- Mostrar que boas perguntas organizam todo o restante do curso.
 
 ## Conceitos centrais
 
@@ -49,41 +50,48 @@ Primeiro contato com uma tabela de dados.
 
 ## Narrativa da aula
 
-A aula abre a disciplina e apresenta a ciência de dados como uma prática
-orientada por perguntas. A primeira decisão didática é separar a área de suas
-ferramentas: ciência de dados usa probabilidade, álgebra linear, estatística e
-aprendizado de máquina, mas não se reduz a nenhuma delas.
+A aula abre com um desafio: encontrar um exoplaneta em uma pequena queda de
+luminosidade. A partir daí, quatro histórias mostram como dados ampliam aquilo
+que conseguimos observar e decidir: detecção de exoplanetas, previsão de
+enchentes, estruturas de proteínas com AlphaFold e monitoramento de
+desmatamento pelo MapBiomas.
 
-Em seguida, a aula apresenta a "receita" do curso: computação para trabalhar
-com dados, estatística para lidar com variabilidade e incerteza, aprendizado de
-máquina como ferramenta, e boas perguntas como eixo central.
+Os casos compartilham uma estrutura simples — pergunta, dados, evidência e
+decisão — que apresenta a área sem antecipar técnicas. Recomendações digitais e
+diferenças de desempenho entre grupos introduzem escolhas humanas,
+responsabilidade e limites. A aula termina conectando essa narrativa ao ciclo de
+uma análise. Uma breve história liga Tukey, Naur, Cleveland e a popularização da
+área nos anos 2010. A seção final detalha ementa, dinâmica, bibliografia,
+avaliação, projeto, cronograma, bem-estar e canais institucionais de apoio.
 
 ## Dimensionamento para 100 minutos
 
 | Tempo | Atividade |
 |---:|---|
 | 0-10 min | Apresentação do professor, do curso e combinados iniciais |
-| 10-25 min | O que é ciência de dados e o que a área usa |
-| 25-40 min | Discussão guiada: exemplos de boas e más perguntas |
-| 40-60 min | Ciclo de uma análise de dados |
-| 60-80 min | Material de apoio em notebook: primeira tabela e indicador simples |
-| 80-95 min | Logística da disciplina, avaliações e projeto |
-| 95-100 min | Fechamento e pergunta para a próxima aula |
+| 10-35 min | Exoplanetas e enchentes: observar e antecipar |
+| 35-55 min | AlphaFold e MapBiomas: descobrir e monitorar |
+| 55-70 min | Recomendações, escolhas humanas e responsabilidade |
+| 70-78 min | O padrão comum e o ciclo de uma análise |
+| 78-85 min | Material de apoio: primeira tabela e indicador simples |
+| 85-97 min | Funcionamento, avaliação, projeto e canais de apoio |
+| 97-100 min | Leituras, fechamento e pergunta para a próxima aula |
+
+## Leituras adicionais dos exemplos
+
+- [NASA Exoplanet Watch](https://science.nasa.gov/citizen-science/exoplanet-watch/exoplanet-watch-overview/)
+- [Previsão global de enchentes](https://research.google/blog/a-flood-forecasting-ai-model-trained-and-evaluated-globally/)
+- [AlphaFold](https://deepmind.google/science/alphafold/)
+- [MapBiomas Alerta](https://alerta.mapbiomas.org/)
 
 ## Material de apoio sugerido
 
-Um exemplo inicial deve usar uma base pequena de dados públicos brasileiros,
-preferencialmente com variáveis compreensíveis sem muito conhecimento prévio.
+O notebook usa uma base pequena e compreensível sobre equipamentos públicos em
+Belo Horizonte. Ele não pretende ensinar técnicas novas: funciona como primeiro
+contato com observações, colunas, indicadores e perguntas que uma tabela pode ou
+não responder.
 
-Possíveis temas:
-
-- qualidade do ar ou clima em cidades brasileiras;
-- acidentes de trânsito;
-- dados de educação;
-- equipamentos públicos em Belo Horizonte;
-- séries históricas simples de indicadores sociais.
-
-O notebook piloto está em [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.ipynb).
+Acesse [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.ipynb).
 
 ## Conexão com exercícios
 

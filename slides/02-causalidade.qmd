@@ -1,8 +1,8 @@
 ---
 title: "Causa e Efeito"
-subtitle: "Aula 02"
+subtitle: "Aula 02 — Módulo 0: Motivação"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
-institute: '<div class="title-brand-lockup"><img class="brand-dcc" src="assets/brand/dcc-ufmg-fundo-escuro.png" alt="DCC"><img class="brand-ufmg" src="assets/brand/ufmg-branca-vermelha.png" alt="UFMG"></div>'
+institute: '<div class="title-brand-lockup"><img class="brand-horizontal" src="assets/brand/dcc-ufmg-horizontal-color.png" alt="Departamento de Ciência da Computação — UFMG"></div>'
 format:
   revealjs:
     theme: [default, styles/slides.scss]
@@ -15,7 +15,11 @@ execute:
   echo: false
 ---
 
-## Causalidade
+## Módulo 0 · Motivação
+
+::: {.statement}
+Como distinguir uma coincidência interessante de uma relação de causa e efeito?
+:::
 
 ## Alguns problemas atuais
 
@@ -25,9 +29,23 @@ execute:
 - Um aumento de desemprego induz aumento de crimes?
 - Uma mudança no código deixou o sistema mais rápido?
 
-## News Cycle
+## O ciclo das notícias { .news-cycle-slide}
 
-![](assets/original/news-cycle.png){fig-align="center" width="80%"}
+::: {.columns}
+::: {.column width="50%"}
+![](assets/original/news-cycle-cropped.png){fig-align="center" width="100%"}
+:::
+
+::: {.column width="50%"}
+- Um estudo é divulgado com um resultado chamativo.
+
+- A manchete simplifica e generaliza o que o estudo realmente mostrou.
+
+- Meses depois, réplicas ou revisões corrigem — ou derrubam — o resultado original.
+
+- O público, em geral, só viu a primeira manchete.
+:::
+:::
 
 ## Qual é o nosso problema?
 
@@ -43,16 +61,94 @@ Estudos estatísticos frequentemente perguntam como uma variável aleatória
 - Qual o efeito de uma política educacional (`X`) na frequência escolar (`Y`)?
 - Qual o efeito de um lembrete (`X`) na entrega de listas (`Y`)?
 
+## Associação não é intervenção
+
+- **Associação:** quem recebeu `X` apresentou valores diferentes de `Y`.
+- **Causalidade:** mudar `X`, mantendo o restante comparável, mudaria `Y`.
+
+::: {.statement}
+Perguntas causais imaginam uma intervenção no mundo.
+:::
+
+## O contrafactual
+
+Para uma mesma unidade `i`, definimos dois resultados potenciais:
+
+$$Y_i(1)=\text{resultado se tratada}$$
+$$Y_i(0)=\text{resultado se não tratada}$$
+
+O efeito individual seria $Y_i(1)-Y_i(0)$.
+
+## O resultado que nunca vemos
+
+Observamos apenas um dos dois cenários:
+
+$$Y_i=T_iY_i(1)+(1-T_i)Y_i(0)$$
+
+O outro é o **contrafactual**.
+
+::: {.fragment}
+Um grupo de comparação tenta representar esse resultado ausente.
+:::
+
+## O problema fundamental
+
+Não podemos observar a mesma pessoa, no mesmo instante, vacinada e não
+vacinada.
+
+Por isso buscamos o efeito médio:
+
+$$ATE=\mathbb{E}[Y(1)-Y(0)]$$
+
+**ATE — *Average Treatment Effect* (Efeito Médio do Tratamento):** média, na
+população, da diferença entre o resultado com tratamento e o resultado sem
+tratamento.
+
 ## O ciclo de trabalho do cientista de dados
 
-```{mermaid}
-flowchart LR
-  A["Formular perguntas"] --> B["Adquirir dados"]
-  B --> C["Análise exploratória"]
-  C --> D["Previsões e inferência"]
-  D --> E["Comunicação"]
-  E --> A
-```
+::: {.data-cycle}
+::: {.cycle-step}
+<span>01</span>
+
+**Formular**<br>perguntas
+:::
+
+<div class="cycle-arrow">→</div>
+
+::: {.cycle-step}
+<span>02</span>
+
+**Adquirir**<br>dados
+:::
+
+<div class="cycle-arrow">→</div>
+
+::: {.cycle-step}
+<span>03</span>
+
+**Explorar**<br>e visualizar
+:::
+
+<div class="cycle-arrow">→</div>
+
+::: {.cycle-step}
+<span>04</span>
+
+**Inferir**<br>e prever
+:::
+
+<div class="cycle-arrow">→</div>
+
+::: {.cycle-step}
+<span>05</span>
+
+**Comunicar**<br>e decidir
+:::
+:::
+
+::: {.cycle-return}
+↖ novas evidências geram novas perguntas
+:::
 
 ## Formular perguntas
 
@@ -84,9 +180,24 @@ Todas tentam estabelecer uma noção de causa e efeito.
 - Em ciência de dados, raramente temos um modelo completo do mundo.
 - Quando possível, fazemos experimentos.
 
-## Fisher
+## Fisher transformou comparação em desenho
 
-![](assets/original/fisher.png){fig-align="center" width="88%"}
+::: {.columns}
+::: {.column width="39%"}
+![](assets/original/fisher-portrait-cropped.png){fig-align="center" width="100%"}
+:::
+
+::: {.column width="55%"}
+**Ronald A. Fisher (1890–1962)**
+
+Ao trabalhar com experimentos agrícolas, Fisher percebeu que não bastava
+comparar colheitas: era preciso **planejar como a comparação seria criada**.
+
+::: {.statement}
+O desenho do estudo vem antes da análise dos dados.
+:::
+:::
+:::
 
 ## Fisher
 
@@ -98,9 +209,26 @@ Em *The Design of Experiments*, consolidou ideias como:
 - randomização;
 - replicação.
 
-## Experimento
+## Experimento {}
 
-![](assets/original/fisher-experimento.png){fig-align="center" width="88%"}
+::: {.columns}
+::: {.column width="64%"}
+![](assets/original/fisher-experiment-cropped.png){fig-align="center" width="100%"}
+:::
+
+::: {.column width="30%"}
+<div class="fisher-experiment-copy">
+
+**Pergunta:** reagentes alteram a colheita?
+
+Cada quadrado representa uma parcela. Os tratamentos são distribuídos pelo
+campo para separar seu efeito das diferenças naturais do terreno.
+
+**Ideia central:** organizar onde medir é parte do método estatístico.
+
+</div>
+:::
+:::
 
 ## Experimento
 
@@ -108,15 +236,23 @@ Queremos estudar o efeito de um tratamento.
 
 ::: {.columns}
 ::: {.column width="50%"}
-**Controle**
+::: {.experiment-group-card .control-card}
+<div class="experiment-card-title">Controle</div>
 
-Grupo que não recebe a intervenção.
+Não recebe a intervenção.
+
+Representa o que aconteceria **sem** o tratamento.
+:::
 :::
 
 ::: {.column width="50%"}
-**Tratamento**
+::: {.experiment-group-card .treatment-card}
+<div class="experiment-card-title">Tratamento</div>
 
-Grupo que recebe a intervenção.
+Recebe a intervenção.
+
+Representa o resultado **com** o tratamento.
+:::
 :::
 :::
 
@@ -133,6 +269,62 @@ Do inglês *Randomized Controlled Trial* (RCT).
 - Parte do grupo recebe o tratamento.
 - Outra parte fica no controle.
 - Depois comparamos o resultado.
+
+## Um experimento que mudou a saúde pública
+
+Em 1954, o ensaio da vacina de Jonas Salk contra a poliomielite envolveu cerca
+de **1,8 milhão de crianças**.
+
+::: {.statement}
+A vacina de vírus inativado previne pólio paralítica?
+:::
+
+::: notes
+Fonte: CDC, Dateline: CDC, https://stacks.cdc.gov/view/cdc/21420/cdc_21420_DS1.pdf
+:::
+
+## Dois desenhos no mesmo estudo
+
+::: {.columns}
+::: {.column width="50%"}
+::: {.experiment-group-card .control-card}
+**Placebo randomizado**
+
+Vacina e placebo foram atribuídos em desenho cego.
+:::
+:::
+::: {.column width="50%"}
+::: {.experiment-group-card .treatment-card}
+**Controle observado**
+
+Em outras regiões, crianças vacinadas foram comparadas às não vacinadas.
+:::
+:::
+:::
+
+O primeiro desenho produzia grupos mais comparáveis.
+
+## Por que o controle observado preocupa?
+
+Famílias que autorizavam a vacinação poderiam diferir das demais em:
+
+- renda e acesso à saúde;
+- exposição ao vírus;
+- procura por diagnóstico;
+- condições anteriores de saúde.
+
+Randomizar reduz esse viés de seleção.
+
+## O resultado do ensaio
+
+- Os resultados foram anunciados em 12 de abril de 1955.
+- No estudo com placebo, a eficácia contra pólio paralítica foi de cerca de
+  **72%**.
+- A vacina foi rapidamente licenciada.
+
+::: notes
+Fonte: NIH/PMC, Lessons from the Salk Polio Vaccine, https://pmc.ncbi.nlm.nih.gov/articles/PMC2928990/
+:::
 
 ## Exemplo: lembrete no Moodle
 
@@ -242,9 +434,9 @@ Correlação não é causalidade.
 Mas boa parte do trabalho em ciência de dados começa observando associações.
 Quando bem desenhado, esse trabalho pode sugerir hipóteses causais.
 
-## John Snow
+## Antes de John Snow…
 
-![](assets/original/john-snow-title.png){fig-align="center" width="88%"}
+![](assets/jon-snow-you-know-nothing.png){fig-align="center" width="92%"}
 
 ## John Snow
 
@@ -252,9 +444,24 @@ Médico inglês, frequentemente associado ao início da epidemiologia moderna.
 
 Viveu entre 1813 e 1858.
 
-## Londres na época
+## Londres na época {.smaller}
 
-![](assets/original/londres-punch.png){fig-align="center" width="82%"}
+::: {.columns}
+::: {.column width="61%"}
+![](assets/original/london-punch-cropped.png){fig-align="center" width="100%"}
+:::
+
+::: {.column width="33%"}
+**Londres, 1852**
+
+A charge *A Court for King Cholera*, da revista *Punch*, retrata aglomeração,
+esgoto e pobreza como parte do cotidiano urbano.
+
+::: {.statement}
+O ambiente oferecia muitas explicações plausíveis — e confundidas entre si.
+:::
+:::
+:::
 
 ## Londres na época
 
@@ -286,7 +493,21 @@ No caso da cólera, odor era um sinal do ambiente, mas não a causa principal.
 
 ## Mapa de John Snow
 
-![](assets/original/john-snow-map.png){fig-align="center" width="88%"}
+::: {.columns}
+::: {.column width="66%"}
+![](assets/original/john-snow-map-cropped.png){fig-align="center" width="88%"}
+:::
+
+::: {.column width="28%"}
+Cada pequena barra registra uma morte por cólera.
+
+As barras se concentram ao redor da bomba da **Broad Street**.
+
+::: {.statement}
+O mapa transforma localização em evidência.
+:::
+:::
+:::
 
 ## Lembrando de Fisher
 
@@ -300,14 +521,74 @@ Snow procurou uma comparação justa dentro dos dados observacionais.
 
 ## Desenhando a confusão
 
-![](assets/original/confounding-graph.png){fig-align="center" width="86%"}
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 4.4
+flowchart LR
+  C["Pobreza e condições urbanas"]:::confounder
+  A["Companhia / fonte da água"]:::exposure
+  M["Qualidade da água"]:::mediator
+  Y["Cólera"]:::outcome
 
-## O experimento de John Snow
+  A -->|altera| M
+  M -->|afeta| Y
+  C -.->|influencia a exposição| A
+  C -.->|também afeta o risco| Y
 
-Parte de Londres recebia água de duas companhias diferentes.
+  classDef confounder fill:#fff0e8,stroke:#d95f02,stroke-width:3px,color:#17324d
+  classDef exposure fill:#eef3f5,stroke:#0f6b78,stroke-width:3px,color:#17324d
+  classDef mediator fill:#eef3f5,stroke:#0f6b78,stroke-width:3px,color:#17324d
+  classDef outcome fill:#e9f5f1,stroke:#16826c,stroke-width:3px,color:#17324d
+  linkStyle 0,1 stroke:#17324d,stroke-width:3px
+  linkStyle 2,3 stroke:#d95f02,stroke-width:3px,stroke-dasharray:8 6
+```
 
-Se as casas eram parecidas em outros aspectos, a fonte da água criava uma
-comparação próxima de um experimento natural.
+::: {.statement}
+Comparar as companhias exige casas semelhantes em pobreza e condições urbanas.
+:::
+
+## O experimento de John Snow {.smaller}
+
+::: {.snow-natural-experiment}
+::: {.snow-stage .snow-population}
+<span>01</span>
+
+**Casas misturadas**<br>
+na mesma região de Londres
+:::
+
+<div class="snow-split">↙ &nbsp;&nbsp; ↘</div>
+
+::: {.snow-branches}
+::: {.snow-stage .snow-dirty}
+<span>02A</span>
+
+**Southwark & Vauxhall**<br>
+captação mais contaminada
+:::
+
+::: {.snow-stage .snow-clean}
+<span>02B</span>
+
+**Lambeth**<br>
+captação mais limpa
+:::
+:::
+
+<div class="snow-merge">↘ &nbsp;&nbsp; ↙</div>
+
+::: {.snow-stage .snow-outcome}
+<span>03</span>
+
+**Comparar mortalidade por cólera**<br>
+entre as duas redes de abastecimento
+:::
+:::
+
+::: {.statement}
+Como as redes atendiam casas próximas, a companhia de água criou uma comparação
+próxima de um experimento natural.
+:::
 
 ## A Tabela de John Snow
 
@@ -339,21 +620,47 @@ Mortes por 10.000 casas.
 - A hipótese da água demorou a convencer.
 - A ciência é lenta, mas acumula evidências.
 
-## Níveis de evidência científica
+## Níveis de evidência científica {.smaller}
 
-![](assets/original/evidence-levels.png){fig-align="center" width="80%"}
+::: {.evidence-ladder}
+::: {.evidence-rung .evidence-high}
+**Sínteses** · revisões sistemáticas e meta-análises
+:::
+::: {.evidence-rung}
+**Experimentos randomizados** · comparação criada pelo sorteio
+:::
+::: {.evidence-rung}
+**Experimentos não randomizados** · comparação controlada, mas vulnerável à seleção
+:::
+::: {.evidence-rung}
+**Estudos observacionais comparativos** · ajuste e desenho tentam reduzir confundimento
+:::
+::: {.evidence-rung}
+**Séries e relatos de casos** · descrevem sinais, sem contrafactual forte
+:::
+::: {.evidence-rung .evidence-base}
+**Opinião e laboratório** · mecanismo e plausibilidade, ainda longe do efeito na população
+:::
+:::
 
-## Desenho de projeto científico
+**Atenção:** subir na hierarquia ajuda, mas qualidade, transparência e contexto
+continuam essenciais.
 
-![](assets/original/scientific-project-design.png){fig-align="center" width="80%"}
+## Evidência científica em movimento
 
-## Ciência experimental
+::: {.evidence-flow-native}
+<span>In vitro</span><b>→</b><span>Observacional</span><b>→</b><span>Randomizado</span><b>→</b><span>Meta-análise</span>
+:::
 
-![](assets/original/evidence-flow.png){fig-align="center" width="80%"}
+::: {.evidence-articles-wide}
+![](assets/original/evidence-flow-articles-tight.png){fig-align="center"}
+:::
 
-## Cenário típico
-
-![](assets/original/experimental-science.png){fig-align="center" width="80%"}
+::: notes
+Slide 44 preservado do deck original: a progressão dos estudos sobre
+hidroxicloroquina durante a pandemia ilustra como conclusões mudam quando o
+nível e a quantidade de evidência aumentam.
+:::
 
 ## RCT
 
@@ -366,6 +673,15 @@ Benefícios:
 - raciocínio matemático sobre diferenças entre grupos;
 - conclusões mais defensáveis sobre efeito.
 
+## Checklist causal
+
+1. Qual é a unidade, o tratamento e o resultado?
+2. Qual é o contrafactual relevante?
+3. Como os grupos foram formados?
+4. Que confundidores permanecem?
+5. Como tratamento e resultado foram medidos?
+6. Para quem e onde a conclusão vale?
+
 ## Conclusões
 
 - O principal trabalho do cientista de dados é fazer boas perguntas.
@@ -377,3 +693,5 @@ Benefícios:
 
 - Computational and Inferential Thinking, capítulo 2: Causality and Experiments.
 - Judea Pearl e Dana Mackenzie. *The Book of Why*, 2018.
+- Miguel Hernán e James Robins. *Causal Inference: What If*, 2020.
+- CDC. [50º aniversário da primeira vacina eficaz contra pólio](https://www.cdc.gov/mmwr/preview/mmwrhtml/mm5413a5.htm).

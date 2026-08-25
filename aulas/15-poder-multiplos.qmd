@@ -1,0 +1,44 @@
+---
+title: "Aula 15: Poder e Múltiplos Testes"
+subtitle: "Detectar efeitos sem fabricar descobertas"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-6}
+::: {.recurso-card}
+### Slides
+
+Poder, bootstrap sob hipóteses alternativas e controle de múltiplos testes.
+
+[Abrir slides](../slides/15-poder-multiplos.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.recurso-card}
+### Material de apoio
+
+Análise reproduzível do experimento Cookie Cats, com simulações e exercícios.
+
+[Abrir notebook](../exemplos/15-poder-multiplos/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- construir $H_0$ por permutação e bootstrap recentralizado;
+- compreender por que o bootstrap usual representa naturalmente $H_A$;
+- definir e estimar poder para alternativas específicas;
+- relacionar efeito, amostra, nível de significância e poder;
+- quantificar a inflação de falsos positivos;
+- escolher entre controle de FWER e FDR.
+
+## Estudo de caso
+
+O experimento Cookie Cats compara duas posições para uma barreira no jogo. A
+retenção em 7 dias é a métrica primária; retenção em 1 dia e rodadas permitem
+discutir famílias de hipóteses e multiplicidade.
+
