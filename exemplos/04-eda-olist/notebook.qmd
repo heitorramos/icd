@@ -2,7 +2,7 @@
 title: "Aula 04 — Análise Exploratória com a Olist"
 subtitle: "Estrutura, granularidade, escopo, temporalidade e corretude"
 author: "Introdução à Ciência de Dados — DCC/UFMG"
-format: ipynb
+format: html
 jupyter: python3
 execute:
   echo: true

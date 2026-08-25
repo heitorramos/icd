@@ -4,7 +4,12 @@ title: "Aulas"
 
 Esta seção reúne os roteiros pedagógicos, slides e notebooks da disciplina.
 
+::: {.modulo-bloco .modulo-0}
+::: {.modulo-cabecalho}
 ## Módulo 0 · Motivação
+
+Perguntas, evidências, responsabilidade e causalidade.
+:::
 
 ::: {.grid .aulas-grid}
 ::: {.g-col-12 .g-col-md-6}
@@ -31,7 +36,14 @@ Associação, causa e efeito, experimentos e estudos observacionais.
 :::
 :::
 
+:::
+
+::: {.modulo-bloco .modulo-1}
+::: {.modulo-cabecalho}
 ## Módulo 1 · Análise Exploratória
+
+Da estrutura das tabelas à exploração e comunicação visual.
+:::
 
 ::: {.grid .aulas-grid}
 ::: {.g-col-12 .g-col-md-6}
@@ -80,9 +92,14 @@ Escala, condicionamento, contexto, cor, transformações e comunicação.
 :::
 :::
 
+:::
+
+::: {.modulo-bloco .modulo-2}
+::: {.modulo-cabecalho}
 ## Módulo 2 · Inferência Estatística
 
-Aulas 07–15 já disponíveis.
+Amostragem, estimadores, incerteza, testes e decisões estatísticas. Aulas 07–15 já disponíveis.
+:::
 
 ::: {.grid .aulas-grid}
 ::: {.g-col-12 .g-col-md-6}
@@ -186,7 +203,14 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 :::
 :::
 
-## Módulo 3 · Em preparação
+:::
+
+::: {.modulo-bloco .modulo-3 .modulo-futuro}
+::: {.modulo-cabecalho}
+## Módulo 3 · Modelagem e aprendizado de máquina
+
+Aulas 16–26 · em preparação.
+:::
 
 ::: {.grid .aulas-grid}
 ::: {.g-col-12}
@@ -200,4 +224,6 @@ funções de perda e verossimilhança, classificação, avaliação e métodos n
 supervisionados.
 :::
 :::
+:::
+
 :::

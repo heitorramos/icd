@@ -2,7 +2,7 @@
 title: "Material de apoio — Boas práticas de visualização"
 subtitle: "TMDB 5000 Movie Dataset"
 jupyter: python3
-format: ipynb
+format: html
 execute:
   echo: true
   warning: false

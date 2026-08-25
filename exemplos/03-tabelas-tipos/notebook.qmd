@@ -1,7 +1,7 @@
 ---
 title: "Aula 03 — Tabelas e tipos de dados com Airbnb NYC"
 subtitle: "Material de estudo"
-format: ipynb
+format: html
 jupyter: python3
 execute:
   echo: true

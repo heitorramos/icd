@@ -2,7 +2,7 @@
 title: "Material de apoio — Fundamentos de visualização"
 subtitle: "Palmer Penguins e Datasaurus Dozen"
 jupyter: python3
-format: ipynb
+format: html
 execute:
   echo: true
   warning: false
