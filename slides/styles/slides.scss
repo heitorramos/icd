@@ -429,7 +429,10 @@ $link-color: #0f6b78;
   border-top-color: #d95f02;
 }
 
-.reveal .theorem-grid h3 {
+.reveal .theorem-card-title {
+  color: #17324d;
+  font-size: 1.15em;
+  font-weight: 700;
   margin: 0 0 0.35rem;
 }
 

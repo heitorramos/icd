@@ -200,7 +200,7 @@ O centro permanece em $\mu$; a dispersão diminui.
 
 ::: {.icd-grid .theorem-grid}
 ::: {.icd-card .lgn-card}
-### Lei dos Grandes Números
+<p class="theorem-card-title">Lei dos Grandes Números</p>
 
 $${\bar X}_n \xrightarrow{P} \mu$$
 
@@ -212,7 +212,7 @@ $${\bar X}_n \xrightarrow{P} \mu$$
 :::
 
 ::: {.icd-card .tcl-card}
-### Teorema Central do Limite
+<p class="theorem-card-title">Teorema Central do Limite</p>
 
 $$\frac{\bar X_n-\mu}{\sigma/\sqrt n}\xrightarrow{d}N(0,1)$$
 
