@@ -1,27 +1,49 @@
 ---
-title: "Aula 12 — Bootstrap"
+title: "Aula 12: Bootstrap"
+subtitle: "Incerteza por reamostragem"
 ---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Distribuição empírica, réplicas bootstrap, erro padrão, intervalos e validade.
+
+[Abrir slides](../slides/12-bootstrap.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Análise de preços do Airbnb NYC 2019 com bootstrap.
+
+[Abrir notebook](../exemplos/12-bootstrap/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados
+
+Anúncios públicos do Airbnb em Nova York, com preço, localização e anfitrião.
+
+[Abrir base](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data/data){.btn .btn-outline-primary}
+:::
+:::
+:::
 
 ## Objetivos
 
-Ao final da aula, você deverá ser capaz de:
-
-- explicar a distribuição empírica e a reamostragem com reposição;
-- implementar o bootstrap para uma estatística;
-- estimar erro padrão e intervalo percentil;
-- avaliar as condições de validade do método;
-- adaptar a unidade de reamostragem quando há dependência.
-
-## Pergunta-guia
-
-Quanto mais cara era uma acomodação inteira típica em Manhattan do que no
-Brooklyn, segundo os anúncios do Airbnb NYC 2019?
-
-## Materiais
-
-- [Slides da Aula 12](../slides/12-bootstrap.html)
-- [Notebook: Airbnb NYC e bootstrap](../exemplos/12-bootstrap/notebook.html)
-- [Base no Kaggle](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data/data)
+- Explicar a distribuição empírica e a reamostragem com reposição.
+- Implementar o bootstrap para uma estatística definida pela pergunta.
+- Estimar erro padrão e intervalos de confiança por bootstrap.
+- Interpretar a distribuição bootstrap como incerteza condicionada à amostra.
+- Avaliar condições de validade, dependência e unidade de reamostragem.
 
 ## Conceitos centrais
 
@@ -32,7 +54,21 @@ Brooklyn, segundo os anúncios do Airbnb NYC 2019?
 - cobertura e validade;
 - bootstrap por blocos, estratos e agrupamentos.
 
-## Antes da próxima aula
+## Estudo de caso
+
+A aula usa a base Airbnb NYC 2019 para comparar o preço típico de acomodações
+inteiras em Manhattan e Brooklyn. Como os preços são assimétricos e possuem
+valores extremos, a mediana é usada como medida principal. O bootstrap entra
+como forma de quantificar a incerteza da diferença entre medianas sem depender
+de uma fórmula pronta para o erro padrão.
+
+## Pergunta da aula
+
+> Quanto mais cara era uma acomodação inteira típica em Manhattan do que no
+> Brooklyn?
+
+## Conexão com exercícios
 
 Refaça a análise para o percentil 75 dos preços e compare o bootstrap por anúncio
-ao bootstrap por anfitrião.
+ao bootstrap por anfitrião. Em seguida, discuta como a escolha da unidade de
+reamostragem muda a interpretação da incerteza.
