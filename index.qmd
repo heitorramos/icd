@@ -39,7 +39,7 @@ Sala 406 — CAD3
 :::
 
 ::: {.g-col-12 .g-col-md-4}
-::: {.info-card .mock-card}
+::: {.info-card}
 ### Atendimento
 
 Ver horários de monitoria.
