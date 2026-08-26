@@ -26,6 +26,15 @@ Teste da taxa de atraso nos pedidos Olist.
 :::
 :::
 
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Pedidos da Olist usados para estudar atrasos, p-valores e poder.
+
+[Abrir base](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce){.btn .btn-outline-primary}
+:::
+:::
 :::
 
 ## Objetivos

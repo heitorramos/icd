@@ -6,7 +6,7 @@ subtitle: "Detectar efeitos sem fabricar descobertas"
 ## Materiais da aula
 
 ::: {.grid .recursos-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Slides
 
@@ -16,13 +16,23 @@ Poder, bootstrap sob hipóteses alternativas e controle de múltiplos testes.
 :::
 :::
 
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Material de apoio
 
 Análise reproduzível do experimento Cookie Cats, com simulações e exercícios.
 
 [Abrir notebook](../exemplos/15-poder-multiplos/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Experimento Cookie Cats com duas posições de barreira e métricas de retenção.
+
+[Abrir base](https://www.kaggle.com/datasets/matinmahmoudi/rounds-and-retention){.btn .btn-outline-primary}
 :::
 :::
 :::
@@ -41,4 +51,3 @@ Análise reproduzível do experimento Cookie Cats, com simulações e exercício
 O experimento Cookie Cats compara duas posições para uma barreira no jogo. A
 retenção em 7 dias é a métrica primária; retenção em 1 dia e rodadas permitem
 discutir famílias de hipóteses e multiplicidade.
-

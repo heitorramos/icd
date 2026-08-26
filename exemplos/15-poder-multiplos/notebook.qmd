@@ -6,7 +6,7 @@ format:
     code-fold: show
     code-summary: "Ocultar código"
 execute:
-  enabled: false
+  enabled: true
 ---
 
 # Objetivos
@@ -288,13 +288,94 @@ Nesta análise (10. Muitos testes sob uma nula global), a leitura deve considera
 
 # 11. Bonferroni, Holm e BH
 
-```{python}
-p_values = np.array([.0004, .001, .004, .009, .015, .03, .08, .20, .50, .90])
+## 11.1 A família e a contabilidade dos erros
 
-for method in ["bonferroni", "holm", "fdr_bh"]:
-    reject, adjusted, _, _ = multipletests(p_values, alpha=.05, method=method)
-    print(method)
-    print(pd.DataFrame({"p": p_values, "p_ajustado": adjusted, "rejeitar": reject}))
+Considere uma família de $m$ hipóteses. Chamamos de $R$ o número de hipóteses rejeitadas e de $V$ o número de rejeições falsas. As $R$ rejeições são as descobertas anunciadas; entre elas, $V$ correspondem a hipóteses nulas que eram verdadeiras.
+
+Não observamos $V$ diretamente. Por isso, os procedimentos de correção não identificam qual descoberta é falsa: eles controlam o comportamento de $V$ quando o estudo é repetido sob condições semelhantes.
+
+### FWER: proteger a família contra qualquer falso positivo
+
+$$
+\operatorname{FWER}=P(V\geq1).
+$$
+
+Controlar FWER em 5% significa que, em repetições do procedimento completo, a probabilidade de cometer **ao menos um** falso positivo na família é no máximo 5%. É um critério apropriado quando uma única afirmação falsa já teria custo elevado, como em uma decisão regulatória ou na escolha confirmatória de uma métrica principal.
+
+Com testes independentes, todos sob $H_0$ e executados individualmente no nível $\alpha$:
+
+$$
+P(V\geq1)=1-(1-\alpha)^m.
+$$
+
+Essa igualdade descreve a inflação sem correção sob independência. A definição de FWER não exige independência.
+
+### FDR: controlar a fração falsa entre as descobertas
+
+$$
+\operatorname{FDR}=E\left[\frac{V}{\max(R,1)}\right].
+$$
+
+Controlar FDR em 5% significa controlar, em média, a proporção de rejeições falsas entre as rejeições realizadas. Isso **não** quer dizer que cada descoberta tenha 5% de probabilidade de ser falsa, nem que todo estudo terá exatamente 5% de falsos positivos. FDR é natural em análises exploratórias com muitas descobertas potenciais, nas quais aceitar algumas falsas permite obter muito mais poder.
+
+## 11.2 Bonferroni: dividir o orçamento de erro
+
+Bonferroni testa cada hipótese no nível $\alpha/m$. A justificativa usa a desigualdade da união:
+
+$$
+P\left(\bigcup_{i=1}^m A_i\right)
+\leq \sum_{i=1}^mP(A_i)
+\leq m\frac{\alpha}{m}=\alpha,
+$$
+
+em que $A_i$ é o evento de falso positivo no teste $i$. Portanto, Bonferroni controla FWER mesmo quando os testes são dependentes. O valor-p ajustado é
+
+$$
+p_i^{adj}=\min(mp_i,1).
+$$
+
+A simplicidade tem um custo: usar o mesmo limiar $\alpha/m$ para todos os testes pode reduzir muito o poder.
+
+## 11.3 Holm: controle sequencial de FWER
+
+Holm ordena $p_{(1)}\leq\cdots\leq p_{(m)}$ e compara, em sequência,
+
+$$
+p_{(i)}\leq\frac{\alpha}{m-i+1}.
+$$
+
+Começamos com o mesmo limiar de Bonferroni. A cada rejeição, restam menos hipóteses e o limiar fica menos severo. No primeiro fracasso, o procedimento para e não rejeita as hipóteses restantes. Holm também controla FWER sob dependência arbitrária e é uniformemente mais poderoso que Bonferroni: nunca rejeita menos hipóteses para a mesma família.
+
+## 11.4 BH: procedimento step-up para FDR
+
+Benjamini–Hochberg (BH) ordena os valores-p, calcula $(i/m)q$ e procura o **maior** índice $k$ que satisfaz
+
+$$
+p_{(k)}\leq\frac{k}{m}q.
+$$
+
+Em seguida rejeita as hipóteses de posições $1$ a $k$. BH não deve parar no primeiro valor-p que falha. Sob independência e certas formas de dependência positiva, ele controla FDR no nível $q$. Dependência arbitrária pode exigir uma alternativa mais conservadora, como Benjamini–Yekutieli.
+
+## 11.5 Exemplo trabalhado
+
+Considere $m=5$, $\alpha=q=0{,}05$ e os valores-p ordenados abaixo.
+
+```{python}
+p_values = np.array([.003, .011, .018, .041, .200])
+
+comparacao = pd.DataFrame({"p": p_values})
+for label, method in [
+    ("Bonferroni", "bonferroni"),
+    ("Holm", "holm"),
+    ("BH", "fdr_bh"),
+]:
+    reject, adjusted, _, _ = multipletests(
+        p_values, alpha=.05, method=method
+    )
+    comparacao[f"p ajustado — {label}"] = adjusted
+    comparacao[f"rejeita — {label}"] = reject
+
+comparacao.round(4)
 ```
 
 ::: {.callout-note title="Discussão da análise"}
@@ -302,9 +383,15 @@ Nesta análise (11. Bonferroni, Holm e BH), a leitura deve considerar o conjunto
 :::
 
 
-Bonferroni e Holm controlam a chance de qualquer falso positivo na família. BH
-controla a proporção esperada de falsos entre as descobertas. Escolha o método
-com base no objetivo, não no número de rejeições que ele produz.
+Neste exemplo, Bonferroni rejeita apenas $p=0{,}003$; Holm rejeita $0{,}003$ e $0{,}011$; BH rejeita também $0{,}018$. O aumento no número de rejeições não significa que BH seja “melhor”: ele aceita uma meta de erro diferente.
+
+| método | quantidade controlada | interpretação | uso típico |
+|---|---|---|---|
+| Bonferroni | FWER | protege contra qualquer falso positivo | poucas decisões confirmatórias e alto custo de erro |
+| Holm | FWER | mesma proteção, com limiares sequenciais | escolha padrão quando se quer controlar FWER |
+| BH | FDR | controla a fração falsa esperada entre descobertas | muitas hipóteses exploratórias ou triagem |
+
+Escolha o método com base no custo dos erros e no objetivo científico, nunca apenas pelo número de resultados significativos que ele produz.
 
 # 12. As três métricas de Cookie Cats
 
@@ -367,10 +454,12 @@ Poder não é uma propriedade isolada do teste. Ele depende de tamanho do efeito
 
 ## Múltiplos testes
 
-Com $m$ testes independentes no nível $\alpha$, a probabilidade de ao menos um falso positivo é
+Com $m$ testes independentes no nível $\alpha$, todos sob a hipótese nula, a probabilidade de ao menos um falso positivo é
 
 $$\operatorname{FWER}=1-(1-\alpha)^m.$$
 
-Bonferroni testa cada hipótese em $\alpha/m$ e controla FWER. Benjamini–Hochberg ordena os valores-p e controla a taxa esperada de falsas descobertas entre as rejeições. Eles não competem pela mesma meta: FWER é mais protetora contra qualquer falso positivo; FDR aceita alguns em troca de maior poder.
+Em geral, $\operatorname{FWER}=P(V\geq1)$. Bonferroni testa cada hipótese em $\alpha/m$ e controla FWER pela desigualdade da união. Holm também controla FWER, mas ordena os valores-p e relaxa progressivamente o limiar; por isso, nunca tem menos poder que Bonferroni.
+
+Já $\operatorname{FDR}=E[V/\max(R,1)]$ controla a proporção falsa esperada entre as descobertas. Benjamini–Hochberg ordena os valores-p, encontra o maior $k$ com $p_{(k)}\leq(k/m)q$ e rejeita as primeiras $k$ hipóteses. FWER e FDR não são versões mais forte e mais fraca da mesma resposta: representam compromissos científicos diferentes.
 
 Definir uma métrica primária reduz multiplicidade. Correções não consertam viés, p-hacking, mudança da hipótese após os dados ou seleção de “vencedores”, que também tende a exagerar os efeitos observados.

@@ -12,7 +12,7 @@ Como transformar tabelas de pedidos, itens, clientes e avaliações em uma anál
 ## Materiais
 
 ::: {.grid .aulas-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Slides
 
@@ -21,13 +21,23 @@ Deck com 45 slides, códigos abertos, resultados e gráficos construídos com a 
 [Abrir slides](../slides/04-eda.html){.btn .btn-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Material de apoio
 
 Notebook executado com auditoria, merges, exercícios e respostas comentadas.
 
 [Abrir notebook](../exemplos/04-eda-olist/notebook.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.aula-card}
+### Base de dados de apoio
+
+E-commerce brasileiro com pedidos, clientes, itens, pagamentos e avaliações.
+
+[Abrir base](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce){.btn .btn-primary}
 :::
 :::
 :::

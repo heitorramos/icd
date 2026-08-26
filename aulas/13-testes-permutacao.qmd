@@ -6,7 +6,7 @@ subtitle: "O acaso como modelo nulo"
 ## Materiais da aula
 
 ::: {.grid .recursos-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Slides
 
@@ -15,13 +15,23 @@ Construção do teste de permutação em uma campanha A/B real.
 [Abrir slides](../slides/13-testes-permutacao.qmd){.btn .btn-outline-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Notebook
 
 Análise reprodutível, simulação da distribuição nula e exercícios.
 
 [Abrir notebook](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Campanha A/B com anúncio, PSA, conversão e exposição registrada.
+
+[Abrir base](https://www.kaggle.com/datasets/faviovaz/marketing-ab-testing){.btn .btn-outline-primary}
 :::
 :::
 :::
@@ -40,4 +50,3 @@ Análise reprodutível, simulação da distribuição nula e exercícios.
 A base Marketing A/B Testing compara a conversão de 588.101 usuários expostos
 a um anúncio comercial ou a um PSA. A aula pergunta se a diferença observada de
 conversão pode ser explicada apenas pela atribuição aleatória dos grupos.
-

@@ -38,6 +38,11 @@ principal, uma descrição curta contendo:
 Esse panorama deve ocupar normalmente um ou dois slides. Toda figura deve incluir
 um bloco recolhível **Código do gráfico** com o trecho que a produziu.
 
+Na página da aula, toda base utilizada deve aparecer na grade inicial em um card
+intitulado **Base de dados de apoio**, com uma descrição breve e link para a
+fonte. Quando houver mais de uma base, o mesmo card pode reunir os links, deixando
+claro qual é a base principal e qual sustenta exemplos complementares.
+
 ## Publicação no GitHub
 
 1. Crie um repositório vazio chamado `icd` no GitHub.

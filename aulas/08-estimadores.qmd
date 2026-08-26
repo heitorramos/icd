@@ -26,6 +26,15 @@ Simulações com a base Palmer Penguins.
 :::
 :::
 
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Palmer Penguins, com espécies, ilhas e medidas corporais.
+
+[Abrir base](https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data){.btn .btn-outline-primary}
+:::
+:::
 :::
 
 ## Objetivos

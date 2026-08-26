@@ -12,7 +12,7 @@ Como tornar a comparação correta mais fácil e reduzir interpretações produz
 ## Materiais
 
 ::: {.grid .aulas-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Slides
 
@@ -21,13 +21,24 @@ Escalas, condicionamento, cor, transformações, contexto, ruído e ética da co
 [Abrir slides](../slides/06-boas-praticas-visualizacao.html){.btn .btn-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Material de apoio
 
 Notebook executado com comparações, redesenhos e exercícios de crítica visual.
 
 [Abrir notebook](../exemplos/06-boas-praticas-visualizacao/notebook.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.aula-card}
+### Base de dados de apoio
+
+TMDB 5000 como base principal e Olist no exemplo de condicionamento espacial.
+
+[TMDB 5000](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata){.btn .btn-primary}
+[Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce){.btn .btn-outline-primary}
 :::
 :::
 :::

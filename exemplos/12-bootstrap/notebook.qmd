@@ -7,7 +7,7 @@ format:
     code-summary: "Ocultar código"
 jupyter: python3
 execute:
-  enabled: false
+  enabled: true
 ---
 
 ## A base

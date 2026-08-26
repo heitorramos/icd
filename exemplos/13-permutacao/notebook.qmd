@@ -6,7 +6,7 @@ format:
     code-fold: show
     code-summary: "Ocultar código"
 execute:
-  enabled: false
+  enabled: true
 ---
 
 # Objetivos
@@ -238,16 +238,23 @@ def stratified_stat(frame, label_col="permuted"):
     weights = frame["most ads day"].value_counts(normalize=True)
     return np.sum(pieces * weights[pieces.index])
 
-work = df[["most ads day", "test group", "converted"]].copy()
+# Uma subamostra mantém o exemplo executável em computadores pessoais.
+work = df[["most ads day", "test group", "converted"]].sample(
+    n=min(40_000, len(df)), random_state=1213
+).copy()
 work["permuted"] = work["test group"]
 observed_strat = stratified_stat(work)
 
 null_strat = []
-for _ in range(1000):
+for _ in range(300):
     work["permuted"] = work.groupby("most ads day")["test group"].transform(
         lambda x: rng.permutation(x.to_numpy())
     )
     null_strat.append(stratified_stat(work))
+
+print(f"Efeito estratificado observado: {observed_strat:.5f}")
+print(f"Centro da distribuição nula: {np.mean(null_strat):.5f}")
+print(f"p-valor aproximado: {(1 + np.sum(np.abs(null_strat) >= abs(observed_strat))) / (len(null_strat) + 1):.4f}")
 ```
 
 

@@ -25,6 +25,16 @@ Estudo completo e reproduzível da base Airbnb NYC 2019.
 [Abrir notebook](../exemplos/03-tabelas-tipos/notebook.qmd){.btn .btn-outline-primary}
 :::
 :::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Anúncios do Airbnb em Nova York, com localização, preço, avaliações e disponibilidade.
+
+[Abrir base](https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview){.btn .btn-outline-primary}
+:::
+:::
 :::
 
 ## Base de dados

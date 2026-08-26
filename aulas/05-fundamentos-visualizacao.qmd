@@ -12,7 +12,7 @@ Como transformar dados em comparações que o sistema perceptivo humano consegue
 ## Materiais
 
 ::: {.grid .aulas-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Slides
 
@@ -21,13 +21,24 @@ Fundamentos de visualização, percepção, histogramas, ECDF, KDE, Palmer Pengu
 [Abrir slides](../slides/05-fundamentos-visualizacao.html){.btn .btn-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.aula-card}
 ### Material de apoio
 
 Notebook executado com código, resultados, exercícios e respostas sugeridas.
 
 [Abrir notebook](../exemplos/05-fundamentos-visualizacao/notebook.qmd){.btn .btn-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.aula-card}
+### Base de dados de apoio
+
+Palmer Penguins e Datasaurus Dozen sustentam os exemplos de distribuição e forma.
+
+[Palmer Penguins](https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data){.btn .btn-primary}
+[Datasaurus Dozen](https://www.autodesk.com/research/publications/same-stats-different-graphs){.btn .btn-outline-primary}
 :::
 :::
 :::

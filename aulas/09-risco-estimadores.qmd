@@ -26,6 +26,15 @@ Comparação de estimadores com Palmer Penguins.
 :::
 :::
 
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Palmer Penguins, reutilizada para comparar perda, risco e robustez.
+
+[Abrir base](https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data){.btn .btn-outline-primary}
+:::
+:::
 :::
 
 ## Objetivos

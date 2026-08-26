@@ -364,19 +364,35 @@ plt.axhline(.05, color=INK, ls="--")
 ```
 </details>
 
-## A família muda o erro
+## A contabilidade das decisões
 
-Se $m$ testes independentes usam nível $\alpha$:
+Em uma família com $m$ hipóteses:
+
+| símbolo | significado |
+|---|---|
+| $R$ | número total de rejeições — as “descobertas” |
+| $V$ | rejeições erradas — falsos positivos |
+| $R-V$ | rejeições corretas — descobertas verdadeiras |
+
+$V$ não é observado: não sabemos diretamente quais rejeições são falsas. Os procedimentos controlam propriedades de $V$ **ao longo de repetições do estudo**.
+
+## FWER: nenhum falso positivo na família
+
+**FWER** (*family-wise error rate*) é:
 
 $$
-FWER=P(\text{ao menos um falso positivo})=1-(1-\alpha)^m
+\operatorname{FWER}=P(V\geq1).
 $$
 
-Com $m=100$ e $\alpha=0{,}05$:
+Ela responde: **“qual é a chance de cometer pelo menos um falso positivo nesta família?”**
+
+Se $m$ testes independentes usam nível $\alpha$, todos sob $H_0$:
 
 $$
-FWER\approx99{,}4\%
+\operatorname{FWER}=1-(1-\alpha)^m.
 $$
+
+Com $m=100$ e $\alpha=0{,}05$, a FWER chega a aproximadamente **99,4%**.
 
 ## A inflação cresce depressa
 
@@ -393,35 +409,102 @@ plt.plot(m, fwer)
 
 ## Bonferroni controla a família
 
-Teste cada hipótese com:
+Bonferroni divide o “orçamento de erro” $\alpha$ entre os $m$ testes:
 
 $$
 \alpha^*=\frac{\alpha}{m}
 $$
 
-Equivalente: ajuste cada valor-p por $p_i^{adj}=\min(mp_i,1)$.
+Rejeite $H_i$ quando $p_i\leq\alpha/m$. Equivalentemente:
 
-Funciona mesmo com dependência, mas pode perder muito poder.
+$$
+p_i^{adj}=\min(mp_i,1).
+$$
+
+Exemplo: com $m=10$ e $\alpha=0{,}05$, cada teste precisa de $p_i\leq0{,}005$.
+
+## Por que Bonferroni funciona?
+
+Se $A_i$ é o evento “o teste $i$ produz um falso positivo”, então:
+
+$$
+P\left(\bigcup_{i=1}^{m}A_i\right)
+\leq\sum_{i=1}^{m}P(A_i)
+\leq m\frac{\alpha}{m}=\alpha.
+$$
+
+É a desigualdade da união: o controle vale mesmo sem independência entre os testes.
+
+O preço dessa proteção é poder menor, especialmente quando $m$ é grande ou os testes são muito correlacionados.
+
+## Holm controla FWER com mais poder
+
+Holm é um procedimento **step-down**:
+
+1. ordene $p_{(1)}\leq\cdots\leq p_{(m)}$;
+2. compare $p_{(1)}$ com $\alpha/m$;
+3. se passar, compare $p_{(2)}$ com $\alpha/(m-1)$;
+4. continue com $p_{(i)}\leq\alpha/(m-i+1)$;
+5. ao primeiro fracasso, pare e não rejeite as hipóteses restantes.
+
+Ele controla FWER sob dependência arbitrária e nunca rejeita menos hipóteses que Bonferroni.
+
+## Exemplo: Bonferroni e Holm
+
+Para $m=5$, $\alpha=0{,}05$ e valores-p ordenados:
+
+| $i$ | $p_{(i)}$ | Bonferroni | limiar de Holm | decisão de Holm |
+|---:|---:|---:|---:|---|
+| 1 | 0,003 | 0,010 | 0,0100 | rejeita |
+| 2 | 0,011 | 0,010 | 0,0125 | rejeita |
+| 3 | 0,018 | 0,010 | 0,0167 | para |
+| 4 | 0,041 | 0,010 | — | não rejeita |
+| 5 | 0,200 | 0,010 | — | não rejeita |
+
+Bonferroni rejeita apenas a primeira; Holm rejeita as duas primeiras sem abandonar o controle de FWER.
 
 ## FDR responde a outra pergunta
 
-Benjamini–Hochberg controla a proporção esperada de falsos entre os resultados declarados significativos:
+**FDR** (*false discovery rate*) é a proporção esperada de falsos entre os resultados declarados significativos:
 
 $$
-FDR=E\left[\frac{V}{\max(R,1)}\right]
+\operatorname{FDR}=E\left[\frac{V}{\max(R,1)}\right].
 $$
 
-É apropriado quando buscamos várias descobertas, não uma única decisão crítica.
+Ela responde: **“entre as descobertas que eu anunciar, qual fração falsa aceito em média?”**
+
+Controlar FDR em 5% não significa que cada resultado tenha 5% de chance de ser falso, nem garante exatamente 5% de falsos em uma realização.
+
+É apropriado quando buscamos várias descobertas e aceitamos algumas falsas em troca de maior poder.
 
 ## O procedimento de Benjamini–Hochberg
 
-1. ordene os valores-p;
-2. encontre o maior $i$ com $p_{(i)}\leq(i/m)q$;
-3. rejeite as hipóteses de posições $1$ a $i$.
+Para controlar FDR no nível $q$:
 
-$q$ é a taxa de falsas descobertas desejada.
+1. ordene $p_{(1)}\leq\cdots\leq p_{(m)}$;
+2. calcule os limiares $(i/m)q$;
+3. encontre o **maior** $k$ tal que $p_{(k)}\leq(k/m)q$;
+4. rejeite $H_{(1)},\ldots,H_{(k)}$.
 
-## Bonferroni e BH não competem pela mesma meta
+Não pare no primeiro valor-p que falha: BH procura o maior índice que satisfaz a desigualdade.
+
+O controle clássico vale sob independência e certas formas de dependência positiva. Dependências arbitrárias exigem métodos mais conservadores, como Benjamini–Yekutieli.
+
+## O mesmo exemplo com BH
+
+Com $q=0{,}05$:
+
+| $i$ | $p_{(i)}$ | $(i/5)q$ | satisfaz? |
+|---:|---:|---:|---|
+| 1 | 0,003 | 0,010 | sim |
+| 2 | 0,011 | 0,020 | sim |
+| 3 | 0,018 | 0,030 | **sim — maior $k$** |
+| 4 | 0,041 | 0,040 | não |
+| 5 | 0,200 | 0,050 | não |
+
+BH rejeita as três primeiras hipóteses. Ele faz mais descobertas porque controla FDR, não a probabilidade de qualquer erro.
+
+## Bonferroni, Holm e BH têm metas distintas
 
 ![](assets/aula15-poder-multiplos/bonferroni-bh.png){fig-alt="Valores-p ordenados comparados aos limiares de Bonferroni e Benjamini-Hochberg."}
 
@@ -435,6 +518,12 @@ plt.plot(np.arange(1, len(p)+1), bh, label="BH")
 plt.axhline(.05/len(p), label="Bonferroni")
 ```
 </details>
+
+| método | controla | perfil |
+|---|---|---|
+| Bonferroni | FWER | simples e conservador |
+| Holm | FWER | prefere-se a Bonferroni quando aplicável |
+| BH | FDR | mais poder para muitas descobertas |
 
 ## Qual família devemos corrigir?
 

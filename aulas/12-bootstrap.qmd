@@ -28,7 +28,7 @@ Análise de preços do Airbnb NYC 2019 com bootstrap.
 
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
-### Base de dados
+### Base de dados de apoio
 
 Anúncios públicos do Airbnb em Nova York, com preço, localização e anfitrião.
 

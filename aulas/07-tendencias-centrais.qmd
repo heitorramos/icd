@@ -25,6 +25,15 @@ Análise guiada do dataset Billboard.
 :::
 :::
 
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Músicas da Billboard com duração, gênero, ano e popularidade.
+
+[Abrir base](https://www.kaggle.com/datasets/dem0nking/billboard-hits-songs-dataset){.btn .btn-outline-primary}
+:::
+:::
 :::
 
 ## Objetivos

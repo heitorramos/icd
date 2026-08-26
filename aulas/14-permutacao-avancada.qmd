@@ -6,7 +6,7 @@ subtitle: "Estatísticas, estratos e validade"
 ## Materiais da aula
 
 ::: {.grid .recursos-grid}
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Slides
 
@@ -15,13 +15,23 @@ Extensões para métricas assimétricas, estratos, pares e clusters.
 [Abrir slides](../slides/14-permutacao-avancada.qmd){.btn .btn-outline-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-6}
+::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Notebook
 
 O mesmo notebook das duas aulas, agora com estatísticas robustas e estratificação.
 
 [Abrir notebook](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+A mesma campanha A/B, agora analisada com estratos e estatísticas robustas.
+
+[Abrir base](https://www.kaggle.com/datasets/faviovaz/marketing-ab-testing){.btn .btn-outline-primary}
 :::
 :::
 :::
@@ -39,4 +49,3 @@ O mesmo notebook das duas aulas, agora com estatísticas robustas e estratifica�
 A campanha permanece como fio condutor. Conversão, exposições, dias e horas são
 usados para mostrar por que o desenho experimental determina quais trocas são
 válidas e quais conclusões podem ser causais.
-
