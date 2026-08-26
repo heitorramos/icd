@@ -214,12 +214,13 @@ e responda às questões propostas.
 
 ## Avaliação da aprendizagem
 
-| Componente | Peso |
+| Componente | Pontos |
 |---|---:|
-| Prova 1 | 30% |
-| Prova 2 | 30% |
-| Listas (Moodle/VPL) | 10% |
-| Projeto final (TP) | 30% |
+| Prova 1 | 30 |
+| Prova 2 | 30 |
+| Listas (Moodle/VPL) | 10 |
+| Projeto final (TP) | 30 |
+| **Total** | **100** |
 
 As datas, a política de recuperação e as regras de entrega serão publicadas no
 Moodle e no cronograma da disciplina.
