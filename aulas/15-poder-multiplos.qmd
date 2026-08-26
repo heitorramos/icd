@@ -51,3 +51,19 @@ Experimento Cookie Cats com duas posições de barreira e métricas de retençã
 O experimento Cookie Cats compara duas posições para uma barreira no jogo. A
 retenção em 7 dias é a métrica primária; retenção em 1 dia e rodadas permitem
 discutir famílias de hipóteses e multiplicidade.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, seções sobre erros tipo I e II, tamanho amostral e poder.
+- James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo de testes múltiplos: famílias de hipóteses, FWER, FDR e procedimentos de correção.
+- Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, capítulos de testes de hipóteses: nível de significância, poder e consequências de decisões repetidas.
+
+### Bibliografia complementar
+
+- Sture Holm, [*A Simple Sequentially Rejective Multiple Test Procedure*](https://doi.org/10.2307/4615733): procedimento de Holm e controle de FWER.
+- Yoav Benjamini e Yosef Hochberg, [*Controlling the False Discovery Rate*](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x): definição de FDR e procedimento BH.
+- Bradley Efron e Robert Tibshirani, [*An Introduction to the Bootstrap*](https://doi.org/10.1201/9780429246593): bootstrap sob a distribuição empírica e construção de distribuições nulas por recentralização.
+
+Os métodos de Holm, BH e a distinção formal entre FWER e FDR exigem bibliografia complementar; os livros introdutórios da disciplina oferecem a base de testes e poder, mas não cobrem todos esses procedimentos com o mesmo detalhe.

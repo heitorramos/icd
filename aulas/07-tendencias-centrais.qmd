@@ -111,3 +111,15 @@ duração, álbum e popularidade. Ele foi desenhado para permitir:
 Veja [Aula 07: tendências centrais com dados do Billboard](../exemplos/07-tendencias-centrais/notebook.ipynb).
 
 O notebook também termina com propostas de investigação para estudo autônomo.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, [Capítulo 10 — Exploratory Data Analysis](https://learningds.org/ch/10/eda_intro.html): forma, centro, dispersão, quantis e leitura visual de distribuições.
+- Adhikari, DeNero e Wagner, [Seção 14.1 — Properties of the Mean](https://inferentialthinking.com/chapters/14/1/properties-of-the-mean/): definição, propriedades e sensibilidade da média.
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, capítulos iniciais de estatística descritiva: média, mediana, quantis, variância e desvio padrão.
+
+### Bibliografia complementar
+
+- NIST/SEMATECH, [Measures of Location](https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm): comparação entre medidas de posição e robustez a assimetria e valores extremos.

@@ -330,6 +330,37 @@ $link-color: #0f6b78;
   letter-spacing: 0;
 }
 
+/* Rodapé: identificação da aula e retorno ao hotsite. */
+.reveal .footer {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+}
+
+.reveal .lecture-footer-label {
+  color: #536471;
+}
+
+.reveal .lecture-footer-button {
+  background: #17324d;
+  border: 1px solid #17324d;
+  border-radius: 999px;
+  color: #fff !important;
+  display: inline-block;
+  font-size: 0.82em;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  padding: 0.18em 0.7em;
+  text-decoration: none;
+}
+
+.reveal .lecture-footer-button:hover,
+.reveal .lecture-footer-button:focus-visible {
+  background: #0f6b78;
+  border-color: #0f6b78;
+}
+
 .reveal blockquote {
   border-left: 0.28rem solid #d95f02;
   color: #27323a;

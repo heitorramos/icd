@@ -61,3 +61,15 @@ cobertura de intervalos construídos a partir de muitas amostras.
 No notebook, compare o erro padrão empírico com $\sigma/\sqrt{n}$, simule a
 cobertura de intervalos de 90%, 95% e 99% e planeje o tamanho necessário para
 uma margem de erro especificada.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Seção 14.4 — The Central Limit Theorem](https://inferentialthinking.com/chapters/14/4/central-limit-theorem/): forma Normal da distribuição da média e condições de uso.
+- Adhikari, DeNero e Wagner, [Seção 14.5 — Variability of the Sample Mean](https://inferentialthinking.com/chapters/14/5/variability-of-the-sample-mean/): erro padrão e relação com $n$.
+- Adhikari, DeNero e Wagner, [Seção 13.3 — Confidence Intervals](https://inferentialthinking.com/chapters/13/3/Confidence_Intervals.html): interpretação, cobertura e níveis de confiança.
+
+### Bibliografia complementar
+
+- Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, capítulos de fundamentos da inferência e inferência para uma proporção: modelos matemáticos, condições e intervalos.

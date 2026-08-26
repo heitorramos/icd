@@ -49,3 +49,16 @@ A mesma campanha A/B, agora analisada com estratos e estatísticas robustas.
 A campanha permanece como fio condutor. Conversão, exposições, dias e horas são
 usados para mostrar por que o desenho experimental determina quais trocas são
 válidas e quais conclusões podem ser causais.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Seção 12.1 — A/B Testing](https://inferentialthinking.com/chapters/12/1/ab-testing/): teste de permutação básico e alinhamento da estatística à hipótese alternativa.
+- Adhikari, DeNero e Wagner, [Seção 12.2 — Causality](https://inferentialthinking.com/chapters/12/2/causality/): atribuição aleatória, grupos de tratamento e controle e interpretação causal.
+
+### Bibliografia complementar
+
+- Phillip Good, [*Permutation, Parametric, and Bootstrap Tests of Hypotheses*](https://link.springer.com/book/10.1007/b138696): permutação restrita, testes pareados e desenhos mais complexos.
+- David A. Freedman e David Lane, [*A Nonstochastic Interpretation of Reported Significance Levels*](https://doi.org/10.2307/2288843): permutação em modelos com covariáveis.
+- Ronald Fisher, *The Design of Experiments*: randomização, blocos e a relação entre desenho experimental e inferência válida.

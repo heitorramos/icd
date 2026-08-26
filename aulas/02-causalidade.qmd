@@ -114,3 +114,15 @@ Uma boa atividade curta é apresentar três perguntas e pedir que estudantes
 classifiquem cada uma como descritiva, preditiva ou causal. Depois, para cada
 pergunta causal, pedir que indiquem tratamento, resultado, unidade observacional,
 possíveis confundidores e um desenho de estudo plausível.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, *Computational and Inferential Thinking*, [Seção 12.2 — Causality](https://inferentialthinking.com/chapters/12/2/causality/): tratamento, controle, randomização e inferência causal em experimentos.
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 2 — Data Scope](https://learningds.org/ch/02/data_scope_intro.html): população-alvo, amostra, viés de seleção e limites de generalização.
+
+### Bibliografia complementar
+
+- Judea Pearl e Dana Mackenzie, *The Book of Why*: contrafactuais, diagramas causais e a diferença entre associação e intervenção.
+- Miguel Hernán e James Robins, [*Causal Inference: What If*](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/): resultados potenciais, confundimento, identificação e validade de estudos causais.

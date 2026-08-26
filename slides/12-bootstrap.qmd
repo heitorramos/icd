@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados: Aula 12 — Bootstrap</a>'
+    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 12 — Bootstrap</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
 execute:
   enabled: false
   echo: false

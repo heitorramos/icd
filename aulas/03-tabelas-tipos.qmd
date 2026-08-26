@@ -107,3 +107,15 @@ necessários Python, pandas, NumPy, Matplotlib e Seaborn.
 
 Recomendação: execute as células em ordem uma primeira vez; depois reinicie o
 kernel e tente responder aos exercícios sem consultar as soluções.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 2 — Data Scope](https://learningds.org/ch/02/data_scope_intro.html): população, amostra e processo de coleta.
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 9 — Wrangling Dataframes](https://learningds.org/ch/09/wrangling_intro.html): granularidade, qualidade, ausências, transformações e reorganização de tabelas.
+- Joel Grus, *Data Science from Scratch*, capítulos sobre Python, estatística e trabalho com dados: tipos computacionais, coleções, tabelas e operações básicas.
+
+### Bibliografia complementar
+
+- Documentação do pandas, [Group by: split-apply-combine](https://pandas.pydata.org/docs/user_guide/groupby.html): referência prática para `groupby`, agregação e transformação.

@@ -102,3 +102,15 @@ O notebook inclui:
 - [Olist no Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 - [Pandas — Merge, join, concatenate and compare](https://pandas.pydata.org/docs/user_guide/merging.html)
 - [Computational and Inferential Thinking — Visualization](https://inferentialthinking.com/chapters/07/Visualization.html)
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 9 — Wrangling Dataframes](https://learningds.org/ch/09/wrangling_intro.html): qualidade, ausências, estrutura, granularidade e preparação dos dados.
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 10 — Exploratory Data Analysis](https://learningds.org/ch/10/eda_intro.html): distribuições, relações, observações incomuns e investigação iterativa.
+- Adhikari, DeNero e Wagner, *Computational and Inferential Thinking*, [Capítulo 7 — Visualization](https://inferentialthinking.com/chapters/07/Visualization.html): tabelas, distribuições e comparações exploratórias.
+
+### Bibliografia complementar
+
+- Documentação do pandas, [Merge, join, concatenate and compare](https://pandas.pydata.org/docs/user_guide/merging.html): chaves, junções e validação de cardinalidade.

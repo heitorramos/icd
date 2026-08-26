@@ -72,3 +72,17 @@ parâmetro, a perda e possíveis valores extremos mudam a escolha.
 No notebook, compare os estimadores sob diferentes tamanhos de amostra. Depois
 adicione contaminação por valores extremos e verifique quando a escolha de menor
 risco deixa de ser a média.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, seções de estimação pontual: viés, variância, erro quadrático médio e comparação de estimadores.
+- Adhikari, DeNero e Wagner, [Seção 14.1 — Properties of the Mean](https://inferentialthinking.com/chapters/14/1/properties-of-the-mean/): propriedades da média e efeito de observações extremas.
+
+### Bibliografia complementar
+
+- Larry Wasserman, [*All of Statistics*](https://link.springer.com/book/10.1007/978-0-387-21736-9), capítulo 7: risco, MSE e propriedades de estimadores.
+- Peter Huber e Elvezio Ronchetti, [*Robust Statistics*](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470434697): funções de perda, contaminação e fundamentos da estimação robusta.
+
+Esta aula depende mais da bibliografia complementar: a derivação da média sob perda quadrática, da mediana sob perda absoluta e a visão de risco não aparecem juntas, com o mesmo nível de detalhe, nos textos introdutórios principais.

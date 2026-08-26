@@ -62,3 +62,15 @@ comportamento do teste sob a hipótese nula quanto seu poder sob alternativas.
 No notebook, compare p-valores calculados pela Binomial exata, pela aproximação
 Normal e por simulação. Depois altere o tamanho amostral e a taxa verdadeira
 para construir uma curva de poder.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Capítulo 11 — Testing Hypotheses](https://inferentialthinking.com/chapters/11/testing-hypotheses/): hipótese nula, estatística de teste, distribuição nula, valor-p e decisão.
+- Çetinkaya-Rundel e Hardin, [Capítulo 16 — Inference for a Single Proportion](https://openintro-ims.netlify.app/inference-one-prop): testes por bootstrap e modelo matemático para proporções.
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, capítulos de testes de hipóteses: erros tipo I e II, significância e poder.
+
+### Bibliografia complementar
+
+- American Statistical Association, [Statement on Statistical Significance and P-Values](https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf): interpretação responsável de valores-p e distinção entre significância e importância científica.

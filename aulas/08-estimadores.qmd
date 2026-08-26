@@ -76,3 +76,15 @@ amostras aleatórias com uma coleta enviesada que observa apenas uma espécie.
 No notebook, altere o tamanho das amostras e compare o erro padrão empírico com
 $\sigma/\sqrt{n}$. Depois restrinja a coleta a uma espécie e explique por que
 aumentar $n$ não elimina o viés de seleção.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Seção 10.3 — Empirical Distribution of a Statistic](https://inferentialthinking.com/chapters/10/3/Empirical_Distribution_of_a_Statistic.html): parâmetro, estatística, distribuição amostral e simulação.
+- Adhikari, DeNero e Wagner, [Seção 14.5 — Variability of the Sample Mean](https://inferentialthinking.com/chapters/14/5/variability-of-the-sample-mean/): viés da média, erro padrão e efeito do tamanho amostral.
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, capítulos de estimação: estimadores, viés, variância e erro quadrático médio.
+
+### Bibliografia complementar
+
+- Larry Wasserman, [*All of Statistics*](https://link.springer.com/book/10.1007/978-0-387-21736-9), capítulos 6 e 7: convergência, erro padrão, estimadores e distribuições amostrais.

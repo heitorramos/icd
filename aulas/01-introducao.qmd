@@ -97,3 +97,15 @@ Acesse [Aula 01: uma primeira tabela](../exemplos/01-introducao-dados/notebook.i
 
 A primeira atividade pode pedir que estudantes escolham uma pergunta, identifiquem
 possíveis variáveis e discutam que tipo de dado seria necessário para respondê-la.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 1 — The Data Science Lifecycle](https://learningds.org/ch/01/lifecycle_intro.html): perguntas, ciclo de vida, aquisição, exploração, inferência e comunicação.
+- Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, [Capítulo 1 — Hello data](https://openintro-ims.netlify.app/data-hello): observações, variáveis, estudos e primeiros exemplos orientados por dados.
+
+### Bibliografia complementar
+
+- Catherine D'Ignazio e Lauren Klein, [*Data Feminism*](https://data-feminism.mitpress.mit.edu/): poder, representatividade e responsabilidade na produção e no uso de dados.
+- Brasil, [Lei Geral de Proteção de Dados Pessoais](https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd): referência normativa para privacidade e uso responsável.

@@ -43,6 +43,19 @@ intitulado **Base de dados de apoio**, com uma descrição breve e link para a
 fonte. Quando houver mais de uma base, o mesmo card pode reunir os links, deixando
 claro qual é a base principal e qual sustenta exemplos complementares.
 
+## Padrão para bibliografia por aula
+
+Toda página de aula deve terminar com a seção **Bibliografia da aula**, relacionando
+capítulos ou seções específicos aos conteúdos ensinados. A seção deve distinguir:
+
+- **Bibliografia principal**, priorizando os livros adotados na disciplina;
+- **Bibliografia complementar**, quando o conteúdo não estiver suficientemente
+  coberto nos textos principais.
+
+As referências devem incluir links sempre que houver uma versão oficial ou aberta
+e indicar brevemente quais tópicos da aula cada leitura sustenta. Esse padrão deve
+ser aplicado também às próximas aulas.
+
 ## Publicação no GitHub
 
 1. Crie um repositório vazio chamado `icd` no GitHub.

@@ -50,3 +50,15 @@ Campanha A/B com anúncio, PSA, conversão e exposição registrada.
 A base Marketing A/B Testing compara a conversão de 588.101 usuários expostos
 a um anúncio comercial ou a um PSA. A aula pergunta se a diferença observada de
 conversão pode ser explicada apenas pela atribuição aleatória dos grupos.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Seção 12.1 — A/B Testing](https://inferentialthinking.com/chapters/12/1/ab-testing/): hipóteses, estatística, permutação dos rótulos e valor-p.
+- Adhikari, DeNero e Wagner, [Seção 12.2 — Causality](https://inferentialthinking.com/chapters/12/2/causality/): interpretação causal de experimentos randomizados.
+- Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, capítulos de testes por randomização: distribuição nula e inferência baseada em simulação.
+
+### Bibliografia complementar
+
+- Phillip Good, [*Permutation, Parametric, and Bootstrap Tests of Hypotheses*](https://link.springer.com/book/10.1007/b138696): formulação geral, testes uni e bilaterais e condições de permutabilidade.

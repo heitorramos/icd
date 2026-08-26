@@ -60,3 +60,15 @@ Fonte: [Same Stats, Different Graphs](https://www.autodesk.com/research/publicat
 ## Objetivos de aprendizagem
 
 Ao final da aula, você deverá conseguir associar perguntas a representações, distinguir marcas e canais visuais, interpretar histogramas, ECDFs e KDEs — incluindo o efeito da largura de banda — e justificar por que posição e comprimento sustentam comparações mais precisas que área, ângulo ou volume.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, *Learning Data Science*, [Capítulo 10 — Exploratory Data Analysis](https://learningds.org/ch/10/eda_intro.html): escolha de gráficos a partir do tipo das variáveis e leitura de distribuições e relações.
+- Lau, Gonzalez e Nolan, [Seção 11.2 — Smoothing and Aggregating Data](https://learningds.org/ch/11/viz_smoothing.html): histogramas, KDE, largura de banda, suavização e sobreposição de pontos.
+
+### Bibliografia complementar
+
+- Claus Wilke, [*Fundamentals of Data Visualization*](https://clauswilke.com/dataviz/): estética, coordenadas, escalas, distribuições e princípios de composição visual.
+- Justin Matejka e George Fitzmaurice, [*Same Stats, Different Graphs*](https://www.autodesk.com/research/publications/same-stats-different-graphs): motivação do Datasaurus e limites dos resumos numéricos.

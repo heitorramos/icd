@@ -56,3 +56,16 @@ Ao final da aula, você deverá conseguir escolher escalas honestas, ordenar cat
 ## Fechamento do módulo
 
 Esta aula encerra o **Módulo 1 — Análise Exploratória**, formado pelas aulas 03–06: tabelas e tipos de dados, EDA, fundamentos de visualização e boas práticas de comunicação visual.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Lau, Gonzalez e Nolan, [Capítulo 11 — Data Visualization](https://learningds.org/ch/11/viz_intro.html): escalas, comparações, percepção, contexto e construção iterativa de gráficos.
+- Lau, Gonzalez e Nolan, [Seção 11.1 — Choosing Scale to Reveal Structure](https://learningds.org/ch/11/viz_scale.html): limites, transformações e escalas logarítmicas.
+- Lau, Gonzalez e Nolan, [Seção 11.3 — Facilitating Meaningful Comparisons](https://learningds.org/ch/11/viz_comparisons.html): alinhamento, ordem, condicionamento e escolha de cores.
+
+### Bibliografia complementar
+
+- Claus Wilke, [*Fundamentals of Data Visualization*](https://clauswilke.com/dataviz/): títulos, anotações, redundância visual e comunicação de uma mensagem.
+- Cynthia Brewer, Mark Harrower e Penn State, [ColorBrewer 2.0](https://colorbrewer2.org/): seleção de paletas qualitativas, sequenciais e divergentes.

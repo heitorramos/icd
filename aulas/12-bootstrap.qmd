@@ -72,3 +72,16 @@ de uma fórmula pronta para o erro padrão.
 Refaça a análise para o percentil 75 dos preços e compare o bootstrap por anúncio
 ao bootstrap por anfitrião. Em seguida, discuta como a escolha da unidade de
 reamostragem muda a interpretação da incerteza.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Adhikari, DeNero e Wagner, [Seção 13.2 — The Bootstrap](https://inferentialthinking.com/chapters/13/2/bootstrap/): distribuição empírica, reamostragem com reposição e distribuição bootstrap.
+- Adhikari, DeNero e Wagner, [Seção 13.3 — Confidence Intervals](https://inferentialthinking.com/chapters/13/3/Confidence_Intervals.html): intervalos percentis e interpretação de cobertura.
+- James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo de métodos de reamostragem: bootstrap para quantificar a precisão de estimativas.
+
+### Bibliografia complementar
+
+- Bradley Efron e Robert Tibshirani, [*An Introduction to the Bootstrap*](https://doi.org/10.1201/9780429246593): fundamentos, correção de viés, intervalos BCa e extensões.
+- A. C. Davison e D. V. Hinkley, [*Bootstrap Methods and Their Application*](https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/ED2FD043579F27952363566DC09CBD6A): validade, dependência e unidades alternativas de reamostragem.
