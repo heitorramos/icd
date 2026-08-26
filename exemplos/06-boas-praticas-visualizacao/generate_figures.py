@@ -98,7 +98,13 @@ for ax,label in zip(axes,["T1","T2","T3","T4"]):
         uf=feature["properties"]["sigla"]
         for polygon in feature["geometry"]["coordinates"]:
             patches.append(Polygon(np.asarray(polygon[0]),closed=True)); colors.append(values.get(uf,0))
-    coll=PatchCollection(patches,cmap="Blues",norm=Normalize(0,vmax),edgecolor="white",linewidth=.35)
+    coll=PatchCollection(
+        patches,
+        cmap="Blues",
+        norm=Normalize(0,vmax),
+        edgecolor="#34454f",
+        linewidth=.8,
+    )
     coll.set_array(np.asarray(colors)); ax.add_collection(coll); ax.autoscale_view(); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(label)
 fig.colorbar(coll,ax=axes,orientation="horizontal",fraction=.06,pad=.06,label="pedidos na amostra")
 fig.suptitle("Condicionando pedidos da Olist por espaço e trimestre — 2017",fontweight="bold")

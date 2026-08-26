@@ -21,21 +21,6 @@ execute:
 Um bom gráfico torna a comparação correta mais fácil e a interpretação errada mais difícil.
 :::
 
-## Um eixo pode fabricar uma diferença
-
-![](assets/aula06-visualizacao/eixo-truncado.png){.wide-chart fig-alt="Comparação entre barras com eixo correto e eixo truncado."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-pair = movies["main_genre"].value_counts().loc[["Drama", "Comedy"]]
-ax.set_ylim(0, pair.max())          # comparação honesta
-ax.set_ylim(pair.min() * .94, ...)  # diferença exagerada
-```
-</details>
-
-Os valores são os mesmos nos dois painéis: **1.207 dramas e 1.042 comédias**.
-
 ## Hoje
 
 1. Definir a mensagem antes de desenhar.
@@ -127,6 +112,19 @@ O comprimento da barra codifica a magnitude desde uma origem.
 Se o eixo começa perto do menor valor, a parte visível deixa de representar corretamente a razão entre categorias.
 
 Linhas e pontos não têm a mesma obrigação quando a pergunta é sobre variação em torno de um nível.
+
+![](assets/aula06-visualizacao/eixo-truncado.png){.wide-chart fig-alt="Comparação entre barras com eixo correto e eixo truncado."}
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+pair = movies["main_genre"].value_counts().loc[["Drama", "Comedy"]]
+ax.set_ylim(0, pair.max())          # comparação honesta
+ax.set_ylim(pair.min() * .94, ...)  # diferença exagerada
+```
+</details>
+
+Os valores são os mesmos nos dois painéis: **1.207 dramas e 1.042 comédias**.
 
 ## Escalas duplas confundem comparações
 
@@ -245,9 +243,12 @@ A escala comum permite comparar tendência e magnitude sem misturar as séries.
 
 ```python
 pedidos = olist.groupby(["trimestre", "customer_state"]).size()
-# quatro mapas, mesmo domínio de cores
+# quatro mapas, mesmo domínio de cores e contornos visíveis
+PatchCollection(estados, edgecolor="#34454f", linewidth=.8)
 ```
 </details>
+
+O contorno dos estados mantém a forma do Brasil legível mesmo nas regiões com preenchimento claro.
 
 Um mapa anual esconderia quando a concentração ocorreu; um gráfico temporal sem mapa esconderia onde.
 

@@ -289,7 +289,7 @@ Nesta análise (Condicionamento por espaço e tempo), a figura deve ser lida ant
 :::
 
 
-O mapa usado nos slides substitui as barras por posição geográfica, mantendo o mesmo domínio de cores nos quatro trimestres. Assim conseguimos comparar **onde** e **quando** os pedidos se concentram.
+O mapa usado nos slides substitui as barras por posição geográfica, mantendo o mesmo domínio de cores nos quatro trimestres. Assim conseguimos comparar **onde** e **quando** os pedidos se concentram. Os contornos dos estados usam uma linha escura e fina: sem essa referência, áreas com valores baixos quase desaparecem sobre o fundo branco. A borda melhora a leitura geográfica, mas não deve competir com a escala de cores que representa os pedidos.
 
 ## Cor e destaque
 
