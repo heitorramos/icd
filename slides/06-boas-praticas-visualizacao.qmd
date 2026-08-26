@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados</a>'
+    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados: Aula 06 — Visualização — boas práticas</a>'
 execute:
   echo: true
 ---
@@ -358,65 +358,114 @@ ax.barh(categorias, valores, color=[acento if foco else cinza])
 
 ## Mas simplificar não é apagar contexto
 
-Todo gráfico compartilhado precisa, conforme o caso, de:
+![](assets/aula06-visualizacao/contexto-completo.png){.wide-chart fig-alt="Gráfico de barras com título informativo, unidade, tamanho da base e fonte."}
 
-- título informativo;
-- unidades;
-- período e população;
-- fonte;
-- definição da métrica;
-- tamanho da amostra;
-- notas sobre filtros ou transformações.
+<details class="code-fold"><summary>Código do exemplo</summary>
+
+```python
+ax.set_title("Drama e comédia dominam a amostra do TMDB 5000", loc="left")
+ax.set_xlabel("número de filmes na base")
+ax.text(0, -.18, "Unidade: filme · n = 4.803 · Fonte: TMDB 5000 / Kaggle",
+        transform=ax.transAxes)
+```
+</details>
+
+Simplificar remove ruído; **contextualizar preserva significado**: título, unidade, população, período, fonte, filtros e tamanho da amostra entram quando são necessários para interpretar o gráfico.
 
 ## Anotação aproxima evidência e interpretação
 
-Uma linha de referência ou rótulo direto pode substituir uma explicação distante.
+![](assets/aula06-visualizacao/anotacao-direta.png){.wide-chart fig-alt="Série temporal com o ponto máximo anotado diretamente no gráfico."}
+
+<details class="code-fold"><summary>Código do exemplo</summary>
+
+```python
+ax.annotate("Pico da base", xy=(ano_pico, n_pico),
+            xytext=(-120, -45), textcoords="offset points",
+            arrowprops={"arrowstyle": "->"})
+```
+</details>
 
 Anote exceções relevantes, mudanças de regime e valores ligados ao argumento — não cada ponto.
 
 ## Legendas aumentam a distância visual
 
-Quando possível, rotule linhas e categorias diretamente.
+![](assets/aula06-visualizacao/legenda-rotulo-direto.png){.wide-chart fig-alt="Comparação entre séries identificadas por legenda e por rótulos diretos."}
 
-Se a legenda for necessária:
+<details class="code-fold"><summary>Código do exemplo</summary>
 
-- preserve a mesma ordem do gráfico;
-- aproxime-a da área de dados;
-- use nomes legíveis;
-- evite códigos que exigem decifração.
+```python
+ax.plot(ano, filmes, label=genero)
+ax.text(ano.iloc[-1] + .7, filmes.iloc[-1], genero,
+        color=cor, va="center")
+```
+</details>
+
+O rótulo direto reduz o movimento dos olhos entre a série e sua identificação. Se a legenda for necessária, preserve a ordem do gráfico e aproxime-a dos dados.
 
 ## Razão de aspecto altera inclinações
 
-Um gráfico muito estreito torna curvas mais íngremes; um gráfico largo as achata.
+![](assets/aula06-visualizacao/razao-aspecto.png){.wide-chart fig-alt="A mesma série temporal em painéis estreito e largo, produzindo inclinações aparentes diferentes."}
+
+<details class="code-fold"><summary>Código do exemplo</summary>
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8),
+                         gridspec_kw={"width_ratios": [1, 2.4]})
+for ax in axes:
+    ax.plot(annual["year"], annual["filmes"])
+```
+</details>
 
 Use proporções estáveis entre comparações e evite escolher o formato apenas porque ele dramatiza a mudança.
 
 ## Sobreposição pede transparência ou agregação
 
-Para muitos pontos:
+![](assets/aula06-visualizacao/sobreposicao-hexbin.png){.wide-chart fig-alt="Dispersão opaca comparada a uma agregação hexbin dos mesmos filmes."}
 
-- reduza tamanho;
-- use transparência;
-- aplique `hexbin` ou densidade;
-- amostre com transparência;
-- faça facetas.
+<details class="code-fold"><summary>Código do exemplo</summary>
 
-Não confunda saturação visual com concentração real.
+```python
+ax.scatter(valid["budget"], valid["revenue"], alpha=.15, s=12)
+ax.hexbin(valid["budget"], valid["revenue"],
+          gridsize=32, mincnt=1, bins="log",
+          xscale="log", yscale="log")
+```
+</details>
+
+Transparência preserva os pontos; `hexbin` agrega localmente e revela densidade. Não confunda saturação visual com concentração real.
 
 ## Muitos dados não significam muitos elementos
 
-Uma boa visualização de milhões de observações pode ser simples se a agregação preserva a pergunta.
+![](assets/aula06-visualizacao/agregacao-granularidade.png){.wide-chart fig-alt="Notas individuais de filmes comparadas à mediana anual e ao intervalo central."}
 
-O risco é esconder grupos pequenos ou variações internas. Sempre examine a granularidade antes de agregar.
+<details class="code-fold"><summary>Código do exemplo</summary>
+
+```python
+yearly = movies.groupby("year")["vote_average"].agg(
+    mediana="median",
+    q25=lambda x: x.quantile(.25),
+    q75=lambda x: x.quantile(.75),
+)
+ax.fill_between(yearly.index, yearly.q25, yearly.q75)
+ax.plot(yearly.index, yearly.mediana)
+```
+</details>
+
+A agregação reduz marcas sem esconder toda a dispersão: a linha mostra a mediana e a faixa mostra os 50% centrais. Ainda assim, examine grupos pequenos antes de resumir.
 
 ## Acessibilidade faz parte da precisão
 
-- contraste suficiente;
-- fonte legível;
-- descrição alternativa;
-- cor acompanhada de outro canal;
-- animação com ritmo compreensível;
-- linguagem direta.
+![](assets/aula06-visualizacao/acessibilidade-redundancia.png){.wide-chart fig-alt="Comparação entre identificação apenas por cor e identificação redundante por cor, tipo de linha e rótulo."}
+
+<details class="code-fold"><summary>Código do exemplo</summary>
+
+```python
+ax.plot(ano, drama, color=azul, linestyle="-", label="Drama")
+ax.plot(ano, comedia, color=laranja, linestyle="--", label="Comédia")
+```
+</details>
+
+Não dependa apenas da cor: combine contraste, traço, forma ou rótulo. Fonte legível, descrição alternativa e linguagem direta também fazem parte da precisão.
 
 ## Ética: o gráfico também argumenta
 

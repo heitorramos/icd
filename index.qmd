@@ -341,8 +341,7 @@ Avisos, atividades, entregas e notas são publicados no Moodle da disciplina.
 5. Renato Assunção. *Fundamentos Estatísticos para Ciência da Computação* — português.
 6. Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani e Jonathan Taylor. [*An Introduction to Statistical Learning*](https://www.statlearning.com/) — inglês, acesso aberto.
 7. [Hotsite desta disciplina](https://heitorramos.github.io/icd/) — slides, notebooks e materiais de apoio.
-
-O item 7 substitui o hotsite antigo indicado no material original.
+8. Prof. Flávio Vinícius. [*Introdução à Ciência de Dados*](https://icd-ufmg.github.io/) — material anterior da disciplina, utilizado como uma das bases para a elaboração deste site.
 
 ## Por onde começar
 

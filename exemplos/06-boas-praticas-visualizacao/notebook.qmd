@@ -338,6 +338,50 @@ plt.show()
 Nesta análise (Anotações e contexto), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
 :::
 
+## Exemplos complementares de comunicação visual
+
+### Simplificação precisa preservar contexto
+
+![](../../slides/assets/aula06-visualizacao/contexto-completo.png){fig-alt="Gráfico de barras acompanhado de título informativo, unidade, tamanho da base e fonte."}
+
+Remover grades, bordas e cores desnecessárias reduz ruído. Remover unidade, população, fonte ou filtros elimina informação necessária para interpretar o resultado. Um gráfico simples não é um gráfico sem contexto.
+
+### Anotação e identificação direta
+
+![](../../slides/assets/aula06-visualizacao/anotacao-direta.png){fig-alt="Série temporal com seu ponto máximo anotado diretamente."}
+
+![](../../slides/assets/aula06-visualizacao/legenda-rotulo-direto.png){fig-alt="Comparação entre uma legenda separada e rótulos colocados junto às séries."}
+
+Uma anotação deve aproximar evidência e interpretação. Rótulos diretos reduzem o esforço de procurar a cor na legenda e voltar ao gráfico; anotar todos os pontos produziria o efeito contrário.
+
+### Formato e sobreposição também mudam a leitura
+
+![](../../slides/assets/aula06-visualizacao/razao-aspecto.png){fig-alt="A mesma série em painéis com razões de aspecto diferentes."}
+
+![](../../slides/assets/aula06-visualizacao/sobreposicao-hexbin.png){fig-alt="Dispersão opaca comparada à agregação hexbin dos mesmos dados."}
+
+A razão de aspecto altera a inclinação aparente sem alterar nenhum dado. Em dispersões densas, pontos opacos encobrem uns aos outros; transparência preserva observações individuais, enquanto `hexbin` responde melhor à pergunta sobre concentração local.
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+axes[0].scatter(valid["budget"], valid["revenue"], alpha=.15, s=12)
+axes[1].hexbin(valid["budget"], valid["revenue"], gridsize=32,
+               mincnt=1, bins="log", cmap="Blues",
+               xscale="log", yscale="log")
+axes[0].set(xscale="log", yscale="log")
+for ax in axes:
+    ax.set(xlabel="orçamento", ylabel="receita")
+plt.tight_layout(); plt.show()
+```
+
+### Agregação e acessibilidade
+
+![](../../slides/assets/aula06-visualizacao/agregacao-granularidade.png){fig-alt="Notas individuais comparadas à mediana anual e ao intervalo central."}
+
+![](../../slides/assets/aula06-visualizacao/acessibilidade-redundancia.png){fig-alt="Séries distinguidas apenas por cor e depois por cor, traço e rótulo."}
+
+Agregar pode reduzir milhares de marcas a uma tendência legível, mas o resumo deve preservar a variação relevante — aqui, mediana e intervalo interquartil aparecem juntos. Para acessibilidade, a categoria não deve depender apenas da percepção de cor: tipo de linha, forma ou rótulo fornecem canais redundantes.
+
 
 ## Auditoria de um gráfico
 

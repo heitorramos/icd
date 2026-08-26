@@ -127,4 +127,72 @@ save("pizza-barras.png")
 
 plt.figure(figsize=(10,5.2)); sc=plt.scatter(valid.budget,valid.revenue,c=np.log10(valid.vote_count.clip(lower=1)),cmap="viridis",alpha=.55,s=28); plt.xscale("log"); plt.yscale("log"); plt.colorbar(sc,label="log10(votos)"); plt.title("Cor sequencial representa magnitude"); plt.xlabel("orçamento"); plt.ylabel("receita"); save("cor-sequencial.png")
 
+# Exemplos para contexto, anotação, rotulagem, aspecto, sobreposição,
+# agregação e acessibilidade.
+context=m.main_genre.value_counts().head(6).sort_values()
+fig,ax=plt.subplots(figsize=(10.5,5.2))
+context.plot.barh(ax=ax,color=BLUE)
+ax.set_title("Drama e comédia dominam a amostra do TMDB 5000",loc="left")
+ax.set_xlabel("número de filmes na base"); ax.set_ylabel("")
+ax.text(1,-.2,"Unidade: filme · Base com 4.803 títulos · Fonte: TMDB 5000 / Kaggle",transform=ax.transAxes,fontsize=11,color=GRAY,ha="right")
+save("contexto-completo.png")
+
+fig,ax=plt.subplots(figsize=(10.5,5.2))
+ax.plot(annual.year,annual.filmes,color=BLUE,linewidth=2.6)
+peak=annual.loc[annual.filmes.idxmax()]
+ax.scatter(peak.year,peak.filmes,color=ORANGE,s=75,zorder=3)
+ax.annotate(f"Pico da base: {int(peak.filmes)} filmes em {int(peak.year)}",xy=(peak.year,peak.filmes),xytext=(-185,-55),textcoords="offset points",arrowprops={"arrowstyle":"->","color":ORANGE},color="#29343a")
+ax.set(title="A anotação liga o padrão à interpretação",xlabel="ano de lançamento",ylabel="filmes na base")
+save("anotacao-direta.png")
+
+twogen=annual_genres[annual_genres.main_genre.isin(["Drama","Comedy"])]
+fig,axes=plt.subplots(1,2,figsize=(12,4.8),sharex=True,sharey=True)
+for genre,color in [("Drama",BLUE),("Comedy",ORANGE)]:
+    d=twogen[twogen.main_genre.eq(genre)]
+    axes[0].plot(d.year,d.filmes,label=genre,color=color,linewidth=2.4)
+    axes[1].plot(d.year,d.filmes,color=color,linewidth=2.4)
+    last=d.sort_values("year").iloc[-1]
+    axes[1].text(last.year+.7,last.filmes,"Comédia" if genre=="Comedy" else genre,color=color,va="center")
+axes[0].legend(title="gênero",frameon=False); axes[0].set_title("Legenda distante")
+axes[1].set_title("Rótulo junto à série")
+for ax in axes: ax.set_xlabel("ano"); ax.set_ylabel("filmes")
+save("legenda-rotulo-direto.png")
+
+fig,axes=plt.subplots(1,2,figsize=(12,4.8),gridspec_kw={"width_ratios":[1,2.4]},sharey=True)
+for ax in axes:
+    ax.plot(annual.year,annual.filmes,color=BLUE,linewidth=2.5)
+    ax.set_xlabel("ano"); ax.set_ylabel("filmes")
+axes[0].set_title("Painel estreito"); axes[1].set_title("Painel largo")
+fig.suptitle("Mesmos dados: a razão de aspecto muda a inclinação aparente",fontweight="bold")
+save("razao-aspecto.png")
+
+fig,axes=plt.subplots(1,2,figsize=(12,4.8))
+axes[0].scatter(valid.budget,valid.revenue,s=22,alpha=1,color=BLUE)
+axes[0].set_title("Pontos opacos se encobrem")
+hb=axes[1].hexbin(valid.budget,valid.revenue,gridsize=32,mincnt=1,cmap="Blues",bins="log",xscale="log",yscale="log")
+axes[1].set_title("Hexbin revela concentração")
+for ax in axes: ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlabel("orçamento"); ax.set_ylabel("receita")
+fig.colorbar(hb,ax=axes[1],label="log10(contagem)")
+save("sobreposicao-hexbin.png")
+
+timed=m.query("1980 <= year <= 2016 and vote_average > 0").copy()
+yearly=timed.groupby("year").vote_average.agg(mediana="median",q25=lambda x:x.quantile(.25),q75=lambda x:x.quantile(.75)).reset_index()
+fig,axes=plt.subplots(1,2,figsize=(12,4.8),sharex=True,sharey=True)
+axes[0].scatter(timed.year,timed.vote_average,s=10,alpha=.12,color=GRAY); axes[0].set_title("Cada filme")
+axes[1].fill_between(yearly.year,yearly.q25,yearly.q75,color="#b8d6df",alpha=.8,label="50% central")
+axes[1].plot(yearly.year,yearly.mediana,color=BLUE,linewidth=2.6,label="mediana anual"); axes[1].set_title("Resumo preserva tendência e dispersão"); axes[1].legend(frameon=False)
+for ax in axes: ax.set_xlabel("ano"); ax.set_ylabel("nota")
+save("agregacao-granularidade.png")
+
+fig,axes=plt.subplots(1,2,figsize=(12,4.8),sharex=True,sharey=True)
+for genre,color in [("Drama","#d64f4f"),("Comedy","#52a85d")]:
+    d=twogen[twogen.main_genre.eq(genre)]
+    axes[0].plot(d.year,d.filmes,color=color,linewidth=2.5,label=genre)
+for genre,color,style in [("Drama",BLUE,"-"),("Comedy",ORANGE,"--")]:
+    d=twogen[twogen.main_genre.eq(genre)]
+    axes[1].plot(d.year,d.filmes,color=color,linestyle=style,linewidth=2.7,label="Comédia" if genre=="Comedy" else genre)
+axes[0].set_title("Apenas cor"); axes[1].set_title("Cor + traço + rótulo")
+for ax in axes: ax.legend(frameon=False); ax.set_xlabel("ano"); ax.set_ylabel("filmes")
+save("acessibilidade-redundancia.png")
+
 print(m.shape, valid.shape, m.main_genre.value_counts().head())

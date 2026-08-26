@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados</a>'
+    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados: Aula 03 — Tabelas e tipos de dados</a>'
 execute:
   echo: false
 ---

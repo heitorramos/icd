@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados</a>'
+    footer: '<a href="../aulas/index.html">Introdução à Ciência de Dados: Aula 14 — Testes de permutação avançados</a>'
 execute:
   enabled: false
   echo: false
