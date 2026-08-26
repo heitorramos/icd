@@ -37,6 +37,11 @@ jobs:
       - name: Render site
         run: quarto render
 
+      - name: Record deployed commit
+        run: |
+          printf '{"sha":"%s","short":"%s","url":"https://github.com/heitorramos/icd/commit/%s"}\n' \
+            "$GITHUB_SHA" "${GITHUB_SHA:0:7}" "$GITHUB_SHA" > _site/version.json
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

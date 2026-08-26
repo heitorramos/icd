@@ -1,0 +1,32 @@
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  let target = document.getElementById("site-version");
+  const standalone = !target;
+
+  if (standalone) {
+    target = document.createElement("p");
+    target.id = "site-version";
+    target.className = "site-version";
+    target.style.cssText = "font: 16px system-ui; margin: 2rem; color: #536471";
+    target.textContent = "Prévia do indicador de versão: verificando…";
+    document.body.appendChild(target);
+  }
+
+  try {
+    const response = await fetch("/icd/version.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("version unavailable");
+
+    const version = await response.json();
+    const link = document.createElement("a");
+    link.href = version.url;
+    link.textContent = `Versão do site: ${version.short}`;
+    link.title = `Abrir o commit ${version.sha} no GitHub`;
+    link.setAttribute("aria-label", `Versão do site ${version.short}; abrir commit no GitHub`);
+    target.replaceChildren(link);
+  } catch (_error) {
+    target.textContent = standalone
+      ? "Prévia: a versão exata aparecerá aqui após a publicação no GitHub Pages."
+      : "Versão disponível após a publicação";
+  }
+});
+</script>

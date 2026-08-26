@@ -18,6 +18,7 @@ website:
   page-navigation: true
   page-footer:
     center: "Material produzido por Heitor Ramos em conjunto com o ChatGPT e revisado por Heitor Ramos. Conteúdo baseado no material do Prof. Flávio Vinícius, disponível em [icd-ufmg.github.io](https://icd-ufmg.github.io/)."
+    right: '<span id="site-version" class="site-version" aria-live="polite">Versão do site: verificando…</span>'
     border: true
   navbar:
     background: "#17324d"
@@ -59,6 +60,7 @@ format:
     theme:
       - cosmo
       - site/styles/icd.scss
+    include-after-body: site/version.html
     toc: true
     toc-depth: 3
     lang: pt-BR
