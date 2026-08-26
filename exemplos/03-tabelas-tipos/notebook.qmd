@@ -872,3 +872,41 @@ Nesta análise (Plano), a figura deve ser lida antes do resumo numérico: observ
 - [Pandas User Guide — Group by](https://pandas.pydata.org/docs/user_guide/groupby.html)
 - [Tidy Data, Hadley Wickham](https://vita.had.co.nz/papers/tidy-data.pdf)
 - [Kaggle — Airbnb in NYC](https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview)
+
+# Guia teórico consolidado
+
+## Dados são produzidos por um processo
+
+Uma tabela não é a realidade: é o resultado de decisões sobre **quem observar**, **o que medir**, **quando registrar** e **como codificar**. Antes de calcular qualquer resumo, identifique:
+
+- **unidade observacional:** o que uma linha representa;
+- **população-alvo:** sobre quem desejamos concluir;
+- **quadro amostral:** quem poderia efetivamente aparecer na coleta;
+- **amostra:** quem de fato apareceu;
+- **mecanismo de seleção:** como as unidades entraram na base.
+
+Amostragem aleatória simples, estratificada, por conglomerados e sistemática são desenhos probabilísticos distintos. Uma base disponibilizada por uma plataforma, como o Airbnb, normalmente combina seleção dos anfitriões, decisões comerciais e filtros administrativos; ela não deve ser tratada automaticamente como amostra aleatória de todas as acomodações da cidade.
+
+## Tipo de armazenamento não é significado
+
+O tipo técnico de uma coluna (`int`, `float`, `string`, `datetime`) não determina seu papel analítico. Um CEP pode ser armazenado como número, mas é um identificador; uma avaliação de 1 a 5 é numérica no arquivo, mas possui interpretação ordinal.
+
+- **categórico nominal:** categorias sem ordem natural;
+- **categórico ordinal:** categorias com ordem, mas sem distâncias necessariamente iguais;
+- **numérico discreto:** contagens;
+- **numérico contínuo:** medidas em uma escala contínua;
+- **identificador:** distingue unidades, mas não mede magnitude;
+- **data/hora:** carrega ordem, duração, sazonalidade e fuso;
+- **texto:** exige representação adequada ao objetivo.
+
+Escolher o tipo semântico errado produz operações sem sentido, como calcular a média de códigos postais.
+
+## Ausência, duplicação e validade
+
+Um valor ausente pode significar “não medido”, “não aplicável”, “recusado” ou “perdido”. Substituí-lo por zero altera o significado. Da mesma forma, duplicata depende da chave: duas linhas iguais podem ser erro, mas duas linhas do mesmo hóspede podem representar reservas diferentes.
+
+Uma regra de validade combina domínio e contexto: preço deve ser não negativo, latitude deve estar no intervalo geográfico plausível e identificadores que deveriam ser únicos precisam ser testados como tal.
+
+## Por que `groupby` funciona
+
+O padrão **dividir–aplicar–combinar** separa a tabela em grupos, aplica uma função a cada subconjunto e reúne os resultados. A unidade da tabela resultante muda: depois de agrupar por bairro, uma linha passa a representar um bairro, não um anúncio. Toda agregação perde detalhes; por isso, visualize os dados individuais antes de resumir e declare a nova unidade observacional.

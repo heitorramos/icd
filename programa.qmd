@@ -1,6 +1,10 @@
 ---
 title: "Programa"
+draft: true
 ---
+
+<!-- Arquivo preservado apenas como referência interna. O conteúdo público do
+programa foi consolidado na página principal da disciplina. -->
 
 ## Objetivo geral
 

@@ -78,7 +78,7 @@ Uma base limpa não garante um experimento válido.
 
 ![](assets/aula13-permutacao/tamanho-grupos.png){fig-alt="Barras mostrando 23.524 usuários no controle PSA e 564.577 no tratamento anúncio."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 counts = df["grupo"].value_counts().reindex(["Controle (PSA)", "Tratamento (anúncio)"])
@@ -102,7 +102,7 @@ Mas ela:
 
 ![](assets/aula13-permutacao/conversao-observada.png){fig-alt="Taxas de conversão de 1,79% no PSA e 2,55% no anúncio."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 rates = df.groupby("grupo")["converted"].mean()
@@ -178,7 +178,7 @@ Embaralhamos apenas os rótulos.
 
 ![](assets/aula13-permutacao/uma-permutacao.png){fig-alt="Exemplo pequeno em que resultados permanecem fixos e rótulos A e B são embaralhados."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 toy["grupo_permutado"] = rng.permutation(toy["grupo"])
@@ -220,7 +220,7 @@ Não é a distribuição dos dados originais.
 
 ![](assets/aula13-permutacao/distribuicao-nula.png){fig-alt="Histograma da distribuição nula concentrada em zero e diferença observada de 0,77 ponto percentual na cauda direita."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 conv_ad = rng.hypergeometric(n_conv, n_total-n_conv, n_ad, size=10000)
@@ -254,7 +254,7 @@ As duas caudas contam porque diferenças negativas também contradizem a igualda
 
 ![](assets/aula13-permutacao/uma-duas-caudas.png){fig-alt="Comparação visual entre região extrema unilateral e bilateral."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 axes[0].fill_between(x, 0, y, where=x >= cutoff, color=ORANGE)
@@ -284,7 +284,7 @@ A correção reconhece que a permutação observada também pertence ao espaço 
 
 ![](assets/aula13-permutacao/convergencia-pvalor.png){fig-alt="Curva do valor-p estimado conforme cresce o número de permutações."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 extreme = np.abs(null_diff) >= abs(observed)
@@ -347,7 +347,7 @@ Por isso, sempre relate:
 
 ![](assets/aula13-permutacao/efeito-absoluto-relativo.png){fig-alt="Comparação entre aumento absoluto de 0,77 ponto percentual e uplift relativo de aproximadamente 43%."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 absolute = treatment - control

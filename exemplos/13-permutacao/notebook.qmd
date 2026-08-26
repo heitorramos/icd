@@ -291,3 +291,29 @@ Marketing A/B Testing, Kaggle, `faviovaz/marketing-ab-testing`, licença CC0.
 A base é adequada para ensino, mas a documentação disponível não informa todos
 os detalhes operacionais da randomização. Essa ausência deve acompanhar qualquer
 afirmação causal.
+
+# Guia teórico consolidado das Aulas 13 e 14
+
+## O princípio da permutação
+
+Sob uma hipótese nula de ausência de associação entre tratamento e resultado, os rótulos podem ser trocáveis. Mantemos os resultados fixos, permutamos os rótulos e recalculamos a estatística. Isso constrói a distribuição nula induzida pelo desenho.
+
+Em Monte Carlo, uma estimativa segura do valor-p é
+
+$$\widehat p=\frac{1+\#\{T_b\text{ tão extremo quanto }T_{obs}\}}{B+1},$$
+
+que evita reportar zero. A direção unilateral ou bilateral deve ser definida antes de observar os resultados.
+
+## Permutação não é bootstrap
+
+Permutação quebra a associação para representar $H_0$. Bootstrap reamostra unidades para aproximar a incerteza sob uma distribuição empírica. Eles podem usar código parecido, mas respondem perguntas diferentes.
+
+## Trocabilidade depende do desenho
+
+Randomização justifica permutar rótulos no nível em que o tratamento foi sorteado. Pareamento exige trocas dentro dos pares; estratificação exige permutar dentro dos estratos; tratamento por cluster exige permutar clusters. Dependência, interferência, attrition e exposição pós-tratamento podem invalidar a troca simples.
+
+A nula aguda afirma efeito zero para cada unidade e sustenta testes de randomização exatos. Uma nula sobre efeito médio é mais fraca e pode exigir estatísticas studentizadas ou argumentos assintóticos.
+
+## Extensões e multiplicidade
+
+Média, mediana, média aparada e outras estatísticas podem ser usadas, desde que sejam recalculadas em cada permutação. Explorar muitos subgrupos cria multiplicidade; correções ou testes máximos devem respeitar a família de hipóteses definida. Significância não substitui tamanho do efeito, intervalo, validade externa e análise do desenho.

@@ -64,7 +64,7 @@ Fonte: Kaggle, `dem0nking/billboard-hits-songs-dataset`.
 
 ![](assets/aula07-billboard/descritiva-resumo.png){fig-alt="Resumo descritivo do dataset Billboard com número de linhas, colunas, gêneros, duração média, duração mediana e popularidade média."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -87,7 +87,7 @@ unidades da base.
 
 ![](assets/aula07-billboard/descritiva-generos-ausentes.png){fig-alt="Gráficos de barras com número de músicas por gênero e valores ausentes por coluna."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -159,7 +159,7 @@ O resumo final depende das escolhas feitas antes dele.
 
 ![](assets/aula07-billboard/histograma-duracao.png){fig-alt="Histograma da duração das músicas do dataset Billboard."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -190,7 +190,7 @@ Um histograma conta quantas observações caem em cada faixa de valores.
 
 ![](assets/aula07-billboard/bins-comparacao.png){fig-alt="Dois histogramas da duração das músicas usando poucos bins e muitos bins."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -226,7 +226,7 @@ Ela mostra a fração de músicas com duração menor ou igual a cada ponto.
 
 ![](assets/aula07-billboard/cdf-duracao.png){fig-alt="CDF empírica da duração das músicas com marcação em 4 minutos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -257,7 +257,7 @@ Duas respostas comuns:
 
 ![](assets/aula07-billboard/media-mediana.png){fig-alt="Histograma da duração com linhas verticais marcando média e mediana."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -279,7 +279,7 @@ A média é o ponto de equilíbrio aritmético dos dados.
 
 ![](assets/aula07-billboard/mediana-vs-media.png){fig-alt="Comparação entre mediana e média no conjunto de valores 1, 2, 3, 4, 5, 99 e 100. A mediana é 4, no centro dos dados ordenados; a média é 30,6, puxada pelos valores extremos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -309,7 +309,7 @@ A mediana divide os dados ordenados em duas metades.
 
 ![](assets/aula07-billboard/media-mediana-assimetria.png){fig-alt="Três histogramas comparando média e mediana em uma distribuição simétrica, uma distribuição assimétrica à direita e uma distribuição assimétrica à esquerda."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -338,7 +338,7 @@ distribuições assimétricas, a cauda puxa a média.
 
 ![](assets/aula07-billboard/outlier-media-mediana.png){fig-alt="Barras comparando média e mediana antes e depois de adicionar uma música de 45 minutos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -375,7 +375,7 @@ O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 ![](assets/aula07-billboard/quartis-duracao.png){fig-alt="Histograma e régua ordenada da duração das músicas, com Q1, mediana e Q3 dividindo os dados em quatro partes com aproximadamente 25% das observações."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -408,7 +408,7 @@ Quartis separam os dados ordenados em quatro partes.
 
 ![](assets/aula07-billboard/boxplot-duracao.png){fig-alt="Boxplot horizontal da duração das músicas."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -432,7 +432,7 @@ Boxplot mostra centro, dispersão e possíveis valores extremos.
 
 ![](assets/aula07-billboard/boxplot-genero.png){fig-alt="Boxplots da duração das músicas por gênero."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -458,7 +458,7 @@ Compare distribuições, não apenas médias.
 
 ![](assets/aula07-billboard/quantis-cdf.png){fig-alt="CDF empírica da duração das músicas com marcações em P10, Q1, mediana, Q3 e P90."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -487,7 +487,7 @@ quantil é o valor abaixo do qual está essa fração da amostra.
 
 ![](assets/aula07-billboard/dispersao-genero.png){fig-alt="Gráfico de pontos mostrando o espalhamento das durações por gênero."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -523,7 +523,7 @@ Simples, mas depende apenas de dois valores.
 
 ![](assets/aula07-billboard/variancia-comparacao.png){fig-alt="Duas linhas de pontos com a mesma média: uma com baixa variância e valores próximos da média; outra com alta variância e valores mais afastados."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -577,23 +577,71 @@ Por isso dividimos a soma dos quadrados por $n-1$.
 
 ## Caminho 2: decomponha os desvios
 
-A média populacional $\mu$ permite escrever:
+A média populacional $\mu$ permite escrever o desvio em relação à média amostral como:
 
 $$
 X_i-\bar X=(X_i-\mu)-(\bar X-\mu).
 $$
 
-Expandindo os quadrados e usando
-$\sum_i(X_i-\mu)=n(\bar X-\mu)$:
+Elevando ao quadrado:
 
 $$
+(X_i-\bar X)^2
+=(X_i-\mu)^2
+-2(X_i-\mu)(\bar X-\mu)
++(\bar X-\mu)^2.
+$$
+
+Somando para $i=1,\ldots,n$:
+
+$$
+\begin{aligned}
 \sum_{i=1}^{n}(X_i-\bar X)^2
-=
-\sum_{i=1}^{n}(X_i-\mu)^2
--n(\bar X-\mu)^2.
+={}&\sum_{i=1}^{n}(X_i-\mu)^2\\
+&-2(\bar X-\mu)\sum_{i=1}^{n}(X_i-\mu)\\
+&+\sum_{i=1}^{n}(\bar X-\mu)^2.
+\end{aligned}
 $$
 
-A dispersão em torno de $\bar X$ é menor: ajustar a média aos próprios dados subtrai o segundo termo.
+Agora usamos duas simplificações:
+
+$$
+\sum_{i=1}^{n}(X_i-\mu)
+=\sum_{i=1}^{n}X_i-n\mu
+=n\bar X-n\mu
+=n(\bar X-\mu),
+$$
+
+e, como $(\bar X-\mu)^2$ não depende de $i$,
+
+$$
+\sum_{i=1}^{n}(\bar X-\mu)^2=n(\bar X-\mu)^2.
+$$
+
+Substituindo essas duas expressões:
+
+$$
+\begin{aligned}
+\sum_{i=1}^{n}(X_i-\bar X)^2
+={}&\sum_{i=1}^{n}(X_i-\mu)^2
+-2n(\bar X-\mu)^2
++n(\bar X-\mu)^2\\
+={}&\boxed{\sum_{i=1}^{n}(X_i-\mu)^2
+-n(\bar X-\mu)^2}.
+\end{aligned}
+$$
+
+Equivalentemente:
+
+$$
+\sum_{i=1}^{n}(X_i-\mu)^2
+=
+\underbrace{\sum_{i=1}^{n}(X_i-\bar X)^2}_{\text{dispersão em torno de }\bar X}
++
+\underbrace{n(\bar X-\mu)^2}_{\text{distância entre os centros}}.
+$$
+
+A dispersão em torno de $\bar X$ é menor porque a média amostral é o centro que melhor se ajusta aos próprios dados.
 
 ## Tomar a esperança revela n − 1
 
@@ -610,7 +658,18 @@ $$
 =n\operatorname{Var}(\bar X)=\sigma^2.
 $$
 
-Portanto, $n\sigma^2-\sigma^2=(n-1)\sigma^2$.
+Portanto, combinando os dois termos da decomposição:
+
+$$
+\begin{aligned}
+\mathbb E\!\left[\sum_{i=1}^{n}(X_i-\bar X)^2\right]
+&=
+\mathbb E\!\left[\sum_{i=1}^{n}(X_i-\mu)^2\right]
+-\mathbb E\!\left[n(\bar X-\mu)^2\right]\\
+&=n\sigma^2-\sigma^2\\
+&=(n-1)\sigma^2.
+\end{aligned}
+$$
 
 ## A correção remove o viés para baixo
 
@@ -648,7 +707,7 @@ assimetria forte ou valores muito grandes.
 
 ![](assets/aula07-billboard/log-duracao.png){fig-alt="Comparação entre histograma da duração em escala original e histograma de log10 da duração."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -672,7 +731,7 @@ dominantes.
 
 ![](assets/aula07-billboard/popularidade.png){fig-alt="Histograma da popularidade das músicas com linhas de média e mediana."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

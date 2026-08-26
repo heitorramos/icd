@@ -4,6 +4,15 @@ Repositório da disciplina de Introdução à Ciência de Dados.
 
 ## Estrutura
 
+## Regra de sincronização pedagógica
+
+Slides e materiais de apoio formam uma única unidade didática. Sempre que um
+slide receber uma definição, derivação, condição de validade, interpretação ou
+limitação nova, o notebook correspondente deve ser atualizado no mesmo trabalho.
+Os notebooks devem funcionar como guias autônomos de estudo: contextualizam a
+base, reproduzem as análises, apresentam os resultados e desenvolvem com mais
+detalhe a teoria introduzida nos slides.
+
 - `aulas/`: roteiros pedagógicos.
 - `slides/`: slides em Quarto Reveal.js.
 - `exemplos/`: exemplos documentados com dados, código e discussões.

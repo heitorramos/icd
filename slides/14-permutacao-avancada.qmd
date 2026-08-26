@@ -44,7 +44,7 @@ Agora vamos tensionar essa conclusão.
 
 ![](assets/aula13-permutacao/boxplot-exposicoes.png){fig-alt="Boxplots do total de exposições nos grupos, evidenciando cauda longa."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 ads = df[df["total ads"] <= df["total ads"].quantile(.995)]
@@ -111,7 +111,7 @@ Não se permuta a estatística pronta; permutam-se os rótulos e refaz-se todo o
 
 ![](assets/aula13-permutacao/ecdf-exposicoes.png){fig-alt="Curvas acumuladas do total de exposições para anúncio e PSA quase sobrepostas."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 plot_df = df[df["total ads"] <= df["total ads"].quantile(.99)]
@@ -150,7 +150,7 @@ Se o experimento sorteou usuários separadamente por dia, comparar dentro de cad
 
 ![](assets/aula13-permutacao/balanceamento-dia.png){fig-alt="Barras mostrando composição percentual por dia semelhante nos grupos anúncio e PSA."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 composition = pd.crosstab(df["most ads day"], df["test group"], normalize="columns")
@@ -184,7 +184,7 @@ Pesos pelo tamanho do estrato respondem ao efeito médio na população observad
 
 ![](assets/aula13-permutacao/conversao-dia.png){fig-alt="Linhas de conversão por dia para anúncio e PSA, com anúncio acima do PSA."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 by_day = df.groupby(["most ads day", "grupo"])["converted"].mean().mul(100).unstack()
@@ -207,7 +207,7 @@ Cada pergunta adicional aumenta a chance de descobrir um padrão apenas por acas
 
 ![](assets/aula13-permutacao/diferenca-hora.png){fig-alt="Barras da diferença de conversão por hora, com variação entre estratos."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 hour = df.groupby(["most ads hour", "grupo"])["converted"].mean().mul(100).unstack()
@@ -357,7 +357,7 @@ Poder depende de:
 
 ![](assets/aula13-permutacao/poder-tamanho.png){fig-alt="Curvas aproximadas de poder para três diferenças de conversão e tamanhos amostrais crescentes."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 se0 = np.sqrt(2 * base * (1-base) / sizes)

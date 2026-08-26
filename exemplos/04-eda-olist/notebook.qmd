@@ -760,3 +760,33 @@ O caminho seguro é agregar cada tabela à granularidade de pedido antes de junt
 - [ ] Avaliei cobertura temporal e escopo.
 - [ ] Testei regras de validade.
 - [ ] Diferenciei associação de causalidade.
+
+# Guia teórico consolidado
+
+## EDA é uma investigação estruturada
+
+Análise exploratória não é uma coleção de gráficos. Ela testa se os dados conseguem sustentar a pergunta. Um roteiro útil percorre cinco lentes:
+
+1. **estrutura:** arquivos, colunas, tipos e chaves;
+2. **granularidade:** o que cada linha representa;
+3. **escopo:** população, período, filtros e cobertura;
+4. **qualidade:** ausências, duplicatas, valores impossíveis e inconsistências;
+5. **distribuição e relações:** forma, centro, dispersão, grupos e associações.
+
+## Chaves, cardinalidade e merges
+
+Uma chave identifica unidades. Em um relacionamento um-para-muitos, juntar pedidos e itens multiplica linhas porque cada pedido pode conter vários itens. Isso não é necessariamente erro, mas muda a granularidade. Se a pergunta está no nível do pedido, agregue os itens antes de retornar à tabela de pedidos.
+
+Declare a cardinalidade esperada (`one_to_one`, `one_to_many`, `many_to_one`) e confira quantas linhas e unidades únicas existem antes e depois do merge. `inner`, `left`, `right` e `outer` respondem perguntas distintas porque preservam populações diferentes.
+
+## Ausência pode carregar informação
+
+Dados ausentes podem depender do processo: pedidos cancelados não possuem data de entrega; avaliações só existem para quem respondeu. Remover linhas com `dropna()` pode redefinir silenciosamente a população analisada. As estratégias principais são excluir, imputar ou modelar a ausência, sempre descrevendo qual pergunta passa a ser respondida.
+
+## Tempo, cobertura e censura
+
+Séries temporais exigem datas válidas e períodos completos. Os meses finais de uma base podem parecer ter menos pedidos apenas porque a coleta terminou antes de todos os eventos amadurecerem. Duração de entrega também exige duas datas e uma regra clara para pedidos não entregues.
+
+## Associação não encerra a análise
+
+A relação entre atraso e avaliação pode refletir efeito causal, seleção de quem avalia, tipo de produto, região ou período. A EDA descreve padrões e produz hipóteses; ela não identifica sozinha o mecanismo causal. Uma conclusão responsável separa o que foi observado, o que foi inferido e quais explicações alternativas permanecem.

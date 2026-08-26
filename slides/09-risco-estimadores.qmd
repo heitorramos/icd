@@ -112,7 +112,7 @@ Em outros problemas, ocorre o contrário:
 
 ![](assets/aula08-estimadores/perda-assimetrica.png){fig-alt="Comparação entre uma perda quadrática simétrica e uma perda que penaliza subestimações três vezes mais."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -248,7 +248,7 @@ As medianas satisfazem essa condição. Se $n$ é par, todo valor entre as duas 
 
 ![](assets/aula08-estimadores/funcoes-perda.png){fig-alt="Duas curvas de perda: o erro quadrático atinge o mínimo na média e o erro absoluto atinge o mínimo na mediana."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -288,7 +288,7 @@ Mover a média em direção ao extremo pode reduzir muito essa penalidade.
 
 ![](assets/aula08-estimadores/robustez-outlier.png){fig-alt="Linhas mostrando a média crescendo à medida que um valor extremo aumenta, enquanto a mediana permanece praticamente constante."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -365,7 +365,7 @@ Ela troca um pouco de viés por menor sensibilidade a extremos.
 
 ![](assets/aula08-estimadores/comparacao-estimadores.png){fig-alt="Curvas de densidade das estimativas produzidas pela média, mediana e média aparada em muitas amostras."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -406,7 +406,7 @@ Uma regra pode melhorar uma propriedade e piorar a outra.
 
 ![](assets/aula08-estimadores/vies-variancia-quadrantes.png){fig-alt="Quatro painéis mostrando combinações de baixo e alto viés com baixa e alta variância em torno de um alvo zero."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -524,7 +524,7 @@ Risco = variância + viés².
 
 ![](assets/aula08-estimadores/risco-estimadores.png){fig-alt="Barras empilhadas decompondo o erro quadrático esperado em variância e viés ao quadrado para média, mediana e média aparada."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

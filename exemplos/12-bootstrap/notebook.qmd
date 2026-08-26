@@ -212,3 +212,25 @@ Antes de reamostrar, verifique:
 2. O que muda quando aumentamos $B$? E quando aumentamos $n$?
 3. Por que reamostrar anúncios pode subestimar a incerteza?
 4. Em quais situações o bootstrap percentil seria inadequado?
+
+# Guia teórico consolidado
+
+## O princípio do bootstrap
+
+A distribuição empírica $\widehat F_n$ coloca massa $1/n$ em cada observação. O bootstrap trata essa distribuição como uma aproximação da população e gera amostras de tamanho $n$ com reposição. Para cada amostra calculamos
+
+$$\widehat\theta^{*b}=T(X_1^{*b},\ldots,X_n^{*b}),\qquad b=1,\ldots,B.$$
+
+A distribuição das réplicas aproxima, condicionalmente à amostra observada, a distribuição amostral do estimador. Seu desvio-padrão estima o erro padrão; quantis podem formar um intervalo percentil.
+
+## O que torna a aproximação válida
+
+O bootstrap costuma funcionar quando a amostra representa a população, a unidade reamostrada corresponde à unidade independente e a estatística varia de maneira suficientemente regular. Ele pode falhar em amostras pequenas, extremos, parâmetros na fronteira, caudas não observadas, forte dependência ou seleção enviesada.
+
+Reposição é indispensável: sem ela, toda réplica seria apenas uma reordenação da mesma amostra. Mais réplicas reduzem erro de Monte Carlo, mas não criam informação nem compensam poucos dados.
+
+## Unidade de reamostragem
+
+Anúncios do mesmo anfitrião podem ser dependentes. Reamostrar anúncios individualmente pressupõe independência entre anúncios; reamostrar anfitriões preserva a dependência interna. Séries temporais podem exigir blocos; amostras estratificadas podem exigir reamostragem dentro dos estratos.
+
+Intervalo percentil não é o único método. Intervalos básico, Normal e BCa fazem correções diferentes e podem discordar, especialmente quando a distribuição bootstrap é assimétrica.

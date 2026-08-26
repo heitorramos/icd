@@ -65,7 +65,7 @@ No jogo, uma porta interrompe o avanço até o jogador esperar ou realizar uma c
 
 ![](assets/aula15-poder-multiplos/tamanho-grupos.png){fig-alt="Barras com 44.700 jogadores no gate 30 e 45.489 no gate 40."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 counts = df["grupo"].value_counts().reindex(order)
@@ -79,7 +79,7 @@ plt.title("Os grupos têm tamanhos muito semelhantes")
 
 ![](assets/aula15-poder-multiplos/retencao-observada.png){fig-alt="Barras de retenção em 1 e 7 dias mostrando taxas ligeiramente maiores para a porta no nível 30."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 ret = df.groupby("grupo")[["retention_1", "retention_7"]].mean().mul(100)
@@ -103,7 +103,7 @@ Diferenças pequenas podem ser importantes — ou apenas ruído.
 
 ![](assets/aula15-poder-multiplos/rodadas-distribuicao.png){fig-alt="Histograma e boxplots mostrando forte assimetria à direita no número de rodadas."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 sns.histplot(df.loc[df.sum_gamerounds <= 500, "sum_gamerounds"], bins=50)
@@ -162,7 +162,7 @@ Embaralhar os rótulos:
 
 ![](assets/aula15-poder-multiplos/permutacao-h0.png){fig-alt="Distribuição de diferenças por permutação centrada em zero, com a diferença observada na cauda."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 pooled = np.r_[y30, y40]
@@ -186,7 +186,7 @@ Por isso, o bootstrap usual fica centrado em $\widehat\Delta$, não em zero.
 
 ![](assets/aula15-poder-multiplos/bootstrap-ha.png){fig-alt="Distribuição bootstrap da diferença de retenção centrada no efeito observado e afastada de zero."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 p30_b = rng.choice(y30, size=len(y30), replace=True).mean()
@@ -243,7 +243,7 @@ Para Bernoulli, simulamos de uma proporção combinada comum.
 
 ![](assets/aula15-poder-multiplos/bootstrap-h0-recentrado.png){fig-alt="Distribuição bootstrap recentralizada em zero com a diferença observada na cauda."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 pooled = (y30.sum() + y40.sum()) / (len(y30) + len(y40))
@@ -257,7 +257,7 @@ t_null = p30_null - p40_null
 
 ![](assets/aula15-poder-multiplos/tres-distribuicoes.png){.wide-chart fig-alt="Três histogramas comparando permutação sob H0, bootstrap recentralizado sob H0 e bootstrap usual sob HA."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 for values, title in [(perm, "Permutação: H0"),
@@ -298,7 +298,7 @@ Cada $\Delta^*$ produz um poder diferente.
 
 ![](assets/aula15-poder-multiplos/poder-efeito-amostra.png){fig-alt="Curvas de poder para três efeitos e diferentes números de jogadores por grupo."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 for effect in effects:
@@ -320,7 +320,7 @@ Aumentar o efeito não é uma opção estatística: ele pertence ao fenômeno e 
 
 ![](assets/aula15-poder-multiplos/alfa-poder.png){fig-alt="Curva mostrando aumento do poder conforme aumenta o nível de significância."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 zcrit = norm.ppf(1 - alphas/2)
@@ -355,7 +355,7 @@ Adicionar horas, segmentos ou cortes cria rapidamente dezenas de hipóteses.
 
 ![](assets/aula15-poder-multiplos/cem-pvalores.png){fig-alt="Cem valores-p sob hipóteses nulas, com alguns abaixo de 0,05 apenas por acaso."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 p_values = rng.uniform(size=100)
@@ -382,7 +382,7 @@ $$
 
 ![](assets/aula15-poder-multiplos/fwer-testes.png){fig-alt="Curva crescente da probabilidade de ao menos um falso positivo conforme aumenta o número de testes."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 m = np.arange(1, 101)
@@ -425,7 +425,7 @@ $q$ é a taxa de falsas descobertas desejada.
 
 ![](assets/aula15-poder-multiplos/bonferroni-bh.png){fig-alt="Valores-p ordenados comparados aos limiares de Bonferroni e Benjamini-Hochberg."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 p = np.sort(p_values)
@@ -459,7 +459,7 @@ Não corrigimos uma hipótese que foi realmente definida como única antes do es
 
 ![](assets/aula15-poder-multiplos/winners-curse.png){fig-alt="Distribuições mostrando que efeitos selecionados por significância são maiores que o efeito verdadeiro."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 estimates = rng.normal(true_effect, se, 5000)

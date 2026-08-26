@@ -25,7 +25,7 @@ Antes de resumir uma base, precisamos descobrir o que suas linhas realmente sign
 
 ![](assets/aula04-eda-olist/nota-atraso.png){.wide-chart fig-alt="Nota média de pedidos entregues no prazo e atrasados."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -108,7 +108,7 @@ Há mais itens que pedidos e menos avaliações que pedidos. Essa diferença já
 
 ![](assets/aula04-eda-olist/status-pedidos.png){.wide-chart fig-alt="Quantidade de pedidos por status."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -124,7 +124,7 @@ orders["order_status"].value_counts().plot.barh()
 
 ![](assets/aula04-eda-olist/pedidos-estado.png){.wide-chart fig-alt="Pedidos nos dez estados com maior frequência."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -235,7 +235,7 @@ False
 
 ![](assets/aula04-eda-olist/itens-por-pedido.png){.wide-chart fig-alt="Distribuição do número de itens por pedido."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -354,7 +354,7 @@ Ela não representa automaticamente todo o comércio eletrônico brasileiro.
 
 ![](assets/aula04-eda-olist/ausencias-pedidos.png){.wide-chart fig-alt="Valores ausentes nas datas de aprovação, envio e entrega."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -442,7 +442,7 @@ Alguns pedidos possuem mais de uma avaliação. Precisamos agregar antes do merg
 
 ![](assets/aula04-eda-olist/valor-pedidos.png){.wide-chart fig-alt="Histogramas do valor dos pedidos na escala completa e com zoom."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -484,7 +484,7 @@ Datas como texto não permitem diferenças, ordenação temporal segura ou reamo
 
 ![](assets/aula04-eda-olist/pedidos-mensais.png){.wide-chart fig-alt="Quantidade mensal de pedidos ao longo do período."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -511,7 +511,7 @@ Escolha a escala que corresponde à pergunta.
 
 ![](assets/aula04-eda-olist/tempo-entrega.png){.wide-chart fig-alt="Distribuição do tempo entre compra e entrega."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -545,7 +545,7 @@ entregues["atrasou"] = entregues["atraso_dias"] > 0
 
 ![](assets/aula04-eda-olist/notas-avaliacoes.png){.wide-chart fig-alt="Contagem das notas de avaliação de um a cinco."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

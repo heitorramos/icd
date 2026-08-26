@@ -14,12 +14,6 @@ Nesta disciplina, conceitos estatísticos são desenvolvidos por meio de bases
 reais, simulações, visualizações e notebooks reproduzíveis.
 
 [Acessar as aulas](aulas/index.qmd){.btn .btn-primary .btn-lg}
-[Consultar o programa](programa.qmd){.btn .btn-outline-primary .btn-lg}
-:::
-
-::: {.mock-notice}
-**Conteúdo provisório:** os campos marcados com **[SUBSTITUIR]** são exemplos de
-informações administrativas que poderão ser atualizadas posteriormente.
 :::
 
 ## Informações rápidas
@@ -36,7 +30,7 @@ Departamento de Ciência da Computação — UFMG<br>
 :::
 
 ::: {.g-col-12 .g-col-md-4}
-::: {.info-card .mock-card}
+::: {.info-card}
 ### Horário e sala
 
 Terças e quintas, 17h0–18h40<br>
@@ -48,7 +42,7 @@ Sala 406 — CAD3
 ::: {.info-card .mock-card}
 ### Atendimento
 
-**[SUBSTITUIR]** Horários e local de atendimento aos estudantes.
+Ver horários de monitoria.
 :::
 :::
 :::
@@ -263,11 +257,12 @@ instalação serão adicionadas conforme a necessidade.
 :::
 
 ::: {.g-col-12 .g-col-md-4}
-::: {.resource-block .mock-card}
+::: {.resource-block}
 ### Ambiente institucional
 
-**[SUBSTITUIR]** Link para Moodle, Teams ou outro espaço usado para avisos,
-entregas e notas.
+Avisos, atividades, entregas e notas são publicados no Moodle da disciplina.
+
+[Acessar o Moodle](https://virtual.ufmg.br/20262/course/view.php?id=12421){.btn .btn-primary}
 :::
 :::
 :::

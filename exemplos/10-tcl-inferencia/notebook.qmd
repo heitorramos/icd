@@ -297,3 +297,31 @@ for true_p in [0.08, 0.085, 0.09, 0.10, 0.12]:
 Brazilian E-Commerce Public Dataset by Olist, disponibilizado no Kaggle em
 `olistbr/brazilian-ecommerce`. O conjunto reúne cerca de 100 mil pedidos reais,
 anonimizados, realizados entre 2016 e 2018.
+
+# Guia teórico consolidado
+
+## Distribuição amostral, LGN e TCL
+
+A distribuição dos dados individuais não é a distribuição da média amostral. Para observações i.i.d. com média $\mu$ e variância finita $\sigma^2$:
+
+$$\mathbb E[\bar X]=\mu,\qquad \operatorname{Var}(\bar X)=\frac{\sigma^2}{n},\qquad \operatorname{SE}(\bar X)=\frac{\sigma}{\sqrt n}.$$
+
+A Lei dos Grandes Números afirma que $\bar X_n$ converge para $\mu$. O Teorema Central do Limite descreve a distribuição do erro:
+
+$$\frac{\bar X_n-\mu}{\sigma/\sqrt n}\xrightarrow{d}N(0,1).$$
+
+LGN responde “para onde vai?”; TCL responde “como oscila?”. O TCL não afirma que os dados originais sejam Normais.
+
+## Condições e aproximação
+
+Independência ou dependência suficientemente fraca, amostra representativa e variância finita são centrais. Assimetria forte e caudas pesadas podem exigir amostras maiores. Em amostragem sem reposição de uma população finita, a fração amostral pode exigir correção do erro padrão.
+
+## Intervalos de confiança
+
+Substituindo $\sigma$ por uma estimativa adequada, um intervalo aproximado tem a forma
+
+$$\widehat\theta\pm z^*\operatorname{SE}(\widehat\theta).$$
+
+A interpretação frequentista é sobre o procedimento: em repetidas amostras, aproximadamente 95% dos intervalos de 95% cobririam o parâmetro. Depois de calculado, o intervalo específico cobre ou não cobre o parâmetro; não atribuímos 95% de probabilidade a um parâmetro fixo.
+
+Mais confiança aumenta a largura. A margem diminui como $1/\sqrt n$, portanto reduzir a margem pela metade exige aproximadamente quadruplicar a amostra. Nenhuma fórmula de intervalo corrige seleção enviesada ou mensuração ruim.

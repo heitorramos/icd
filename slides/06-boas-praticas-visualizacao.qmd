@@ -25,7 +25,7 @@ Um bom gráfico torna a comparação correta mais fácil e a interpretação err
 
 ![](assets/aula06-visualizacao/eixo-truncado.png){.wide-chart fig-alt="Comparação entre barras com eixo correto e eixo truncado."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 pair = movies["main_genre"].value_counts().loc[["Drama", "Comedy"]]
@@ -113,7 +113,7 @@ Título bom é uma afirmação sustentada pelo gráfico.
 
 ![](assets/aula06-visualizacao/generos-ordenados.png){.wide-chart fig-alt="Gêneros de filmes ordenados por contagem."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 movies["main_genre"].value_counts().head(8).sort_values().plot.barh()
@@ -132,7 +132,7 @@ Linhas e pontos não têm a mesma obrigação quando a pergunta é sobre variaç
 
 ![](assets/aula06-visualizacao/eixos-duplos.png){.wide-chart fig-alt="Os mesmos dados de filmes e notas parecem se opor com o segundo eixo usual e acompanhar-se quando esse eixo é invertido."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 ax2 = ax.twinx()
@@ -155,7 +155,7 @@ Prefira:
 
 ![](assets/aula06-visualizacao/linear-log.png){.wide-chart fig-alt="Orçamento e receita de filmes em escalas linear e logarítmica."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 sns.scatterplot(data=valid, x="budget", y="revenue")
@@ -184,7 +184,7 @@ Transformar pode revelar estrutura, mas muda a pergunta visual.
 
 ![](assets/aula06-visualizacao/filmes-tempo.png){.wide-chart fig-alt="Número de filmes por ano na base TMDB."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 movies.groupby("year").size().loc[1980:2016].plot.line()
@@ -213,7 +213,7 @@ O eixo temporal deve representar o acontecimento que a pergunta menciona.
 
 ![](assets/aula06-visualizacao/contagem-razao.png){.wide-chart fig-alt="Contagens anuais de dramas e comédias ao lado da razão entre as duas contagens."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 contagens = movies.groupby(["year", "main_genre"]).size().unstack()
@@ -227,7 +227,7 @@ Contagem mede volume; razão mede a composição relativa entre dois gêneros.
 
 ![](assets/aula06-visualizacao/justaposicao-generos.png){.wide-chart fig-alt="Quatro séries anuais de filmes apresentadas lado a lado com os mesmos eixos."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 sns.relplot(data=annual, x="year", y="filmes", col="main_genre",
@@ -241,7 +241,7 @@ A escala comum permite comparar tendência e magnitude sem misturar as séries.
 
 ![](assets/aula06-visualizacao/olist-mapa-trimestres.png){.wide-chart fig-alt="Quatro mapas do Brasil mostrando pedidos da Olist por estado e trimestre de 2017."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 pedidos = olist.groupby(["trimestre", "customer_state"]).size()
@@ -255,7 +255,7 @@ Um mapa anual esconderia quando a concentração ocorreu; um gráfico temporal s
 
 ![](assets/aula06-visualizacao/notas-genero-box.png){.wide-chart fig-alt="Boxplots de notas de filmes por gênero."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 sns.boxplot(data=movies, x="vote_average", y="main_genre")
@@ -272,7 +272,7 @@ Use intervalos, pontos brutos, tamanho da amostra ou transparência sobre a cobe
 
 ![](assets/aula06-visualizacao/pizza-barras.png){.wide-chart fig-alt="A mesma composição de gêneros em pizza e barras."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 ax.pie(share, labels=share.index)
@@ -293,7 +293,7 @@ Use matizes diferentes para categorias sem ordem.
 
 ![](assets/aula06-visualizacao/cor-sequencial.png){.wide-chart fig-alt="Dispersão de orçamento e receita colorida pela quantidade de votos."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 plt.scatter(valid.budget, valid.revenue,
@@ -316,7 +316,7 @@ Sem centro, duas cores opostas inventam uma ruptura.
 
 ![](assets/aula06-visualizacao/lucro-destaque.png){.wide-chart fig-alt="Ranking de filmes por lucro com um único destaque em laranja."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 colors = ["#b7c4ca"] * 9 + ["#d97727"]
@@ -338,7 +338,7 @@ Destaque é hierarquia, não ornamentação.
 
 ![](assets/aula06-visualizacao/ruido-clareza.png){.wide-chart fig-alt="Comparação entre gráfico carregado e versão com hierarquia visual."}
 
-<details class="code-fold" open><summary>Código do gráfico</summary>
+<details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 ax.barh(categorias, valores, color=[acento if foco else cinza])

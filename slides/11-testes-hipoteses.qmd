@@ -88,7 +88,7 @@ Observamos 9,58% de atrasos.
 
 ![](assets/aula10-tcl-inferencia/distribuicao-taxa-atraso.png){fig-alt="Histograma da proporção de atrasos em muitas amostras de 1200 pedidos, centrado na taxa populacional."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -171,7 +171,7 @@ $$
 
 ![](assets/aula10-tcl-inferencia/distribuicao-nula.png){fig-alt="Distribuição simulada da proporção de atrasos sob hipótese nula de 8 por cento, com o valor observado de 9,58 por cento marcado."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -231,7 +231,7 @@ $$
 
 ![](assets/aula10-tcl-inferencia/pvalor-cauda.png){fig-alt="Distribuição nula da taxa de atraso com a região tão extrema quanto o resultado observado destacada em laranja."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -279,7 +279,7 @@ Com $\alpha=0{,}05$, rejeitaríamos $H_0$ neste exemplo.
 
 ![](assets/aula10-tcl-inferencia/regioes-rejeicao.png){fig-alt="Duas curvas normais com regiões de rejeição unilaterais para níveis de significância de 5 e 1 por cento."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -364,7 +364,7 @@ Aqui: 96 atrasos e 1.104 não atrasos são esperados sob $H_0$.
 
 ![](assets/aula10-tcl-inferencia/binomial-normal.png){fig-alt="Probabilidades da Binomial para número de caras em 30 lançamentos e curva da aproximação Normal."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -437,7 +437,7 @@ Sua probabilidade é controlada por $\alpha$.
 
 ![](assets/aula10-tcl-inferencia/erro-tipo-i.png){fig-alt="Fração acumulada de rejeições em cinco mil testes simulados sob a hipótese nula, convergindo para 5 por cento."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -497,7 +497,7 @@ O poder depende do valor verdadeiro sob a alternativa.
 
 ![](assets/aula10-tcl-inferencia/curva-poder.png){fig-alt="Curva de poder do teste em função da taxa verdadeira de atraso, crescendo à medida que se afasta de 8 por cento."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

@@ -81,7 +81,7 @@ Dos 344 registros, 342 têm massa corporal observada. Esses 342 formam nossa pop
 
 ![](assets/aula08-estimadores/populacao-massa.png){fig-alt="Histograma da massa corporal dos pinguins, empilhado por espécie, com a média da população marcada em 4202 gramas."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -158,7 +158,7 @@ Aqui: pinguins selecionados para medição.
 
 ![](assets/aula08-estimadores/uma-amostra.png){fig-alt="Pontos de massa corporal da população, com uma amostra de 20 pinguins destacada e linhas para a média populacional e a média amostral."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -297,7 +297,7 @@ $$
 
 ![](assets/aula08-estimadores/proporcao-gentoo.png){fig-alt="Histograma das proporções de pinguins Gentoo em cinco mil amostras de tamanho 40, centrado na proporção populacional."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -352,7 +352,7 @@ Para estudar um estimador, precisamos imaginar muitas amostras possíveis.
 
 ![](assets/aula08-estimadores/distribuicao-amostral.png){fig-alt="À esquerda, dez amostras e suas médias; à direita, histograma de quatro mil médias amostrais."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -464,7 +464,7 @@ $$
 
 ![](assets/aula08-estimadores/amostragem-enviesada.png){fig-alt="Distribuições das médias de amostras aleatórias de toda a população e de amostras apenas de pinguins Gentoo, mostrando forte deslocamento."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -521,7 +521,7 @@ Menor variância significa estimativas mais estáveis entre amostras.
 
 ![](assets/aula08-estimadores/tamanho-amostra.png){fig-alt="Curvas de densidade das médias amostrais para amostras de tamanho 10, 30 e 80, cada vez mais concentradas em torno da média populacional."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -570,7 +570,7 @@ Para reduzir o erro padrão pela metade, precisamos multiplicar $n$ por quatro.
 
 ![](assets/aula08-estimadores/erro-padrao.png){fig-alt="Linhas quase coincidentes comparando o erro padrão simulado e a fórmula sigma sobre raiz de n para diferentes tamanhos de amostra."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -607,7 +607,7 @@ Mais dados reduzem a variabilidade aleatória — se o mecanismo de amostragem f
 
 ![](assets/aula08-estimadores/convergencia-media.png){fig-alt="Média acumulada da massa corporal ao longo de 2500 observações, oscilando e depois se estabilizando perto da média populacional."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -662,7 +662,7 @@ O formato da população não precisa ser Normal.
 
 ![](assets/aula08-estimadores/tcl-assimetria.png){fig-alt="Uma população fortemente assimétrica à direita e uma distribuição aproximadamente normal de médias de amostras de tamanho 30."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

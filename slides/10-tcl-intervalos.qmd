@@ -82,7 +82,7 @@ Trataremos esses pedidos como uma população conhecida para validar os métodos
 
 ![](assets/aula10-tcl-inferencia/populacao-entrega.png){fig-alt="Histograma assimétrico à direita do tempo de entrega dos pedidos Olist, com média de 12,6 dias."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -105,7 +105,7 @@ Há uma cauda longa: poucos pedidos demoram muito mais que o típico.
 
 ![](assets/aula10-tcl-inferencia/amostra-entrega.png){fig-alt="Distribuição populacional do tempo de entrega comparada a um histograma de uma amostra de 50 pedidos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -174,7 +174,7 @@ $$
 
 ![](assets/aula10-tcl-inferencia/tcl-tamanhos.png){fig-alt="Distribuições amostrais da média do tempo de entrega para amostras de tamanho 10, 50 e 200."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -281,7 +281,7 @@ Se $n/N<10\%$, a correção costuma ser pequena.
 
 ![](assets/aula10-tcl-inferencia/tcl-tres-populacoes.png){fig-alt="Populações uniforme, assimétrica e bimodal, com distribuições de médias amostrais aproximadamente normais."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -332,7 +332,7 @@ Valores próximos de zero são comuns; valores extremos são raros.
 
 ![](assets/aula10-tcl-inferencia/areas-normal.png){fig-alt="Curva Normal dividida em faixas de desvios padrão. A área central até um desvio padrão contém 68,3%, até dois contém 95,4% e até três contém 99,7%."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -364,7 +364,7 @@ for inicio, fim, cor, rotulo in faixas:
 
 ![](assets/aula10-tcl-inferencia/padronizacao-tcl.png){fig-alt="Histograma das médias padronizadas do tempo de entrega sobreposto à densidade Normal padrão."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -389,7 +389,7 @@ A unidade “dias” desaparece após a padronização.
 
 ![](assets/aula10-tcl-inferencia/erro-padrao-entrega.png){fig-alt="Erro padrão simulado e teórico do tempo médio de entrega em função do tamanho da amostra."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -475,7 +475,7 @@ $$
 
 ![](assets/aula10-tcl-inferencia/intervalo-exemplo.png){fig-alt="Intervalo de confiança de 95 por cento para o tempo médio de entrega, com a média populacional marcada."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -520,7 +520,7 @@ Não esperamos que todos cubram o parâmetro.
 
 ![](assets/aula10-tcl-inferencia/cobertura-intervalos.png){fig-alt="Cem intervalos de confiança simulados, com os que não cobrem a média populacional destacados em laranja."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -551,7 +551,7 @@ Os intervalos laranja são erros esperados do procedimento.
 
 ![](assets/aula10-tcl-inferencia/confianca-largura.png){fig-alt="Barras mostrando intervalos mais largos para níveis de confiança de 80, 90, 95 e 99 por cento."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -588,7 +588,7 @@ Ela diminui quando:
 
 ![](assets/aula10-tcl-inferencia/margem-tamanho.png){fig-alt="Curva decrescente da margem de erro em função do tamanho da amostra."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

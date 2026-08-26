@@ -313,3 +313,40 @@ Gorman, K. B.; Williams, T. D.; Fraser, W. R. (2014). *Ecological Sexual
 Dimorphism and Environmental Variability within a Community of Antarctic
 Penguins*. Dados distribuídos sob licença CC0 e disponibilizados no Kaggle em
 `parulpandey/palmer-archipelago-antarctica-penguin-data`.
+
+# Guia teórico consolidado das Aulas 08 e 09
+
+## Parâmetro, estimador e estimativa
+
+O **parâmetro** é uma característica fixa da população ou do processo gerador. O **estimador** é uma regra aleatória aplicada à amostra. A **estimativa** é o valor observado dessa regra em uma amostra específica. A distribuição amostral descreve como o estimador variaria se repetíssemos o desenho de amostragem.
+
+Um estimador é não viesado quando $\mathbb E[\widehat\theta]=\theta$, consistente quando se aproxima de $\theta$ à medida que $n$ cresce e preciso quando sua variância é pequena. Erro padrão é o desvio-padrão da distribuição amostral; não é o desvio-padrão dos indivíduos.
+
+## Perda quadrática e média
+
+Para escolher um centro $a$ pela perda quadrática,
+
+$$L(a)=\sum_{i=1}^n(x_i-a)^2.$$
+
+Derivando:
+
+$$L'(a)=2\sum_{i=1}^n(a-x_i)=2\left(na-\sum_i x_i\right).$$
+
+A condição $L'(a)=0$ fornece $a=\bar x$. Como $L''(a)=2n>0$, a média é o mínimo global.
+
+## Perda absoluta e mediana
+
+Para $L(a)=\sum_i|x_i-a|$, a função não é diferenciável nos dados. Fora desses pontos, cada observação à esquerda contribui inclinação $+1$ e cada observação à direita contribui $-1$. A inclinação muda de negativa para positiva quando há ao menos metade das observações de cada lado: essa é precisamente a condição de mediana.
+
+## Risco, viés e variância
+
+Sob perda quadrática,
+
+$$\operatorname{MSE}(\widehat\theta)=\mathbb E[(\widehat\theta-\theta)^2]
+=\operatorname{Var}(\widehat\theta)+\operatorname{Bias}(\widehat\theta)^2.$$
+
+Um pequeno viés pode ser aceitável se reduzir bastante a variância. A melhor escolha depende da população, da perda e do custo dos erros. Robustez descreve sensibilidade à contaminação; a mediana possui ponto de ruptura muito maior que a média, enquanto a média aparada oferece um compromisso.
+
+## O desenho não é curado por n
+
+Aumentar $n$ reduz variabilidade aleatória, mas não corrige viés de seleção, mensuração inadequada ou dependência ignorada. Propriedades algébricas do estimador só têm valor quando a amostra representa o alvo da pergunta.

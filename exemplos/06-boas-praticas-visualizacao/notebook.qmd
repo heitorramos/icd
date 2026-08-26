@@ -374,3 +374,29 @@ Escreva três frases justificando cada mudança.
 ## Para guardar
 
 Boas práticas não são uma lista de proibições. Elas derivam da tarefa perceptiva, da pergunta e do compromisso de representar dados com transparência.
+
+# Guia teórico consolidado
+
+## Escala é parte do argumento
+
+Barras codificam magnitude pelo comprimento desde uma origem comum; por isso, truncar o zero exagera razões. Pontos e linhas podem usar domínios locais quando a pergunta é variação, desde que a escala seja explícita. Dois eixos verticais são particularmente perigosos: domínios e orientação independentes permitem fabricar concordância ou oposição entre curvas.
+
+A escala logarítmica transforma razões em distâncias:
+
+$$\log(ab)=\log(a)+\log(b).$$
+
+Ela é apropriada para fenômenos multiplicativos e caudas longas, mas exige valores positivos, marcas interpretáveis e indicação clara da transformação.
+
+## Tempo, comparação e condicionamento
+
+Linhas sugerem continuidade e só devem conectar valores com ordem significativa. Comparações entre painéis pedem domínios comuns. Condicionar por grupo, espaço ou tempo permite enxergar heterogeneidade sem misturar populações distintas. Contagens absolutas e razões respondem perguntas diferentes: volume não é composição.
+
+## Cor, destaque e acessibilidade
+
+Paletas qualitativas separam categorias; sequenciais representam magnitude ordenada; divergentes exigem um centro substantivo. Luminância deve acompanhar a ordem. Vermelho e verde não bastam para parte do público; cor precisa ser combinada com posição, forma, rótulo ou contraste.
+
+Destaque cria hierarquia: poucas cores fortes e cinza para contexto geralmente comunicam melhor que uma paleta saturada. Legendas distantes aumentam o esforço; rótulos diretos aproximam evidência e interpretação.
+
+## Incerteza e ética
+
+Médias sem distribuição ou incerteza podem sugerir precisão inexistente. Razão de aspecto, filtragem, domínio dos eixos e omissão de grupos alteram a interpretação. Um gráfico correto também declara unidade, período, filtros, fonte, limitações e a mensagem verificável que sustenta.

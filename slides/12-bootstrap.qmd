@@ -62,7 +62,7 @@ O preço é anunciado: não observamos se a estadia realmente ocorreu.
 
 ![](assets/aula12-bootstrap/anuncios-distrito.png){fig-alt="Barras com o número de anúncios por distrito de Nova York, destacando Manhattan e Brooklyn como os maiores grupos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -94,7 +94,7 @@ Limpar a cauda muda a população-alvo: agora estudamos anúncios entre US$ 1 e 
 
 ![](assets/aula12-bootstrap/distribuicao-precos.png){fig-alt="Dois histogramas dos preços dos anúncios Airbnb, em escala original e logarítmica, mostrando forte assimetria à direita."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -120,7 +120,7 @@ Na base original, a mediana é US$ 106 e a média é US$ 153.
 
 ![](assets/aula12-bootstrap/precos-distrito.png){fig-alt="Boxplots de preço por noite nos cinco distritos de Nova York, sem exibir pontos extremos."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -142,7 +142,7 @@ Mas comparar todos os anúncios mistura localização e tipo de acomodação.
 
 ![](assets/aula12-bootstrap/composicao-tipo.png){fig-alt="Barras empilhadas com a composição dos anúncios de Manhattan e Brooklyn por tipo de acomodação."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -189,7 +189,7 @@ $$
 
 ![](assets/aula12-bootstrap/ecdf-amostra.png){fig-alt="Curvas de distribuição acumulada dos preços de acomodações inteiras em Brooklyn e Manhattan, com as medianas marcadas."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -255,7 +255,7 @@ Essa variação imita a incerteza amostral.
 
 ![](assets/aula12-bootstrap/reamostragem-reposicao.png){fig-alt="Pontos representando uma amostra de preços e uma reamostragem bootstrap com valores repetidos e ausentes."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -282,7 +282,7 @@ Em média, uma réplica contém cerca de 63,2% das observações distintas.
 
 ![](assets/aula12-bootstrap/uma-replica.png){fig-alt="Medianas observadas e medianas de uma réplica bootstrap em Brooklyn e Manhattan."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -369,7 +369,7 @@ Esses dois papéis não devem ser confundidos.
 
 ![](assets/aula12-bootstrap/distribuicao-bootstrap.png){fig-alt="Histograma de três mil diferenças bootstrap entre as medianas de Manhattan e Brooklyn."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -416,7 +416,7 @@ Ele usa os quantis da própria distribuição bootstrap.
 
 ![](assets/aula12-bootstrap/intervalo-percentil.png){fig-alt="Densidade bootstrap da diferença de medianas com o intervalo percentil de 95 por cento destacado entre 30 e 51 dólares."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -450,7 +450,7 @@ Depois de observar o intervalo, o parâmetro não passa a ter 95% de probabilida
 
 ![](assets/aula12-bootstrap/estabilidade-b.png){fig-alt="Limites inferior e superior do intervalo bootstrap conforme cresce o número de réplicas."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -475,7 +475,7 @@ Para intervalos, alguns milhares de réplicas costumam ser um ponto de partida p
 
 ![](assets/aula12-bootstrap/tamanho-largura.png){fig-alt="Boxplots da largura do intervalo bootstrap para diferentes tamanhos de amostra por distrito."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -516,7 +516,7 @@ Depois de estabilizar $B$, ampliar a amostra é o que realmente estreita o inter
 
 ![](assets/aula12-bootstrap/metodos-intervalo.png){fig-alt="Comparação dos intervalos percentil, básico e Normal para a diferença de medianas."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -555,7 +555,7 @@ Não basta que o histograma bootstrap pareça suave ou convincente.
 
 ![](assets/aula12-bootstrap/cobertura-bootstrap.png){fig-alt="Vinte intervalos bootstrap obtidos de amostras repetidas, comparados à diferença de medianas na população didática."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -617,7 +617,7 @@ Reamostrar anúncios como se fossem independentes pode subestimar a incerteza.
 
 ![](assets/aula12-bootstrap/dependencia-host.png){fig-alt="Distribuição do número de anúncios por anfitrião e comparação entre bootstrap por anúncio e por anfitrião."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python

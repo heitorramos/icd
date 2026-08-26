@@ -216,3 +216,22 @@ anonimizados; o limite de 8% é uma referência didática, não uma meta declara
 pela empresa. O notebook não deve ser interpretado como auditoria operacional
 da Olist.
 
+# Guia teórico consolidado
+
+## A lógica de um teste
+
+Um teste começa antes dos cálculos: defina estimando, hipótese nula $H_0$, alternativa $H_A$, estatística e direção. A distribuição nula descreve valores que a estatística poderia assumir se $H_0$ fosse verdadeira. O valor-p é a probabilidade, calculada sob $H_0$, de obter resultado tão ou mais extremo que o observado.
+
+O valor-p não é $P(H_0\mid\text{dados})$, não mede o tamanho do efeito e não é a probabilidade de o resultado ter ocorrido por acaso.
+
+## Decisão e erros
+
+O nível $\alpha$ controla a probabilidade de erro tipo I sob as condições do teste. Erro tipo II é não rejeitar $H_0$ quando uma alternativa relevante é verdadeira. Poder é $1-\beta$: a chance de detectar essa alternativa específica.
+
+Reduzir $\alpha$ diminui falsos positivos, mas pode reduzir poder. Poder cresce com tamanho do efeito, tamanho amostral, menor variabilidade e, mantendo o restante, um limiar menos rigoroso.
+
+## Significância e importância
+
+“Rejeitar $H_0$” não significa provar $H_A$; “não rejeitar” não prova equivalência. Com amostras grandes, efeitos irrelevantes podem ser significativos. Sempre reporte estimativa, intervalo e consequência substantiva, além do valor-p.
+
+Testes unilaterais só são defensáveis quando a direção foi escolhida antes de observar os dados e efeitos na direção oposta não levariam à mesma ação. Fazer muitos testes aumenta a chance de falsos positivos e exige definir uma família e uma estratégia de correção.

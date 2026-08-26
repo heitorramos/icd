@@ -307,3 +307,33 @@ visualizar_variavel(penguins, "bill_length_mm")
 ## Para guardar
 
 O gráfico é uma transformação dos dados. Toda escolha preserva algumas relações e enfraquece outras. Antes de escolher a biblioteca ou a estética, defina a pergunta e a comparação que o leitor precisa realizar.
+
+# Guia teórico consolidado
+
+## Visualização como codificação
+
+Um gráfico mapeia variáveis para **marcas** — pontos, linhas e áreas — e para **canais visuais**, como posição, comprimento, ângulo, área, forma, cor e luminância. Para comparação quantitativa, posição em uma escala comum e comprimento alinhado costumam ser mais precisos que área ou ângulo.
+
+O gráfico deve ser escolhido pela pergunta: barras comparam categorias, linhas representam evolução em uma dimensão ordenada, histogramas e densidades mostram forma, ECDFs respondem proporções acumuladas e dispersões mostram relações entre duas medidas.
+
+## Histograma, ECDF e KDE
+
+O histograma depende da origem e largura dos bins. A ECDF não suaviza:
+
+$$\widehat F(x)=\frac1n\sum_{i=1}^n\mathbf 1(X_i\le x),$$
+
+e responde diretamente qual proporção é menor ou igual a $x$.
+
+A KDE estima uma densidade suave:
+
+$$\widehat f_h(x)=\frac{1}{nh}\sum_{i=1}^nK\left(\frac{x-x_i}{h}\right).$$
+
+Para um kernel Normal padrão, $K$ possui variância 1. Depois da escala, cada kernel centrado em $x_i$ possui desvio-padrão $h$ e variância $h^2$. Um $h$ pequeno preserva oscilações e ruído; um $h$ grande pode esconder grupos e assimetrias. No Seaborn, `bw_adjust` multiplica a largura escolhida automaticamente e não é necessariamente $h$ nas unidades dos dados.
+
+## Resumo não substitui forma
+
+Datasaurus e exemplos semelhantes mostram que médias, variâncias e correlações quase idênticas podem coexistir com formas radicalmente diferentes. Agregar é perder informação. Resumos devem ser acompanhados por visualização, inspeção de valores impossíveis e comparação dentro de grupos relevantes.
+
+## Condicionamento e causalidade
+
+Facetas condicionam a análise a uma variável e ajudam a verificar se uma associação agregada persiste dentro dos grupos. Ainda assim, relação visual não implica mecanismo causal: desenho do estudo, temporalidade e variáveis de confusão continuam essenciais.

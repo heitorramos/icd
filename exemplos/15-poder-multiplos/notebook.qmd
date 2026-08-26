@@ -352,3 +352,25 @@ Base Cookie Cats, versão `matinmahmoudi/rounds-and-retention` no Kaggle, licen�
 Apache 2.0. O conjunto é uma republicação educacional e não traz todos os detalhes
 operacionais do experimento original. As conclusões devem ser tratadas como um
 estudo de caso didático, não como recomendação atual para o produto.
+
+# Guia teórico consolidado
+
+## Três distribuições diferentes
+
+A distribuição observada descreve os dados. Uma distribuição sob $H_0$ representa resultados possíveis sem efeito; permutação costuma ser natural quando o desenho torna os rótulos trocáveis. A distribuição sob $H_A$ representa efeitos plausíveis; bootstrap é frequentemente natural para aproximá-la a partir dos grupos observados.
+
+Bootstrap também pode construir $H_0$: recentralizamos os grupos para remover o efeito observado e reamostramos dentro das distribuições recentralizadas. Isso é válido somente quando a transformação representa adequadamente a hipótese nula.
+
+## Poder é relativo a uma alternativa
+
+Poder não é uma propriedade isolada do teste. Ele depende de tamanho do efeito, variabilidade, amostra, regra de decisão e $\alpha$. Uma simulação de poder deve especificar o mundo alternativo e repetir todo o procedimento de análise. Aumentar $n$, reduzir ruído ou escolher uma métrica mais informativa pode aumentar poder.
+
+## Múltiplos testes
+
+Com $m$ testes independentes no nível $\alpha$, a probabilidade de ao menos um falso positivo é
+
+$$\operatorname{FWER}=1-(1-\alpha)^m.$$
+
+Bonferroni testa cada hipótese em $\alpha/m$ e controla FWER. Benjamini–Hochberg ordena os valores-p e controla a taxa esperada de falsas descobertas entre as rejeições. Eles não competem pela mesma meta: FWER é mais protetora contra qualquer falso positivo; FDR aceita alguns em troca de maior poder.
+
+Definir uma métrica primária reduz multiplicidade. Correções não consertam viés, p-hacking, mudança da hipótese após os dados ou seleção de “vencedores”, que também tende a exagerar os efeitos observados.

@@ -77,7 +77,7 @@ O objetivo é descrever a oferta anunciada em uma fotografia do mercado de 2019.
 
 ![](assets/aula03-airbnb/mapa-anuncios.png){fig-alt="Mapa de dispersão dos anúncios do Airbnb em Nova York, coloridos por distrito."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -424,7 +424,7 @@ não uma medida contínua com distâncias iguais.
 
 ![](assets/aula03-airbnb/valores-ausentes.png){fig-alt="Contagem de valores ausentes em quatro colunas da base Airbnb." width="72%"}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -491,7 +491,7 @@ Validação transforma conhecimento do domínio em testes verificáveis.
 
 ![](assets/aula03-airbnb/precos-bruto-zoom.png){.price-distribution-chart fig-alt="Dois histogramas do preço: escala completa e zoom até 500 dólares."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
@@ -702,7 +702,7 @@ resumo = (
 
 ![](assets/aula03-airbnb/mediana-distrito-tipo.png){fig-alt="Preço mediano por distrito e tipo de acomodação."}
 
-<details class="code-fold" open>
+<details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
