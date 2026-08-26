@@ -226,13 +226,14 @@ Moodle e no cronograma da disciplina.
 
 ### Etapas do projeto final
 
-| Etapa | Entrega |
-|---:|---|
-| 01 | Definição da equipe e do tema |
-| 02 | Entrevista parcial 01 |
-| 03 | Entrevista parcial 02 |
-| 04 | Entrevista parcial 03 |
-| 05 | Vídeo e notebook final |
+| Etapa | Entrega | Valor |
+|---:|---|---:|
+| 01 | Definição da equipe e do tema | 0 ponto |
+| 02 | Entrevista parcial 01 | 3 pontos |
+| 03 | Entrevista parcial 02 | 3 pontos |
+| 04 | Entrevista parcial 03 | 4 pontos |
+| 05 | Vídeo e notebook final | 20 pontos |
+|  | **Total do projeto** | **30 pontos** |
 
 ### Proposta do projeto
 
@@ -292,14 +293,6 @@ adequados ao projeto:
   — arquivos dos sistemas de informação em saúde;
 - [Portal Brasileiro de Dados Abertos](https://dados.gov.br/home) — catálogo de
   bases publicadas por órgãos do Governo Federal.
-
-Outras sugestões do hotsite anterior:
-
-- [Brasil.IO — COVID-19](https://brasil.io/covid19/);
-- [Suicide Rates Overview 1985–2016](https://www.kaggle.com/datasets/russellyates88/suicide-rates-overview-1985-to-2016);
-- [FIFA 19](https://www.kaggle.com/datasets/karangadiya/fifa19);
-- [League of Legends](https://www.kaggle.com/datasets/chuckephron/leagueoflegends);
-- [Pokémon](https://www.kaggle.com/datasets/rounakbanik/pokemon).
 
 Antes de escolher, verifique licença, documentação, unidade observacional,
 qualidade das variáveis e se a base permite responder a perguntas que envolvam
