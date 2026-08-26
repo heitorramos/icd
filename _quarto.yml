@@ -17,7 +17,7 @@ website:
   repo-actions: [edit, issue]
   page-navigation: true
   page-footer:
-    center: "Material produzido por Heitor Ramos em conjunto com o ChatGPT. Todo o material foi revisado por Heitor Ramos."
+    center: "Material produzido por Heitor Ramos em conjunto com o ChatGPT e revisado por Heitor Ramos. Conteúdo baseado no material do Prof. Flávio Vinícius, disponível em [icd-ufmg.github.io](https://icd-ufmg.github.io/)."
     border: true
   navbar:
     background: "#17324d"
