@@ -286,6 +286,136 @@ A distribuição das réplicas aproxima, condicionalmente à amostra observada, 
 
 Para nível $1-\alpha$, o intervalo percentil é $[q_{\alpha/2},q_{1-\alpha/2}]$, em que $q_\gamma$ é o quantil de ordem $\gamma$ das réplicas. Para 95%, $\alpha=0{,}05$ e usamos os quantis 2,5% e 97,5%.
 
+## Viés do estimador e viés estimado pelo bootstrap
+
+O viés frequentista de um estimador é
+
+$$\operatorname{Bias}(\widehat\theta)=E_F(\widehat\theta)-\theta,$$
+
+em que $E_F$ é a esperança sob repetidas amostras da população $F$, $\theta=T(F)$ é o parâmetro e $\widehat\theta$ é o estimador. Não podemos calcular essa quantidade diretamente com uma única amostra porque $F$ e $\theta$ são desconhecidos.
+
+No mundo bootstrap, substituímos $F$ por $\widehat F_n$ e estimamos
+
+$$\widehat{\operatorname{Bias}}_{boot}
+=E_*(\widehat\theta^*\mid X_1,\ldots,X_n)-\widehat\theta
+\approx\overline{\theta^*}-\widehat\theta,$$
+
+onde $E_*$ é a esperança sobre reamostragens condicionadas nos dados observados e $\overline{\theta^*}=B^{-1}\sum_{b=1}^B\widehat\theta^{*b}$ é a média das réplicas. Uma correção pontual simples seria
+
+$$\widehat\theta_{corr}=\widehat\theta-\widehat{\operatorname{Bias}}_{boot}
+=2\widehat\theta-\overline{\theta^*}.$$
+
+Essa correção não deve ser aplicada automaticamente. A estimativa do viés também tem erro de Monte Carlo e erro amostral; em estimadores irregulares ou amostras pequenas, subtrair o viés estimado pode aumentar o MSE. Além disso, esse cálculo trata apenas do viés que a distribuição empírica consegue reproduzir.
+
+É essencial distinguir:
+
+- **viés do estimador:** deslocamento médio provocado pela regra estatística sob amostras repetidas;
+- **viés bootstrap estimado:** aproximação desse deslocamento condicionada à amostra observada;
+- **viés de seleção ou mensuração:** diferença causada por uma amostra não representativa ou dados medidos incorretamente, que o bootstrap comum geralmente replica em vez de corrigir.
+
+### Exemplo numérico: corrigindo o estimador do máximo
+
+Considere a amostra observada
+
+$$x=(2,4)$$
+
+e suponha que queremos estimar o maior valor da população com
+
+$$\widehat\theta=\max(x_1,x_2)=4.$$
+
+A distribuição empírica coloca probabilidade $1/2$ em 2 e $1/2$ em 4. Ao sortear duas observações com reposição, existem quatro amostras bootstrap ordenadas igualmente prováveis:
+
+| amostra bootstrap $x^*$ | $\widehat\theta^*=\max(x^*)$ |
+|---|---:|
+| $(2,2)$ | 2 |
+| $(2,4)$ | 4 |
+| $(4,2)$ | 4 |
+| $(4,4)$ | 4 |
+
+Como todas têm probabilidade $1/4$, a esperança bootstrap do estimador é
+
+$$
+E_*(\widehat\theta^*)
+=\overline{\theta^*}
+=\frac{2+4+4+4}{4}
+=3{,}5.
+$$
+
+Logo, o viés bootstrap estimado é
+
+$$
+\widehat{\operatorname{Bias}}_{boot}
+=\overline{\theta^*}-\widehat\theta
+=3{,}5-4
+=-0{,}5.
+$$
+
+O sinal negativo indica que, no mundo bootstrap, o máximo tende a ficar abaixo do máximo observado. Aplicando a correção usual,
+
+$$
+\widehat\theta_{corr}
+=\widehat\theta-\widehat{\operatorname{Bias}}_{boot}
+=4-(-0{,}5)
+=4{,}5.
+$$
+
+Equivalentemente,
+
+$$
+\widehat\theta_{corr}
+=2\widehat\theta-\overline{\theta^*}
+=2(4)-3{,}5
+=4{,}5.
+$$
+
+```{python}
+from itertools import product
+
+x_simples = np.array([2, 4])
+amostras_possiveis = np.array(list(product(x_simples, repeat=2)))
+maximos_bootstrap = amostras_possiveis.max(axis=1)
+
+theta_hat_simples = x_simples.max()
+bias_simples = maximos_bootstrap.mean() - theta_hat_simples
+theta_corrigido_simples = theta_hat_simples - bias_simples
+
+pd.DataFrame({
+    "amostra bootstrap": [tuple(v) for v in amostras_possiveis],
+    "máximo": maximos_bootstrap,
+}), pd.Series({
+    "estimativa observada": theta_hat_simples,
+    "média bootstrap": maximos_bootstrap.mean(),
+    "viés bootstrap": bias_simples,
+    "estimativa corrigida": theta_corrigido_simples,
+})
+```
+
+::: {.callout-note title="O que o exemplo ensina"}
+A correção desloca a estimativa na direção oposta ao viés estimado. Entretanto, o máximo é um estimador pouco regular e a amostra tem apenas duas observações: obter 4,5 não garante melhora em MSE nem revela valores da população que nunca apareceram na amostra. O exemplo serve para tornar a fórmula transparente, não para recomendar correção automática.
+:::
+
+```{python}
+bias_boot = replicas.mean() - theta_hat
+theta_corrigido = theta_hat - bias_boot
+pd.Series({
+    "estimativa observada": theta_hat,
+    "viés bootstrap estimado": bias_boot,
+    "estimativa corrigida": theta_corrigido,
+})
+```
+
+Com a semente usada neste material, o resultado é:
+
+| quantidade | valor (US$) |
+|---|---:|
+| estimativa observada | 40,00 |
+| viés bootstrap estimado | −0,26 |
+| estimativa corrigida | 40,26 |
+
+::: {.callout-note title="Interpretação"}
+Um centro bootstrap próximo de $\widehat\theta$ sugere pouco viés estimável para essa estatística e essa distribuição empírica. Isso não demonstra que a amostra Airbnb represente todos os anúncios, nem corrige dependência entre anúncios do mesmo anfitrião.
+:::
+
 ## O percentil não é o único intervalo
 
 Considere $B$ réplicas $\widehat\theta^{*1},\ldots,\widehat\theta^{*B}$. Denote por $q_\gamma^*$ o quantil de ordem $\gamma$ dessas réplicas, por $\widehat\theta$ a estimativa observada e por $z_\gamma=\Phi^{-1}(\gamma)$ o quantil de ordem $\gamma$ da Normal padrão. Os métodos abaixo usam a mesma reamostragem, mas transformam a distribuição bootstrap de formas diferentes.
@@ -384,3 +514,14 @@ Reposição é indispensável: sem ela, toda réplica seria apenas uma reordena�
 Anúncios do mesmo anfitrião podem ser dependentes. Reamostrar anúncios individualmente pressupõe independência entre anúncios; reamostrar anfitriões preserva a dependência interna. Séries temporais podem exigir blocos; amostras estratificadas podem exigir reamostragem dentro dos estratos.
 
 O método de intervalo não corrige uma unidade de reamostragem inadequada. Percentil, básico, Normal e BCa podem discordar, especialmente quando a distribuição bootstrap é assimétrica ou enviesada.
+
+# Questões de revisão da Aula 12
+
+1. Por que uma réplica bootstrap de tamanho $n$ é sorteada com reposição?
+2. Se anúncios do mesmo anfitrião são dependentes, qual deve ser a unidade de reamostragem?
+
+<details><summary>Respostas comentadas</summary>
+
+1. Com reposição, algumas observações se repetem e outras ficam ausentes, fazendo a estatística variar. Sem reposição, teríamos apenas uma reordenação da amostra.
+2. O anfitrião deve ser reamostrado como conglomerado, carregando seus anúncios. Aumentar $B$ não corrige dependência ignorada.
+</details>

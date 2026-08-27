@@ -334,6 +334,15 @@ $$
 
 E como $\widehat{p}=K/n$, a Binomial também descreve a proporção.
 
+## O que varia entre amostras? {.quiz-question}
+
+Ao repetir amostras aleatórias de mesmo tamanho, qual afirmação está correta?
+
+- [O parâmetro populacional muda a cada amostra]{data-explanation="O parâmetro é uma característica fixa da população ou do processo gerador definido."}
+- [A estimativa muda, embora o parâmetro permaneça fixo]{.correct data-explanation="A variabilidade entre estimativas é justamente o objeto descrito pela distribuição amostral."}
+- [Um estimador não viesado produz sempre o valor exato]{data-explanation="Não viés é uma propriedade média do procedimento; amostras individuais ainda produzem erro."}
+- [Toda amostra de mesmo tamanho produz a mesma estimativa]{data-explanation="A composição aleatória da amostra faz a estimativa variar."}
+
 ## Uma amostra não basta para avaliar a regra
 
 Se repetirmos a coleta, os pinguins mudam.
@@ -627,6 +636,15 @@ finish("convergencia-media.png")
 ```
 
 </details>
+
+## O que uma amostra maior não corrige? {.quiz-question}
+
+Queremos a massa média de todas as espécies, mas coletamos apenas pinguins Gentoo. O que ocorre ao aumentar muito $n$?
+
+- [A estimativa necessariamente converge para a média de todas as espécies]{data-explanation="Mais observações do grupo errado não tornam a amostra representativa da população-alvo."}
+- [A variância pode diminuir, mas o viés de seleção permanece]{.correct data-explanation="A amostra fica mais precisa em torno da média de Gentoo, não em torno da média de todas as espécies."}
+- [O viés desaparece porque a média amostral é sempre não viesada]{data-explanation="A não tendenciosidade da média exige amostragem compatível com a população-alvo."}
+- [O erro padrão aumenta com o tamanho da amostra]{data-explanation="Em condições usuais, o erro padrão diminui aproximadamente como 1/√n."}
 
 ## Mais dados não curam seleção ruim
 

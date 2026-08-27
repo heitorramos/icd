@@ -267,6 +267,15 @@ finish("pvalor-cauda.png")
 É uma probabilidade calculada assumindo $H_0$.
 :::
 
+## O que o valor-p responde? {.quiz-question}
+
+Um valor-p de 0,02 significa que:
+
+- [$H_0$ tem 2% de probabilidade de ser verdadeira]{data-explanation="O valor-p não é uma probabilidade posterior de H0."}
+- [Sob $H_0$, resultados tão ou mais extremos ocorreriam com probabilidade 2%]{.correct data-explanation="A probabilidade é calculada condicionando na hipótese nula e na regra de extremidade escolhida."}
+- [Há 98% de probabilidade de o efeito ser relevante]{data-explanation="Valor-p não mede relevância prática nem tamanho do efeito."}
+- [Somente 2% dos dados são compatíveis com $H_0$]{data-explanation="O valor-p se refere à estatística de teste em repetições, não à fração de observações."}
+
 ## Nível de significância
 
 Escolhemos antes do teste um limite $\alpha$ para o erro tipo I.
@@ -537,6 +546,15 @@ finish("poder-duas-distribuicoes.png")
 ```
 
 </details>
+
+## Por que o poder aumentou? {.quiz-question}
+
+Na figura, o efeito permanece de 8% para 10%, mas $n$ cresce de 300 para 1.200. Por que o poder aumenta?
+
+- [As distribuições ficam mais estreitas e se sobrepõem menos]{.correct data-explanation="O erro padrão diminui com n, tornando a mesma diferença mais distinguível da flutuação amostral."}
+- [A hipótese alternativa se afasta automaticamente de $H_0$]{data-explanation="As taxas 8% e 10% permanecem fixas; o que muda é a precisão."}
+- [$\alpha$ aumenta junto com a amostra]{data-explanation="O gráfico mantém α = 5%; aumentar n não exige alterar o nível do teste."}
+- [O erro tipo I deixa de existir]{data-explanation="O nível α continua controlando falsos positivos sob H0."}
 
 ## O poder cresce com o efeito
 

@@ -230,6 +230,15 @@ $$\frac{\bar X_n-\mu}{\sigma/\sqrt n}\xrightarrow{d}N(0,1)$$
 LGN fala de **convergência ao alvo**; TCL, da **distribuição do erro**.
 :::
 
+## LGN ou TCL? {.quiz-question}
+
+Qual afirmação descreve corretamente o Teorema Central do Limite?
+
+- [A média amostral se aproxima de $\mu$, sem informar o formato de sua distribuição]{data-explanation="Essa é a mensagem principal da Lei dos Grandes Números."}
+- [O erro padronizado da média se aproxima de uma Normal padrão]{.correct data-explanation="Sob condições adequadas, (X̄−μ)/(σ/√n) converge em distribuição para N(0,1)."}
+- [Os dados individuais tornam-se Normais quando $n$ cresce]{data-explanation="O TCL descreve a distribuição da média, não transforma as observações originais."}
+- [A independência e a variância finita são irrelevantes]{data-explanation="As condições do teorema determinam quando a aproximação pode ser usada."}
+
 ## O Teorema Central do Limite
 
 Sob condições usuais, quando $n$ é suficientemente grande:
@@ -503,6 +512,15 @@ finish("intervalo-exemplo.png")
 ```
 
 </details>
+
+## O que significa 95% de confiança? {.quiz-question}
+
+Qual interpretação frequentista está correta?
+
+- [Há 95% de probabilidade de $\mu$ estar no intervalo já calculado]{data-explanation="Após o cálculo, o intervalo específico cobre ou não cobre o parâmetro fixo."}
+- [Em repetições, cerca de 95% dos intervalos construídos pelo procedimento cobrem $\mu$]{.correct data-explanation="A confiança é uma propriedade de cobertura do procedimento em amostras repetidas."}
+- [95% dos dados individuais ficam dentro do intervalo]{data-explanation="O intervalo estima a média populacional, não delimita 95% das observações."}
+- [A confiança garante ausência de viés de seleção]{data-explanation="Um intervalo correto não repara uma amostra que não representa a população."}
 
 ## O parâmetro não é aleatório
 

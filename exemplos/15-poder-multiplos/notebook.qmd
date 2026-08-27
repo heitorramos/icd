@@ -447,3 +447,14 @@ Em geral, $\operatorname{FWER}=P(V\geq1)$. Bonferroni testa cada hipótese em $\
 Já $\operatorname{FDR}=E[V/\max(R,1)]$ controla a proporção falsa esperada entre as descobertas. Benjamini–Hochberg ordena os valores-p, encontra o maior $k$ com $p_{(k)}\leq(k/m)q$ e rejeita as primeiras $k$ hipóteses. FWER e FDR não são versões mais forte e mais fraca da mesma resposta: representam compromissos científicos diferentes.
 
 Definir uma métrica primária reduz multiplicidade. Correções não consertam viés, p-hacking, mudança da hipótese após os dados ou seleção de “vencedores”, que também tende a exagerar os efeitos observados.
+
+# Questões de revisão da Aula 15
+
+1. Quando o bootstrap usual representa naturalmente $H_A$ e como ele pode ser adaptado para representar $H_0$?
+2. Quais quantidades são controladas por Bonferroni, Holm e Benjamini–Hochberg?
+
+<details><summary>Respostas comentadas</summary>
+
+1. Ao reamostrar separadamente os grupos, preservamos o efeito observado e representamos alternativas plausíveis. Para $H_0$, é necessário remover a diferença, por exemplo recentralizando os dados.
+2. Bonferroni e Holm controlam FWER; Holm usa um procedimento sequencial. Benjamini–Hochberg controla FDR sob suas condições.
+</details>

@@ -253,6 +253,15 @@ t_null = p30_null - p40_null
 ```
 </details>
 
+## Qual distribuição o bootstrap representa? {.quiz-question}
+
+Associe corretamente o uso do bootstrap à hipótese representada.
+
+- [Bootstrap usual separado por grupo representa naturalmente efeitos próximos ao observado]{.correct data-explanation="Ele preserva a diferença entre os grupos e é natural para estudar HA e intervalos."}
+- [Bootstrap usual separado por grupo sempre representa H0]{data-explanation="Sem recentralização, ele mantém o efeito observado em vez de impor ausência de efeito."}
+- [Bootstrap recentralizado preserva necessariamente o efeito observado]{data-explanation="A recentralização remove o efeito para construir uma distribuição sob H0."}
+- [Permutação e bootstrap respondem sempre à mesma pergunta]{data-explanation="Permutação quebra a associação sob H0; bootstrap aproxima incerteza sob uma distribuição empírica escolhida."}
+
 ## A hipótese determina a simulação
 
 ![](assets/aula15-poder-multiplos/tres-distribuicoes.png){.wide-chart fig-alt="Três histogramas comparando permutação sob H0, bootstrap recentralizado sob H0 e bootstrap usual sob HA."}
@@ -503,6 +512,15 @@ Com $q=0{,}05$:
 | 5 | 0,200 | 0,050 | não |
 
 BH rejeita as três primeiras hipóteses. Ele faz mais descobertas porque controla FDR, não a probabilidade de qualquer erro.
+
+## Qual erro cada método controla? {.quiz-question .quiz-multiple}
+
+Selecione as associações corretas.
+
+- [Bonferroni controla FWER dividindo $\alpha$ pelo número de testes]{.correct data-explanation="Cada hipótese é comparada a α/m, garantindo controle da chance de qualquer falso positivo."}
+- [Holm controla FWER com um procedimento sequencial]{.correct data-explanation="Holm ordena os valores-p e usa limiares progressivos, sendo geralmente menos conservador que Bonferroni."}
+- [Benjamini–Hochberg controla FDR]{.correct data-explanation="BH controla a proporção esperada de falsos positivos entre as descobertas, sob suas condições."}
+- [Todos os três métodos controlam exatamente a mesma quantidade]{data-explanation="Bonferroni e Holm miram FWER; BH mira FDR."}
 
 ## Bonferroni, Holm e BH têm metas distintas
 

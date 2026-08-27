@@ -360,3 +360,18 @@ onde $\widehat p_{g,s}$ é a proporção observada no grupo $g$ e estrato $s$, e
 $$T=\frac{\bar X_{ad}-\bar X_{psa}}{\sqrt{s_{ad}^2/n_{ad}+s_{psa}^2/n_{psa}}}$$
 
 divide a diferença das médias por um erro padrão estimado; $\bar X_g$, $s_g^2$ e $n_g$ são a média, a variância amostral e o tamanho do grupo $g$.
+
+# Questões de revisão das Aulas 13 e 14
+
+1. O que permanece fixo e o que varia em uma permutação simples de dois grupos?
+2. Quando a alternativa deve ser bilateral?
+3. Como permutar quando a atribuição ocorreu separadamente dentro de cada estrato?
+4. Qual é a diferença entre a nula aguda de Fisher e uma nula de efeito médio zero?
+
+<details><summary>Respostas comentadas</summary>
+
+1. Resultados e tamanhos dos grupos permanecem fixos; os rótulos variam e a estatística é recalculada.
+2. Quando diferenças nas duas direções contradizem $H_0$ e são relevantes para a pergunta definida antes dos dados.
+3. Os rótulos devem ser permutados somente dentro de cada estrato, reproduzindo o mecanismo de atribuição.
+4. A nula aguda exige $Y_i(1)=Y_i(0)$ para toda unidade; efeito médio zero permite efeitos individuais que se cancelam.
+</details>

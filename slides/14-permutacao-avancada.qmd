@@ -182,6 +182,15 @@ Pesos pelo tamanho do estrato respondem ao efeito médio na população observad
 
 $s=1,\ldots,S$ indexa os estratos; $\widehat p_{g,s}$ é a proporção no grupo $g$ dentro do estrato $s$; $w_s\geq0$ é um peso fixado antes da permutação, com $\sum_sw_s=1$. Os rótulos são permutados apenas dentro de cada $s$.
 
+## Quando a permutação deve ser estratificada? {.quiz-question}
+
+O tratamento foi sorteado separadamente dentro de cada dia. Como os rótulos devem ser permutados?
+
+- [Livremente entre todos os usuários]{data-explanation="Isso cria atribuições incompatíveis com o desenho original."}
+- [Apenas entre usuários do mesmo dia]{.correct data-explanation="A permutação deve reproduzir a randomização e preservar os tamanhos dentro de cada estrato."}
+- [Somente entre usuários que converteram]{data-explanation="Condicionar na resposta quebra a lógica da atribuição aleatória."}
+- [Não é possível usar permutação com estratos]{data-explanation="É possível, desde que as trocas sejam restritas aos estratos adequados."}
+
 ## A diferença aparece em todos os dias
 
 ![](assets/aula13-permutacao/conversao-dia.png){fig-alt="Linhas de conversão por dia para anúncio e PSA, com anúncio acima do PSA."}
@@ -312,6 +321,15 @@ $$
 Nenhuma unidade é afetada. Isso é mais forte que afirmar apenas efeito médio zero.
 
 $Y_i(1)$ e $Y_i(0)$ são os resultados potenciais da unidade $i$ sob tratamento e controle. O quantificador $\forall i$ exige igualdade para cada unidade, não apenas em média.
+
+## Qual hipótese é mais forte? {.quiz-question}
+
+Qual afirmação descreve a nula aguda de Fisher?
+
+- [O efeito médio é zero, embora efeitos individuais possam existir]{data-explanation="Essa é uma hipótese nula sobre o efeito médio."}
+- [$Y_i(1)=Y_i(0)$ para toda unidade $i$]{.correct data-explanation="A nula aguda afirma ausência de efeito para cada unidade, permitindo imputar todos os resultados potenciais."}
+- [As médias observadas dos grupos são exatamente iguais]{data-explanation="Igualdade amostral não define a hipótese causal sobre resultados potenciais."}
+- [As distribuições têm apenas a mesma variância]{data-explanation="A nula aguda é uma afirmação sobre resultados potenciais individuais, não apenas dispersão."}
 
 ## Nula aguda versus nula média
 

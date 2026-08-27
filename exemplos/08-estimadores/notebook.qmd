@@ -346,3 +346,18 @@ Um pequeno viés pode ser aceitável se reduzir bastante a variância. A melhor 
 ## O desenho não é curado por n
 
 Aumentar $n$ reduz variabilidade aleatória, mas não corrige viés de seleção, mensuração inadequada ou dependência ignorada. Propriedades algébricas do estimador só têm valor quando a amostra representa o alvo da pergunta.
+
+# Questões de revisão das Aulas 08 e 09
+
+1. Ao repetir amostras aleatórias, o que varia: o parâmetro, o estimador ou a estimativa?
+2. Por que aumentar $n$ não corrige uma amostra formada apenas por Gentoo quando o alvo inclui todas as espécies?
+3. Quais centros minimizam, respectivamente, perda quadrática e perda absoluta?
+4. Como um estimador com viés pequeno ainda pode apresentar MSE alto?
+
+<details><summary>Respostas comentadas</summary>
+
+1. O parâmetro permanece fixo, o estimador é a regra e a estimativa obtida varia entre amostras.
+2. Mais dados reduzem a variância em torno da média de Gentoo, mas não corrigem a população representada.
+3. A média minimiza perda quadrática; a mediana minimiza perda absoluta.
+4. Porque $\operatorname{MSE}=\operatorname{viés}^2+\operatorname{variância}$ e a variância pode dominar.
+</details>

@@ -251,6 +251,15 @@ Com reposição:
 
 Essa variação imita a incerteza amostral.
 
+## Por que sortear com reposição? {.quiz-question}
+
+Por que o bootstrap comum reamostra $n$ observações com reposição?
+
+- [Para que toda réplica contenha exatamente os mesmos valores uma vez]{data-explanation="Isso ocorreria sem reposição e produziria apenas uma reordenação da amostra."}
+- [Para permitir repetições e ausências, fazendo a estatística variar entre réplicas]{.correct data-explanation="Essa variabilidade aproxima a incerteza amostral usando a distribuição empírica."}
+- [Para aumentar artificialmente o tamanho da amostra]{data-explanation="Cada réplica continua tendo tamanho n; B controla o número de réplicas, não o tamanho amostral."}
+- [Para corrigir automaticamente viés de seleção]{data-explanation="O bootstrap herda a representatividade e as limitações da amostra observada."}
+
 ## Uma reamostragem parece imperfeita
 
 ![](assets/aula12-bootstrap/reamostragem-reposicao.png){fig-alt="Pontos representando uma amostra de preços e uma reamostragem bootstrap com valores repetidos e ausentes."}
@@ -402,6 +411,23 @@ $$
 Aqui, o erro padrão bootstrap é aproximadamente US$ 5,5.
 
 $B$ é o número de réplicas, $\widehat\theta_b^*$ é a estimativa da réplica $b$ e $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas.
+
+## O bootstrap também pode estimar viés
+
+O viés de um estimador é
+
+$$\operatorname{Bias}(\widehat\theta)=E(\widehat\theta)-\theta.$$
+
+Como $\theta$ e a esperança populacional são desconhecidos, o bootstrap aproxima:
+
+$$\widehat{\operatorname{Bias}}_{boot}
+=\overline{\theta^*}-\widehat\theta,$$
+
+onde $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas. Valor próximo de zero sugere pouco deslocamento **capturável pela amostra**.
+
+::: {.statement}
+O bootstrap pode diagnosticar viés do estimador; não detecta nem corrige viés de seleção que a amostra não revela.
+:::
 
 ## O intervalo percentil é direto
 
@@ -700,6 +726,15 @@ print(f"diferença={theta_hat:.0f}; IC95%=[{ci[0]:.0f}, {ci[1]:.0f}]")
 ```
 
 </details>
+
+## Qual unidade deve ser reamostrada? {.quiz-question}
+
+Vários anúncios pertencem ao mesmo anfitrião e podem ser dependentes. Qual estratégia é mais adequada?
+
+- [Reamostrar anúncios individualmente e ignorar o anfitrião]{data-explanation="Isso trata unidades dependentes como independentes e pode subestimar a incerteza."}
+- [Reamostrar anfitriões e carregar seus anúncios em cada réplica]{.correct data-explanation="O bootstrap por conglomerados preserva a dependência interna e imita melhor a coleta."}
+- [Aumentar apenas o número de réplicas $B$]{data-explanation="Mais réplicas reduzem erro de Monte Carlo, mas não corrigem a unidade de reamostragem."}
+- [Remover anfitriões com mais de um anúncio]{data-explanation="Excluir unidades muda a população-alvo e não é uma correção geral para dependência."}
 
 ## Casos que exigem outra estratégia
 

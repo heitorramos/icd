@@ -244,6 +244,15 @@ $$
 
 As medianas satisfazem essa condição. Se $n$ é par, todo valor entre as duas observações centrais também minimiza a perda.
 
+## Qual centro minimiza cada perda? {.quiz-question .quiz-multiple}
+
+Selecione as associações corretas.
+
+- [A média minimiza a soma dos erros quadráticos]{.correct data-explanation="Ao zerar a derivada da perda quadrática, obtemos o equilíbrio aritmético θ = x̄."}
+- [A mediana minimiza a soma dos erros absolutos]{.correct data-explanation="Na mediana, há equilíbrio entre observações à esquerda e à direita."}
+- [A mediana sempre minimiza a perda quadrática]{data-explanation="A perda quadrática é minimizada pela média, salvo coincidências particulares entre média e mediana."}
+- [A escolha da perda não altera o estimador preferido]{data-explanation="Perdas diferentes formalizam custos diferentes e podem selecionar estimadores distintos."}
+
 ## A perda decide o vencedor
 
 ![](assets/aula08-estimadores/funcoes-perda.png){fig-alt="Duas curvas de perda: o erro quadrático atinge o mínimo na média e o erro absoluto atinge o mínimo na mediana."}
@@ -519,6 +528,15 @@ $$
 ::: {.statement}
 Risco = variância + viés².
 :::
+
+## Como interpretar o MSE? {.quiz-question}
+
+Um estimador tem viés pequeno, mas variância muito alta. O que a decomposição do MSE implica?
+
+- [O MSE precisa ser pequeno porque o viés é pequeno]{data-explanation="O termo de variância também contribui para o erro quadrático médio."}
+- [O MSE combina viés ao quadrado e variância]{.correct data-explanation="A decomposição é MSE = viés² + variância, sob perda quadrática."}
+- [Variância e viés sempre diminuem juntos]{data-explanation="Frequentemente existe um trade-off: reduzir um componente pode aumentar o outro."}
+- [O MSE mede apenas robustez a outliers]{data-explanation="Robustez é outra propriedade; o MSE resume desempenho quadrático sob uma distribuição."}
 
 ## A decomposição fica visível
 

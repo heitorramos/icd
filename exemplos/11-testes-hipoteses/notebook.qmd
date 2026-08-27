@@ -286,3 +286,14 @@ Reduzir $\alpha$ diminui falsos positivos, mas pode reduzir poder. Poder cresce 
 “Rejeitar $H_0$” não significa provar $H_A$; “não rejeitar” não prova equivalência. Com amostras grandes, efeitos irrelevantes podem ser significativos. Sempre reporte estimativa, intervalo e consequência substantiva, além do valor-p.
 
 Testes unilaterais só são defensáveis quando a direção foi escolhida antes de observar os dados e efeitos na direção oposta não levariam à mesma ação. Fazer muitos testes aumenta a chance de falsos positivos e exige definir uma família e uma estratégia de correção.
+
+# Questões de revisão da Aula 11
+
+1. O que um valor-p de 0,02 afirma — e o que ele não afirma?
+2. Por que aumentar $n$ eleva o poder quando $p_0$, $p_1$ e $\alpha$ permanecem fixos?
+
+<details><summary>Respostas comentadas</summary>
+
+1. Sob $H_0$, resultados tão ou mais extremos ocorreriam com probabilidade 2%. Isso não significa que $P(H_0\mid\text{dados})=0{,}02$ nem mede relevância prática.
+2. O erro padrão diminui, as distribuições sob $H_0$ e $H_1$ ficam mais estreitas e sua sobreposição diminui.
+</details>

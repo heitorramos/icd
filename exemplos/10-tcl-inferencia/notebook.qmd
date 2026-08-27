@@ -339,3 +339,14 @@ $\theta$ é o parâmetro-alvo; $\widehat\theta$ é seu estimador; $\operatorname
 A interpretação frequentista é sobre o procedimento: em repetidas amostras, aproximadamente 95% dos intervalos de 95% cobririam o parâmetro. Depois de calculado, o intervalo específico cobre ou não cobre o parâmetro; não atribuímos 95% de probabilidade a um parâmetro fixo.
 
 Mais confiança aumenta a largura. A margem diminui como $1/\sqrt n$, portanto reduzir a margem pela metade exige aproximadamente quadruplicar a amostra. Nenhuma fórmula de intervalo corrige seleção enviesada ou mensuração ruim.
+
+# Questões de revisão da Aula 10
+
+1. Qual é a diferença entre as afirmações da LGN e do TCL?
+2. O que significa dizer que um procedimento produz intervalos de 95% de confiança?
+
+<details><summary>Respostas comentadas</summary>
+
+1. A LGN descreve a convergência de $\bar X_n$ para $\mu$; o TCL descreve a distribuição aproximadamente Normal do erro padronizado.
+2. Em repetições do procedimento, aproximadamente 95% dos intervalos cobrem o parâmetro fixo. Não é uma probabilidade posterior sobre o intervalo já observado.
+</details>

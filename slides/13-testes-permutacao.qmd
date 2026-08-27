@@ -218,6 +218,15 @@ Ela descreve:
 
 Não é a distribuição dos dados originais.
 
+## O que a permutação mantém fixo? {.quiz-question .quiz-multiple}
+
+Em um teste de permutação simples para dois grupos, selecione o que permanece fixo.
+
+- [Os resultados observados]{.correct data-explanation="A permutação redistribui os rótulos entre resultados que permanecem fixos."}
+- [Os tamanhos dos grupos]{.correct data-explanation="As permutações admissíveis preservam quantas unidades pertencem a cada grupo."}
+- [A associação original entre rótulo e resultado]{data-explanation="Essa associação é justamente o que o embaralhamento quebra sob H0."}
+- [O valor da estatística de teste]{data-explanation="A estatística é recalculada e varia em cada permutação."}
+
 ## A diferença observada está na cauda
 
 ![](assets/aula13-permutacao/distribuicao-nula.png){fig-alt="Histograma da distribuição nula concentrada em zero e diferença observada de 0,77 ponto percentual na cauda direita."}
@@ -265,6 +274,15 @@ axes[0].fill_between(x, 0, y, where=x >= cutoff, color=ORANGE)
 axes[1].fill_between(x, 0, y, where=np.abs(x) >= cutoff, color=ORANGE)
 ```
 </details>
+
+## Uma ou duas caudas? {.quiz-question}
+
+A pergunta definida antes da análise é: “o anúncio altera a conversão em qualquer direção?”. Qual alternativa usar?
+
+- [$H_1:p_{ad}>p_{psa}$]{data-explanation="Essa alternativa considera apenas aumento de conversão."}
+- [$H_1:p_{ad}<p_{psa}$]{data-explanation="Essa alternativa considera apenas redução de conversão."}
+- [$H_1:p_{ad}\neq p_{psa}$]{.correct data-explanation="Qualquer direção relevante exige teste bilateral e extremidade nas duas caudas."}
+- [Escolher a cauda depois de observar o sinal]{data-explanation="Escolher depois dos dados reduz artificialmente o valor-p."}
 
 ## A direção deve ser escolhida antes
 
