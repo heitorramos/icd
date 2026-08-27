@@ -1,6 +1,6 @@
 ---
 title: "Tendências Centrais"
-subtitle: "Aula 07 — Módulo 2: Inferência Estatística"
+subtitle: "Aula 07 — Módulo 1: Análise Exploratória"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 institute: '<div class="title-brand-lockup"><img class="brand-horizontal" src="assets/brand/dcc-ufmg-horizontal-color.png" alt="Departamento de Ciência da Computação — UFMG"></div>'
 format:
@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 07 — Tendências centrais</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 07 — Tendências centrais</span><a class="lecture-footer-button" href="../aulas/07-tendencias-centrais.html">voltar para a Aula</a>'
 execute:
   echo: false
 ---
@@ -62,30 +62,17 @@ Fonte: Kaggle, `dem0nking/billboard-hits-songs-dataset`.
 
 ## Conhecendo a base
 
-![](assets/aula07-billboard/descritiva-resumo.png){fig-alt="Resumo descritivo do dataset Billboard com número de linhas, colunas, gêneros, duração média, duração mediana e popularidade média."}
-
-<details class="code-fold">
-<summary>Código do gráfico</summary>
-
-```python
-metrics = [
-    ("linhas", len(songs)),
-    ("colunas", songs.shape[1]),
-    ("gêneros", songs["Genre"].nunique()),
-    ("duração média", f"{songs['duration_min'].mean():.2f} min"),
-    ("duração mediana", f"{songs['duration_min'].median():.2f} min"),
-    ("popularidade média", f"{songs['Popularity'].mean():.1f}"),
-]
-```
-
-</details>
+![](assets/aula07-billboard/descritiva-resumo.png){.aula07-figure-large fig-alt="Resumo descritivo do dataset Billboard com número de linhas, colunas, gêneros, duração média, duração mediana e popularidade média."}
 
 Antes de calcular qualquer resumo, precisamos saber o tamanho, as variáveis e as
 unidades da base.
 
 ## Diagnóstico inicial
 
-![](assets/aula07-billboard/descritiva-generos-ausentes.png){fig-alt="Gráficos de barras com número de músicas por gênero e valores ausentes por coluna."}
+![](assets/aula07-billboard/descritiva-generos-ausentes.png){.aula07-figure-large fig-alt="Gráficos de barras com número de músicas por gênero e valores ausentes por coluna."}
+
+Análise descritiva começa com perguntas simples: há categorias dominantes? Há
+valores ausentes? A variável numérica está na unidade certa?
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -102,9 +89,6 @@ raw.isna().sum().sort_values().plot.barh(
 ```
 
 </details>
-
-Análise descritiva começa com perguntas simples: há categorias dominantes? Há
-valores ausentes? A variável numérica está na unidade certa?
 
 ## Amostra e população
 
@@ -149,15 +133,27 @@ Depois calcule médias, medianas, quartis e desvios.
 
 Agregações são úteis, mas escondem forma, caudas e valores extremos.
 
+## Antes de calcular: o que você espera? {.quiz-question}
+
+Se acrescentarmos uma única faixa de **45 minutos** à base, qual resumo da
+duração típica deve mudar mais?
+
+- [A média]{.correct data-explanation="A média usa a magnitude de todos os valores; uma duração extrema desloca o seu ponto de equilíbrio."}
+- [A mediana]{data-explanation="A mediana depende principalmente da ordem e da posição central, por isso tende a mudar pouco com um único extremo."}
+- [As duas mudam exatamente igual]{data-explanation="Média e mediana reagem de maneiras diferentes a valores extremos."}
+- [Nenhuma delas muda]{data-explanation="A nova observação entra nos dois cálculos, embora normalmente afete muito mais a média."}
+
 ## Pipeline descritivo
 
-![](assets/aula07-billboard/pipeline-descritivo.png){fig-alt="Pipeline descritivo em cinco etapas: escolher coluna, visualizar distribuição, calcular resumos, comparar resumos e comunicar com limites."}
+![](assets/aula07-billboard/pipeline-descritivo.png){.aula07-figure-large fig-alt="Pipeline descritivo em cinco etapas: escolher coluna, visualizar distribuição, calcular resumos, comparar resumos e comunicar com limites."}
 
 O resumo final depende das escolhas feitas antes dele.
 
 ## Histograma
 
 ![](assets/aula07-billboard/histograma-duracao.png){fig-alt="Histograma da duração das músicas do dataset Billboard."}
+
+Um histograma conta quantas observações caem em cada faixa de valores.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -176,8 +172,6 @@ ax.set_ylabel("número de músicas")
 
 </details>
 
-Um histograma conta quantas observações caem em cada faixa de valores.
-
 ## Lendo um histograma
 
 - Onde os dados se concentram?
@@ -188,7 +182,9 @@ Um histograma conta quantas observações caem em cada faixa de valores.
 
 ## Escolha de bins
 
-![](assets/aula07-billboard/bins-comparacao.png){fig-alt="Dois histogramas da duração das músicas usando poucos bins e muitos bins."}
+![](assets/aula07-billboard/bins-comparacao.png){.aula07-figure-large fig-alt="Dois histogramas da duração das músicas usando poucos bins e muitos bins."}
+
+Quando os bins mudam a história, complemente com CDF e quantis.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -203,28 +199,31 @@ for ax, bins, title in zip(axes, [6, 28], ["Poucos bins", "Muitos bins"]):
 
 </details>
 
-Quando os bins mudam a história, complemente com CDF e quantis.
-
 ## CDF empírica
 
 ```text
 entrada: valores x_1, x_2, ..., x_n
 
-1. ordenar os valores: x_(1) <= x_(2) <= ... <= x_(n)
-2. para cada posição i, calcular p_i = i / n
-3. plotar os pontos (x_(i), p_i)
-4. ler p_i como a fração da amostra com valor <= x_(i)
+1. ordenar os valores distintos: v_1 < v_2 < ... < v_k
+2. para cada v_j, contar: c_j = número de observações com x_i <= v_j
+3. calcular a frequência acumulada: F_n(v_j) = c_j / n
+4. plotar (v_j, F_n(v_j)) como uma função em degraus
 ```
 
 A CDF empírica transforma cada valor observado em uma pergunta acumulada:
 "que fração da amostra já apareceu até aqui?".
+
+Valores repetidos entram juntos na contagem: para cada valor distinto, usamos
+a proporção de **todas** as observações menores ou iguais a ele.
 
 Ela não mostra quantas músicas existem em cada intervalo, como o histograma.
 Ela mostra a fração de músicas com duração menor ou igual a cada ponto.
 
 ## Lendo a CDF
 
-![](assets/aula07-billboard/cdf-duracao.png){fig-alt="CDF empírica da duração das músicas com marcação em 4 minutos."}
+![](assets/aula07-billboard/cdf-duracao.png){.aula07-figure-large fig-alt="CDF empírica da duração das músicas com marcação em 4 minutos."}
+
+Leitura: a curva mostra diretamente a fração acumulada até cada duração.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -242,7 +241,15 @@ ax.set_ylabel("fração acumulada")
 
 </details>
 
-Leitura: a curva mostra diretamente a fração acumulada até cada duração.
+## O que significa ler 0,89 na CDF? {.quiz-question}
+
+Suponha que a CDF empírica tenha valor **0,89** em 4 minutos. Qual interpretação
+está correta?
+
+- [89% das músicas duram exatamente 4 minutos]{data-explanation="A CDF é acumulada: ela não representa apenas as observações exatamente iguais a 4."}
+- [89% das músicas duram no máximo 4 minutos]{.correct data-explanation="Por definição, Fₙ(4) é a fração observada com duração menor ou igual a 4 minutos."}
+- [11% das músicas duram no máximo 4 minutos]{data-explanation="Os 11% restantes estão acima de 4 minutos; a fração acumulada até 4 é 89%."}
+- [A duração média das músicas é 0,89 × 4 minutos]{data-explanation="Uma CDF descreve proporções acumuladas, não calcula a média por multiplicação."}
 
 ## Centro dos dados
 
@@ -255,7 +262,9 @@ Duas respostas comuns:
 
 ## Média
 
-![](assets/aula07-billboard/media-mediana.png){fig-alt="Histograma da duração com linhas verticais marcando média e mediana."}
+![](assets/aula07-billboard/media-mediana.png){.aula07-figure-large fig-alt="Histograma da duração com linhas verticais marcando média e mediana."}
+
+A média é o ponto de equilíbrio aritmético dos dados.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -273,11 +282,11 @@ ax.legend()
 
 </details>
 
-A média é o ponto de equilíbrio aritmético dos dados.
-
 ## Mediana
 
-![](assets/aula07-billboard/mediana-vs-media.png){fig-alt="Comparação entre mediana e média no conjunto de valores 1, 2, 3, 4, 5, 99 e 100. A mediana é 4, no centro dos dados ordenados; a média é 30,6, puxada pelos valores extremos."}
+![](assets/aula07-billboard/mediana-vs-media.png){.aula07-figure-large fig-alt="Comparação entre mediana e média no conjunto de valores 1, 2, 3, 4, 5, 99 e 100. A mediana é 4, no centro dos dados ordenados; a média é 30,6, puxada pelos valores extremos."}
+
+A mediana divide os dados ordenados em duas metades.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -303,11 +312,12 @@ ax2.axvline(media, label=f"média = {media:.1f}")
 
 </details>
 
-A mediana divide os dados ordenados em duas metades.
-
 ## Média vs. mediana
 
-![](assets/aula07-billboard/media-mediana-assimetria.png){fig-alt="Três histogramas comparando média e mediana em uma distribuição simétrica, uma distribuição assimétrica à direita e uma distribuição assimétrica à esquerda."}
+![](assets/aula07-billboard/media-mediana-assimetria.png){.aula07-figure-large fig-alt="Três histogramas comparando média e mediana em uma distribuição simétrica, uma distribuição assimétrica à direita e uma distribuição assimétrica à esquerda."}
+
+Em distribuições simétricas, média e mediana tendem a ficar próximas. Em
+distribuições assimétricas, a cauda puxa a média.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -331,12 +341,11 @@ for titulo, valores in dados.items():
 
 </details>
 
-Em distribuições simétricas, média e mediana tendem a ficar próximas. Em
-distribuições assimétricas, a cauda puxa a média.
-
 ## Outlier
 
-![](assets/aula07-billboard/outlier-media-mediana.png){fig-alt="Barras comparando média e mediana antes e depois de adicionar uma música de 45 minutos."}
+![](assets/aula07-billboard/outlier-media-mediana.png){.aula07-figure-large fig-alt="Barras comparando média e mediana antes e depois de adicionar uma música de 45 minutos."}
+
+O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -362,8 +371,6 @@ sns.barplot(data=outlier_summary, x="Resumo", y="Valor", hue="Cenário")
 
 </details>
 
-O problema não é o outlier existir. O problema é resumi-lo sem perceber.
-
 ## Regra de leitura
 
 - Média e mediana próximas sugerem distribuição mais equilibrada.
@@ -373,7 +380,9 @@ O problema não é o outlier existir. O problema é resumi-lo sem perceber.
 
 ## Quartis
 
-![](assets/aula07-billboard/quartis-duracao.png){fig-alt="Histograma e régua ordenada da duração das músicas, com Q1, mediana e Q3 dividindo os dados em quatro partes com aproximadamente 25% das observações."}
+![](assets/aula07-billboard/quartis-duracao.png){.aula07-figure-large fig-alt="Histograma e régua ordenada da duração das músicas, com Q1, mediana e Q3 dividindo os dados em quatro partes com aproximadamente 25% das observações."}
+
+Quartis separam os dados ordenados em quatro partes.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -402,11 +411,11 @@ ax2.set_xlabel("duração da música (minutos)")
 
 </details>
 
-Quartis separam os dados ordenados em quatro partes.
-
 ## Boxplot
 
-![](assets/aula07-billboard/boxplot-duracao.png){fig-alt="Boxplot horizontal da duração das músicas."}
+![](assets/aula07-billboard/boxplot-duracao.png){.aula07-figure-large fig-alt="Boxplot horizontal da duração das músicas."}
+
+Boxplot mostra centro, dispersão e possíveis valores extremos.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -426,11 +435,11 @@ ax.set_xlabel("duração (minutos)")
 
 </details>
 
-Boxplot mostra centro, dispersão e possíveis valores extremos.
-
 ## Boxplot por grupo
 
-![](assets/aula07-billboard/boxplot-genero.png){fig-alt="Boxplots da duração das músicas por gênero."}
+![](assets/aula07-billboard/boxplot-genero.png){.aula07-figure-large fig-alt="Boxplots da duração das músicas por gênero."}
+
+Compare distribuições, não apenas médias.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -452,11 +461,12 @@ ax.set_ylabel("duração (minutos)")
 
 </details>
 
-Compare distribuições, não apenas médias.
-
 ## Quantis
 
-![](assets/aula07-billboard/quantis-cdf.png){fig-alt="CDF empírica da duração das músicas com marcações em P10, Q1, mediana, Q3 e P90."}
+![](assets/aula07-billboard/quantis-cdf.png){.aula07-figure-large fig-alt="CDF empírica da duração das músicas com marcações em P10, Q1, mediana, Q3 e P90."}
+
+Quantis generalizam quartis: para um percentual `p`, como 25%, 50% ou 90%, o
+quantil é o valor abaixo do qual está essa fração da amostra.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -480,12 +490,11 @@ for p, q in zip(ps, qs):
 
 </details>
 
-Quantis generalizam quartis: para um percentual `p`, como 25%, 50% ou 90%, o
-quantil é o valor abaixo do qual está essa fração da amostra.
-
 ## Dispersão
 
-![](assets/aula07-billboard/dispersao-genero.png){fig-alt="Gráfico de pontos mostrando o espalhamento das durações por gênero."}
+![](assets/aula07-billboard/dispersao-genero.png){.aula07-figure-large fig-alt="Gráfico de pontos mostrando o espalhamento das durações por gênero."}
+
+Duas amostras podem ter centros parecidos e dispersões muito diferentes.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -506,8 +515,6 @@ sns.stripplot(
 
 </details>
 
-Duas amostras podem ter centros parecidos e dispersões muito diferentes.
-
 ## Intervalo
 
 ::: {.range-figure}
@@ -521,7 +528,9 @@ Simples, mas depende apenas de dois valores.
 
 ## Variância
 
-![](assets/aula07-billboard/variancia-comparacao.png){fig-alt="Duas linhas de pontos com a mesma média: uma com baixa variância e valores próximos da média; outra com alta variância e valores mais afastados."}
+![](assets/aula07-billboard/variancia-comparacao.png){.aula07-figure-large fig-alt="Duas linhas de pontos com a mesma média: uma com baixa variância e valores próximos da média; outra com alta variância e valores mais afastados."}
+
+A variância cresce quando os valores ficam, em média, mais longe da média.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -540,8 +549,6 @@ for valores in [baixa, alta]:
 ```
 
 </details>
-
-A variância cresce quando os valores ficam, em média, mais longe da média.
 
 ## População e amostra: variâncias diferentes
 
@@ -690,6 +697,16 @@ $$
 
 Essa é a correção de Bessel.
 
+## Por que aparece n − 1? {.quiz-question .quiz-multiple}
+
+Selecione **todas** as afirmações que justificam a correção da variância
+amostral.
+
+- [Depois de estimar a média, os desvios têm apenas n − 1 graus de liberdade]{.correct data-explanation="Como os desvios em relação à média amostral somam zero, o último fica determinado pelos anteriores."}
+- [Dividir por n produziria, em média, uma estimativa abaixo da variância populacional]{.correct data-explanation="A soma dos quadrados em torno da média amostral tem esperança (n−1)σ²; dividir por n mantém o viés para baixo."}
+- [A correção garante que toda amostra tenha a mesma variância da população]{data-explanation="A correção remove o viés em média; uma amostra individual ainda pode produzir uma estimativa maior ou menor."}
+- [Subtraímos 1 porque sempre descartamos uma observação da amostra]{data-explanation="Nenhuma observação é descartada; o que se perde é um grau de liberdade ao estimar a média."}
+
 ## Desvio padrão
 
 ::: {.statement}
@@ -705,31 +722,44 @@ Transformações não "consertam" os dados automaticamente.
 Elas ajudam a enxergar a distribuição em outra escala, especialmente quando há
 assimetria forte ou valores muito grandes.
 
-![](assets/aula07-billboard/log-duracao.png){fig-alt="Comparação entre histograma da duração em escala original e histograma de log10 da duração."}
+![](assets/aula07-billboard/log-duracao.png){.aula07-figure-large fig-alt="Comparação da duração das músicas após adicionar uma observação didática de 45 minutos. Na escala original, o valor extremo comprime as demais músicas; na escala logarítmica, a cauda é comprimida."}
+
+**Observação:** adicionamos artificialmente uma música de **45 minutos** apenas
+para tornar visível o efeito da transformação.
+
+Como o log é monotônico, ele preserva a ordem dos valores.
+
+Na escala original, 45 minutos comprime as músicas usuais entre 2 e 5 minutos.
+No log, distâncias representam razões, e o valor extremo ocupa menos espaço.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
+duracao_com_extremo = pd.concat(
+    [songs["duration_min"], pd.Series([45.0])],
+    ignore_index=True
+)
+
 fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
 
-axes[0].hist(songs["duration_min"], bins=16)
-axes[0].set_title("Escala original")
+axes[0].hist(duracao_com_extremo, bins=18)
+axes[0].axvline(45, linestyle="--", label="45 min — valor didático")
+axes[0].set_title("Escala original: o extremo comprime os demais")
 
-axes[1].hist(np.log10(songs["duration_min"]), bins=16)
-axes[1].set_title("log10(duração)")
+axes[1].hist(np.log10(duracao_com_extremo), bins=18)
+axes[1].axvline(np.log10(45), linestyle="--", label="45 min — valor didático")
+axes[1].set_title("log10: a cauda é comprimida")
 ```
 
 </details>
 
-Como o log é monotônico, ele preserva a ordem dos valores.
-
-O que muda é a escala das diferenças: valores grandes ficam visualmente menos
-dominantes.
-
 ## Popularidade
 
-![](assets/aula07-billboard/popularidade.png){fig-alt="Histograma da popularidade das músicas com linhas de média e mediana."}
+![](assets/aula07-billboard/popularidade.png){.aula07-figure-large fig-alt="Histograma da popularidade das músicas com linhas de média e mediana."}
+
+O mesmo roteiro vale para outra variável numérica: visualize, calcule resumos e
+compare média e mediana.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -743,9 +773,6 @@ ax.legend()
 ```
 
 </details>
-
-O mesmo roteiro vale para outra variável numérica: visualize, calcule resumos e
-compare média e mediana.
 
 ## Outras médias
 

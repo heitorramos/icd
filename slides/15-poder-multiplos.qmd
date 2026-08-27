@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 15 — Poder e múltiplos testes</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 15 — Poder e múltiplos testes</span><a class="lecture-footer-button" href="../aulas/15-poder-multiplos.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -508,6 +508,12 @@ BH rejeita as três primeiras hipóteses. Ele faz mais descobertas porque contro
 
 ![](assets/aula15-poder-multiplos/bonferroni-bh.png){fig-alt="Valores-p ordenados comparados aos limiares de Bonferroni e Benjamini-Hochberg."}
 
+| método | controla | perfil |
+|---|---|---|
+| Bonferroni | FWER | simples e conservador |
+| Holm | FWER | prefere-se a Bonferroni quando aplicável |
+| BH | FDR | mais poder para muitas descobertas |
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -518,12 +524,6 @@ plt.plot(np.arange(1, len(p)+1), bh, label="BH")
 plt.axhline(.05/len(p), label="Bonferroni")
 ```
 </details>
-
-| método | controla | perfil |
-|---|---|---|
-| Bonferroni | FWER | simples e conservador |
-| Holm | FWER | prefere-se a Bonferroni quando aplicável |
-| BH | FDR | mais poder para muitas descobertas |
 
 ## Qual família devemos corrigir?
 

@@ -176,6 +176,37 @@ plt.title("Mais réplicas reduzem o ruído de Monte Carlo")
 plt.legend()
 finish("estabilidade-b.png")
 
+# 10b. Estabilidade do IC bootstrap para diferença de médias e comparação com TCL.
+mean_hat = manhattan.mean() - brooklyn.mean()
+se_tcl = np.sqrt(manhattan.var(ddof=1) / len(manhattan)
+                 + brooklyn.var(ddof=1) / len(brooklyn))
+ci_tcl = np.array([mean_hat - 1.96 * se_tcl, mean_hat + 1.96 * se_tcl])
+B_max = 5000
+mean_boot = (
+    rng.choice(manhattan, size=(B_max, len(manhattan)), replace=True).mean(axis=1)
+    - rng.choice(brooklyn, size=(B_max, len(brooklyn)), replace=True).mean(axis=1)
+)
+checkpoints_mean = np.array([25, 50, 100, 200, 400, 800, 1200, 2000, 3000, 5000])
+ci_boot_B = np.array([
+    np.quantile(mean_boot[:B], [.025, .975]) for B in checkpoints_mean
+])
+plt.figure(figsize=(9.5, 5.3))
+plt.plot(checkpoints_mean, ci_boot_B[:, 0], "o-", color=ORANGE,
+         lw=2.5, label="Bootstrap: limite inferior")
+plt.plot(checkpoints_mean, ci_boot_B[:, 1], "o-", color=BLUE,
+         lw=2.5, label="Bootstrap: limite superior")
+plt.axhline(ci_tcl[0], color=ORANGE, ls="--", lw=2,
+            label="TCL: limite inferior")
+plt.axhline(ci_tcl[1], color=BLUE, ls="--", lw=2,
+            label="TCL: limite superior")
+plt.xscale("log")
+plt.xticks(checkpoints_mean, checkpoints_mean)
+plt.gca().get_xaxis().set_major_formatter(plt.ScalarFormatter())
+plt.xlabel("Número acumulado de réplicas B")
+plt.ylabel("Limite do IC 95% da diferença de médias (US$)")
+plt.legend(ncol=2, fontsize=10)
+finish("estabilidade-media-bootstrap-tcl.png")
+
 # 11. Tamanho amostral e largura do intervalo.
 sizes = np.array([50, 100, 200, 400, 600])
 widths = []

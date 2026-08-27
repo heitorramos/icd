@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 05 — Fundamentos de visualização</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 05 — Fundamentos de visualização</span><a class="lecture-footer-button" href="../aulas/05-fundamentos-visualizacao.html">voltar para a Aula</a>'
 execute:
   echo: true
 ---
@@ -119,6 +119,8 @@ Algumas medidas corporais e registros de sexo estão ausentes.
 
 ![](assets/aula05-visualizacao/anatomia-grafico.png){.wide-chart fig-alt="Gráfico de barras anotado com título, área de dados e rótulo do eixo."}
 
+`Figure` contém a composição; `Axes` contém a escala, as marcas e os rótulos.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -128,8 +130,6 @@ ax.set_title("Pinguins observados por espécie")
 ax.set_xlabel("número de observações")
 ```
 </details>
-
-`Figure` contém a composição; `Axes` contém a escala, as marcas e os rótulos.
 
 ## Categorias pedem contagens comparáveis
 
@@ -157,6 +157,8 @@ Para comparar categorias, comprimento alinhado é um canal perceptivo forte.
 
 ![](assets/aula05-visualizacao/linhas-tempo.png){.wide-chart fig-alt="Série mensal de pedidos da Olist durante 2017."}
 
+Conectar meses faz sentido porque o tempo define uma ordem; conectar espécies inventaria um caminho.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -165,11 +167,15 @@ mensal.plot.line(marker="o")
 ```
 </details>
 
-Conectar meses faz sentido porque o tempo define uma ordem; conectar espécies inventaria um caminho.
-
 ## Uma variável numérica pede uma distribuição
 
 ![](assets/aula05-visualizacao/massa-histograma.png){.wide-chart fig-alt="Histogramas da massa corporal por espécie."}
+
+Para um valor $x$, cada bin $[a,b)$ conta quantas observações satisfazem $a \le x < b$.
+
+::: {.statement}
+O histograma mostra forma, centro, dispersão, caudas e possíveis lacunas.
+:::
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -179,15 +185,15 @@ sns.histplot(data=penguins, x="body_mass_g", hue="species",
 ```
 </details>
 
-Para um valor $x$, cada bin $[a,b)$ conta quantas observações satisfazem $a \le x < b$.
-
-::: {.statement}
-O histograma mostra forma, centro, dispersão, caudas e possíveis lacunas.
-:::
-
 ## O número de bins muda o que vemos
 
 ![](assets/aula05-visualizacao/bins-comparacao.png){.wide-chart fig-alt="Três histogramas da mesma variável com diferentes quantidades de bins."}
+
+- Freedman-Diaconis: $h = 2\,IQR(x)n^{-1/3}$.
+- Scott: $h = 3{,}49\,s\,n^{-1/3}$.
+- Sturges: $k = 1 + \log_2(n)$.
+
+Nenhuma regra substitui olhar versões alternativas e considerar a resolução relevante para o fenômeno.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -197,15 +203,13 @@ for bins in [6, 15, 35]:
 ```
 </details>
 
-- Freedman-Diaconis: $h = 2\,IQR(x)n^{-1/3}$.
-- Scott: $h = 3{,}49\,s\,n^{-1/3}$.
-- Sturges: $k = 1 + \log_2(n)$.
-
-Nenhuma regra substitui olhar versões alternativas e considerar a resolução relevante para o fenômeno.
-
 ## A ECDF evita escolher bins {.smaller}
 
 ![](assets/aula05-visualizacao/massa-ecdf.png){.wide-chart fig-alt="Funções de distribuição empíricas da massa corporal dos pinguins, separadas por espécie."}
+
+$$\widehat F(x)=\frac{1}{n}\sum_{i=1}^n \mathbf{1}(X_i\le x).$$
+
+Ela responde: **qual proporção tem massa menor ou igual a $x$?**
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -213,10 +217,6 @@ Nenhuma regra substitui olhar versões alternativas e considerar a resolução r
 sns.ecdfplot(data=penguins, x="body_mass_g", hue="species")
 ```
 </details>
-
-$$\widehat F(x)=\frac{1}{n}\sum_{i=1}^n \mathbf{1}(X_i\le x).$$
-
-Ela responde: **qual proporção tem massa menor ou igual a $x$?**
 
 ## KDE constrói uma densidade suave {.smaller}
 
@@ -246,6 +246,8 @@ sns.kdeplot(data=penguins, x="body_mass_g", fill=True)
 - $h$ grande pode apagar grupos e assimetrias;
 - como nos bins do histograma, compare escolhas plausíveis.
 
+No Seaborn, `bw_adjust` **multiplica** a largura de banda calculada automaticamente; ele não é necessariamente o $h$ medido em gramas.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -254,11 +256,13 @@ for ajuste in [0.25, 1, 2.5]:
 ```
 </details>
 
-No Seaborn, `bw_adjust` **multiplica** a largura de banda calculada automaticamente; ele não é necessariamente o $h$ medido em gramas.
-
 ## Boxplot e violinplot respondem perguntas diferentes
 
 ![](assets/aula05-visualizacao/box-violin.png){.wide-chart fig-alt="Comparação entre boxplots e violinplots da massa dos pinguins."}
+
+::: {.code-result}
+**Boxplot:** resume mediana, quartis e valores afastados. **Violinplot:** acrescenta a forma estimada da distribuição e pode revelar multimodalidade, mas depende da suavização escolhida.
+:::
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -268,20 +272,9 @@ sns.violinplot(data=penguins, x="species", y="body_mass_g", inner="quart")
 ```
 </details>
 
-::: {.code-result}
-**Boxplot:** resume mediana, quartis e valores afastados. **Violinplot:** acrescenta a forma estimada da distribuição e pode revelar multimodalidade, mas depende da suavização escolhida.
-:::
-
 ## Duas variáveis numéricas pedem posição
 
 ![](assets/aula05-visualizacao/massa-nadadeira.png){.wide-chart fig-alt="Dispersão entre comprimento da nadadeira e massa corporal."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species")
-```
-</details>
 
 Procure:
 
@@ -293,6 +286,13 @@ Procure:
 - variação desigual.
 
 Correlação resume apenas parte dessa estrutura.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species")
+```
+</details>
 
 ## Cor acrescenta uma terceira variável
 
@@ -310,6 +310,8 @@ sns.scatterplot(data=penguins, x="bill_length_mm", y="bill_depth_mm",
 
 ![](assets/aula05-visualizacao/customizacao-grafico.png){.wide-chart fig-alt="Comparação entre gráfico padrão e gráfico com título, rótulo e destaque visual."}
 
+Título, eixos e legenda reduzem ambiguidade; destaque orienta a comparação principal.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -318,8 +320,6 @@ ax.set_xlabel("pinguins observados")
 ax.barh(..., color=[cinza, cinza, destaque])
 ```
 </details>
-
-Título, eixos e legenda reduzem ambiguidade; destaque orienta a comparação principal.
 
 ## De `df.plot()` à figura exportada {.smaller}
 
@@ -337,6 +337,8 @@ fig.savefig("especies.png", dpi=300, bbox_inches="tight")
 
 ![](assets/aula05-visualizacao/canais-perceptivos.png){.wide-chart fig-alt="Quatro representações da mesma diferença usando posição, comprimento, ângulo e área."}
 
+Posição em escala comum e comprimento permitem comparações mais precisas que ângulo e área.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -344,11 +346,11 @@ fig.savefig("especies.png", dpi=300, bbox_inches="tight")
 ```
 </details>
 
-Posição em escala comum e comprimento permitem comparações mais precisas que ângulo e área.
-
 ## Comprimento é mais fácil que área
 
 ![](assets/aula05-visualizacao/comprimento-area.png){.wide-chart fig-alt="Valores um e sete representados por barras e áreas de círculos."}
+
+Comprimento expõe a razão; comparar áreas exige uma estimativa visual muito menos precisa.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -358,11 +360,11 @@ ax.scatter([0, 1], [0, 0], s=np.array([1, 7]) * 900)
 ```
 </details>
 
-Comprimento expõe a razão; comparar áreas exige uma estimativa visual muito menos precisa.
-
 ## Ângulos dificultam comparações próximas
 
 ![](assets/aula05-visualizacao/angulos-barras.png){.wide-chart fig-alt="A mesma composição apresentada como gráfico de setores e barras."}
+
+Setores funcionam melhor com poucas partes e diferenças grandes; barras revelam diferenças próximas.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -372,11 +374,11 @@ ax.barh(["D", "C", "B", "A"], [15, 24, 29, 32])
 ```
 </details>
 
-Setores funcionam melhor com poucas partes e diferenças grandes; barras revelam diferenças próximas.
-
 ## Forma distingue categorias, não magnitude
 
 ![](assets/aula05-visualizacao/formas-categorias.png){.wide-chart fig-alt="Dispersão de medidas dos pinguins usando círculos, quadrados e triângulos sem preenchimento colorido."}
+
+Formas ajudam com poucos grupos e funcionam sem cor, mas não possuem ordem natural.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -384,8 +386,6 @@ Setores funcionam melhor com poucas partes e diferenças grandes; barras revelam
 markers = {"Adelie": "o", "Chinstrap": "s", "Gentoo": "^"}
 ```
 </details>
-
-Formas ajudam com poucos grupos e funcionam sem cor, mas não possuem ordem natural.
 
 ## Cor possui funções diferentes
 
@@ -405,6 +405,8 @@ Formas ajudam com poucos grupos e funcionam sem cor, mas não possuem ordem natu
 
 ![](assets/aula05-visualizacao/luminancia-paletas.png){.wide-chart fig-alt="Comparação de gradientes Viridis, cinza e Jet."}
 
+`viridis` preserva melhor a progressão perceptiva; `jet` cria faixas de destaque que não existem nos dados.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -412,11 +414,11 @@ ax.imshow(gradient, cmap="viridis", aspect="auto")
 ```
 </details>
 
-`viridis` preserva melhor a progressão perceptiva; `jet` cria faixas de destaque que não existem nos dados.
-
 ## Vermelho e verde não bastam
 
 ![](assets/aula05-visualizacao/cor-acessibilidade.png){.wide-chart fig-alt="Comparação entre codificação vermelho-verde e alternativa azul-laranja acompanhada de formas."}
+
+Cor acompanhada de forma permanece legível quando a distinção cromática falha.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -424,8 +426,6 @@ ax.imshow(gradient, cmap="viridis", aspect="auto")
 sns.scatterplot(..., hue="species", style="species", palette="colorblind")
 ```
 </details>
-
-Cor acompanhada de forma permanece legível quando a distinção cromática falha.
 
 ## O mesmo resumo pode esconder um dinossauro {.smaller}
 
@@ -474,6 +474,10 @@ Médias, medianas e correlações são úteis, mas não mostram sozinhas:
 
 ![](assets/aula05-visualizacao/erro-impossivel.png){.wide-chart fig-alt="Massas de pinguins por linha, com um valor impossível de quarenta mil gramas destacado."}
 
+::: {.statement}
+Um zero extra produz um ponto impossível: o gráfico é parte da auditoria.
+:::
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -482,13 +486,11 @@ plt.annotate("provável erro", xy=(linha, 40000))
 ```
 </details>
 
-::: {.statement}
-Um zero extra produz um ponto impossível: o gráfico é parte da auditoria.
-:::
-
 ## Comparações pedem domínio comum
 
 ![](assets/aula05-visualizacao/facetas-escalas.png){.wide-chart fig-alt="Contagens por ilha e espécie usando escalas livres e escala vertical comum."}
+
+Escalas independentes fazem diferenças pequenas parecerem equivalentes a mudanças grandes.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -497,11 +499,11 @@ g = sns.catplot(..., col="species", sharey=True)
 ```
 </details>
 
-Escalas independentes fazem diferenças pequenas parecerem equivalentes a mudanças grandes.
-
 ## Facetas condicionam sem misturar
 
 ![](assets/aula05-visualizacao/facetas-relacao.png){.wide-chart fig-alt="Relação entre nadadeira e massa corporal em facetas separadas por espécie."}
+
+Use facetas para perguntar: **o padrão permanece dentro de cada grupo?**
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -511,11 +513,11 @@ sns.lmplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
 ```
 </details>
 
-Use facetas para perguntar: **o padrão permanece dentro de cada grupo?**
-
 ## Relação não implica mecanismo
 
 ![](assets/aula05-visualizacao/associacao-grupos.png){.wide-chart fig-alt="Comparação da associação agregada entre massa e nadadeira com associações separadas por espécie."}
+
+Condicionar muda a relação visual, mas ainda não identifica um mecanismo causal.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -524,8 +526,6 @@ sns.regplot(data=penguins, x="flipper_length_mm", y="body_mass_g")
 sns.lmplot(..., col="species")
 ```
 </details>
-
-Condicionar muda a relação visual, mas ainda não identifica um mecanismo causal.
 
 ## Uma escolha de gráfico é uma escolha de pergunta
 

@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 14 — Testes de permutação avançados</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 14 — Testes de permutação avançados</span><a class="lecture-footer-button" href="../aulas/14-permutacao-avancada.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -180,6 +180,8 @@ $$
 
 Pesos pelo tamanho do estrato respondem ao efeito médio na população observada.
 
+$s=1,\ldots,S$ indexa os estratos; $\widehat p_{g,s}$ é a proporção no grupo $g$ dentro do estrato $s$; $w_s\geq0$ é um peso fixado antes da permutação, com $\sum_sw_s=1$. Os rótulos são permutados apenas dentro de cada $s$.
+
 ## A diferença aparece em todos os dias
 
 ![](assets/aula13-permutacao/conversao-dia.png){fig-alt="Linhas de conversão por dia para anúncio e PSA, com anúncio acima do PSA."}
@@ -228,6 +230,8 @@ $$
 
 Não basta testar um grupo significativo e outro não significativo.
 
+$\widehat\Delta_h$ é o efeito estimado no subgrupo $h$; $T_{int}$ compara diretamente dois efeitos. Testar a interação corresponde a testar $H_0:\Delta_{hora\ 1}=\Delta_{hora\ 2}$.
+
 ## Múltiplos testes inflam falsos positivos
 
 Com 20 hipóteses verdadeiramente nulas e $\alpha=0{,}05$:
@@ -275,6 +279,8 @@ $$
 T_b=\frac{1}{n}\sum_i s_i d_i
 $$
 
+$d_i=Y_{iA}-Y_{iB}$ é a diferença do par $i$; $s_i$ é um sinal independente com probabilidades iguais de $-1$ e $+1$ sob a nula; $T_b$ é a média após a $b$-ésima inversão aleatória.
+
 ## Clusters mudam a unidade do acaso
 
 Se escolas, cidades ou contas foram sorteadas, pessoas dentro do mesmo cluster não são permutáveis individualmente.
@@ -305,6 +311,8 @@ $$
 
 Nenhuma unidade é afetada. Isso é mais forte que afirmar apenas efeito médio zero.
 
+$Y_i(1)$ e $Y_i(0)$ são os resultados potenciais da unidade $i$ sob tratamento e controle. O quantificador $\forall i$ exige igualdade para cada unidade, não apenas em média.
+
 ## Nula aguda versus nula média
 
 - **Nula aguda:** permite imputar todos os resultados potenciais e reproduzir exatamente a atribuição.
@@ -322,6 +330,8 @@ $$
 
 Isso é mais forte que igualdade apenas de médias, especialmente se variâncias diferem.
 
+$F_{ad}$ e $F_{psa}$ são as funções de distribuição completas dos resultados nos dois grupos. A igualdade exige mesma localização, dispersão, caudas e demais características.
+
 ## Studentizar ajuda
 
 Uma estatística studentizada escala a diferença por sua incerteza:
@@ -332,6 +342,8 @@ T=\frac{\bar X_{ad}-\bar X_{psa}}
 $$
 
 Ela costuma ser mais estável quando tamanhos e variâncias diferem.
+
+$\bar X_g$, $s_g^2$ e $n_g$ são, respectivamente, média, variância amostral e tamanho do grupo $g$. O denominador estima o erro padrão da diferença.
 
 ## O forte desbalanceamento importa aqui
 

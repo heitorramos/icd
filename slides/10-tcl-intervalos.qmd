@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 10 — Teorema Central do Limite</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 10 — Teorema Central do Limite</span><a class="lecture-footer-button" href="../aulas/10-tcl-intervalos.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -82,6 +82,8 @@ Trataremos esses pedidos como uma população conhecida para validar os métodos
 
 ![](assets/aula10-tcl-inferencia/populacao-entrega.png){fig-alt="Histograma assimétrico à direita do tempo de entrega dos pedidos Olist, com média de 12,6 dias."}
 
+Há uma cauda longa: poucos pedidos demoram muito mais que o típico.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -99,11 +101,11 @@ finish("populacao-entrega.png")
 
 </details>
 
-Há uma cauda longa: poucos pedidos demoram muito mais que o típico.
-
 ## Uma amostra é imperfeita
 
 ![](assets/aula10-tcl-inferencia/amostra-entrega.png){fig-alt="Distribuição populacional do tempo de entrega comparada a um histograma de uma amostra de 50 pedidos."}
+
+Outra amostra produziria outro histograma e outra média.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -124,8 +126,6 @@ finish("amostra-entrega.png")
 ```
 
 </details>
-
-Outra amostra produziria outro histograma e outra média.
 
 ## Parâmetro, estimador e estimativa
 
@@ -160,7 +160,7 @@ Ela responde perguntas sobre o **estimador**, não sobre pedidos individuais:
 
 ## O erro padrão mede a oscilação
 
-Para observações independentes com variância $\sigma^2$:
+Se $X_1,\ldots,X_n$ são independentes, com $E[X_i]=\mu$ e $\operatorname{Var}(X_i)=\sigma^2<\infty$:
 
 $$
 \operatorname{Var}(\bar{X})=\frac{\sigma^2}{n}
@@ -170,9 +170,13 @@ $$
 \operatorname{SE}(\bar{X})=\frac{\sigma}{\sqrt{n}}
 $$
 
+$\bar X=n^{-1}\sum_iX_i$ é a média amostral; $n$ é o tamanho da amostra; $\sigma$ é o desvio padrão populacional. O erro padrão é o desvio padrão da **distribuição amostral** de $\bar X$.
+
 ## Aumentar n concentra as médias
 
 ![](assets/aula10-tcl-inferencia/tcl-tamanhos.png){fig-alt="Distribuições amostrais da média do tempo de entrega para amostras de tamanho 10, 50 e 200."}
+
+O centro permanece em $\mu$; a dispersão diminui.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -193,8 +197,6 @@ finish("tcl-tamanhos.png")
 ```
 
 </details>
-
-O centro permanece em $\mu$; a dispersão diminui.
 
 ## LGN e TCL respondem perguntas diferentes
 
@@ -243,6 +245,8 @@ $$
 \bar{X}\approx N\left(\mu,\frac{\sigma^2}{n}\right)
 $$
 
+$\xrightarrow{d}$ significa convergência em distribuição; $N(0,1)$ é a Normal padrão. A aproximação afirma que $\bar X$ tem centro $\mu$ e variância aproximada $\sigma^2/n$ — não que cada $X_i$ seja Normal.
+
 ## Independência é uma condição central
 
 O TCL clássico pressupõe observações independentes ou fracamente dependentes.
@@ -281,6 +285,8 @@ Se $n/N<10\%$, a correção costuma ser pequena.
 
 ![](assets/aula10-tcl-inferencia/tcl-tres-populacoes.png){fig-alt="Populações uniforme, assimétrica e bimodal, com distribuições de médias amostrais aproximadamente normais."}
 
+O TCL atua sobre as médias, não transforma os dados originais.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -303,8 +309,6 @@ finish("tcl-tres-populacoes.png")
 ```
 
 </details>
-
-O TCL atua sobre as médias, não transforma os dados originais.
 
 ## Assimetria exige amostras maiores
 
@@ -332,6 +336,8 @@ Valores próximos de zero são comuns; valores extremos são raros.
 
 ![](assets/aula10-tcl-inferencia/areas-normal.png){fig-alt="Curva Normal dividida em faixas de desvios padrão. A área central até um desvio padrão contém 68,3%, até dois contém 95,4% e até três contém 99,7%."}
 
+Área sob a curva representa a proporção esperada de observações.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -358,11 +364,11 @@ for inicio, fim, cor, rotulo in faixas:
 
 </details>
 
-Área sob a curva representa a proporção esperada de observações.
-
 ## A simulação acompanha a Normal
 
 ![](assets/aula10-tcl-inferencia/padronizacao-tcl.png){fig-alt="Histograma das médias padronizadas do tempo de entrega sobreposto à densidade Normal padrão."}
+
+A unidade “dias” desaparece após a padronização.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -383,11 +389,11 @@ finish("padronizacao-tcl.png")
 
 </details>
 
-A unidade “dias” desaparece após a padronização.
-
 ## A fórmula do erro padrão funciona
 
 ![](assets/aula10-tcl-inferencia/erro-padrao-entrega.png){fig-alt="Erro padrão simulado e teórico do tempo médio de entrega em função do tamanho da amostra."}
+
+O padrão simulado coincide com $\sigma/\sqrt{n}$.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -408,8 +414,6 @@ finish("erro-padrao-entrega.png")
 ```
 
 </details>
-
-O padrão simulado coincide com $\sigma/\sqrt{n}$.
 
 ## Do TCL para uma faixa plausível
 
@@ -471,9 +475,13 @@ $$
 [\bar{x}-1{,}96\operatorname{SE},\ \bar{x}+1{,}96\operatorname{SE}]
 $$
 
+$\bar x$ é a média observada, $s$ estima $\sigma$, $s/\sqrt n$ estima o erro padrão e $1{,}96$ é o quantil $0{,}975$ da Normal padrão. A forma geral é estimativa $\pm$ valor crítico $\times$ erro padrão.
+
 ## Um intervalo com n = 100
 
 ![](assets/aula10-tcl-inferencia/intervalo-exemplo.png){fig-alt="Intervalo de confiança de 95 por cento para o tempo médio de entrega, com a média populacional marcada."}
+
+Esta amostra produziu um intervalo de aproximadamente 10,8 a 14,4 dias.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -496,8 +504,6 @@ finish("intervalo-exemplo.png")
 
 </details>
 
-Esta amostra produziu um intervalo de aproximadamente 10,8 a 14,4 dias.
-
 ## O parâmetro não é aleatório
 
 Depois de calcular o intervalo, $\mu$ está ou não está dentro dele.
@@ -519,6 +525,8 @@ Não esperamos que todos cubram o parâmetro.
 ## Alguns intervalos falham
 
 ![](assets/aula10-tcl-inferencia/cobertura-intervalos.png){fig-alt="Cem intervalos de confiança simulados, com os que não cobrem a média populacional destacados em laranja."}
+
+Os intervalos laranja são erros esperados do procedimento.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -545,11 +553,11 @@ finish("cobertura-intervalos.png")
 
 </details>
 
-Os intervalos laranja são erros esperados do procedimento.
-
 ## Mais confiança produz mais largura
 
 ![](assets/aula10-tcl-inferencia/confianca-largura.png){fig-alt="Barras mostrando intervalos mais largos para níveis de confiança de 80, 90, 95 e 99 por cento."}
+
+Não ganhamos cobertura gratuitamente.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -568,8 +576,6 @@ finish("confianca-largura.png")
 
 </details>
 
-Não ganhamos cobertura gratuitamente.
-
 ## Margem de erro
 
 Para 95% de confiança:
@@ -587,6 +593,8 @@ Ela diminui quando:
 ## Planejar a amostra pela precisão
 
 ![](assets/aula10-tcl-inferencia/margem-tamanho.png){fig-alt="Curva decrescente da margem de erro em função do tamanho da amostra."}
+
+Dobrar a precisão exige aproximadamente quadruplicar $n$.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -607,8 +615,6 @@ finish("margem-tamanho.png")
 ```
 
 </details>
-
-Dobrar a precisão exige aproximadamente quadruplicar $n$.
 
 ## Fórmula para planejar n
 

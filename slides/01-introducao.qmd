@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 01 — Introdução</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 01 — Introdução</span><a class="lecture-footer-button" href="../aulas/01-introducao.html">voltar para a Aula</a>'
 execute:
   echo: true
 ---

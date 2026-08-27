@@ -63,10 +63,6 @@ penguins = penguins.dropna(subset=["body_mass_g", "species", "island"])
 penguins.head()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
-:::
-
 
 # 3. Conhecendo a população didática
 
@@ -84,8 +80,8 @@ print(f"Desvio padrão populacional: {sigma:.1f} g")
 penguins.groupby("species")["body_mass_g"].agg(["count", "mean", "std"])
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Conhecendo a população didática), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+::: {.callout-note title="Interpretação"}
+Separe parâmetro, estimador e estimativa observada. A qualidade do estimador deve ser avaliada em amostras repetidas por viés, variância e erro quadrático, não por um único resultado favorável.
 :::
 
 
@@ -118,8 +114,8 @@ print("Dividindo por n:   ", amostra_variancia.var(ddof=0))
 print("Dividindo por n-1: ", amostra_variancia.var(ddof=1))
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Variância populacional e amostral), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+::: {.callout-note title="Interpretação"}
+A variância com divisor n descreve o conjunto observado. Quando a média populacional é estimada pela média amostral, perde-se um grau de liberdade e o divisor n−1 corrige o viés para baixo.
 :::
 
 
@@ -134,13 +130,13 @@ print(f"Estimativa x̄: {x_barra:.1f} g")
 print(f"Erro observado: {x_barra - mu:.1f} g")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (4. Uma amostra, uma estimativa), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
-:::
-
 
 Execute a célula novamente com outra semente. A estimativa muda porque a
 amostra muda; o parâmetro permanece fixo.
+
+::: {.callout-note title="Interpretação"}
+O erro exibido pertence a uma amostra particular: ele pode ser positivo ou negativo e muda quando repetimos a seleção. Essa variabilidade não transforma o parâmetro em algo aleatório; ela descreve a incerteza do procedimento amostral.
+:::
 
 # 5. Distribuição amostral
 
@@ -170,8 +166,8 @@ print(f"Variância estimada: {variancia:.1f} g²")
 print(f"Erro padrão estimado: {erro_padrao:.1f} g")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Distribuição amostral), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+::: {.callout-note title="Interpretação"}
+O centro das médias simuladas deve ficar próximo de $\mu$, sinal de pouco viés. Já o desvio padrão dessas médias é o erro padrão: ele mede quanto a estimativa mudaria entre amostras do mesmo tamanho.
 :::
 
 
@@ -188,10 +184,6 @@ plt.legend()
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. Tamanho da amostra), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
-:::
-
 
 Compare o erro padrão empírico com a fórmula:
 
@@ -202,8 +194,8 @@ for n in [10, 30, 80]:
     print(f"n={n:>2}: empírico={empirico:6.1f} | σ/√n={teorico:6.1f}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. Tamanho da amostra), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
+::: {.callout-note title="Interpretação"}
+Ao aumentar $n$, as distribuições ficam mais estreitas sem mudar substancialmente de centro. A proximidade entre os valores empíricos e $\sigma/\sqrt n$ confirma a queda do erro padrão na razão inversa da raiz do tamanho amostral.
 :::
 
 
@@ -225,12 +217,12 @@ print(f"Centro das amostras Gentoo: {enviesadas.mean():.1f} g")
 print(f"Parâmetro de interesse: {mu:.1f} g")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (7. Uma amostra maior pode continuar enviesada), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
-:::
-
 
 ![](../../slides/assets/aula08-estimadores/amostragem-enviesada.png){fig-alt="Comparação entre amostragem aleatória e amostragem restrita a Gentoo."}
+
+::: {.callout-note title="Interpretação"}
+A distribuição obtida apenas com Gentoo pode ser estreita e, ainda assim, ficar sistematicamente afastada do parâmetro de todas as espécies. Mais observações reduzem variância; não corrigem uma regra de seleção que representa a população errada.
+:::
 
 # 8. Funções de perda
 
@@ -247,10 +239,6 @@ print(f"Média: {dados.mean():.1f} g")
 print(f"Mediana: {np.median(dados):.1f} g")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (8. Funções de perda), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o resultado ao estimador usado: ele resume a amostra sob uma função de perda e um mecanismo de amostragem, portanto deve ser lido junto com viés, variância e robustez.
-:::
-
 
 Para a perda quadrática,
 
@@ -265,6 +253,10 @@ quando há mais observações à direita e positiva quando há mais à esquerda.
 cruza zero nas medianas.
 
 ![](../../slides/assets/aula08-estimadores/funcoes-perda.png){fig-alt="Perdas quadrática e absoluta em função da estimativa."}
+
+::: {.callout-note title="Interpretação"}
+A perda quadrática cresce rapidamente com erros grandes e atinge o mínimo na média. A perda absoluta cresce linearmente e é minimizada pela mediana; por isso, ela é menos dominada pelo valor extremo de 6.100 g.
+:::
 
 # 9. Comparando estimadores pelo risco
 
@@ -297,6 +289,10 @@ for nome, valores in estimadores.items():
 
 pd.DataFrame(resultados)
 ```
+
+::: {.callout-note title="Interpretação"}
+O MSE combina viés e variância: $\operatorname{MSE}=\operatorname{viés}^2+\operatorname{variância}$. Assim, o melhor estimador depende da distribuição e da perda adotada; robustez pode compensar uma pequena perda de eficiência quando há caudas ou valores extremos.
+:::
 
 
 # 10. Investigue

@@ -1,0 +1,61 @@
+---
+title: "Projeto final"
+subtitle: "Etapas, acompanhamento e requisitos do trabalho prático"
+---
+
+O projeto aplica as técnicas da disciplina a uma base de dados de interesse da equipe. O objetivo é desenvolver uma **investigação completa de ciência de dados**, indo além de cálculos isolados: formular uma pergunta relevante, compreender como os dados foram produzidos, explorá-los, quantificar incertezas e sustentar as conclusões com evidências.
+
+A equipe pode trabalhar com uma das bases sugeridas abaixo ou com dados de iniciação científica, estágio ou trabalho, desde que seu uso seja autorizado e compatível com as exigências éticas e legais aplicáveis. Os grupos podem ter **até quatro integrantes**; equipes maiores devem entregar uma análise proporcionalmente mais ampla.
+
+## Etapas e pontuação
+
+| Etapa | Entrega | Valor |
+|---:|---|---:|
+| 01 | Definição da equipe e do tema | 0 ponto |
+| 02 | Entrevista parcial 01 | 3 pontos |
+| 03 | Entrevista parcial 02 | 3 pontos |
+| 04 | Entrevista parcial 03 | 4 pontos |
+| 05 | Vídeo e notebook final | 20 pontos |
+|  | **Total do projeto** | **30 pontos** |
+
+## Desenvolvimento e acompanhamento
+
+Na definição do tema, a equipe deve apresentar:
+
+1. a base de dados e sua proveniência;
+2. as perguntas de ciência de dados que serão investigadas;
+3. uma primeira compreensão da unidade observacional, das principais variáveis e das limitações da base.
+
+Depois dessa definição, o projeto será acompanhado em **três entrevistas parciais** com a monitoria. Os encontros servem para discutir dúvidas, revisar o andamento e ajustar o escopo antes da entrega final. As datas e o procedimento de agendamento serão divulgados no Moodle.
+
+## Conteúdo mínimo da análise
+
+O trabalho final deve incluir:
+
+- caracterização inicial e análise exploratória dos dados;
+- pelo menos dois testes de hipóteses e/ou intervalos de confiança;
+- pelo menos uma análise de regressão e/ou classificação;
+- interpretação dos resultados, limitações e conclusões relacionadas às perguntas propostas.
+
+O notebook deve estar organizado como um relatório reproduzível, com as seções:
+
+1. introdução, motivação e perguntas de pesquisa;
+2. metodologia, incluindo descrição da base e justificativa dos métodos;
+3. resultados, começando pela caracterização exploratória;
+4. inferência e modelagem;
+5. conclusões e limitações.
+
+## Bases sugeridas
+
+Estes catálogos são bons pontos de partida para encontrar dados documentados e adequados ao projeto:
+
+- [Kaggle Datasets](https://www.kaggle.com/datasets) — bases de temas variados;
+- [OpenDataSUS](https://opendatasus.saude.gov.br/) — dados abertos do Sistema Único de Saúde;
+- [DATASUS — transferência de arquivos](https://datasus.saude.gov.br/transferencia-de-arquivos/) — arquivos dos sistemas de informação em saúde;
+- [Portal Brasileiro de Dados Abertos](https://dados.gov.br/home) — catálogo de bases publicadas por órgãos do Governo Federal.
+
+Antes de escolher, verifique licença, documentação, unidade observacional, qualidade das variáveis e se a base permite responder a perguntas que envolvam exploração, inferência e modelagem.
+
+## Onde acompanhar
+
+As datas e orientações atualizadas serão publicadas no [Moodle](https://virtual.ufmg.br/20262/course/view.php?id=12421). Consulte também o [cronograma da disciplina](cronograma.qmd).

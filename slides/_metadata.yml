@@ -1,0 +1,10 @@
+revealjs-plugins:
+  - quiz
+
+format:
+  revealjs:
+    quiz:
+      defaultCorrect: "Correto!"
+      defaultIncorrect: "Revise a ideia e tente novamente."
+      shuffleOptions: false
+      includeScore: false

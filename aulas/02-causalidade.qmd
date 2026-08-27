@@ -83,18 +83,6 @@ O exemplo computacional principal é [Pipeline de experimento A/B](../exemplos/0
 Ele deve ser usado em aula para mostrar a diferença entre "olhar médias" e
 conduzir uma análise causal mínima com verificações.
 
-## Dimensionamento para 100 minutos
-
-| Tempo | Atividade |
-|---:|---|
-| 0-10 min | Retomada: boas perguntas e perguntas causais |
-| 10-25 min | Tratamento, resultado, unidade e comparação contrafactual |
-| 25-40 min | Fisher, controle, randomização e replicação |
-| 40-65 min | Notebook: pipeline de experimento A/B |
-| 65-75 min | Discussão: limites do experimento e validade externa |
-| 75-90 min | John Snow, estudo observacional e confundimento |
-| 90-100 min | Checklist causal e atividade curta |
-
 ## Estudo de caso complementar
 
 O estudo de John Snow sobre cólera em Londres complementa o exemplo A/B. Ele

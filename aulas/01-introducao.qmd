@@ -64,19 +64,6 @@ uma análise. Uma breve história liga Tukey, Naur, Cleveland e a popularizaçã
 área nos anos 2010. A seção final detalha ementa, dinâmica, bibliografia,
 avaliação, projeto, cronograma, bem-estar e canais institucionais de apoio.
 
-## Dimensionamento para 100 minutos
-
-| Tempo | Atividade |
-|---:|---|
-| 0-10 min | Apresentação do professor, do curso e combinados iniciais |
-| 10-35 min | Exoplanetas e enchentes: observar e antecipar |
-| 35-55 min | AlphaFold e MapBiomas: descobrir e monitorar |
-| 55-70 min | Recomendações, escolhas humanas e responsabilidade |
-| 70-78 min | O padrão comum e o ciclo de uma análise |
-| 78-85 min | Material de apoio: primeira tabela e indicador simples |
-| 85-97 min | Funcionamento, avaliação, projeto e canais de apoio |
-| 97-100 min | Leituras, fechamento e pergunta para a próxima aula |
-
 ## Leituras adicionais dos exemplos
 
 - [NASA Exoplanet Watch](https://science.nasa.gov/citizen-science/exoplanet-watch/exoplanet-watch-overview/)

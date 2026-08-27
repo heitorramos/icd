@@ -73,18 +73,6 @@ selecionar linhas e colunas, criar variáveis e agrupar. A comparação final de
 preços por distrito e tipo de acomodação mostra como uma pergunta se transforma
 em operações tabulares verificáveis.
 
-## Dimensionamento para 100 minutos
-
-| Tempo | Atividade |
-|---:|---|
-| 0–15 min | Base Airbnb, unidade observacional, coleta e amostragem |
-| 15–35 min | Anatomia da tabela e tipos semânticos |
-| 35–50 min | CSV, pandas e diagnóstico inicial |
-| 50–65 min | Ausências, duplicatas, validade e preço |
-| 65–82 min | Seleção, filtros, cópia e vetorização |
-| 82–95 min | `groupby`, agregação e encadeamento |
-| 95–100 min | Checklist e atividade de classificação |
-
 ## Material de estudo
 
 O notebook vai além dos slides e inclui:

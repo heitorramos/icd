@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 03 — Tabelas e tipos de dados</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 03 — Tabelas e tipos de dados</span><a class="lecture-footer-button" href="../aulas/03-tabelas-tipos.html">voltar para a Aula</a>'
 execute:
   echo: false
 ---
@@ -424,15 +424,6 @@ não uma medida contínua com distâncias iguais.
 
 ![](assets/aula03-airbnb/valores-ausentes.png){fig-alt="Contagem de valores ausentes em quatro colunas da base Airbnb." width="72%"}
 
-<details class="code-fold">
-<summary>Código do gráfico</summary>
-
-```python
-missing = airbnb.isna().sum().sort_values()
-missing[missing > 0].plot.barh()
-```
-</details>
-
 `last_review` e `reviews_per_month` faltam exatamente nas mesmas 10.052 linhas.
 
 Hipótese plausível: anúncios sem avaliações não possuem data nem taxa mensal.
@@ -444,6 +435,15 @@ airbnb[["last_review", "reviews_per_month"]].isna().all(axis=1).sum()
 ::: {.code-result}
 **Resultado:** `10052` linhas têm as duas informações ausentes.
 :::
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+missing = airbnb.isna().sum().sort_values()
+missing[missing > 0].plot.barh()
+```
+</details>
 
 ## Ausente não é zero
 

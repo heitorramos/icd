@@ -17,7 +17,7 @@ website:
   repo-actions: [edit, issue]
   page-navigation: true
   page-footer:
-    center: "Material produzido por Heitor Ramos em conjunto com o ChatGPT e revisado por Heitor Ramos. Conteúdo baseado no material do Prof. Flávio Vinícius, disponível em [icd-ufmg.github.io](https://icd-ufmg.github.io/)."
+    center: "Material produzido por Heitor Ramos com o auxílio do ChatGPT. Conteúdo baseado no material do Prof. Flávio Vinícius, disponível em [icd-ufmg.github.io](https://icd-ufmg.github.io/)."
     right: '<span id="site-version" class="site-version" aria-live="polite">Versão do site: verificando…</span>'
     border: true
   navbar:
@@ -26,6 +26,10 @@ website:
     left:
       - text: "Início"
         href: index.qmd
+      - text: "Cronograma"
+        href: cronograma.qmd
+      - text: "Projeto"
+        href: projeto.qmd
       - text: "Aulas"
         href: aulas/index.qmd
   sidebar:
@@ -33,6 +37,8 @@ website:
       style: docked
       contents:
         - aulas/index.qmd
+        - cronograma.qmd
+        - projeto.qmd
         - section: "Módulo 0 · Motivação"
           contents:
             - aulas/01-introducao.qmd
@@ -43,9 +49,9 @@ website:
             - aulas/04-eda.qmd
             - aulas/05-fundamentos-visualizacao.qmd
             - aulas/06-boas-praticas-visualizacao.qmd
+            - aulas/07-tendencias-centrais.qmd
         - section: "Módulo 2 · Inferência Estatística"
           contents:
-            - aulas/07-tendencias-centrais.qmd
             - aulas/08-estimadores.qmd
             - aulas/09-risco-estimadores.qmd
             - aulas/10-tcl-intervalos.qmd

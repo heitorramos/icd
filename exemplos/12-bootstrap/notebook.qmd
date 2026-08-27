@@ -30,8 +30,8 @@ airbnb = pd.read_csv(f"{path}/AB_NYC_2019.csv")
 airbnb.shape
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (A base), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+Antes de interpretar resultados, confirme o que cada linha representa, o período coberto e as colunas realmente disponíveis. Essa definição determina quais agregações e comparações são válidas.
 :::
 
 
@@ -41,26 +41,18 @@ Nesta análise (A base), a figura deve ser lida antes do resumo numérico: obser
 airbnb[["price", "minimum_nights", "availability_365"]].describe()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Panorama descritivo), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
-:::
-
 
 ```{python}
 airbnb["neighbourhood_group"].value_counts()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Panorama descritivo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
-:::
 
 
 ```{python}
 airbnb[["price", "neighbourhood_group", "room_type", "host_id"]].isna().sum()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Panorama descritivo), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+Os resumos devem ser lidos em conjunto: preço e noites mínimas são assimétricos, os bairros têm tamanhos diferentes e valores ausentes podem alterar a população efetivamente analisada. Esses fatos orientam o filtro, a escolha da mediana e a forma de reamostrar.
 :::
 
 
@@ -83,8 +75,8 @@ sample = focus.groupby("neighbourhood_group", group_keys=False).sample(
 )
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Limpeza e população-alvo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+O bootstrap descreve incerteza condicionada à amostra observada. Sua validade depende de representatividade, independência adequada e escolha correta da unidade de reamostragem.
 :::
 
 
@@ -103,8 +95,8 @@ theta_hat = (
 theta_hat
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Estimativa observada), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+A diferença observada é o centro da análise, mas não informa sozinha sua precisão. O bootstrap aproxima essa incerteza reamostrando unidades comparáveis da amostra.
 :::
 
 
@@ -130,8 +122,8 @@ for b in range(B):
     replicas[b] = np.median(manhattan_star) - np.median(brooklyn_star)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Réplicas bootstrap), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+Cada réplica refaz a comparação como se a distribuição empírica fosse a população. A nuvem de diferenças não representa novos dados reais; ela aproxima a variabilidade da estatística provocada pelo processo amostral.
 :::
 
 
@@ -142,10 +134,6 @@ se_boot = replicas.std(ddof=1)
 ci_percentil = np.quantile(replicas, [.025, .975])
 se_boot, ci_percentil
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Erro padrão e intervalo percentil), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
-:::
 
 
 O erro padrão descreve quanto a estatística varia entre réplicas. O intervalo
@@ -161,8 +149,61 @@ plt.xlabel("Diferença de medianas (US$)")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Erro padrão e intervalo percentil), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Interprete o bootstrap como incerteza condicionada à amostra observada: a reamostragem é útil quando a amostra representa bem a população e as observações são comparáveis.
+::: {.callout-note title="Interpretação"}
+O centro da distribuição bootstrap deve ficar próximo da diferença observada. Sua dispersão fornece o erro padrão, e os quantis delimitam uma faixa de valores compatíveis com a incerteza amostral sob as condições assumidas.
+:::
+
+## Diferença de médias: bootstrap versus TCL
+
+Para comparar os métodos sobre a mesma estatística, agora usamos a diferença de médias
+
+$$\widehat\Delta=\bar X_M-\bar X_B,$$
+
+em que $\bar X_M$ e $\bar X_B$ são os preços médios observados em Manhattan e Brooklyn. Sob independência entre as unidades e amostras suficientemente grandes, o TCL fornece o erro padrão estimado
+
+$$\widehat{SE}_{TCL}(\widehat\Delta)
+=\sqrt{\frac{s_M^2}{n_M}+\frac{s_B^2}{n_B}},$$
+
+onde $s_g^2$ e $n_g$ são a variância amostral e o tamanho do grupo $g$. O intervalo aproximado de 95% é $\widehat\Delta\pm1{,}96\widehat{SE}_{TCL}$.
+
+No bootstrap, cada réplica calcula $\widehat\Delta_b^*=\bar X_{M,b}^*-\bar X_{B,b}^*$ e o intervalo percentil usa os quantis 2,5% e 97,5% das primeiras $B$ réplicas.
+
+```{python}
+#| eval: false
+mean_hat = prices["Manhattan"].mean() - prices["Brooklyn"].mean()
+se_tcl = np.sqrt(
+    prices["Manhattan"].var(ddof=1) / len(prices["Manhattan"])
+    + prices["Brooklyn"].var(ddof=1) / len(prices["Brooklyn"])
+)
+ci_tcl = np.array([mean_hat - 1.96*se_tcl,
+                   mean_hat + 1.96*se_tcl])
+
+B_max = 5000
+mean_boot = (
+    rng.choice(prices["Manhattan"], (B_max, len(prices["Manhattan"])),
+               replace=True).mean(axis=1)
+    - rng.choice(prices["Brooklyn"], (B_max, len(prices["Brooklyn"])),
+                 replace=True).mean(axis=1)
+)
+checkpoints = np.array([25, 50, 100, 200, 400, 800,
+                        1200, 2000, 3000, 5000])
+ci_boot_B = np.array([
+    np.quantile(mean_boot[:B], [.025, .975]) for B in checkpoints
+])
+
+plt.plot(checkpoints, ci_boot_B[:, 0], "o-", label="Bootstrap: inferior")
+plt.plot(checkpoints, ci_boot_B[:, 1], "o-", label="Bootstrap: superior")
+plt.axhline(ci_tcl[0], linestyle="--", label="TCL: inferior")
+plt.axhline(ci_tcl[1], linestyle="--", label="TCL: superior")
+plt.xscale("log")
+plt.legend()
+plt.show()
+```
+
+![](../../slides/assets/aula12-bootstrap/estabilidade-media-bootstrap-tcl.png){fig-alt="Limites do intervalo bootstrap da diferença de médias conforme aumenta B, comparados aos limites do intervalo obtido pelo TCL."}
+
+::: {.callout-note title="Interpretação"}
+Com poucas réplicas, os quantis bootstrap oscilam por erro de Monte Carlo. À medida que $B$ cresce, os limites se estabilizam próximos aos limites do TCL. Essa proximidade decorre da aproximação Normal para a diferença de médias nesta amostra; aumentar $B$ apenas estabiliza o cálculo bootstrap e não garante igualdade entre os métodos.
 :::
 
 
@@ -180,6 +221,10 @@ def cluster_sample(group, rng):
         group[group["host_id"].eq(host)] for host in chosen
     ], ignore_index=True)
 ```
+
+::: {.callout-note title="Interpretação"}
+Sortear anúncios individualmente trataria unidades do mesmo anfitrião como independentes. O bootstrap por conglomerados preserva essa dependência interna e faz a incerteza refletir melhor a unidade que efetivamente foi amostrada.
+:::
 
 
 ## Quando o bootstrap é válido?
@@ -217,11 +262,116 @@ Antes de reamostrar, verifique:
 
 ## O princípio do bootstrap
 
-A distribuição empírica $\widehat F_n$ coloca massa $1/n$ em cada observação. O bootstrap trata essa distribuição como uma aproximação da população e gera amostras de tamanho $n$ com reposição. Para cada amostra calculamos
+A distribuição empírica é
+
+$$\widehat F_n(x)=\frac1n\sum_{i=1}^n\mathbb 1(X_i\leq x),$$
+
+em que $X_i$ é a observação $i$, $x$ é um ponto da escala e $\mathbb 1(\cdot)$ é a função indicadora. Ela coloca massa $1/n$ em cada observação. O bootstrap trata essa distribuição como uma aproximação da população e gera amostras de tamanho $n$ com reposição. Para cada amostra calculamos
 
 $$\widehat\theta^{*b}=T(X_1^{*b},\ldots,X_n^{*b}),\qquad b=1,\ldots,B.$$
 
+$T$ é a função estatística escolhida; $X_i^{*b}$ é a observação $i$ da réplica $b$; $B$ é o número de réplicas; e o asterisco identifica quantidades geradas condicionalmente à amostra original. Se $\theta=T(F)$ é o parâmetro e $\widehat\theta=T(\widehat F_n)$ é a estimativa observada, o bootstrap usa a distribuição de $\widehat\theta^* - \widehat\theta$ para aproximar a distribuição de $\widehat\theta-\theta$.
+
+Uma formulação assintótica da validade é
+
+$$
+\mathcal L\!\left(\sqrt n(\widehat\theta^*-\widehat\theta)\mid X_1,\ldots,X_n\right)
+\Rightarrow
+\mathcal L\!\left(\sqrt n(\widehat\theta-\theta)\right),
+$$
+
+Para qualquer variável aleatória genérica $Z$, $\mathcal L(Z)$ denota sua distribuição de probabilidade. Na expressão acima, o operador $\mathcal L$ é aplicado a duas variáveis aleatórias específicas: o erro bootstrap padronizado $\sqrt n(\widehat\theta^*-\widehat\theta)$ e o erro amostral padronizado $\sqrt n(\widehat\theta-\theta)$. A barra vertical indica condicionamento nos dados observados e $\Rightarrow$ significa convergência em distribuição.
+
 A distribuição das réplicas aproxima, condicionalmente à amostra observada, a distribuição amostral do estimador. Seu desvio-padrão estima o erro padrão; quantis podem formar um intervalo percentil.
+
+Para nível $1-\alpha$, o intervalo percentil é $[q_{\alpha/2},q_{1-\alpha/2}]$, em que $q_\gamma$ é o quantil de ordem $\gamma$ das réplicas. Para 95%, $\alpha=0{,}05$ e usamos os quantis 2,5% e 97,5%.
+
+## O percentil não é o único intervalo
+
+Considere $B$ réplicas $\widehat\theta^{*1},\ldots,\widehat\theta^{*B}$. Denote por $q_\gamma^*$ o quantil de ordem $\gamma$ dessas réplicas, por $\widehat\theta$ a estimativa observada e por $z_\gamma=\Phi^{-1}(\gamma)$ o quantil de ordem $\gamma$ da Normal padrão. Os métodos abaixo usam a mesma reamostragem, mas transformam a distribuição bootstrap de formas diferentes.
+
+### Intervalo percentil
+
+O intervalo percentil de nível $1-\alpha$ é
+
+$$IC_{perc}=\left[q_{\alpha/2}^*,\ q_{1-\alpha/2}^*\right].$$
+
+Ele usa diretamente os quantis da distribuição de $\widehat\theta^*$.
+
+**Vantagens:** é simples, respeita transformações monótonas e pode produzir limites assimétricos quando as réplicas são assimétricas. Sua interpretação computacional é direta.
+
+**Desvantagens:** não corrige explicitamente o viés de $\widehat\theta$ e pode ter cobertura ruim quando a distribuição bootstrap está deslocada, a amostra é pequena ou o estimador é pouco regular.
+
+### Intervalo básico
+
+O intervalo básico reflete os quantis bootstrap em torno da estimativa observada:
+
+$$IC_{bas}=\left[2\widehat\theta-q_{1-\alpha/2}^*,\ 2\widehat\theta-q_{\alpha/2}^*\right].$$
+
+A motivação é aproximar a distribuição do erro $\widehat\theta-\theta$ pela distribuição de $\widehat\theta^*-\widehat\theta$ e inverter os limites para isolar $\theta$.
+
+**Vantagens:** faz uma correção simples de deslocamento e está diretamente ligado à distribuição bootstrap do erro do estimador.
+
+**Desvantagens:** não é invariante a transformações monótonas. Um intervalo calculado para $\log(\theta)$ e depois transformado de volta pode diferir daquele calculado diretamente para $\theta$. Também não corrige adequadamente assimetria complexa.
+
+### Intervalo Normal com erro padrão bootstrap
+
+O intervalo Normal é
+
+$$IC_{N}=\left[\widehat\theta-z_{1-\alpha/2}\widehat{SE}_{boot},\ \widehat\theta+z_{1-\alpha/2}\widehat{SE}_{boot}\right],$$
+
+com
+
+
+$$\widehat{SE}_{boot}=\sqrt{\frac{1}{B-1}\sum_{b=1}^B\left(\widehat\theta^{*b}-\overline{\theta^*}\right)^2},$$
+
+onde $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta^{*b}$ é a média das réplicas.
+
+**Vantagens:** é familiar, fácil de comunicar e costuma funcionar bem quando a distribuição do estimador é aproximadamente Normal, simétrica e com viés pequeno. Para médias em amostras grandes, aproxima-se naturalmente do intervalo derivado pelo TCL.
+
+**Desvantagens:** força simetria ao redor de $\widehat\theta$, mesmo quando a distribuição bootstrap é assimétrica. Pode gerar limites impossíveis para parâmetros restritos, como probabilidades próximas de zero ou um.
+
+### Intervalo BCa
+
+BCa significa *bias-corrected and accelerated*, ou **corrigido por viés e aceleração**. Ele continua usando quantis bootstrap, mas substitui $\alpha/2$ e $1-\alpha/2$ por probabilidades ajustadas:
+
+$$
+\alpha_j^{BCa}=\Phi\!\left[z_0+
+\frac{z_0+z_{\alpha_j}}{1-a(z_0+z_{\alpha_j})}\right],
+\qquad \alpha_1=\alpha/2,\quad \alpha_2=1-\alpha/2,
+$$
+
+e constrói
+
+$$IC_{BCa}=\left[q_{\alpha_1^{BCa}}^*,\ q_{\alpha_2^{BCa}}^*\right].$$
+
+Na fórmula, $\Phi$ é a CDF da Normal padrão; $z_0$ é a correção de viés, estimada pela posição de $\widehat\theta$ entre as réplicas; e $a$ é a aceleração, que mede como o erro padrão muda com o parâmetro. Uma estimativa usual de $z_0$ é
+
+$$z_0=\Phi^{-1}\!\left(\frac{\#\{\widehat\theta^{*b}<\widehat\theta\}}{B}\right).$$
+
+A aceleração é normalmente calculada por *jackknife*: removemos uma observação por vez, calculamos $\widehat\theta_{(-i)}$ e usamos
+
+$$
+a=\frac{\sum_{i=1}^n(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^3}
+{6\left[\sum_{i=1}^n(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^2\right]^{3/2}},
+$$
+
+onde $\widehat\theta_{(-i)}$ é a estimativa sem a observação $i$ e $\overline\theta_{(-\cdot)}=n^{-1}\sum_i\widehat\theta_{(-i)}$ é a média das estimativas *jackknife*.
+
+**Vantagens:** corrige deslocamento e assimetria, é invariante a transformações monótonas e costuma apresentar melhor precisão de cobertura em problemas regulares.
+
+**Desvantagens:** é mais custoso e menos transparente, pois exige bootstrap e *jackknife*. Pode ser instável em amostras pequenas, com estatísticas não suaves, parâmetros na fronteira ou observações extremamente influentes. “Mais sofisticado” não compensa uma amostra não representativa ou uma unidade de reamostragem incorreta.
+
+| Método | Melhor cenário | Principal limitação |
+|---|---|---|
+| Percentil | distribuição bootstrap com pouco viés | não corrige deslocamento |
+| Básico | erro bootstrap aproximadamente bem representado | não é invariante a transformações |
+| Normal | estimador aproximadamente Normal e simétrico | ignora assimetria e restrições do parâmetro |
+| BCa | problema regular com viés ou assimetria moderados | maior custo e possível instabilidade |
+
+::: {.callout-note title="Como escolher"}
+Não existe um intervalo universalmente melhor. Compare métodos, examine a distribuição bootstrap e verifique cobertura por simulação quando possível. Discordâncias relevantes são diagnóstico de viés, assimetria, pouca informação ou falta de regularidade — não um convite para escolher apenas o intervalo que produz a conclusão desejada.
+:::
 
 ## O que torna a aproximação válida
 
@@ -233,4 +383,4 @@ Reposição é indispensável: sem ela, toda réplica seria apenas uma reordena�
 
 Anúncios do mesmo anfitrião podem ser dependentes. Reamostrar anúncios individualmente pressupõe independência entre anúncios; reamostrar anfitriões preserva a dependência interna. Séries temporais podem exigir blocos; amostras estratificadas podem exigir reamostragem dentro dos estratos.
 
-Intervalo percentil não é o único método. Intervalos básico, Normal e BCa fazem correções diferentes e podem discordar, especialmente quando a distribuição bootstrap é assimétrica.
+O método de intervalo não corrige uma unidade de reamostragem inadequada. Percentil, básico, Normal e BCa podem discordar, especialmente quando a distribuição bootstrap é assimétrica ou enviesada.

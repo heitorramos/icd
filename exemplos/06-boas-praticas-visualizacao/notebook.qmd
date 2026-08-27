@@ -43,10 +43,6 @@ olist_customers = pd.read_csv(Path("data") / "olist_customers.csv")
 olist = olist_orders.merge(olist_customers, on="customer_id", validate="many_to_one")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Objetivos), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ## O que é a base?
 
@@ -56,26 +52,18 @@ Uma linha representa um filme. A base reúne metadados do TMDB sobre produção 
 movies.shape, movies[["original_title", "year", "main_genre", "budget", "revenue", "vote_average"]].head()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (O que é a base?), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ```{python}
 movies[["budget", "revenue", "vote_average", "vote_count"]].describe().T
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (O que é a base?), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
 
 
 ```{python}
 movies[["budget", "revenue", "runtime", "release_date"]].isna().mean().sort_values(ascending=False)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (O que é a base?), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+Antes de interpretar resultados, confirme o que cada linha representa, o período coberto e as colunas realmente disponíveis. Essa definição determina quais agregações e comparações são válidas.
 :::
 
 
@@ -91,8 +79,8 @@ top.sort_values().plot.barh(ax=axes[1], color="#176b87", title="Ordem por valor"
 plt.tight_layout(); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Ordem e comparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+A codificação visual deve reduzir o esforço necessário para responder à pergunta. Ordem, contraste e anotação devem destacar a evidência sem esconder categorias, incerteza ou contexto.
 :::
 
 
@@ -111,8 +99,8 @@ axes[1].set_xlim(small.min() * .96, small.max() * 1.01)
 plt.tight_layout(); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Eixo truncado), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+Em barras, o comprimento parte de uma origem; truncar o eixo altera visualmente a razão entre categorias. Linhas e pontos podem usar domínios locais quando a pergunta é variação, desde que a escala esteja explícita.
 :::
 
 
@@ -145,10 +133,6 @@ for ax, invert, title in zip(
 plt.tight_layout(); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Escalas duplas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 Prefira painéis alinhados com escalas declaradas, índices com uma base comum ou uma dispersão que represente diretamente a relação entre as variáveis.
 
@@ -163,8 +147,8 @@ axes[0].set_title("Linear"); axes[1].set_title("Log-log")
 plt.tight_layout(); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Transformações logarítmicas), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+O log preserva a ordem, mas transforma razões em distâncias. No exemplo didático, a observação de 45 minutos comprime a escala original; após o log, a região entre 2 e 5 minutos volta a ficar legível.
 :::
 
 
@@ -184,10 +168,6 @@ ax.set(xscale="log", yscale="log", xlim=lims, ylim=lims)
 ax.legend(); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Exercício 2), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ## Distribuições por grupo
 
@@ -199,17 +179,13 @@ sns.boxplot(data=d, x="vote_average", y="main_genre", order=order, color="#176b8
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Distribuições por grupo), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ```{python}
 d.groupby("main_genre")["vote_average"].agg(["count", "mean", "median", "std"]).round(2)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Distribuições por grupo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+Compare grupos usando a mesma definição de métrica e mostre também seus tamanhos. Diferenças aparentes podem refletir composição, cobertura ou poucos casos, e não apenas o fator usado no agrupamento.
 :::
 
 
@@ -221,8 +197,8 @@ annual.loc[1980:2016].plot(figsize=(10, 4), color="#176b87")
 plt.ylabel("filmes na base"); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Tempo e cobertura), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
+::: {.callout-note title="Interpretação"}
+A cobertura temporal precisa ser verificada antes de comparar períodos. Meses incompletos e datas ausentes podem produzir quedas artificiais que pertencem ao processo de coleta, não ao fenômeno estudado.
 :::
 
 
@@ -238,10 +214,6 @@ wide["razao_drama_comedia"] = wide["Drama"] / wide["Comedy"].replace(0, np.nan)
 wide.tail()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Condicionamento: contagem, razão e justaposição), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ```{python}
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
@@ -251,10 +223,6 @@ axes[1].axhline(1, color="#737b83", linestyle="--")
 axes[0].set_title("Contagens"); axes[1].set_title("Razão Drama / Comédia")
 plt.tight_layout(); plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Condicionamento: contagem, razão e justaposição), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
 
 
 Contagens medem volume; razões medem composição. São perguntas diferentes, embora usem as mesmas observações.
@@ -271,10 +239,6 @@ estado_trimestre = (olist_2017.groupby(["trimestre", "customer_state"])
 estado_trimestre.sort_values("pedidos", ascending=False).head(12)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Condicionamento por espaço e tempo), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ```{python}
 g = sns.catplot(data=estado_trimestre.query("customer_state in ['SP','RJ','MG','RS','PR']"),
@@ -283,10 +247,6 @@ g = sns.catplot(data=estado_trimestre.query("customer_state in ['SP','RJ','MG','
 g.set_axis_labels("UF", "pedidos na amostra")
 plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Condicionamento por espaço e tempo), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
 
 
 O mapa usado nos slides substitui as barras por posição geográfica, mantendo o mesmo domínio de cores nos quatro trimestres. Assim conseguimos comparar **onde** e **quando** os pedidos se concentram. Os contornos dos estados usam uma linha escura e fina: sem essa referência, áreas com valores baixos quase desaparecem sobre o fundo branco. A borda melhora a leitura geográfica, mas não deve competir com a escala de cores que representa os pedidos.
@@ -300,10 +260,6 @@ plt.barh(best["original_title"], best["profit"] / 1e9, color=colors)
 plt.xlabel("lucro nominal (US$ bilhões)"); plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Cor e destaque), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
-
 
 ```{python}
 plt.scatter(valid["budget"], valid["revenue"],
@@ -312,10 +268,6 @@ plt.scatter(valid["budget"], valid["revenue"],
 plt.xscale("log"); plt.yscale("log")
 plt.colorbar(label="log10(votos)"); plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Cor e destaque), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
 
 
 ### Exercício 3
@@ -334,9 +286,6 @@ ax.set(xscale="log", yscale="log", title="Um destaque ligado à mensagem",
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Anotações e contexto), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A interpretação precisa avaliar se o desenho visual favorece comparação honesta: escala, ordem, cor, anotação e contexto podem esclarecer ou distorcer a mensagem.
-:::
 
 ## Exemplos complementares de comunicação visual
 

@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 11 — Testes de hipóteses</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 11 — Testes de hipóteses</span><a class="lecture-footer-button" href="../aulas/11-testes-hipoteses.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -88,6 +88,8 @@ Observamos 9,58% de atrasos.
 
 ![](assets/aula10-tcl-inferencia/distribuicao-taxa-atraso.png){fig-alt="Histograma da proporção de atrasos em muitas amostras de 1200 pedidos, centrado na taxa populacional."}
 
+Uma diferença observada precisa ser comparada a essa variabilidade.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -112,8 +114,6 @@ z_obs = (p_hat - p0) / se0
 ```
 
 </details>
-
-Uma diferença observada precisa ser comparada a essa variabilidade.
 
 ## Afirmações precisam ser formalizadas
 
@@ -167,9 +167,13 @@ E[\widehat{p}]=0{,}08,
 \operatorname{SE}_0=\sqrt{\frac{0{,}08(0{,}92)}{1200}}
 $$
 
+$K$ é o número de atrasos em $n$ pedidos; $p_0=0{,}08$ é o valor imposto por $H_0$; $\widehat p=K/n$ é a proporção amostral. O índice zero em $\operatorname{SE}_0$ indica que o erro padrão é calculado sob a hipótese nula.
+
 ## A distribuição nula
 
 ![](assets/aula10-tcl-inferencia/distribuicao-nula.png){fig-alt="Distribuição simulada da proporção de atrasos sob hipótese nula de 8 por cento, com o valor observado de 9,58 por cento marcado."}
+
+O valor observado está à direita do centro previsto por $H_0$.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -189,8 +193,6 @@ finish("distribuicao-nula.png")
 
 </details>
 
-O valor observado está à direita do centro previsto por $H_0$.
-
 ## Estatística de teste
 
 Padronizamos a distância até o valor nulo:
@@ -200,7 +202,7 @@ Z=\frac{\widehat{p}-p_0}
 {\sqrt{p_0(1-p_0)/n}}
 $$
 
-$Z$ mede quantos erros padrão separam a amostra de $H_0$.
+$Z$ mede quantos erros padrão separam a amostra de $H_0$: $\widehat p$ é a taxa observada, $p_0$ é a taxa nula e $n$ é o tamanho amostral. Sob $H_0$ e condições adequadas, $Z\approx N(0,1)$.
 
 ## Aplicando aos pedidos
 
@@ -227,9 +229,13 @@ $$
 p\text{-valor}\approx0{,}0216
 $$
 
+A probabilidade é calculada **assumindo $H_0$**. O evento $Z\ge2{,}02$ reúne resultados pelo menos tão favoráveis a $H_1$ quanto o observado; não é a probabilidade de $H_0$ ser verdadeira.
+
 ## A cauda representa o p-valor
 
 ![](assets/aula10-tcl-inferencia/pvalor-cauda.png){fig-alt="Distribuição nula da taxa de atraso com a região tão extrema quanto o resultado observado destacada em laranja."}
+
+Contamos resultados tão ou mais favoráveis a $H_1$ que o observado.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -248,8 +254,6 @@ finish("pvalor-cauda.png")
 ```
 
 </details>
-
-Contamos resultados tão ou mais favoráveis a $H_1$ que o observado.
 
 ## O p-valor não é
 
@@ -279,6 +283,8 @@ Com $\alpha=0{,}05$, rejeitaríamos $H_0$ neste exemplo.
 
 ![](assets/aula10-tcl-inferencia/regioes-rejeicao.png){fig-alt="Duas curvas normais com regiões de rejeição unilaterais para níveis de significância de 5 e 1 por cento."}
 
+Reduzir $\alpha$ exige uma estatística mais extrema.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -298,8 +304,6 @@ finish("regioes-rejeicao.png")
 ```
 
 </details>
-
-Reduzir $\alpha$ exige uma estatística mais extrema.
 
 ## Rejeitar não significa provar
 
@@ -364,6 +368,8 @@ Aqui: 96 atrasos e 1.104 não atrasos são esperados sob $H_0$.
 
 ![](assets/aula10-tcl-inferencia/binomial-normal.png){fig-alt="Probabilidades da Binomial para número de caras em 30 lançamentos e curva da aproximação Normal."}
 
+A aproximação é melhor no centro e com contagens esperadas grandes.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -389,8 +395,6 @@ print(f"Amostra teste: n={len(obs)}, k={k_obs}, p_hat={p_hat:.5f}, z={z_obs:.3f}
 ```
 
 </details>
-
-A aproximação é melhor no centro e com contagens esperadas grandes.
 
 ## Simulação sob a hipótese nula
 
@@ -437,6 +441,8 @@ Sua probabilidade é controlada por $\alpha$.
 
 ![](assets/aula10-tcl-inferencia/erro-tipo-i.png){fig-alt="Fração acumulada de rejeições em cinco mil testes simulados sob a hipótese nula, convergindo para 5 por cento."}
 
+Com $H_0$ verdadeira, cerca de 5% dos testes rejeitam por acaso quando $\alpha=5\%$.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -459,8 +465,6 @@ finish("erro-tipo-i.png")
 ```
 
 </details>
-
-Com $H_0$ verdadeira, cerca de 5% dos testes rejeitam por acaso quando $\alpha=5\%$.
 
 ## Reduzir alpha tem um custo
 
@@ -489,13 +493,56 @@ $$
 \text{poder}=1-\beta
 $$
 
-É a probabilidade de rejeitar $H_0$ quando um efeito específico é verdadeiro.
+Aqui, $\beta=P_{\theta_1}(\text{não rejeitar }H_0)$ é a probabilidade de erro tipo II sob um valor alternativo específico $\theta_1$. Portanto, $1-\beta=P_{\theta_1}(\text{rejeitar }H_0)$.
 
 O poder depende do valor verdadeiro sob a alternativa.
+
+## Uma amostra maior aumenta a área de poder
+
+![](assets/aula10-tcl-inferencia/poder-duas-distribuicoes.png){fig-alt="Distribuições da proporção amostral sob a hipótese nula de 8 por cento e a alternativa de 10 por cento para 300 e 1.200 pedidos; a região hachurada sob a alternativa mostra poder de 37 e 79 por cento." width="100%"}
+
+Mantendo $p_0=8\%$, $p_1=10\%$ e $\alpha=5\%$, aumentar $n$ estreita as duas distribuições. A área de $H_1$ além do limiar crítico cresce de 37% para 79%.
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+p0, p1, alpha = .08, .10, .05
+z_critical = norm.ppf(1 - alpha)
+fig, axes = plt.subplots(1, 2, figsize=(13.2, 5.3), sharex=True)
+common_x = np.linspace(.02, .16, 800)
+
+for ax, n in zip(axes, [300, 1200]):
+    se0 = np.sqrt(p0 * (1-p0) / n)
+    se1 = np.sqrt(p1 * (1-p1) / n)
+    critical = p0 + z_critical * se0
+    x = common_x
+    y0, y1 = norm.pdf(x, p0, se0), norm.pdf(x, p1, se1)
+    power = norm.sf(critical, p1, se1)
+    ax.plot(100*x, y0, color=BLUE, lw=3, label=r"Sob $H_0$: $p=8\%$")
+    ax.plot(100*x, y1, color=ORANGE, lw=3, label=r"Sob $H_1$: $p=10\%$")
+    mask = x >= critical
+    ax.fill_between(100*x[mask], 0, y1[mask], facecolor="#f6c49a",
+                    edgecolor=ORANGE, alpha=.65, hatch="///",
+                    label=f"Poder = {power:.0%}")
+    ax.axvline(100*critical, color=INK, ls="--", lw=2,
+               label="limiar crítico")
+    ax.set(title=f"n = {n} pedidos",
+           xlabel="Proporção amostral de atrasos (%)")
+    ax.set_xlim(2, 16)
+    ax.set_yticks([]); ax.legend(frameon=False)
+
+plt.tight_layout()
+finish("poder-duas-distribuicoes.png")
+```
+
+</details>
 
 ## O poder cresce com o efeito
 
 ![](assets/aula10-tcl-inferencia/curva-poder.png){fig-alt="Curva de poder do teste em função da taxa verdadeira de atraso, crescendo à medida que se afasta de 8 por cento."}
+
+É mais fácil detectar 12% que 8,5% de atrasos.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -519,8 +566,6 @@ finish("curva-poder.png")
 ```
 
 </details>
-
-É mais fácil detectar 12% que 8,5% de atrasos.
 
 ## Tamanho da amostra aumenta o poder
 

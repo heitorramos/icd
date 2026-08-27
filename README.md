@@ -13,6 +13,22 @@ Os notebooks devem funcionar como guias autônomos de estudo: contextualizam a
 base, reproduzem as análises, apresentam os resultados e desenvolvem com mais
 detalhe a teoria introduzida nos slides.
 
+As páginas e os materiais de apoio não devem incluir seções de
+**Dimensionamento para 100 minutos**. A organização do tempo de aula não faz
+parte do material destinado aos estudantes.
+
+Discussões de resultados devem ser específicas para a saída imediatamente
+anterior. Evite parágrafos genéricos repetidos entre células ou seções; mantenha,
+em geral, uma interpretação por etapa analítica, mencionando o padrão observado,
+a unidade de análise e a limitação relevante.
+
+Toda equação apresentada em slides, páginas ou materiais de apoio deve definir
+imediatamente seus termos: símbolos, índices, parâmetros, estatísticas, conjuntos
+e operadores menos usuais. Também deve indicar as condições ou hipóteses
+necessárias e traduzir o resultado para linguagem natural. Quando a equação for
+aplicada a um exemplo, explicite a correspondência entre a notação e as variáveis
+da base utilizada. Não presuma que a notação seja autoexplicativa.
+
 - `aulas/`: roteiros pedagógicos.
 - `slides/`: slides em Quarto Reveal.js.
 - `exemplos/`: exemplos documentados com dados, código e discussões.

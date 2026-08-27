@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 06 — Visualização — boas práticas</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 06 — Visualização — boas práticas</span><a class="lecture-footer-button" href="../aulas/06-boas-praticas-visualizacao.html">voltar para a Aula</a>'
 execute:
   echo: true
 ---
@@ -115,6 +115,8 @@ Linhas e pontos não têm a mesma obrigação quando a pergunta é sobre variaç
 
 ![](assets/aula06-visualizacao/eixo-truncado.png){.wide-chart fig-alt="Comparação entre barras com eixo correto e eixo truncado."}
 
+Os valores são os mesmos nos dois painéis: **1.207 dramas e 1.042 comédias**.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -124,11 +126,18 @@ ax.set_ylim(pair.min() * .94, ...)  # diferença exagerada
 ```
 </details>
 
-Os valores são os mesmos nos dois painéis: **1.207 dramas e 1.042 comédias**.
-
 ## Escalas duplas confundem comparações
 
 ![](assets/aula06-visualizacao/eixos-duplos.png){.wide-chart fig-alt="Os mesmos dados de filmes e notas parecem se opor com o segundo eixo usual e acompanhar-se quando esse eixo é invertido."}
+
+Dois eixos verticais permitem que qualquer par de curvas pareça acompanhar-se. Aqui, **os dados são idênticos nos dois painéis**; apenas o segundo eixo foi invertido.
+
+Prefira:
+
+- índices com uma base comum;
+- painéis alinhados;
+- variação percentual claramente definida;
+- uma relação direta em dispersão.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -139,15 +148,6 @@ ax2.plot(annual["year"], annual["nota"], color="orange")
 ax2.invert_yaxis()  # escolha possível, mas enganosa
 ```
 </details>
-
-Dois eixos verticais permitem que qualquer par de curvas pareça acompanhar-se. Aqui, **os dados são idênticos nos dois painéis**; apenas o segundo eixo foi invertido.
-
-Prefira:
-
-- índices com uma base comum;
-- painéis alinhados;
-- variação percentual claramente definida;
-- uma relação direta em dispersão.
 
 ## Escala linear esconde caudas longas
 
@@ -211,6 +211,8 @@ O eixo temporal deve representar o acontecimento que a pergunta menciona.
 
 ![](assets/aula06-visualizacao/contagem-razao.png){.wide-chart fig-alt="Contagens anuais de dramas e comédias ao lado da razão entre as duas contagens."}
 
+Contagem mede volume; razão mede a composição relativa entre dois gêneros.
+
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
@@ -219,11 +221,11 @@ razao = contagens["Drama"] / contagens["Comedy"]
 ```
 </details>
 
-Contagem mede volume; razão mede a composição relativa entre dois gêneros.
-
 ## Justaposição: mesmo domínio, lado a lado
 
 ![](assets/aula06-visualizacao/justaposicao-generos.png){.wide-chart fig-alt="Quatro séries anuais de filmes apresentadas lado a lado com os mesmos eixos."}
+
+A escala comum permite comparar tendência e magnitude sem misturar as séries.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -233,11 +235,13 @@ sns.relplot(data=annual, x="year", y="filmes", col="main_genre",
 ```
 </details>
 
-A escala comum permite comparar tendência e magnitude sem misturar as séries.
-
 ## Condicionando por espaço e tempo
 
 ![](assets/aula06-visualizacao/olist-mapa-trimestres.png){.wide-chart fig-alt="Quatro mapas do Brasil mostrando pedidos da Olist por estado e trimestre de 2017."}
+
+O contorno dos estados mantém a forma do Brasil legível mesmo nas regiões com preenchimento claro.
+
+Um mapa anual esconderia quando a concentração ocorreu; um gráfico temporal sem mapa esconderia onde.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -247,10 +251,6 @@ pedidos = olist.groupby(["trimestre", "customer_state"]).size()
 PatchCollection(estados, edgecolor="#34454f", linewidth=.8)
 ```
 </details>
-
-O contorno dos estados mantém a forma do Brasil legível mesmo nas regiões com preenchimento claro.
-
-Um mapa anual esconderia quando a concentração ocorreu; um gráfico temporal sem mapa esconderia onde.
 
 ## Distribuições contam mais que médias
 
@@ -514,12 +514,12 @@ Ao encontrar um gráfico ruim, não pare em “está feio”. Pergunte:
 - Acrescente contexto sem poluir.
 - Mostre limitações, filtros e incerteza.
 
-## O Módulo 1 fecha aqui
+## O bloco de visualização fecha aqui
 
-Nas aulas 03–06, passamos de tabelas e tipos de dados para EDA e visualização.
+Nas aulas 03–06, passamos de tabelas e tipos de dados para EDA e visualização. O Módulo 1 continua na Aula 07 com tendências centrais e dispersão.
 
 ::: {.statement}
-Agora sabemos estruturar, investigar e comunicar padrões antes de avançar para probabilidade e inferência.
+Agora sabemos estruturar, investigar e comunicar padrões; na próxima aula, vamos aprender a resumir centro e dispersão sem perder de vista a distribuição.
 :::
 
 ## Material de apoio

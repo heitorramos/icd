@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 04 — Análise exploratória de dados</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 04 — Análise exploratória de dados</span><a class="lecture-footer-button" href="../aulas/04-eda.html">voltar para a Aula</a>'
 execute:
   echo: true
 ---
@@ -36,7 +36,6 @@ entregues.groupby("atrasou")["nota"].mean()
 ::: notes
 Resultado descritivo, não causal. Atrasos podem estar associados a outros problemas do pedido.
 :::
-
 ## Hoje
 
 1. Entender a estrutura de uma base relacional.
@@ -108,6 +107,10 @@ Há mais itens que pedidos e menos avaliações que pedidos. Essa diferença já
 
 ![](assets/aula04-eda-olist/status-pedidos.png){.wide-chart fig-alt="Quantidade de pedidos por status."}
 
+::: {.code-result}
+**Resultado:** aproximadamente 97% dos pedidos estão marcados como entregues.
+:::
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -116,13 +119,11 @@ orders["order_status"].value_counts().plot.barh()
 ```
 </details>
 
-::: {.code-result}
-**Resultado:** aproximadamente 97% dos pedidos estão marcados como entregues.
-:::
-
 ## A distribuição geográfica é desigual
 
 ![](assets/aula04-eda-olist/pedidos-estado.png){.wide-chart fig-alt="Pedidos nos dez estados com maior frequência."}
+
+São Paulo responde por cerca de 42% dos pedidos da amostra.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -131,8 +132,6 @@ orders["order_status"].value_counts().plot.barh()
 base["customer_state"].value_counts().head(10).plot.barh()
 ```
 </details>
-
-São Paulo responde por cerca de 42% dos pedidos da amostra.
 
 ## EDA é investigação, não decoração
 
@@ -235,6 +234,8 @@ False
 
 ![](assets/aula04-eda-olist/itens-por-pedido.png){.wide-chart fig-alt="Distribuição do número de itens por pedido."}
 
+Na amostra, a mediana é um item e o máximo chega a 20 itens.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -242,8 +243,6 @@ False
 items.groupby("order_id").size().clip(upper=6).value_counts()
 ```
 </details>
-
-Na amostra, a mediana é um item e o máximo chega a 20 itens.
 
 ## Um merge pode multiplicar linhas
 
@@ -354,6 +353,8 @@ Ela não representa automaticamente todo o comércio eletrônico brasileiro.
 
 ![](assets/aula04-eda-olist/ausencias-pedidos.png){.wide-chart fig-alt="Valores ausentes nas datas de aprovação, envio e entrega."}
 
+Datas posteriores ao pedido faltam mais frequentemente.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -361,8 +362,6 @@ Ela não representa automaticamente todo o comércio eletrônico brasileiro.
 orders.isna().sum().loc[lambda x: x > 0].plot.barh()
 ```
 </details>
-
-Datas posteriores ao pedido faltam mais frequentemente.
 
 ## O status explica parte das ausências
 
@@ -442,6 +441,10 @@ Alguns pedidos possuem mais de uma avaliação. Precisamos agregar antes do merg
 
 ![](assets/aula04-eda-olist/valor-pedidos.png){.wide-chart fig-alt="Histogramas do valor dos pedidos na escala completa e com zoom."}
 
+::: {.code-result}
+**Resultado:** mediana de R$ 86,99; a média é maior por causa da cauda à direita.
+:::
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -450,10 +453,6 @@ sns.histplot(analysis["valor_produtos"], bins=70)
 sns.histplot(analysis.query("valor_produtos <= 500")["valor_produtos"])
 ```
 </details>
-
-::: {.code-result}
-**Resultado:** mediana de R$ 86,99; a média é maior por causa da cauda à direita.
-:::
 
 ## Outlier não é sinônimo de erro
 
@@ -484,6 +483,8 @@ Datas como texto não permitem diferenças, ordenação temporal segura ou reamo
 
 ![](assets/aula04-eda-olist/pedidos-mensais.png){.wide-chart fig-alt="Quantidade mensal de pedidos ao longo do período."}
 
+Setembro e outubro de 2018 não devem ser comparados como meses completos.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -491,8 +492,6 @@ Datas como texto não permitem diferenças, ordenação temporal segura ou reamo
 orders.set_index("order_purchase_timestamp").resample("MS").size()
 ```
 </details>
-
-Setembro e outubro de 2018 não devem ser comparados como meses completos.
 
 ## A granularidade temporal muda a história
 
@@ -511,6 +510,10 @@ Escolha a escala que corresponde à pergunta.
 
 ![](assets/aula04-eda-olist/tempo-entrega.png){.wide-chart fig-alt="Distribuição do tempo entre compra e entrega."}
 
+::: {.code-result}
+**Resultado:** mediana de 10,2 dias; a média é maior por causa de entregas longas.
+:::
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -521,10 +524,6 @@ entregues["entrega_dias"] = (
 ).dt.total_seconds() / 86400
 ```
 </details>
-
-::: {.code-result}
-**Resultado:** mediana de 10,2 dias; a média é maior por causa de entregas longas.
-:::
 
 ## Atraso exige duas datas
 
@@ -545,6 +544,8 @@ entregues["atrasou"] = entregues["atraso_dias"] > 0
 
 ![](assets/aula04-eda-olist/notas-avaliacoes.png){.wide-chart fig-alt="Contagem das notas de avaliação de um a cinco."}
 
+Notas 5 são frequentes, mas nem todo pedido possui avaliação disponível.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -552,8 +553,6 @@ entregues["atrasou"] = entregues["atraso_dias"] > 0
 reviews["review_score"].value_counts().sort_index().plot.bar()
 ```
 </details>
-
-Notas 5 são frequentes, mas nem todo pedido possui avaliação disponível.
 
 ## Atraso e nota se movem juntos
 

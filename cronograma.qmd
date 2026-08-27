@@ -1,0 +1,34 @@
+---
+title: "Cronograma"
+subtitle: "Organização das aulas e materiais da disciplina"
+---
+
+As datas abaixo são provisórias. Os títulos e materiais já disponíveis levam à página de cada aula. Datas definitivas e eventuais alterações serão comunicadas pelo Moodle.
+
+| Aula | Data | Conteúdo | Material |
+|---:|:---:|---|---|
+| **Módulo 0** |  | **Motivação** |  |
+| 01 | **[SUBSTITUIR]** | Introdução à ciência de dados | [Acessar](aulas/01-introducao.qmd) |
+| 02 | **[SUBSTITUIR]** | Causalidade e experimentos | [Acessar](aulas/02-causalidade.qmd) |
+| **Módulo 1** |  | **Análise Exploratória** |  |
+| 03 | **[SUBSTITUIR]** | Tabelas e tipos de dados | [Acessar](aulas/03-tabelas-tipos.qmd) |
+| 04 | **[SUBSTITUIR]** | Análise exploratória de dados | [Acessar](aulas/04-eda.qmd) |
+| 05 | **[SUBSTITUIR]** | Fundamentos de visualização e percepção | [Acessar](aulas/05-fundamentos-visualizacao.qmd) |
+| 06 | **[SUBSTITUIR]** | Visualização: boas práticas | [Acessar](aulas/06-boas-praticas-visualizacao.qmd) |
+| 07 | **[SUBSTITUIR]** | Tendências centrais e dispersão | [Acessar](aulas/07-tendencias-centrais.qmd) |
+| **Módulo 2** |  | **Inferência Estatística** |  |
+| 08 | **[SUBSTITUIR]** | Estimadores | [Acessar](aulas/08-estimadores.qmd) |
+| 09 | **[SUBSTITUIR]** | Escolha de estimadores e funções de perda | [Acessar](aulas/09-risco-estimadores.qmd) |
+| 10 | **[SUBSTITUIR]** | Teorema Central do Limite e intervalos | [Acessar](aulas/10-tcl-intervalos.qmd) |
+| 11 | **[SUBSTITUIR]** | Testes de hipóteses | [Acessar](aulas/11-testes-hipoteses.qmd) |
+| 12 | **[SUBSTITUIR]** | Bootstrap | [Acessar](aulas/12-bootstrap.qmd) |
+| 13 | **[SUBSTITUIR]** | Testes de permutação | [Acessar](aulas/13-testes-permutacao.qmd) |
+| 14 | **[SUBSTITUIR]** | Permutação: extensões e validade | [Acessar](aulas/14-permutacao-avancada.qmd) |
+| 15 | **[SUBSTITUIR]** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
+| **Módulo 3** |  | **Aulas 16–26: correlação, regressão e ML** | Em preparação |
+
+## Informações complementares
+
+- Consulte a página de [Aulas](aulas/index.qmd) para acessar slides, bases e materiais de apoio.
+- Atividades, entregas e avisos são publicados no [Moodle](https://virtual.ufmg.br/20262/course/view.php?id=12421).
+- Consulte também as [informações do projeto final](projeto.qmd).

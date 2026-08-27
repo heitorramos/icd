@@ -94,18 +94,6 @@ Escala, condicionamento, contexto, cor, transformações e comunicação.
 [Abrir a aula](06-boas-praticas-visualizacao.qmd){.btn .btn-primary}
 :::
 :::
-:::
-
-:::
-
-::: {.modulo-bloco .modulo-2}
-::: {.modulo-cabecalho}
-## Módulo 2 · Inferência Estatística
-
-Amostragem, estimadores, incerteza, testes e decisões estatísticas. Aulas 07–15 já disponíveis.
-:::
-
-::: {.grid .aulas-grid}
 ::: {.g-col-12 .g-col-md-6}
 ::: {.aula-card}
 ### Aula 07
@@ -117,6 +105,18 @@ Distribuições, média, mediana, quartis, dispersão e transformações.
 [Abrir a aula](07-tendencias-centrais.qmd){.btn .btn-primary}
 :::
 :::
+:::
+
+:::
+
+::: {.modulo-bloco .modulo-2}
+::: {.modulo-cabecalho}
+## Módulo 2 · Inferência Estatística
+
+Amostragem, estimadores, incerteza, testes e decisões estatísticas. Aulas 08–15 já disponíveis.
+:::
+
+::: {.grid .aulas-grid}
 ::: {.g-col-12 .g-col-md-6}
 ::: {.aula-card}
 ### Aula 08

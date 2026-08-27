@@ -6,6 +6,39 @@ $link-color: #0f6b78;
 
 /*-- scss:rules --*/
 
+/* Questões interativas: tipografia mais compacta para acomodar enunciados,
+   alternativas e explicações sem perder legibilidade. */
+.reveal section.quiz-question h2 {
+  font-size: 1.35em;
+  margin-bottom: 0.55em;
+}
+
+.reveal section.quiz-question > p {
+  font-size: 0.78em;
+  line-height: 1.28;
+  margin: 0.4em 0 0.55em;
+}
+
+.reveal section.quiz-question li {
+  margin-bottom: 0.28em;
+}
+
+.reveal section.quiz-question .option-button {
+  font-size: 0.72em;
+  line-height: 1.25;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0.3em;
+  padding: 0.42em 0.65em;
+  width: 92%;
+}
+
+.reveal section.quiz-question .action-buttons,
+.reveal section.quiz-question .feedback {
+  font-size: 0.7em;
+  margin-top: 0.55em;
+}
+
 .reveal .news-cycle-slide .columns .column:last-child {
   font-size: 0.78em;
 }
@@ -332,14 +365,21 @@ $link-color: #0f6b78;
 
 /* Rodapé: identificação da aula e retorno ao hotsite. */
 .reveal .footer {
+  display: block;
+}
+
+.reveal .footer p {
   align-items: center;
-  display: flex;
-  gap: 0.7rem;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  margin: 0;
+  width: 100%;
 }
 
 .reveal .lecture-footer-label {
   color: #536471;
+  grid-column: 2;
+  white-space: nowrap;
 }
 
 .reveal .lecture-footer-button {
@@ -350,9 +390,16 @@ $link-color: #0f6b78;
   display: inline-block;
   font-size: 0.82em;
   font-weight: 650;
+  flex-shrink: 0;
+  grid-column: 3;
+  justify-self: start;
   letter-spacing: 0.01em;
+  margin-left: 5rem;
   padding: 0.18em 0.7em;
+  position: static;
   text-decoration: none;
+  transform: none;
+  white-space: nowrap;
 }
 
 .reveal .lecture-footer-button:hover,
@@ -394,6 +441,14 @@ $link-color: #0f6b78;
   max-width: min(100%, 30rem) !important;
   width: auto !important;
   object-fit: contain;
+}
+
+.reveal section > img.r-stretch.aula07-figure-large {
+  height: 29rem !important;
+  max-height: 29rem !important;
+  max-width: 92% !important;
+  object-fit: contain;
+  width: 92% !important;
 }
 
 .reveal section > img.r-stretch.wide-chart {

@@ -73,10 +73,6 @@ orders["late"] = (orders["delay_days"] > 0).astype(int)
 orders[["delivery_days", "delay_days", "late"]].describe()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
-:::
-
 
 # 3. População didática
 
@@ -94,8 +90,8 @@ print(f"Desvio padrão: {sigma:.2f} dias")
 print(f"Taxa de atraso: {p_late:.2%}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. População didática), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+A distribuição amostral descreve como a estatística varia entre amostras. O TCL aproxima a média por uma Normal quando as condições são adequadas; aumentar n reduz o erro padrão, mas não corrige viés de seleção ou dependência.
 :::
 
 
@@ -130,8 +126,8 @@ for n in [10, 50, 200, 1000]:
     print(f"n={n:>4}: simulado={empirical:.3f} | teórico={theoretical:.3f}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (4. Distribuição amostral da média), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+As médias amostrais permanecem centradas perto da média populacional, enquanto sua dispersão diminui com $n$. A concordância entre simulação e $\sigma/\sqrt n$ mostra que o erro padrão descreve a variabilidade entre amostras, não a dispersão dos pedidos individuais.
 :::
 
 
@@ -149,8 +145,8 @@ plt.xlabel("Médias padronizadas")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Padronização), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+Depois de subtrair $\mu$ e dividir pelo erro padrão, a distribuição fica aproximadamente centrada em zero e com escala unitária. A comparação com a curva Normal avalia visualmente a aproximação fornecida pelo TCL.
 :::
 
 
@@ -169,8 +165,8 @@ print(f"Erro padrão: {se:.2f}")
 print(f"IC 95%: [{lower:.2f}, {upper:.2f}]")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. Um intervalo de confiança), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+O intervalo combina a estimativa observada com sua incerteza. Os 95% referem-se ao desempenho do procedimento em repetições: não significam que exista 95% de probabilidade de o parâmetro fixo estar neste intervalo já calculado.
 :::
 
 
@@ -188,6 +184,10 @@ coverage = np.mean([lower <= mu <= upper for lower, upper in intervals])
 print(f"Cobertura simulada: {coverage:.2%}")
 ```
 
+::: {.callout-note title="Interpretação"}
+A cobertura simulada deve ficar próxima do nível nominal. Aumentar o valor crítico eleva a cobertura, mas também produz intervalos mais largos; reduzir o valor crítico faz a troca oposta.
+:::
+
 
 Altere `z_star` para 1,645 e 2,576. Compare cobertura e largura média.
 
@@ -200,6 +200,10 @@ def required_n(sigma, margin, z_star=1.96):
 for margin in [2.0, 1.0, 0.5]:
     print(margin, required_n(sigma, margin))
 ```
+
+::: {.callout-note title="Interpretação"}
+Como $n$ depende do inverso do quadrado da margem, reduzir a margem de erro pela metade exige aproximadamente quatro vezes mais observações, mantidos o nível de confiança e a variabilidade.
+:::
 
 # 9. Testando a taxa de atraso
 
@@ -225,6 +229,10 @@ print(f"n={n}, atrasos={k}, p̂={p_hat:.4f}")
 print(f"z={z:.3f}, p-valor Normal={p_value_normal:.4f}")
 ```
 
+::: {.callout-note title="Interpretação"}
+A estatística $z$ mede quantos erros padrão separam a taxa observada dos 8% postulados por $H_0$. O valor-p é a probabilidade, sob essa hipótese, de observar uma taxa pelo menos tão alta quanto a encontrada.
+:::
+
 
 # 10. P-valor exato
 
@@ -232,10 +240,6 @@ print(f"z={z:.3f}, p-valor Normal={p_value_normal:.4f}")
 p_value_exact = binom.sf(k - 1, n=n, p=p0)
 print(f"p-valor Binomial exato: {p_value_exact:.4f}")
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (10. P-valor exato), o resultado deve ser lido como comparação com um mundo nulo construído por rearranjo dos rótulos; discuta se esse mundo nulo é plausível para o desenho do estudo. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
-:::
 
 
 # 11. P-valor por simulação
@@ -246,8 +250,8 @@ p_value_simulated = np.mean(null_proportions >= p_hat)
 print(f"p-valor simulado: {p_value_simulated:.4f}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (11. P-valor por simulação), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+Os valores-p Normal, binomial exato e simulado devem ser próximos quando a aproximação Normal é adequada e a simulação é grande. Diferenças pequenas decorrem da aproximação contínua e do erro de Monte Carlo; em amostras pequenas, prefira o cálculo exato.
 :::
 
 
@@ -265,8 +269,8 @@ for _ in range(10_000):
 print(f"Taxa simulada de erro tipo I: {np.mean(rejections):.3f}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (12. Erro tipo I), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Separe o comportamento da população do comportamento das estatísticas amostrais: a análise mostra como erro padrão, tamanho amostral e aproximação Normal sustentam a inferência.
+::: {.callout-note title="Interpretação"}
+Como os dados são gerados com $p=0{,}08$, toda rejeição é um falso positivo. A proporção simulada deve ficar próxima de $\alpha$, mostrando o significado operacional do nível de significância.
 :::
 
 
@@ -281,6 +285,10 @@ def simulated_power(true_p, n=1200, alpha=0.05, reps=5000):
 for true_p in [0.08, 0.085, 0.09, 0.10, 0.12]:
     print(true_p, simulated_power(true_p))
 ```
+
+::: {.callout-note title="Interpretação"}
+O poder cresce quando a taxa verdadeira se afasta de 8%, pois o sinal se torna maior em relação ao ruído amostral. Em 8%, a proporção de rejeições representa erro tipo I, não poder para uma diferença real.
+:::
 
 
 # 14. Investigue
@@ -306,9 +314,13 @@ A distribuição dos dados individuais não é a distribuição da média amostr
 
 $$\mathbb E[\bar X]=\mu,\qquad \operatorname{Var}(\bar X)=\frac{\sigma^2}{n},\qquad \operatorname{SE}(\bar X)=\frac{\sigma}{\sqrt n}.$$
 
+Aqui, $X_i$ é a observação aleatória da unidade $i$; $\bar X=n^{-1}\sum_{i=1}^nX_i$ é o estimador da média; $\mu=E[X_i]$ e $\sigma^2=\operatorname{Var}(X_i)$ são parâmetros populacionais; $n$ é o tamanho amostral. $\operatorname{SE}(\bar X)$ é o desvio padrão de $\bar X$ entre amostras repetidas, não o desvio padrão dos valores individuais.
+
 A Lei dos Grandes Números afirma que $\bar X_n$ converge para $\mu$. O Teorema Central do Limite descreve a distribuição do erro:
 
 $$\frac{\bar X_n-\mu}{\sigma/\sqrt n}\xrightarrow{d}N(0,1).$$
+
+O símbolo $\xrightarrow{d}$ indica convergência em distribuição e $N(0,1)$ denota a Normal padrão. A variável padronizada subtrai o centro $\mu$ e mede o erro na unidade natural de variabilidade de $\bar X$, que é $\sigma/\sqrt n$.
 
 LGN responde “para onde vai?”; TCL responde “como oscila?”. O TCL não afirma que os dados originais sejam Normais.
 
@@ -321,6 +333,8 @@ Independência ou dependência suficientemente fraca, amostra representativa e v
 Substituindo $\sigma$ por uma estimativa adequada, um intervalo aproximado tem a forma
 
 $$\widehat\theta\pm z^*\operatorname{SE}(\widehat\theta).$$
+
+$\theta$ é o parâmetro-alvo; $\widehat\theta$ é seu estimador; $\operatorname{SE}(\widehat\theta)$ mede a oscilação do estimador; e $z^*$ é o quantil da distribuição de referência determinado pelo nível de confiança. Para uma média com $\sigma$ desconhecido, substituímos o erro padrão por $s/\sqrt n$ e, em amostras pequenas sob condições adequadas, usamos um quantil da distribuição t.
 
 A interpretação frequentista é sobre o procedimento: em repetidas amostras, aproximadamente 95% dos intervalos de 95% cobririam o parâmetro. Depois de calculado, o intervalo específico cobre ou não cobre o parâmetro; não atribuímos 95% de probabilidade a um parâmetro fixo.
 

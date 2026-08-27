@@ -127,7 +127,7 @@ Ao final da disciplina, espera-se que estudantes consigam:
 ## Módulos do curso
 
 O conteúdo segue a organização modular da disciplina. O Módulo 2 já reúne as
-Aulas 07–15; o Módulo 3 terá seus novos materiais produzidos nas Aulas 16–26.
+Aulas 08–15; o Módulo 3 terá seus novos materiais produzidos nas Aulas 16–26.
 
 ::: {.course-path}
 ::: {.path-step}
@@ -137,14 +137,14 @@ Ciência de dados, perguntas, responsabilidade, correlações espúrias e causal
 
 ::: {.path-step}
 **Módulo 1 · Análise Exploratória**<br>
- Aulas 03–06: tabelas, tipos de dados, EDA, fundamentos de visualização,
- percepção e boas práticas. O módulo se encerra na Aula 06.
+ Aulas 03–07: tabelas, tipos de dados, EDA, visualização, tendências centrais
+ e dispersão. O módulo se encerra na Aula 07.
 :::
 
 ::: {.path-step}
 **Módulo 2 · Inferência Estatística**<br>
-Aulas 07–15: tendências centrais, estimadores, intervalos, testes, bootstrap,
-permutação, poder e múltiplos testes.
+Aulas 08–15: estimadores, intervalos, testes, bootstrap, permutação, poder e
+múltiplos testes.
 :::
 
 ::: {.path-step .mock-card}
@@ -156,30 +156,9 @@ classificação e aos métodos não supervisionados.
 
 ## Cronograma
 
-As datas abaixo são provisórias. Os títulos e materiais já disponíveis levam à
-página de cada aula.
+Consulte a sequência das aulas, a divisão por módulos e os links para os materiais publicados.
 
-| Aula | Data | Conteúdo | Material |
-|---:|:---:|---|---|
-| **Módulo 0** |  | **Motivação** |  |
-| 01 | **[SUBSTITUIR]** | Introdução à ciência de dados | [Acessar](aulas/01-introducao.qmd) |
-| 02 | **[SUBSTITUIR]** | Causalidade e experimentos | [Acessar](aulas/02-causalidade.qmd) |
-| **Módulo 1** |  | **Análise Exploratória** |  |
-| 03 | **[SUBSTITUIR]** | Tabelas e tipos de dados | [Acessar](aulas/03-tabelas-tipos.qmd) |
-| 04 | **[SUBSTITUIR]** | Análise exploratória de dados | [Acessar](aulas/04-eda.qmd) |
-| 05 | **[SUBSTITUIR]** | Fundamentos de visualização e percepção | [Acessar](aulas/05-fundamentos-visualizacao.qmd) |
-| 06 | **[SUBSTITUIR]** | Visualização: boas práticas | [Acessar](aulas/06-boas-praticas-visualizacao.qmd) |
-| **Módulo 2** |  | **Inferência Estatística** |  |
-| 07 | **[SUBSTITUIR]** | Tendências centrais e dispersão | [Acessar](aulas/07-tendencias-centrais.qmd) |
-| 08 | **[SUBSTITUIR]** | Estimadores | [Acessar](aulas/08-estimadores.qmd) |
-| 09 | **[SUBSTITUIR]** | Escolha de estimadores e funções de perda | [Acessar](aulas/09-risco-estimadores.qmd) |
-| 10 | **[SUBSTITUIR]** | Teorema Central do Limite e intervalos | [Acessar](aulas/10-tcl-intervalos.qmd) |
-| 11 | **[SUBSTITUIR]** | Testes de hipóteses | [Acessar](aulas/11-testes-hipoteses.qmd) |
-| 12 | **[SUBSTITUIR]** | Bootstrap | [Acessar](aulas/12-bootstrap.qmd) |
-| 13 | **[SUBSTITUIR]** | Testes de permutação | [Acessar](aulas/13-testes-permutacao.qmd) |
-| 14 | **[SUBSTITUIR]** | Permutação: extensões e validade | [Acessar](aulas/14-permutacao-avancada.qmd) |
-| 15 | **[SUBSTITUIR]** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
-| **Módulo 3** |  | **Aulas 16–26: correlação, regressão e ML** | Em preparação |
+[Abrir cronograma completo](cronograma.qmd){.btn .btn-primary}
 
 ## Dinâmica das aulas
 
@@ -222,82 +201,13 @@ e responda às questões propostas.
 | Projeto final (TP) | 30 |
 | **Total** | **100** |
 
-As datas, a política de recuperação e as regras de entrega serão publicadas no
-Moodle e no cronograma da disciplina.
+As datas, a política de recuperação e as regras de entrega serão publicadas no Moodle e no cronograma da disciplina.
 
-### Etapas do projeto final
+### Projeto final
 
-| Etapa | Entrega | Valor |
-|---:|---|---:|
-| 01 | Definição da equipe e do tema | 0 ponto |
-| 02 | Entrevista parcial 01 | 3 pontos |
-| 03 | Entrevista parcial 02 | 3 pontos |
-| 04 | Entrevista parcial 03 | 4 pontos |
-| 05 | Vídeo e notebook final | 20 pontos |
-|  | **Total do projeto** | **30 pontos** |
+O projeto vale 30 pontos e desenvolve uma investigação completa de ciência de dados, acompanhada em etapas ao longo do semestre.
 
-### Proposta do projeto
-
-O projeto aplica as técnicas da disciplina a uma base de dados de interesse da
-equipe. O objetivo é desenvolver uma **investigação completa de ciência de
-dados**, indo além de cálculos isolados: formular uma pergunta relevante,
-compreender como os dados foram produzidos, explorá-los, quantificar incertezas
-e sustentar as conclusões com evidências.
-
-A equipe pode trabalhar com uma das bases sugeridas abaixo ou com dados de
-iniciação científica, estágio ou trabalho, desde que seu uso seja autorizado e
-compatível com as exigências éticas e legais aplicáveis. Os grupos podem ter
-**até quatro integrantes**; equipes maiores devem entregar uma análise
-proporcionalmente mais ampla.
-
-### Desenvolvimento e acompanhamento
-
-Na definição do tema, a equipe deve apresentar:
-
-1. a base de dados e sua proveniência;
-2. as perguntas de ciência de dados que serão investigadas;
-3. uma primeira compreensão da unidade observacional, das principais variáveis
-   e das limitações da base.
-
-Depois dessa definição, o projeto será acompanhado em **três entrevistas
-parciais** com a monitoria. Os encontros servem para discutir dúvidas, revisar o
-andamento e ajustar o escopo antes da entrega final. As datas e o procedimento
-de agendamento serão divulgados no Moodle.
-
-### Conteúdo mínimo da análise
-
-O trabalho final deve incluir:
-
-- caracterização inicial e análise exploratória dos dados;
-- pelo menos dois testes de hipóteses e/ou intervalos de confiança;
-- pelo menos uma análise de regressão e/ou classificação;
-- interpretação dos resultados, limitações e conclusões relacionadas às
-  perguntas propostas.
-
-O notebook deve estar organizado como um relatório reproduzível, com as seções:
-
-1. introdução, motivação e perguntas de pesquisa;
-2. metodologia, incluindo descrição da base e justificativa dos métodos;
-3. resultados, começando pela caracterização exploratória;
-4. inferência e modelagem;
-5. conclusões e limitações.
-
-### Bases sugeridas
-
-Estes catálogos são bons pontos de partida para encontrar dados documentados e
-adequados ao projeto:
-
-- [Kaggle Datasets](https://www.kaggle.com/datasets) — bases de temas variados;
-- [OpenDataSUS](https://opendatasus.saude.gov.br/) — dados abertos do Sistema
-  Único de Saúde;
-- [DATASUS — transferência de arquivos](https://datasus.saude.gov.br/transferencia-de-arquivos/)
-  — arquivos dos sistemas de informação em saúde;
-- [Portal Brasileiro de Dados Abertos](https://dados.gov.br/home) — catálogo de
-  bases publicadas por órgãos do Governo Federal.
-
-Antes de escolher, verifique licença, documentação, unidade observacional,
-qualidade das variáveis e se a base permite responder a perguntas que envolvam
-exploração, inferência e modelagem.
+[Consultar etapas e orientações do projeto](projeto.qmd){.btn .btn-primary}
 
 ## Material de apoio e ferramentas
 

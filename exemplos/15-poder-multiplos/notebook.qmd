@@ -36,8 +36,8 @@ df = pd.read_csv(csv_path)
 df.head()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (1. Download da base), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+Antes de interpretar resultados, confirme o que cada linha representa, o período coberto e as colunas realmente disponíveis. Essa definição determina quais agregações e comparações são válidas.
 :::
 
 
@@ -60,10 +60,6 @@ df.groupby("version").agg(
 )
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. O que é a base?), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 # 3. Análise descritiva
 
@@ -76,10 +72,6 @@ axes[1].set_title("Retenção observada")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Análise descritiva), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 ![](../../slides/assets/aula15-poder-multiplos/retencao-observada.png){fig-alt="Retenção observada em 1 e 7 dias nos dois grupos."}
 
@@ -87,8 +79,8 @@ Nesta análise (3. Análise descritiva), a figura deve ser lida antes do resumo 
 df["sum_gamerounds"].describe(percentiles=[.50, .90, .95, .99, .999])
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Análise descritiva), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+Poder depende do efeito, variabilidade, tamanho amostral e nível de significância. Ao testar várias hipóteses, defina previamente a família e escolha FWER ou FDR conforme o custo dos falsos positivos.
 :::
 
 
@@ -111,8 +103,8 @@ observed = y30.mean() - y40.mean()
 print(f"Diferença observada: {observed:.4%}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (4. Métrica primária e efeito), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+$\widehat\Delta$ mede a diferença de retenção em pontos percentuais entre as versões. Seu sinal indica a direção observada, mas seu tamanho ainda precisa ser comparado à incerteza amostral e à relevância prática.
 :::
 
 
@@ -138,10 +130,6 @@ null_small = np.array([
 ])
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. $H_0$ por permutação), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 Para uma resposta binária, o número de sucessos que cai no primeiro grupo segue
 uma distribuição hipergeométrica quando condicionamos o total de sucessos.
@@ -156,6 +144,10 @@ p_perm = (1 + np.sum(np.abs(null_perm) >= abs(observed))) / (B+1)
 print(f"p-valor por permutação: {p_perm:.5f}")
 ```
 
+::: {.callout-note title="Interpretação"}
+A permutação constrói $H_0$ ao tornar os rótulos trocáveis e manter fixos os resultados observados. O valor-p mede quão rara seria uma diferença pelo menos tão extrema se a posição do portão não alterasse a retenção.
+:::
+
 # 6. $H_A$ por bootstrap
 
 O bootstrap usual reamostra separadamente em cada grupo. Ele preserva o efeito
@@ -169,8 +161,8 @@ ci = np.quantile(boot_alt, [.025, .975])
 print(f"IC bootstrap 95%: [{ci[0]:.4%}, {ci[1]:.4%}]")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. $H_A$ por bootstrap), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+O bootstrap usual preserva as taxas distintas dos grupos, por isso sua distribuição fica centrada perto de $\widehat\Delta$ e representa uma alternativa compatível com os dados. O intervalo expressa a precisão do efeito estimado.
 :::
 
 
@@ -203,8 +195,8 @@ p_boot_null = (1 + np.sum(np.abs(null_boot) >= abs(observed))) / (B+1)
 print(f"p-valor bootstrap sob H0: {p_boot_null:.5f}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (7. $H_0$ também pode ser feita por bootstrap), interprete a distribuição reamostrada como uma aproximação da incerteza do estimador, não como novas observações reais da população. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+Após impor a mesma taxa aos dois grupos, o bootstrap também representa $H_0$ e fica centrado em zero. Essa recentralização é essencial: sem ela, estaríamos simulando em torno do efeito observado, isto é, de uma alternativa.
 :::
 
 
@@ -223,15 +215,15 @@ for ax, values, title in zip(
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (8. Compare os três mundos), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 Explique por que as duas primeiras distribuições são centradas em zero e a
 terceira é centrada em $\widehat\Delta$.
 
 ![](../../slides/assets/aula15-poder-multiplos/tres-distribuicoes.png){fig-alt="Comparação entre permutação sob H0, bootstrap recentralizado sob H0 e bootstrap sob HA."}
+
+::: {.callout-note title="Interpretação"}
+Permutação e bootstrap recentralizado respondem como a estatística varia sob ausência de efeito. O bootstrap usual responde quais efeitos são plausíveis ao redor da estimativa; por isso é mais natural para construir $H_A$ e intervalos.
+:::
 
 # 9. Poder sob uma alternativa específica
 
@@ -263,12 +255,12 @@ plt.ylabel("Poder")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (9. Poder sob uma alternativa específica), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 ![](../../slides/assets/aula15-poder-multiplos/poder-efeito-amostra.png){fig-alt="Poder em função do tamanho amostral e do efeito verdadeiro."}
+
+::: {.callout-note title="Interpretação"}
+O poder aumenta tanto com $n$ quanto com o efeito verdadeiro. Efeitos pequenos exigem amostras muito maiores para alcançar 80%, portanto “o estudo tem poder” só faz sentido depois de especificar qual alternativa importa.
+:::
 
 # 10. Muitos testes sob uma nula global
 
@@ -279,8 +271,8 @@ print("Valores-p abaixo de 0,05:", (p_values_null < .05).sum())
 print("FWER teórica:", 1-(1-.05)**m)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (10. Muitos testes sob uma nula global), a leitura deve considerar o conjunto de testes, não apenas um p-valor isolado: muitas comparações aumentam a chance de descobertas falsas. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
+::: {.callout-note title="Interpretação"}
+Mesmo com todas as hipóteses nulas verdadeiras, cerca de 5 dos 100 valores-p ficam abaixo de 0,05 em média, e a chance de ao menos um falso positivo é muito alta. É esse risco familiar que Bonferroni e Holm controlam; BH controla outra quantidade, a proporção falsa entre descobertas.
 :::
 
 
@@ -378,10 +370,6 @@ for label, method in [
 comparacao.round(4)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (11. Bonferroni, Holm e BH), a leitura deve considerar o conjunto de testes, não apenas um p-valor isolado: muitas comparações aumentam a chance de descobertas falsas. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
-
 
 Neste exemplo, Bonferroni rejeita apenas $p=0{,}003$; Holm rejeita $0{,}003$ e $0{,}011$; BH rejeita também $0{,}018$. O aumento no número de rejeições não significa que BH seja “melhor”: ele aceita uma meta de erro diferente.
 
@@ -417,10 +405,6 @@ result["p_bonferroni"] = multipletests(result.p, method="bonferroni")[1]
 result["p_bh"] = multipletests(result.p, method="fdr_bh")[1]
 result
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (12. As três métricas de Cookie Cats), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Relacione o gráfico às decisões do experimento: poder, tamanho amostral, efeito mínimo detectável e correções para múltiplos testes mudam o custo de falso positivo e falso negativo.
-:::
 
 
 # 13. Exercícios

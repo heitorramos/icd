@@ -48,10 +48,6 @@ DATA = next(path for path in [
 ] if path.exists())
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (1. Preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 # 2. Leitura e unidade observacional
 
@@ -67,8 +63,8 @@ registra diretamente reservas, hóspedes ou faturamento realizado.
 airbnb.shape
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. Leitura e unidade observacional), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
+::: {.callout-note title="Interpretação"}
+Antes de interpretar resultados, confirme o que cada linha representa, o período coberto e as colunas realmente disponíveis. Essa definição determina quais agregações e comparações são válidas.
 :::
 
 
@@ -99,10 +95,6 @@ airbnb.columns.tolist()
 airbnb.info()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Diagnóstico inicial), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 Observe que `last_review` chegou como `object`. O pandas conhece a representação
 inicial, mas não conhece automaticamente todo o significado da variável.
@@ -115,10 +107,6 @@ diagnostico = pd.DataFrame({
 })
 diagnostico
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Diagnóstico inicial), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ## Pergunta de estudo 1
@@ -162,10 +150,6 @@ missing = airbnb.isna().sum().sort_values(ascending=False)
 missing[missing > 0]
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Valores ausentes), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 fig, ax = plt.subplots(figsize=(8, 4))
@@ -173,10 +157,6 @@ missing[missing > 0].sort_values().plot.barh(ax=ax, color="#0f6b78")
 ax.set(title="Valores ausentes por coluna", xlabel="ausentes", ylabel="")
 plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Valores ausentes), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 `last_review` e `reviews_per_month` faltam nas mesmas 10.052 linhas. Vamos
@@ -189,10 +169,6 @@ mesmo_padrao = airbnb["last_review"].isna().equals(
 mesmo_padrao
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Valores ausentes), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 pd.crosstab(
@@ -203,13 +179,9 @@ pd.crosstab(
 )
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Valores ausentes), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
+::: {.callout-note title="Interpretação"}
+As ausências de `last_review` e `reviews_per_month` coincidem com anúncios sem avaliações, indicando um padrão estrutural: sem avaliação, não existem data da última avaliação nem média mensal. Ausência não equivale a zero; preencher a data ou a taxa com zero mudaria o significado dos dados.
 :::
-
-
-**Interpretação:** a ausência parece estrutural. Sem avaliações, não existe
-uma “última avaliação”. Preencher a data com zero seria conceitualmente errado.
 
 # 6. Identificadores e duplicatas
 
@@ -236,10 +208,6 @@ validacoes = pd.Series({
 validacoes
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (7. Regras de validade), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 airbnb.loc[airbnb["price"].eq(0), [
@@ -256,8 +224,8 @@ airbnb["price_extreme"] = airbnb["price"].gt(1000)
 airbnb[["price_valid", "price_extreme"]].mean()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (7. Regras de validade), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
+::: {.callout-note title="Interpretação"}
+Todo filtro redefine a população analisada. Registre a condição, conte quantas linhas permanecem e explicite o denominador antes de interpretar proporções ou médias.
 :::
 
 
@@ -266,10 +234,6 @@ Nesta análise (7. Regras de validade), compare centro e dispersão em conjunto:
 ```{python}
 airbnb["price"].describe(percentiles=[.5, .9, .95, .99])
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (8. Distribuição do preço), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ```{python}
@@ -285,10 +249,6 @@ axes[1].set(title="Zoom entre US$ 1 e 500", xlabel="US$ por noite")
 plt.tight_layout()
 plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (8. Distribuição do preço), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 O zoom deve ser declarado: ele melhora a leitura da região densa, mas não pode
@@ -323,10 +283,6 @@ recorte = airbnb.query(
 recorte.shape
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Filtros legíveis), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 Usamos `.copy()` porque criaremos novas colunas no recorte.
 
@@ -348,18 +304,10 @@ a fonte e a data da taxa de câmbio.
 airbnb["neighbourhood_group"].value_counts()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (11. Categorias e contagens), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 airbnb["room_type"].value_counts(normalize=True).mul(100).round(1)
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (11. Categorias e contagens), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ```{python}
@@ -376,20 +324,12 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (11. Categorias e contagens), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 # 12. Groupby: dividir, aplicar e combinar
 
 ```{python}
 airbnb.groupby("room_type", observed=True)["price"].median()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (12. Groupby: dividir, aplicar e combinar), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ```{python}
@@ -408,10 +348,6 @@ resumo_tipo = (
 resumo_tipo
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (12. Groupby: dividir, aplicar e combinar), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 Observe como média e mediana diferem. Os valores extremos puxam a média para
 cima.
@@ -429,10 +365,6 @@ medianas = (
 medianas
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Duas categorias), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 ax = medianas.plot.bar(figsize=(10, 5), color=["#0f6b78", "#d95f02", "#16826c"])
@@ -443,8 +375,8 @@ plt.tight_layout()
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Duas categorias), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
+::: {.callout-note title="Interpretação"}
+Compare grupos usando a mesma definição de métrica e mostre também seus tamanhos. Diferenças aparentes podem refletir composição, cobertura ou poucos casos, e não apenas o fator usado no agrupamento.
 :::
 
 
@@ -470,10 +402,6 @@ resultado = (
 )
 resultado.head(10)
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (13. Encadeamento documentado), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 Cada etapa corresponde a uma decisão: filtrar preços, criar indicadores,
@@ -524,10 +452,6 @@ checks[["valid_minimum_nights", "valid_reviews_per_month",
         "valid_availability"]].mean()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (15. Respostas sugeridas), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 resposta_c = (
@@ -543,10 +467,6 @@ resposta_c = (
 )
 resposta_c
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (15. Respostas sugeridas), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 # 16. Checklist final
@@ -630,10 +550,6 @@ row_percent = pd.crosstab(
 row_percent
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (18. Tabelas cruzadas e proporções condicionais), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 ax = row_percent.plot.bar(
@@ -648,10 +564,6 @@ plt.xticks(rotation=0)
 plt.tight_layout()
 plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (18. Tabelas cruzadas e proporções condicionais), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ## Cuidado com o denominador
@@ -675,10 +587,6 @@ grouped = (
 )
 grouped.head(8)
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (19. Índices hierárquicos e reshape), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 `unstack` move um nível do índice para as colunas.
@@ -708,8 +616,8 @@ long = wide.reset_index().melt(
 long.head()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Formato largo e formato longo), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
+::: {.callout-note title="Interpretação"}
+O formato longo facilita operações por grupo e gráficos com uma variável de categoria; o formato largo favorece comparações tabulares. A transformação muda a organização, não a informação substantiva.
 :::
 
 
@@ -728,10 +636,6 @@ Use `&` e parênteses:
 ```{python}
 airbnb[(airbnb["price"] > 0) & (airbnb["price"] <= 500)].shape
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Erro 1 — usar `and` em Series), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ## Erro 2 — selecionar Series quando esperava DataFrame
@@ -764,10 +668,6 @@ pd.Series({
 })
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Erro 4 — converter datas silenciosamente), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 # 21. Miniestudo guiado
 
@@ -796,10 +696,6 @@ study = (
 study.shape
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Plano), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
-
 
 ```{python}
 study_summary = (
@@ -816,10 +712,6 @@ study_summary = (
 )
 study_summary.head(10)
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Plano), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ```{python}
@@ -839,10 +731,6 @@ plt.xticks(rotation=0)
 plt.tight_layout()
 plt.show()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (Plano), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Ao discutir essa saída, conecte sempre o número calculado à unidade observacional da tabela: aqui, linhas, colunas e tipos de variáveis definem quais perguntas podem ser respondidas sem mudar a granularidade.
-:::
 
 
 ## Interpretação responsável

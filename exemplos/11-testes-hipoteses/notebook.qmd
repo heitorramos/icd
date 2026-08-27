@@ -49,20 +49,12 @@ orders["delay_days"] = (
 orders["late"] = (orders["delay_days"] > 0).astype(int)
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. Download e preparação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
-:::
-
 
 # 3. Descrição rápida
 
 ```{python}
 orders[["delay_days", "late"]].describe()
 ```
-
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Descrição rápida), esta etapa é uma auditoria inicial: ela não responde ainda à pergunta principal, mas revela tamanho, cobertura, ausências e limitações que condicionam todas as análises seguintes. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
-:::
 
 
 ```{python}
@@ -73,8 +65,8 @@ plt.xlabel("Dias após a data prevista")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Descrição rápida), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+::: {.callout-note title="Interpretação"}
+Interprete o resultado sob H0: o valor-p mede quão extremo seria o observado no modelo nulo. Ele não é a probabilidade de H0 e deve ser lido junto com efeito, incerteza e regra de decisão.
 :::
 
 
@@ -97,8 +89,8 @@ p_hat = sample.mean()
 print(f"n={n}; atrasados={k}; taxa={p_hat:.2%}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (4. População didática e amostra), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+::: {.callout-note title="Interpretação"}
+A taxa amostral é a evidência observada que será comparada aos 8% de $H_0$. Uma nova amostra produziria outro valor; o teste precisa quantificar se a diferença atual é grande em relação à variabilidade esperada.
 :::
 
 
@@ -127,8 +119,8 @@ plt.legend()
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. Distribuição nula por simulação), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+::: {.callout-note title="Interpretação"}
+A distribuição nula mostra as taxas que surgiriam apenas por flutuação amostral se $p=8\%$. A posição da linha observada nessa distribuição determina quão incompatíveis são os dados com $H_0$.
 :::
 
 
@@ -145,13 +137,13 @@ pd.Series({"simulação": p_sim, "Binomial exata": p_exact,
            "aproximação Normal": p_normal})
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (7. Três p-valores), a discussão deve conectar a aproximação usada às condições da amostra: tamanho, independência, variabilidade e forma da distribuição afetam a confiabilidade da inferência. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
-:::
-
 
 Explique por que os resultados são próximos e em quais amostras a aproximação
 Normal poderia falhar.
+
+::: {.callout-note title="Interpretação"}
+O cálculo exato usa a distribuição binomial; a simulação a reproduz com erro de Monte Carlo; e a Normal é uma aproximação. A concordância é esperada quando $np_0$ e $n(1-p_0)$ não são pequenos, mas pode falhar com amostras pequenas ou probabilidades próximas de zero ou um.
+:::
 
 # 8. Regra de decisão
 
@@ -176,6 +168,10 @@ def rejection_rate(true_p, n=1200, reps=10000, alpha=.05):
 print("Erro tipo I sob p=8%:", rejection_rate(.08))
 ```
 
+::: {.callout-note title="Interpretação"}
+Sob $H_0$, qualquer rejeição é um erro tipo I. A taxa simulada próxima de 5% confirma que $\alpha$ limita a frequência de falsos positivos no longo prazo, e não a probabilidade de esta decisão específica estar errada.
+:::
+
 
 # 10. Poder
 
@@ -189,8 +185,53 @@ plt.ylabel("Poder")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (10. Poder), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. Leia o resultado sob a hipótese nula: a evidência depende da estatística escolhida, da cauda considerada e do erro que estamos dispostos a controlar.
+::: {.callout-note title="Interpretação"}
+O poder é baixo para alternativas muito próximas de 8% e cresce com o tamanho do efeito. A linha de 80% é uma referência de planejamento, não uma garantia de detectar toda diferença relevante.
+:::
+
+## Visualizando poder sob $H_0$ e $H_1$
+
+Fixemos um teste unilateral com $H_0:p=0{,}08$, uma alternativa específica $p_1=0{,}10$ e $\alpha=0{,}05$. O limiar crítico aproximado para cada tamanho amostral é
+
+$$c_n=p_0+z_{1-\alpha}\sqrt{\frac{p_0(1-p_0)}{n}},$$
+
+em que $c_n$ é a menor proporção que leva à rejeição, $p_0$ é a taxa nula, $z_{1-\alpha}$ é o quantil da Normal padrão e $n$ é o tamanho da amostra. Sob a alternativa, o poder aproximado é
+
+$$\pi(p_1;n)=P_{p_1}(\widehat p\geq c_n).$$
+
+$P_{p_1}$ indica que a probabilidade é calculada quando a taxa verdadeira é $p_1$; geometricamente, ela corresponde à área da distribuição alternativa à direita do limiar.
+
+```{python}
+#| eval: false
+p0, p1, alpha = .08, .10, .05
+z_critical = norm.ppf(1 - alpha)
+fig, axes = plt.subplots(1, 2, figsize=(13.2, 5.3), sharex=True)
+common_x = np.linspace(.02, .16, 800)
+
+for ax, n_current in zip(axes, [300, 1200]):
+    se0_current = np.sqrt(p0 * (1-p0) / n_current)
+    se1_current = np.sqrt(p1 * (1-p1) / n_current)
+    critical = p0 + z_critical * se0_current
+    x = common_x
+    y0 = norm.pdf(x, p0, se0_current)
+    y1 = norm.pdf(x, p1, se1_current)
+    power_current = norm.sf(critical, p1, se1_current)
+    ax.plot(100*x, y0, label=r"Sob $H_0$: $p=8\%$")
+    ax.plot(100*x, y1, label=r"Sob $H_1$: $p=10\%$")
+    mask = x >= critical
+    ax.fill_between(100*x[mask], 0, y1[mask], alpha=.5, hatch="///",
+                    label=f"Poder = {power_current:.0%}")
+    ax.axvline(100*critical, linestyle="--", label="limiar crítico")
+    ax.set_title(f"n = {n_current}")
+    ax.set_xlim(2, 16)
+    ax.legend()
+plt.show()
+```
+
+![](../../slides/assets/aula10-tcl-inferencia/poder-duas-distribuicoes.png){fig-alt="Distribuições da proporção amostral sob H0 e H1 para duas amostras, com a área de poder hachurada."}
+
+::: {.callout-note title="Interpretação"}
+Com 300 pedidos, as distribuições sob 8% e 10% se sobrepõem bastante e apenas 37% da distribuição alternativa ultrapassa o limiar. Com 1.200 pedidos, ambas ficam mais estreitas, a sobreposição diminui e o poder sobe para aproximadamente 79%. O efeito verdadeiro não mudou; aumentou apenas a capacidade de distingui-lo da flutuação amostral.
 :::
 
 
@@ -224,9 +265,19 @@ Um teste começa antes dos cálculos: defina estimando, hipótese nula $H_0$, al
 
 O valor-p não é $P(H_0\mid\text{dados})$, não mede o tamanho do efeito e não é a probabilidade de o resultado ter ocorrido por acaso.
 
+Formalmente, seja $T=T(X_1,\ldots,X_n)$ uma estatística cuja direção de extremidade foi definida antes da análise. Em um teste unilateral à direita,
+
+$$p(X)=P_{H_0}\{T(X^{rep})\geq T(X^{obs})\},$$
+
+em que $X^{obs}$ são os dados observados, $X^{rep}$ representa uma nova amostra gerada pelo modelo nulo e $P_{H_0}$ indica que a probabilidade é calculada assumindo $H_0$. No teste bilateral, a região extrema deve incluir desvios relevantes nas duas direções, frequentemente por meio de $|T|$ quando a distribuição nula é centrada em zero.
+
+Uma região crítica $\mathcal R_\alpha$ é escolhida para satisfazer $P_{H_0}(T\in\mathcal R_\alpha)\leq\alpha$. A regra é rejeitar $H_0$ quando $T_{obs}\in\mathcal R_\alpha$, de modo que $\alpha$ limita a probabilidade de rejeição quando a nula é verdadeira.
+
 ## Decisão e erros
 
 O nível $\alpha$ controla a probabilidade de erro tipo I sob as condições do teste. Erro tipo II é não rejeitar $H_0$ quando uma alternativa relevante é verdadeira. Poder é $1-\beta$: a chance de detectar essa alternativa específica.
+
+Para um valor alternativo $\theta_1$, $\beta(\theta_1)=P_{\theta_1}(T\notin\mathcal R_\alpha)$ e $\pi(\theta_1)=1-\beta(\theta_1)$ é a função poder. Portanto, poder não é um único atributo do teste: ele varia com o efeito verdadeiro $\theta_1$.
 
 Reduzir $\alpha$ diminui falsos positivos, mas pode reduzir poder. Poder cresce com tamanho do efeito, tamanho amostral, menor variabilidade e, mantendo o restante, um limiar menos rigoroso.
 

@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 08 — Estimadores</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 08 — Estimadores</span><a class="lecture-footer-button" href="../aulas/08-estimadores.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -81,6 +81,10 @@ Dos 344 registros, 342 têm massa corporal observada. Esses 342 formam nossa pop
 
 ![](assets/aula08-estimadores/populacao-massa.png){fig-alt="Histograma da massa corporal dos pinguins, empilhado por espécie, com a média da população marcada em 4202 gramas."}
 
+::: {.callout-note}
+Nesta aula, os registros completos serão nossa **população conhecida**. Assim podemos verificar se as estimativas funcionam.
+:::
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -97,10 +101,6 @@ finish("populacao-massa.png")
 ```
 
 </details>
-
-::: {.callout-note}
-Nesta aula, os registros completos serão nossa **população conhecida**. Assim podemos verificar se as estimativas funcionam.
-:::
 
 ## População finita ou processo gerador?
 
@@ -158,6 +158,8 @@ Aqui: pinguins selecionados para medição.
 
 ![](assets/aula08-estimadores/uma-amostra.png){fig-alt="Pontos de massa corporal da população, com uma amostra de 20 pinguins destacada e linhas para a média populacional e a média amostral."}
 
+Uma amostra aleatória com $n=20$ produziu $\bar{x}=4.171$ g, enquanto $\mu=4.202$ g.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -189,8 +191,6 @@ means_80 = sample_means(masses, 80)
 ```
 
 </details>
-
-Uma amostra aleatória com $n=20$ produziu $\bar{x}=4.171$ g, enquanto $\mu=4.202$ g.
 
 ## Três objetos diferentes
 
@@ -297,6 +297,8 @@ $$
 
 ![](assets/aula08-estimadores/proporcao-gentoo.png){fig-alt="Histograma das proporções de pinguins Gentoo em cinco mil amostras de tamanho 40, centrado na proporção populacional."}
 
+Com $n=40$, os valores possíveis avançam em passos de $1/40=0{,}025$.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -317,8 +319,6 @@ finish("proporcao-gentoo.png")
 ```
 
 </details>
-
-Com $n=40$, os valores possíveis avançam em passos de $1/40=0{,}025$.
 
 ## Da Bernoulli à Binomial
 
@@ -352,6 +352,8 @@ Para estudar um estimador, precisamos imaginar muitas amostras possíveis.
 
 ![](assets/aula08-estimadores/distribuicao-amostral.png){fig-alt="À esquerda, dez amostras e suas médias; à direita, histograma de quatro mil médias amostrais."}
 
+Não é a distribuição dos dados. É a distribuição de uma **estatística** entre amostras repetidas.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -374,8 +376,6 @@ finish("distribuicao-amostral.png")
 ```
 
 </details>
-
-Não é a distribuição dos dados. É a distribuição de uma **estatística** entre amostras repetidas.
 
 ## Teoria e simulação se complementam
 
@@ -464,6 +464,8 @@ $$
 
 ![](assets/aula08-estimadores/amostragem-enviesada.png){fig-alt="Distribuições das médias de amostras aleatórias de toda a população e de amostras apenas de pinguins Gentoo, mostrando forte deslocamento."}
 
+Selecionar apenas pinguins Gentoo desloca toda a distribuição das estimativas.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -482,8 +484,6 @@ finish("amostragem-enviesada.png")
 ```
 
 </details>
-
-Selecionar apenas pinguins Gentoo desloca toda a distribuição das estimativas.
 
 ## Viés de seleção não é viés algébrico
 
@@ -521,6 +521,8 @@ Menor variância significa estimativas mais estáveis entre amostras.
 
 ![](assets/aula08-estimadores/tamanho-amostra.png){fig-alt="Curvas de densidade das médias amostrais para amostras de tamanho 10, 30 e 80, cada vez mais concentradas em torno da média populacional."}
 
+Todas se concentram em torno de $\mu$, mas amostras maiores oscilam menos.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -538,8 +540,6 @@ finish("tamanho-amostra.png")
 ```
 
 </details>
-
-Todas se concentram em torno de $\mu$, mas amostras maiores oscilam menos.
 
 ## Variância da média amostral
 
@@ -570,6 +570,8 @@ Para reduzir o erro padrão pela metade, precisamos multiplicar $n$ por quatro.
 
 ![](assets/aula08-estimadores/erro-padrao.png){fig-alt="Linhas quase coincidentes comparando o erro padrão simulado e a fórmula sigma sobre raiz de n para diferentes tamanhos de amostra."}
 
+O padrão empírico acompanha $\sigma/\sqrt{n}$.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -589,8 +591,6 @@ finish("erro-padrao.png")
 
 </details>
 
-O padrão empírico acompanha $\sigma/\sqrt{n}$.
-
 ## Lei dos Grandes Números
 
 Quando $n$ cresce, a média amostral converge para a média da população:
@@ -606,6 +606,8 @@ Mais dados reduzem a variabilidade aleatória — se o mecanismo de amostragem f
 ## A convergência não é monotônica
 
 ![](assets/aula08-estimadores/convergencia-media.png){fig-alt="Média acumulada da massa corporal ao longo de 2500 observações, oscilando e depois se estabilizando perto da média populacional."}
+
+A média pode se afastar temporariamente de $\mu$, mas suas oscilações tendem a diminuir.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -625,8 +627,6 @@ finish("convergencia-media.png")
 ```
 
 </details>
-
-A média pode se afastar temporariamente de $\mu$, mas suas oscilações tendem a diminuir.
 
 ## Mais dados não curam seleção ruim
 
@@ -662,6 +662,8 @@ O formato da população não precisa ser Normal.
 
 ![](assets/aula08-estimadores/tcl-assimetria.png){fig-alt="Uma população fortemente assimétrica à direita e uma distribuição aproximadamente normal de médias de amostras de tamanho 30."}
 
+O TCL descreve a distribuição das **médias**, não transforma os dados originais.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -683,8 +685,6 @@ finish("tcl-assimetria.png")
 ```
 
 </details>
-
-O TCL descreve a distribuição das **médias**, não transforma os dados originais.
 
 ## O que aprendemos
 

@@ -53,9 +53,9 @@ Fonte: [TMDB 5000 no Kaggle](https://www.kaggle.com/datasets/tmdb/tmdb-movie-met
 
 Ao final da aula, você deverá conseguir escolher escalas honestas, ordenar categorias, usar transformações logarítmicas, selecionar paletas coerentes, destacar uma mensagem, acrescentar contexto e criticar um gráfico a partir da tarefa perceptiva — não apenas de sua aparência.
 
-## Fechamento do módulo
+## Continuidade do módulo
 
-Esta aula encerra o **Módulo 1 — Análise Exploratória**, formado pelas aulas 03–06: tabelas e tipos de dados, EDA, fundamentos de visualização e boas práticas de comunicação visual.
+Esta aula conclui o bloco de visualização do **Módulo 1 — Análise Exploratória**. Na Aula 07, o módulo continua com tendências centrais e medidas de dispersão.
 
 ## Bibliografia da aula
 

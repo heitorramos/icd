@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 02 — Causa e efeito</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 02 — Causa e efeito</span><a class="lecture-footer-button" href="../aulas/02-causalidade.html">voltar para a Aula</a>'
 execute:
   echo: false
 ---

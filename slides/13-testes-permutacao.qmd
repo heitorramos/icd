@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 13 — Testes de permutação</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 13 — Testes de permutação</span><a class="lecture-footer-button" href="../aulas/13-testes-permutacao.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -129,7 +129,7 @@ $$
 \Delta=p_{ad}-p_{psa}
 $$
 
-O estimando vem antes do algoritmo.
+$p_{ad}=P(Y=1\mid ad)$ e $p_{psa}=P(Y=1\mid psa)$ são as probabilidades populacionais de conversão sob cada condição; $\Delta$ é o contraste causal ou associativo de interesse, conforme o desenho permita. O estimando vem antes do algoritmo.
 
 ## A hipótese nula
 
@@ -161,7 +161,7 @@ $$
 T=\widehat p_{ad}-\widehat p_{psa}
 $$
 
-Valores positivos favorecem o anúncio; valores próximos de zero são compatíveis com ausência de efeito.
+$\widehat p_g=n_g^{-1}\sum_{i:G_i=g}Y_i$ é a conversão observada no grupo $g$. Assim, $T$ é uma função dos resultados $Y_i$ e dos rótulos $G_i$; valores positivos favorecem o anúncio.
 
 ## O que $H_0$ autoriza trocar?
 
@@ -173,6 +173,8 @@ Mantemos fixos:
 - os tamanhos dos grupos.
 
 Embaralhamos apenas os rótulos.
+
+Formalmente, sob trocaabilidade, para toda permutação admissível $\pi$ dos rótulos, $(Y,G)$ e $(Y,\pi G)$ têm a mesma distribuição sob $H_0$. O conjunto de permutações admissíveis deve reproduzir o mecanismo de atribuição.
 
 ## Permutar quebra a associação
 
@@ -240,6 +242,8 @@ $$
 
 É a proporção de permutações tão favoráveis ao anúncio quanto o resultado observado.
 
+$T_{obs}$ usa os rótulos originais; $T^{perm}$ usa uma atribuição permitida pelo desenho. A probabilidade é tomada sobre o mecanismo de permutação, mantendo os resultados fixos.
+
 ## O valor-p bilateral
 
 Para $H_1:p_{ad}\neq p_{psa}$:
@@ -279,6 +283,8 @@ $$
 $$
 
 A correção reconhece que a permutação observada também pertence ao espaço possível.
+
+$T_b$ é a estatística na permutação $b$, $B$ é o número de permutações e $\#\{\cdot\}$ conta as que são pelo menos tão extremas quanto $T_{obs}$. Os termos $+1$ incluem a configuração observada e evitam um zero artificial.
 
 ## Mais permutações estabilizam a estimativa
 

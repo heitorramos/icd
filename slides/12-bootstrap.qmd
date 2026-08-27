@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">Introdução à Ciência de Dados: Aula 12 — Bootstrap</span><a class="lecture-footer-button" href="../aulas/index.html">Aulas</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 12 — Bootstrap</span><a class="lecture-footer-button" href="../aulas/12-bootstrap.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -62,6 +62,8 @@ O preço é anunciado: não observamos se a estadia realmente ocorreu.
 
 ![](assets/aula12-bootstrap/anuncios-distrito.png){fig-alt="Barras com o número de anúncios por distrito de Nova York, destacando Manhattan e Brooklyn como os maiores grupos."}
 
+Manhattan e Brooklyn somam aproximadamente 85% dos anúncios.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -77,8 +79,6 @@ finish("anuncios-distrito.png")
 
 </details>
 
-Manhattan e Brooklyn somam aproximadamente 85% dos anúncios.
-
 ## Uma limpeza mínima e explícita
 
 - 11 anúncios têm preço igual a zero;
@@ -93,6 +93,8 @@ Limpar a cauda muda a população-alvo: agora estudamos anúncios entre US$ 1 e 
 ## A média é puxada pela cauda
 
 ![](assets/aula12-bootstrap/distribuicao-precos.png){fig-alt="Dois histogramas dos preços dos anúncios Airbnb, em escala original e logarítmica, mostrando forte assimetria à direita."}
+
+Na base original, a mediana é US$ 106 e a média é US$ 153.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -114,11 +116,11 @@ finish("distribuicao-precos.png")
 
 </details>
 
-Na base original, a mediana é US$ 106 e a média é US$ 153.
-
 ## Localização importa
 
 ![](assets/aula12-bootstrap/precos-distrito.png){fig-alt="Boxplots de preço por noite nos cinco distritos de Nova York, sem exibir pontos extremos."}
+
+Mas comparar todos os anúncios mistura localização e tipo de acomodação.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -136,11 +138,11 @@ finish("precos-distrito.png")
 
 </details>
 
-Mas comparar todos os anúncios mistura localização e tipo de acomodação.
-
 ## O tipo de acomodação também importa
 
 ![](assets/aula12-bootstrap/composicao-tipo.png){fig-alt="Barras empilhadas com a composição dos anúncios de Manhattan e Brooklyn por tipo de acomodação."}
+
+Manhattan tem uma proporção maior de acomodações inteiras.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -158,8 +160,6 @@ finish("composicao-tipo.png")
 ```
 
 </details>
-
-Manhattan tem uma proporção maior de acomodações inteiras.
 
 ## Nossa comparação será mais justa
 
@@ -189,6 +189,8 @@ $$
 
 ![](assets/aula12-bootstrap/ecdf-amostra.png){fig-alt="Curvas de distribuição acumulada dos preços de acomodações inteiras em Brooklyn e Manhattan, com as medianas marcadas."}
 
+A cauda extrema afeta pouco o ponto em que a curva acumulada cruza 50%.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -206,8 +208,6 @@ finish("ecdf-amostra.png")
 ```
 
 </details>
-
-A cauda extrema afeta pouco o ponto em que a curva acumulada cruza 50%.
 
 ## Por que não usar o intervalo clássico?
 
@@ -237,7 +237,7 @@ $$
 \widehat F_n(x)=\frac{1}{n}\sum_{i=1}^{n}\mathbb{1}(X_i\leq x)
 $$
 
-Cada observação recebe probabilidade $1/n$.
+$X_i$ é a $i$-ésima observação, $x$ é um ponto da escala e $\mathbb 1(\cdot)$ vale 1 quando a condição é verdadeira e 0 caso contrário. Assim, $\widehat F_n(x)$ é a proporção observada de valores menores ou iguais a $x$; cada observação recebe massa $1/n$.
 
 ## Reposição é indispensável
 
@@ -254,6 +254,8 @@ Essa variação imita a incerteza amostral.
 ## Uma reamostragem parece imperfeita
 
 ![](assets/aula12-bootstrap/reamostragem-reposicao.png){fig-alt="Pontos representando uma amostra de preços e uma reamostragem bootstrap com valores repetidos e ausentes."}
+
+Em média, uma réplica contém cerca de 63,2% das observações distintas.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -276,11 +278,11 @@ finish("reamostragem-reposicao.png")
 
 </details>
 
-Em média, uma réplica contém cerca de 63,2% das observações distintas.
-
 ## Uma réplica produz outra estimativa
 
 ![](assets/aula12-bootstrap/uma-replica.png){fig-alt="Medianas observadas e medianas de uma réplica bootstrap em Brooklyn e Manhattan."}
+
+Repetir esse processo revela quais diferenças são plausíveis.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -302,8 +304,6 @@ finish("uma-replica.png")
 ```
 
 </details>
-
-Repetir esse processo revela quais diferenças são plausíveis.
 
 ## O algoritmo em cinco passos
 
@@ -330,6 +330,8 @@ $$
 
 O método aproxima a lei de $\widehat\theta-\theta$ pela lei condicional de $\widehat\theta^*-\widehat\theta$.
 
+$F$ é a distribuição populacional desconhecida; $\widehat F_n$ é sua versão empírica; $T$ é o funcional que define o parâmetro; $\theta=T(F)$, $\widehat\theta=T(\widehat F_n)$ e $\widehat\theta^*$ é a estimativa em uma amostra bootstrap. O asterisco sempre identifica o mundo reamostrado.
+
 ## O alvo é uma distribuição condicional
 
 Formalmente, esperamos que:
@@ -340,7 +342,7 @@ $$
 \mathcal L\!\left(\sqrt n(\widehat\theta-\theta)\right).
 $$
 
-A convergência não é automática para toda estatística ou processo de dados.
+Para qualquer variável aleatória genérica $Z$, $\mathcal L(Z)$ denota sua distribuição de probabilidade. Na fórmula, aplicamos esse operador aos erros padronizados do estimador bootstrap e do estimador original. A barra $\mid X_1,\ldots,X_n$ indica que condicionamos nos dados observados; $\Rightarrow$ indica convergência em distribuição. A convergência não é automática para toda estatística ou processo de dados.
 
 ## O código mínimo é curto
 
@@ -369,6 +371,8 @@ Esses dois papéis não devem ser confundidos.
 
 ![](assets/aula12-bootstrap/distribuicao-bootstrap.png){fig-alt="Histograma de três mil diferenças bootstrap entre as medianas de Manhattan e Brooklyn."}
 
+A distribuição não precisa ser perfeitamente Normal para ser útil.
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
@@ -385,8 +389,6 @@ finish("distribuicao-bootstrap.png")
 
 </details>
 
-A distribuição não precisa ser perfeitamente Normal para ser útil.
-
 ## O erro padrão vem das réplicas
 
 Se $\widehat\theta_1^*,\ldots,\widehat\theta_B^*$ são as réplicas:
@@ -398,6 +400,8 @@ $$
 $$
 
 Aqui, o erro padrão bootstrap é aproximadamente US$ 5,5.
+
+$B$ é o número de réplicas, $\widehat\theta_b^*$ é a estimativa da réplica $b$ e $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas.
 
 ## O intervalo percentil é direto
 
@@ -412,9 +416,13 @@ $$
 
 Ele usa os quantis da própria distribuição bootstrap.
 
+$q_\gamma(\widehat\theta^*)$ é o quantil de ordem $\gamma$ das réplicas e $\alpha$ é a probabilidade total deixada fora do intervalo; para 95%, $\alpha=0{,}05$.
+
 ## Os 95% centrais vão de 30 a 51
 
 ![](assets/aula12-bootstrap/intervalo-percentil.png){fig-alt="Densidade bootstrap da diferença de medianas com o intervalo percentil de 95 por cento destacado entre 30 e 51 dólares."}
+
+O intervalo permanece totalmente acima de zero.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -436,8 +444,6 @@ finish("intervalo-percentil.png")
 
 </details>
 
-O intervalo permanece totalmente acima de zero.
-
 ## Interprete o procedimento, não a probabilidade
 
 ::: {.statement}
@@ -449,6 +455,8 @@ Depois de observar o intervalo, o parâmetro não passa a ter 95% de probabilida
 ## Quantas réplicas são suficientes?
 
 ![](assets/aula12-bootstrap/estabilidade-b.png){fig-alt="Limites inferior e superior do intervalo bootstrap conforme cresce o número de réplicas."}
+
+Para intervalos, alguns milhares de réplicas costumam ser um ponto de partida prático.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -469,11 +477,50 @@ finish("estabilidade-b.png")
 
 </details>
 
-Para intervalos, alguns milhares de réplicas costumam ser um ponto de partida prático.
+## Para médias, bootstrap e TCL ficam próximos
+
+![](assets/aula12-bootstrap/estabilidade-media-bootstrap-tcl.png){fig-alt="Limites inferior e superior do intervalo bootstrap para a diferença de médias conforme cresce o número de réplicas, estabilizando próximos aos limites horizontais obtidos pelo Teorema Central do Limite." width="100%"}
+
+Com a amostra fixa, aumentar $B$ reduz a oscilação de Monte Carlo. A proximidade com o TCL ocorre porque a diferença de médias tem distribuição aproximadamente Normal — não porque $B$ obrigue os métodos a coincidir.
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+mean_hat = manhattan.mean() - brooklyn.mean()
+se_tcl = np.sqrt(
+    manhattan.var(ddof=1) / len(manhattan)
+    + brooklyn.var(ddof=1) / len(brooklyn)
+)
+ci_tcl = np.array([mean_hat - 1.96*se_tcl,
+                   mean_hat + 1.96*se_tcl])
+
+B_max = 5000
+mean_boot = (
+    rng.choice(manhattan, (B_max, len(manhattan)), replace=True).mean(axis=1)
+    - rng.choice(brooklyn, (B_max, len(brooklyn)), replace=True).mean(axis=1)
+)
+checkpoints = np.array([25, 50, 100, 200, 400, 800,
+                        1200, 2000, 3000, 5000])
+ci_boot_B = np.array([
+    np.quantile(mean_boot[:B], [.025, .975]) for B in checkpoints
+])
+
+plt.plot(checkpoints, ci_boot_B[:, 0], "o-", label="Bootstrap: inferior")
+plt.plot(checkpoints, ci_boot_B[:, 1], "o-", label="Bootstrap: superior")
+plt.axhline(ci_tcl[0], ls="--", label="TCL: inferior")
+plt.axhline(ci_tcl[1], ls="--", label="TCL: superior")
+plt.xscale("log"); plt.legend()
+finish("estabilidade-media-bootstrap-tcl.png")
+```
+
+</details>
 
 ## Mais dados ajudam mais que mais réplicas
 
 ![](assets/aula12-bootstrap/tamanho-largura.png){fig-alt="Boxplots da largura do intervalo bootstrap para diferentes tamanhos de amostra por distrito."}
+
+Depois de estabilizar $B$, ampliar a amostra é o que realmente estreita o intervalo.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -501,8 +548,6 @@ finish("tamanho-largura.png")
 
 </details>
 
-Depois de estabilizar $B$, ampliar a amostra é o que realmente estreita o intervalo.
-
 ## Percentil não é o único intervalo
 
 | Método | Ideia | Atenção |
@@ -515,6 +560,8 @@ Depois de estabilizar $B$, ampliar a amostra é o que realmente estreita o inter
 ## Métodos podem discordar
 
 ![](assets/aula12-bootstrap/metodos-intervalo.png){fig-alt="Comparação dos intervalos percentil, básico e Normal para a diferença de medianas."}
+
+Discordância relevante é um sinal para investigar assimetria, viés e tamanho amostral.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -539,8 +586,6 @@ finish("metodos-intervalo.png")
 
 </details>
 
-Discordância relevante é um sinal para investigar assimetria, viés e tamanho amostral.
-
 ## Validade é uma propriedade repetida
 
 Um intervalo é válido quando sua cobertura real se aproxima do nível nominal:
@@ -554,6 +599,8 @@ Não basta que o histograma bootstrap pareça suave ou convincente.
 ## Podemos testar a cobertura didaticamente
 
 ![](assets/aula12-bootstrap/cobertura-bootstrap.png){fig-alt="Vinte intervalos bootstrap obtidos de amostras repetidas, comparados à diferença de medianas na população didática."}
+
+Na prática, a população verdadeira não está disponível para essa verificação.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -579,8 +626,6 @@ finish("cobertura-bootstrap.png")
 ```
 
 </details>
-
-Na prática, a população verdadeira não está disponível para essa verificação.
 
 ## Quando o bootstrap costuma funcionar
 
@@ -616,6 +661,8 @@ Reamostrar anúncios como se fossem independentes pode subestimar a incerteza.
 ## A unidade de reamostragem importa
 
 ![](assets/aula12-bootstrap/dependencia-host.png){fig-alt="Distribuição do número de anúncios por anfitrião e comparação entre bootstrap por anúncio e por anfitrião."}
+
+Quando a dependência ocorre por anfitrião, reamostramos **anfitriões inteiros**.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -653,8 +700,6 @@ print(f"diferença={theta_hat:.0f}; IC95%=[{ci[0]:.0f}, {ci[1]:.0f}]")
 ```
 
 </details>
-
-Quando a dependência ocorre por anfitrião, reamostramos **anfitriões inteiros**.
 
 ## Casos que exigem outra estratégia
 

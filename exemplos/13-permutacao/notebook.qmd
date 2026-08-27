@@ -31,8 +31,8 @@ df = pd.read_csv(csv_path).drop(columns=["Unnamed: 0"])
 df.head()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (1. Download da base), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+Antes de interpretar resultados, confirme o que cada linha representa, o período coberto e as colunas realmente disponíveis. Essa definição determina quais agregações e comparações são válidas.
 :::
 
 
@@ -56,10 +56,6 @@ df.groupby("test group").agg(
 )
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (2. O que é a base?), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
-:::
-
 
 # 3. Análise descritiva
 
@@ -73,8 +69,8 @@ axes[1].set_ylabel("Conversão (%)")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (3. Análise descritiva), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+A permutação constrói a referência de H0 ao quebrar a associação entre rótulo e resposta. Isso exige trocaabilidade; blocos, pares ou clusters do desenho original precisam ser preservados.
 :::
 
 
@@ -92,8 +88,8 @@ print(f"Diferença absoluta: {observed:.4%}")
 print(f"Uplift relativo: {relative:.1%}")
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (4. Efeito observado), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+A diferença absoluta informa quantas conversões adicionais ocorreram por usuário exposto; o uplift relativo compara essa diferença com a taxa do controle. São escalas complementares e ambas devem acompanhar a incerteza.
 :::
 
 
@@ -123,10 +119,6 @@ def permutation_test(y, group, statistic=difference_in_means,
     return observed, null, p_value
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (5. Uma função geral de permutação), compare centro e dispersão em conjunto: médias, medianas e quantis contam partes diferentes da distribuição e podem divergir quando há assimetria ou valores extremos. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
-:::
-
 
 # 6. Teste da conversão
 
@@ -146,8 +138,8 @@ plt.xlabel("Diferença de conversão sob H0")
 plt.show()
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (6. Teste da conversão), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+A distribuição permutada reúne diferenças produzidas quando o rótulo de grupo não carrega efeito. O valor-p é a fração de permutações pelo menos tão extremas quanto a diferença observada.
 :::
 
 
@@ -166,6 +158,10 @@ null_fast = conv_ad/n_ad - (n_conv-conv_ad)/(n_total-n_ad)
 p_fast = (1 + np.sum(np.abs(null_fast) >= abs(observed))) / (B+1)
 print(p_fast)
 ```
+
+::: {.callout-note title="Interpretação"}
+Para uma resposta binária, o atalho hipergeométrico reproduz a lógica da permutação condicionando o total de conversões. Ele evita embaralhar milhões de rótulos sem mudar a hipótese nula.
+:::
 
 # 8. Uma ou duas caudas
 
@@ -189,8 +185,8 @@ plt.show()
 exposure.groupby("test group")["total ads"].agg(["mean", "median", "std"])
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (9. Uma métrica assimétrica), a figura deve ser lida antes do resumo numérico: observe forma, assimetria, grupos, valores extremos e escolhas de escala antes de transformar o padrão em uma conclusão. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+A média reage fortemente à cauda de usuários muito expostos, enquanto a mediana descreve um usuário central. Como exposição pode ocorrer depois da atribuição, este contraste é descritivo e não deve ser tratado automaticamente como efeito causal.
 :::
 
 
@@ -218,8 +214,8 @@ for statistic in [difference_in_means, median_difference, trimmed_difference]:
     print(statistic.__name__, result[0], result[2])
 ```
 
-::: {.callout-note title="Discussão da análise"}
-Nesta análise (10. Estatísticas robustas), ao discutir a tabela agregada, destaque qual denominador foi usado e qual informação se perdeu ao resumir várias linhas em um único valor. A discussão deve começar pela trocaabilidade dos rótulos: a permutação só é uma referência válida quando, sob a hipótese nula, a atribuição aos grupos poderia ser rearranjada.
+::: {.callout-note title="Interpretação"}
+Estatísticas diferentes testam aspectos diferentes da distribuição. Resultados divergentes indicam que o efeito sobre o centro aritmético, o centro ordinal e a parte menos extrema dos dados não é o mesmo.
 :::
 
 
@@ -257,6 +253,10 @@ print(f"Centro da distribuição nula: {np.mean(null_strat):.5f}")
 print(f"p-valor aproximado: {(1 + np.sum(np.abs(null_strat) >= abs(observed_strat))) / (len(null_strat) + 1):.4f}")
 ```
 
+::: {.callout-note title="Interpretação"}
+Restringir as trocas ao mesmo dia preserva diferenças sistemáticas entre estratos. A comparação só é válida se, dentro de cada dia, os rótulos forem trocáveis segundo o desenho do experimento.
+:::
+
 
 # 12. Poder por simulação
 
@@ -270,6 +270,10 @@ def power_for_effect(p0=.018, effect=.008, n_each=5000, reps=3000):
 for n in [1000, 2500, 5000, 10000, 25000]:
     print(n, power_for_effect(n_each=n))
 ```
+
+::: {.callout-note title="Interpretação"}
+O poder cresce com o tamanho dos grupos porque o mesmo efeito se torna maior em relação ao erro amostral. A curva vale para a taxa e o efeito especificados; outra alternativa exige novo planejamento.
+:::
 
 
 # 13. Checklist de validade
@@ -309,7 +313,17 @@ Em Monte Carlo, uma estimativa segura do valor-p é
 
 $$\widehat p=\frac{1+\#\{T_b\text{ tão extremo quanto }T_{obs}\}}{B+1},$$
 
-que evita reportar zero. A direção unilateral ou bilateral deve ser definida antes de observar os resultados.
+em que:
+
+- $\widehat p$ é o valor-p estimado por simulação;
+- $T_{obs}$ é o valor da estatística calculada nos grupos originalmente observados;
+- $T_b$ é a estatística recalculada na $b$-ésima permutação dos rótulos, com $b=1,\ldots,B$;
+- $B$ é o número total de permutações aleatórias realizadas;
+- $\#\{\cdot\}$ significa “número de ocorrências”: contamos quantas estatísticas permutadas são pelo menos tão extremas quanto $T_{obs}$ sob a alternativa escolhida.
+
+“Tão extremo” depende da hipótese alternativa. Em um teste unilateral à direita, contamos $T_b\geq T_{obs}$; à esquerda, $T_b\leq T_{obs}$; em um teste bilateral com uma estatística centrada em zero, é comum contar $|T_b|\geq|T_{obs}|$.
+
+Os termos $+1$ no numerador e no denominador incluem conceitualmente a configuração observada entre as possibilidades consideradas. Essa correção evita reportar valor-p igual a zero quando nenhuma das $B$ permutações aleatórias supera $T_{obs}$. A direção unilateral ou bilateral deve ser definida antes de observar os resultados.
 
 ## Permutação não é bootstrap
 
@@ -319,8 +333,30 @@ Permutação quebra a associação para representar $H_0$. Bootstrap reamostra u
 
 Randomização justifica permutar rótulos no nível em que o tratamento foi sorteado. Pareamento exige trocas dentro dos pares; estratificação exige permutar dentro dos estratos; tratamento por cluster exige permutar clusters. Dependência, interferência, attrition e exposição pós-tratamento podem invalidar a troca simples.
 
+Se $Y=(Y_1,\ldots,Y_n)$ contém os resultados e $G=(G_1,\ldots,G_n)$ os rótulos, a trocaabilidade exige que, sob $H_0$,
+
+$$T(Y,G)\overset d=T(Y,\pi G)$$
+
+para toda permutação admissível $\pi$ gerada pelo desenho. $T$ é a estatística de teste, $\pi G$ é o vetor de rótulos permutados e $\overset d=$ significa igualdade em distribuição. Em blocos ou estratos, o conjunto de $\pi$ deve conter apenas trocas internas; em experimentos por cluster, $\pi$ atua nos rótulos dos clusters.
+
 A nula aguda afirma efeito zero para cada unidade e sustenta testes de randomização exatos. Uma nula sobre efeito médio é mais fraca e pode exigir estatísticas studentizadas ou argumentos assintóticos.
+
+Na notação de resultados potenciais, a nula aguda de Fisher é
+
+$$H_0^{F}:Y_i(1)=Y_i(0)\quad\text{para todo }i,$$
+
+em que $Y_i(1)$ e $Y_i(0)$ são os resultados que a unidade $i$ teria sob tratamento e controle. Já uma nula média, $H_0^{m}:n^{-1}\sum_i[Y_i(1)-Y_i(0)]=0$, permite efeitos individuais positivos e negativos que se cancelam.
 
 ## Extensões e multiplicidade
 
 Média, mediana, média aparada e outras estatísticas podem ser usadas, desde que sejam recalculadas em cada permutação. Explorar muitos subgrupos cria multiplicidade; correções ou testes máximos devem respeitar a família de hipóteses definida. Significância não substitui tamanho do efeito, intervalo, validade externa e análise do desenho.
+
+Para estratos $s=1,\ldots,S$, uma estatística combinada pode ser
+
+$$T=\sum_{s=1}^S w_s(\widehat p_{ad,s}-\widehat p_{psa,s}),\qquad w_s\geq0,\quad\sum_sw_s=1,$$
+
+onde $\widehat p_{g,s}$ é a proporção observada no grupo $g$ e estrato $s$, e $w_s$ é um peso definido antes da permutação. Para duas amostras com tamanhos ou variâncias diferentes, a forma studentizada
+
+$$T=\frac{\bar X_{ad}-\bar X_{psa}}{\sqrt{s_{ad}^2/n_{ad}+s_{psa}^2/n_{psa}}}$$
+
+divide a diferença das médias por um erro padrão estimado; $\bar X_g$, $s_g^2$ e $n_g$ são a média, a variância amostral e o tamanho do grupo $g$.
