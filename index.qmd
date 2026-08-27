@@ -33,7 +33,7 @@ Departamento de Ciência da Computação — UFMG<br>
 ::: {.info-card}
 ### Horário e sala
 
-Terças e quintas, 17h0–18h40<br>
+Terças e quintas, 17h00–18h40<br>
 Sala 406 — CAD3
 :::
 :::
