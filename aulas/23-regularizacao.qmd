@@ -1,0 +1,61 @@
+---
+title: "Aula 23: Regularização"
+subtitle: "Generalização, Ridge, Lasso e Elastic Net"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Viés–variância, penalizações, geometria, validação e estabilidade.
+
+[Abrir slides](../slides/23-regularizacao.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Derivações, implementação Ridge, seleção por validação e resultados executados.
+
+[Abrir notebook](../exemplos/23-regularizacao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Medical Insurance Cost, com atributos numéricos e categóricos.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- distinguir erro de treino e risco de generalização;
+- decompor erro em ruído, viés e variância;
+- formular regularização por penalização e restrição;
+- comparar $L_0$, Ridge, Lasso e Elastic Net;
+- escolher hiperparâmetros sem contaminar o teste;
+- reconhecer o papel de escala, pipelines e estabilidade.
+
+## Estudo de caso
+
+A base de despesas médicas é expandida com polinômios e interações. O exemplo mostra como flexibilidade e colinearidade tornam coeficientes instáveis, e como Ridge recupera estabilidade ao aceitar algum viés.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulo 6.
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 3 e 7.
+
+### Bibliografia complementar
+
+- Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, capítulo 9.
+- Data 100, capítulos sobre engenharia de atributos e regularização.

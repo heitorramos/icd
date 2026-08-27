@@ -1,0 +1,62 @@
+---
+title: "Aula 21: Regressão linear múltipla"
+subtitle: "Vários preditores e a ponte para GLMs"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Notação matricial, interpretação, interações, colinearidade e introdução a GLMs.
+
+[Abrir slides](../slides/21-regressao-multipla.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Derivações, ajuste executado, bootstrap, diagnósticos e interpretações.
+
+[Abrir notebook](../exemplos/21-regressao-multipla/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Despesas médicas com preditores quantitativos e categóricos.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- formular regressão múltipla em notação matricial;
+- interpretar coeficientes condicionais, indicadores e interações;
+- derivar perda, gradiente e equações normais;
+- discutir colinearidade, diagnóstico e bootstrap;
+- reconhecer o modelo linear normal como um GLM;
+- preparar a regressão logística com resposta Bernoulli e link logit.
+
+## Estudo de caso
+
+A base de seguros permite combinar idade, IMC, filhos, tabagismo, sexo e região. O modelo múltiplo melhora a descrição das despesas, mas também evidencia os cuidados necessários com interpretação condicional e especificação.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 3 e 4.
+- Faraway, *Linear Models with R*.
+
+### Bibliografia complementar
+
+- Gelman, Hill e Vehtari, *Regression and Other Stories*.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*.
+- McCullagh e Nelder, *Generalized Linear Models*.

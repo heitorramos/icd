@@ -1,0 +1,331 @@
+---
+title: "Regressão linear simples com despesas médicas"
+subtitle: "Material de apoio — Aula 17"
+format:
+  html:
+    toc: true
+    code-fold: show
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Objetivos
+
+Este guia desenvolve a regressão linear simples como um modelo estatístico para a média condicional. Ao final, você deverá saber formular o problema de mínimos quadrados, derivar seus estimadores, interpretar o ajuste e reconhecer suas limitações.
+
+## Base de dados de apoio
+
+Usaremos a base **Medical Insurance Cost**, disponibilizada no [Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset) sob licença CC0. Cada linha representa uma pessoa segurada. A resposta `charges` registra despesas médicas em dólares; `age` será o preditor. A variável `smoker` ajudará a revelar estrutura que a reta simples não captura.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+
+data_path = Path("../16-correlacao/data/insurance.csv")
+df = pd.read_csv(data_path)
+df.head()
+```
+
+## Auditoria e análise descritiva
+
+Antes de ajustar uma reta, precisamos conhecer unidade observacional, escala, ausências, duplicatas e distribuição das variáveis.
+
+```{python}
+df.info()
+```
+
+```{python}
+df[["age", "charges", "bmi", "children"]].describe().round(2)
+```
+
+```{python}
+pd.DataFrame({
+    "ausências": df.isna().sum(),
+    "valores_distintos": df.nunique(),
+})
+```
+
+```{python}
+print("Linhas duplicadas:", df.duplicated().sum())
+df["smoker"].value_counts().rename_axis("smoker").to_frame("n")
+```
+
+::: {.callout-note title="Interpretação"}
+Há uma linha exatamente duplicada, mas não há identificador para concluir se ela é erro ou duas pessoas com os mesmos registros. Portanto, não a removemos automaticamente. As despesas são assimétricas e fumantes têm valores muito maiores; isso será importante nos resíduos.
+:::
+
+```{python}
+fig, axes = plt.subplots(1, 3, figsize=(13, 3.6))
+sns.histplot(df, x="age", ax=axes[0])
+sns.histplot(df, x="charges", ax=axes[1])
+sns.boxplot(df, x="smoker", y="charges", ax=axes[2])
+plt.tight_layout()
+plt.show()
+```
+
+## Da média global à média condicional
+
+Sem usar a idade, a melhor previsão constante sob perda quadrática é a média global. Ao separar idades em faixas, observamos que a média das despesas muda com $X$.
+
+```{python}
+bins = pd.cut(df["age"], bins=np.arange(17.5, 68, 5))
+local = (df.groupby(bins, observed=True)
+           .agg(idade_média=("age", "mean"),
+                despesa_média=("charges", "mean"),
+                n=("charges", "size")))
+local.round(2)
+```
+
+O alvo da regressão é a função
+
+$$m(x)=E[Y\mid X=x],$$
+
+isto é, a média da distribuição de $Y$ entre unidades que possuem $X=x$. Na regressão linear simples, aproximamos esse alvo por
+
+$$E[Y_i\mid X_i=x_i]=\beta_0+\beta_1x_i.$$
+
+## Modelo estatístico e seus termos
+
+Escrevemos
+
+$$Y_i=\beta_0+\beta_1x_i+\varepsilon_i,
+\qquad E[\varepsilon_i\mid X_i=x_i]=0.$$
+
+- $Y_i$: resposta aleatória da observação $i$;
+- $x_i$: valor observado do preditor;
+- $\beta_0$: intercepto populacional;
+- $\beta_1$: variação da média de $Y$ associada ao aumento de uma unidade em $X$;
+- $\varepsilon_i$: desvio aleatório de $Y_i$ em relação à média condicional.
+
+O erro $\varepsilon_i$ é uma quantidade populacional não observada. Depois do ajuste, calculamos o **resíduo** $e_i=y_i-\widehat y_i$.
+
+## O critério de mínimos quadrados
+
+Para candidatos $b_0$ e $b_1$, definimos
+
+$$\widehat y_i=b_0+b_1x_i,\qquad e_i=y_i-\widehat y_i.$$
+
+A soma dos resíduos ao quadrado é
+
+$$\operatorname{SSE}(b_0,b_1)=
+\sum_{i=1}^n(y_i-b_0-b_1x_i)^2.$$
+
+Aqui, $n$ é o número de observações, e $b_0,b_1$ são valores candidatos. As estimativas $\widehat\beta_0,\widehat\beta_1$ são os valores que minimizam a SSE. Elevar ao quadrado evita cancelamentos e penaliza fortemente erros grandes, mas também torna o ajuste sensível a observações extremas.
+
+## Derivação do intercepto
+
+Derivando a SSE em relação a $b_0$:
+
+$$
+\frac{\partial\operatorname{SSE}}{\partial b_0}
+=-2\sum_{i=1}^n(y_i-b_0-b_1x_i).
+$$
+
+No mínimo, igualamos a derivada a zero:
+
+$$
+\sum_{i=1}^ny_i-nb_0-b_1\sum_{i=1}^nx_i=0.
+$$
+
+Como $\bar x=n^{-1}\sum_i x_i$ e $\bar y=n^{-1}\sum_i y_i$,
+
+$$\widehat\beta_0=\bar y-\widehat\beta_1\bar x.$$
+
+Logo, a reta ajustada passa pelo ponto $(\bar x,\bar y)$.
+
+## Derivação da inclinação
+
+Substituindo $b_0=\bar y-b_1\bar x$, o resíduo se torna
+
+$$y_i-\bar y-b_1(x_i-\bar x).$$
+
+Derivando em relação a $b_1$ e igualando a zero:
+
+$$
+-2\sum_{i=1}^n(x_i-\bar x)
+\left[(y_i-\bar y)-b_1(x_i-\bar x)\right]=0.
+$$
+
+Portanto,
+
+$$
+\widehat\beta_1=
+\frac{\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)}
+{\sum_{i=1}^n(x_i-\bar x)^2},
+\qquad
+\widehat\beta_0=\bar y-\widehat\beta_1\bar x.
+$$
+
+O numerador mede a variação conjunta de $X$ e $Y$; o denominador mede a variação de $X$. Se todos os $x_i$ forem iguais, o denominador é zero e a inclinação não pode ser estimada.
+
+## Relação com covariância e correlação
+
+Usando covariância e variância amostrais calculadas com o mesmo denominador,
+
+$$\widehat\beta_1=\frac{s_{XY}}{s_X^2}
+=r\frac{s_Y}{s_X}.$$
+
+Assim, a inclinação depende da unidade das variáveis. Se padronizarmos $X$ e $Y$ para média zero e desvio-padrão um, a inclinação passa a ser exatamente a correlação de Pearson $r$.
+
+## Implementação convencional
+
+```{python}
+x = df["age"].to_numpy(dtype=float)
+y = df["charges"].to_numpy(dtype=float)
+
+xbar, ybar = x.mean(), y.mean()
+b1 = np.sum((x-xbar)*(y-ybar)) / np.sum((x-xbar)**2)
+b0 = ybar-b1*xbar
+yhat = b0+b1*x
+resid = y-yhat
+
+pd.Series({"intercepto": b0, "inclinação": b1}).round(4)
+```
+
+O modelo ajustado é aproximadamente
+
+$$\widehat{charges}=3165{,}89+257{,}72\,age.$$
+
+::: {.callout-note title="Interpretação"}
+Dentro do intervalo observado, um ano adicional de idade está associado a um acréscimo médio previsto de cerca de US$ 257,72. O intercepto corresponde à previsão para idade zero, que está fora dos dados; portanto, serve para posicionar a reta, mas não possui interpretação prática direta.
+:::
+
+```{python}
+plt.figure(figsize=(8, 5))
+sns.scatterplot(data=df, x="age", y="charges", hue="smoker", alpha=.45)
+order = np.argsort(x)
+plt.plot(x[order], yhat[order], color="#d95f02", linewidth=3,
+         label="mínimos quadrados")
+plt.legend()
+plt.show()
+```
+
+## Qualidade do ajuste
+
+Definimos
+
+$$
+R^2=1-\frac{\sum_i(y_i-\widehat y_i)^2}
+{\sum_i(y_i-\bar y)^2}.
+$$
+
+O numerador é a variação residual (SSE); o denominador é a variação total (SST). No modelo simples com intercepto, $R^2=r^2$.
+
+```{python}
+sse = np.sum(resid**2)
+sst = np.sum((y-ybar)**2)
+r2 = 1-sse/sst
+rmse = np.sqrt(np.mean(resid**2))
+pd.Series({"R²": r2, "RMSE": rmse, "correlação²": np.corrcoef(x, y)[0, 1]**2}).round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+A idade explica apenas cerca de 8,9% da variação amostral das despesas. Isso não torna a inclinação inútil, mas mostra que uma reta baseada somente em idade é uma previsão individual muito imprecisa.
+:::
+
+## Diagnóstico dos resíduos
+
+Resíduos devem ser examinados contra valores ajustados e contra variáveis omitidas relevantes.
+
+```{python}
+diagnostics = pd.DataFrame({
+    "ajustado": yhat,
+    "resíduo": resid,
+    "fumante": df["smoker"],
+})
+diagnostics.groupby("fumante")["resíduo"].agg(["count", "mean", "std"]).round(2)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.scatterplot(data=diagnostics, x="ajustado", y="resíduo",
+                hue="fumante", alpha=.55, ax=axes[0])
+axes[0].axhline(0, color="black", linestyle="--")
+sns.histplot(data=diagnostics, x="resíduo", hue="fumante",
+             element="step", stat="density", common_norm=False, ax=axes[1])
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Os resíduos são sistematicamente positivos para fumantes e negativos para não fumantes. Portanto, a condição de média zero não parece plausível quando condicionamos apenas em idade. O diagnóstico sugere ampliar o modelo; não basta celebrar uma inclinação estatisticamente diferente de zero.
+:::
+
+## Hipóteses e o que elas sustentam
+
+- **Linearidade da média:** $E[Y\mid X=x]=\beta_0+\beta_1x$ sustenta a interpretação da reta.
+- **Média condicional zero:** $E[\varepsilon\mid X]=0$ evita viés sistemático na função média.
+- **Independência entre unidades:** sustenta fórmulas usuais de incerteza.
+- **Variância constante:** simplifica o erro-padrão clássico; não é necessária para calcular a reta.
+- **Normalidade condicional:** é útil para inferência exata em pequenas amostras, não para obter os coeficientes de mínimos quadrados.
+
+## Incerteza da inclinação por bootstrap
+
+No bootstrap pareado, reamostramos pares $(x_i,y_i)$ para preservar sua associação.
+
+```{python}
+def slope(xv, yv):
+    return np.sum((xv-xv.mean())*(yv-yv.mean())) / np.sum((xv-xv.mean())**2)
+
+B = 4000
+boot_slopes = np.empty(B)
+for b in range(B):
+    idx = rng.integers(0, len(df), len(df))
+    boot_slopes[b] = slope(x[idx], y[idx])
+
+np.quantile(boot_slopes, [0.025, 0.5, 0.975]).round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+O intervalo percentil descreve a incerteza amostral sob a ideia de que a amostra observada representa adequadamente a população. Ele não corrige confundimento, seleção ou especificação inadequada do modelo.
+:::
+
+## Teste por permutação
+
+Sob a hipótese nula de ausência de associação, permutamos $Y$ em relação a $X$ e recalculamos a inclinação.
+
+```{python}
+P = 4000
+perm_slopes = np.array([slope(x, rng.permutation(y)) for _ in range(P)])
+p_value = (1+np.sum(np.abs(perm_slopes) >= abs(b1))) / (P+1)
+pd.Series({"inclinação_observada": b1, "p_valor_bilateral": p_value}).round(6)
+```
+
+::: {.callout-note title="Interpretação"}
+Um valor-p pequeno indica que uma inclinação tão extrema seria rara após romper a associação. Isso não transforma a associação entre idade e despesas em efeito causal.
+:::
+
+## Previsão média não é previsão individual
+
+$\widehat y(x_0)=\widehat\beta_0+\widehat\beta_1x_0$ estima a média para unidades com $X=x_0$. Um intervalo para essa média é mais estreito que um intervalo de previsão para uma nova unidade, pois este último inclui também a variabilidade individual dos erros. A construção paramétrica desses intervalos será aprofundada depois.
+
+## O que fica para as próximas aulas
+
+- **Máxima verossimilhança:** formulará uma distribuição para $Y\mid X$ e mostrará quando mínimos quadrados emerge desse modelo probabilístico.
+- **Gradiente descendente:** substituirá a solução fechada por atualizações iterativas dos parâmetros.
+
+Nesta aula, a solução foi obtida diretamente por derivação do critério de mínimos quadrados. A interpretação geométrica por projeção não foi retomada.
+
+## Questões de revisão
+
+1. Por que a reta ajustada passa por $(\bar x,\bar y)$?
+2. Em que situação a inclinação não pode ser calculada?
+3. Por que $R^2$ baixo não implica automaticamente inclinação igual a zero?
+4. O padrão dos resíduos por tabagismo revela qual limitação do modelo?
+5. Qual é a diferença entre um intervalo para a média e um intervalo de previsão individual?
+
+## Bibliografia
+
+- James, G.; Witten, D.; Hastie, T.; Tibshirani, R. *An Introduction to Statistical Learning*, cap. 3.
+- Diez, D.; Barr, C.; Çetinkaya-Rundel, M. *OpenIntro Statistics*, seção sobre regressão linear.
+- Wasserman, L. *All of Statistics*, seções sobre regressão linear e mínimos quadrados.
+- Bruce, P.; Bruce, A.; Gedeck, P. *Practical Statistics for Data Scientists*, capítulo sobre regressão.

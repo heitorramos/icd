@@ -1,0 +1,323 @@
+---
+title: "Aula extra — Dados ausentes, qualidade e viés de seleção"
+subtitle: "Guia de estudo executável"
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  error: false
+jupyter: python3
+---
+
+## 1. Por que uma célula está vazia?
+
+Valores ausentes não constituem apenas um obstáculo computacional. Eles são resultado de um processo de observação: exames podem não ter sido solicitados, respostas podem ter sido recusadas e equipamentos podem falhar. O tratamento adequado depende desse processo.
+
+Usaremos a base de doença renal crônica da Aula 25. Ela contém 400 pacientes, atributos clínicos numéricos e categóricos e diversos padrões de ausência.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+
+df = pd.read_csv(Path("data/kidney_disease.csv"))
+for col in df.select_dtypes(include=["object", "string"]):
+    df[col] = df[col].astype("string").str.strip().replace({"?": pd.NA, "": pd.NA})
+df["classification"] = df["classification"].str.replace("\t", "", regex=False).str.strip()
+
+numeric = ["age","bp","sg","al","su","bgr","bu","sc","sod","pot","hemo","pcv","wc","rc"]
+categorical = ["rbc","pc","pcc","ba","htn","dm","cad","appet","pe","ane"]
+for col in numeric:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+df.shape
+```
+
+## 2. Auditoria inicial
+
+```{python}
+missing = pd.DataFrame({
+    "n_ausente": df[numeric + categorical].isna().sum(),
+    "percentual": 100 * df[numeric + categorical].isna().mean(),
+}).sort_values("percentual", ascending=False)
+missing.head(15).round(1)
+```
+
+```{python}
+row_missing = df[numeric + categorical].isna().sum(axis=1)
+row_missing.describe().round(2)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
+missing.head(14).iloc[::-1].percentual.plot.barh(ax=axes[0], color="#1f6f8b")
+axes[0].set(xlabel="percentual ausente", title="Por atributo")
+axes[1].hist(row_missing, bins=np.arange(row_missing.max() + 2) - .5, color="#d95f02")
+axes[1].set(xlabel="ausências por paciente", ylabel="pacientes", title="Por linha")
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Há duas perguntas distintas: quais atributos perdem mais informação e quais pacientes concentram ausências. Uma taxa global esconderia ambos os padrões. Códigos como `?`, vazio e “não aplicável” também devem ser distinguidos antes da contagem.
+:::
+
+## 3. Notação e mecanismos
+
+Para cada valor $Y_i$, defina $R_i=1$ quando ele foi observado e $R_i=0$ quando está ausente. Conceitualmente, $Y=(Y_{obs},Y_{mis})$ reúne a parte observada e a parte que existiria nos dados completos.
+
+Os mecanismos clássicos são:
+
+$$\begin{aligned}
+\text{MCAR: }&P(R\mid Y_{obs},Y_{mis},X)=P(R),\\
+\text{MAR: }&P(R\mid Y_{obs},Y_{mis},X)=P(R\mid Y_{obs},X),\\
+\text{MNAR: }&P(R\mid Y_{obs},Y_{mis},X)\text{ depende de }Y_{mis}.
+\end{aligned}$$
+
+$X$ representa covariáveis plenamente observadas ou incluídas no condicionamento. MAR não significa “ausência aleatória” sem condições: ela pode depender fortemente do que já observamos. MAR e MNAR não podem, em geral, ser distinguidos definitivamente apenas com dados observados.
+
+## 4. Uma simulação controlada
+
+Vamos estimar a média de $Y\sim N(0,1)$ depois de apagar valores sob mecanismos diferentes.
+
+```{python}
+def one_simulation(mechanism, n=1500):
+    y = rng.normal(size=n)
+    x = rng.normal(size=n)
+    if mechanism == "MCAR":
+        p_miss = np.repeat(.35, n)
+    elif mechanism == "MAR":
+        p_miss = 1 / (1 + np.exp(-(-.7 + 1.2*x)))
+    else:  # MNAR: a ausência depende do próprio Y que pode faltar
+        p_miss = 1 / (1 + np.exp(-(-.7 + 1.2*y)))
+    observed = rng.random(n) > p_miss
+    return y[observed].mean() - y.mean()
+
+rows = [(m, one_simulation(m)) for m in ["MCAR", "MAR", "MNAR"] for _ in range(500)]
+sim = pd.DataFrame(rows, columns=["mecanismo", "erro_da_media"])
+sim.groupby("mecanismo").agg(["mean", "std"]).round(3)
+```
+
+```{python}
+sns.violinplot(data=sim, x="mecanismo", y="erro_da_media", hue="mecanismo",
+               palette=["#2a9d8f", "#1f6f8b", "#d95f02"], legend=False, inner="quartile")
+plt.axhline(0, color="black", linewidth=1)
+plt.ylabel("média observada − média completa")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Nesta simulação MAR, a ausência depende de uma variável independente de $Y$, portanto a média simples permanece centrada. Isso não é uma propriedade geral de toda análise sob MAR. Sob MNAR, valores altos desaparecem mais, deslocando sistematicamente a média observada.
+:::
+
+## 5. Casos completos mudam a amostra
+
+A análise de casos completos usa $\mathcal I_{cc}=\{i:R_{i1}=\cdots=R_{ip}=1\}$. Sob MCAR ela costuma preservar ausência de viés, mas perde precisão. Fora desse caso, a validade depende do estimando e do mecanismo.
+
+```{python}
+complete = df[numeric].notna().all(axis=1)
+comparison = pd.DataFrame({
+    "amostra completa": {
+        "n": len(df),
+        "% DRC": 100*(df.classification == "ckd").mean(),
+        "idade média": df.age.mean(),
+        "hemoglobina média": df.hemo.mean(),
+    },
+    "casos completos": {
+        "n": complete.sum(),
+        "% DRC": 100*(df.loc[complete, "classification"] == "ckd").mean(),
+        "idade média": df.loc[complete, "age"].mean(),
+        "hemoglobina média": df.loc[complete, "hemo"].mean(),
+    },
+})
+comparison.round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Apenas 203 pacientes têm todos os atributos numéricos observados. A exclusão quase divide a amostra ao meio e altera sua composição. Comparar descrições é um diagnóstico útil, mas não prova que a análise de casos completos seja ou não enviesada.
+:::
+
+## 6. A ausência se relaciona com variáveis observadas?
+
+```{python}
+target = (df.classification == "ckd").astype(int)
+by_class = pd.DataFrame({
+    "com DRC": df.loc[target == 1, numeric].isna().mean(),
+    "sem DRC": df.loc[target == 0, numeric].isna().mean(),
+}).sort_values("com DRC", ascending=False)
+by_class.head(10).mul(100).round(1)
+```
+
+```{python}
+by_class.head(10).iloc[::-1].mul(100).plot.barh(figsize=(9, 4.8), color=["#d95f02", "#2a9d8f"])
+plt.xlabel("percentual ausente")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Uma associação entre ausência e DRC mostra que o padrão não é completamente indiferente ao observado. Ela não distingue MAR de MNAR, pois essa distinção envolve valores que não vemos. É necessário investigar como e quando os exames eram solicitados.
+:::
+
+## 7. Imputação simples
+
+Na imputação pela mediana,
+
+$$\tilde x_{ij}=\begin{cases}
+x_{ij},&R_{ij}=1,\\
+\operatorname{mediana}(X_j^{obs}),&R_{ij}=0.
+\end{cases}$$
+
+```{python}
+hemo_observed = df.hemo.dropna()
+hemo_imputed = df.hemo.fillna(hemo_observed.median())
+pd.DataFrame({
+    "observada": hemo_observed.describe(),
+    "após imputação": hemo_imputed.describe(),
+}).round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+A mediana é robusta, mas a imputação concentra todos os casos ausentes num único ponto. A distribuição resultante tem variabilidade artificialmente reduzida e não representa a incerteza sobre cada valor.
+:::
+
+## 8. Imputação preditiva e indicadores
+
+Um modelo de imputação busca $P(X_j^{mis}\mid X_{-j}^{obs})$. Podemos também criar $M_j=\mathbb 1\{X_j\text{ ausente}\}$ para informar ao modelo quais valores foram preenchidos.
+
+Indicadores podem ser úteis para previsão, especialmente quando o protocolo de coleta carrega informação. Porém, um protocolo pode mudar entre hospitais ou ao longo do tempo; a associação pode não ser transportável.
+
+## 9. Pipeline e ausência de vazamento
+
+```{python}
+work = df[numeric + categorical].copy()
+for col in categorical:
+    work[col] = work[col].astype(object).where(work[col].notna(), np.nan)
+
+def make_pipeline(strategy):
+    prep = ColumnTransformer([
+        ("num", Pipeline([
+            ("imputer", SimpleImputer(strategy=strategy, add_indicator=True)),
+            ("scale", StandardScaler()),
+        ]), numeric),
+        ("cat", Pipeline([
+            ("imputer", SimpleImputer(strategy="most_frequent", add_indicator=True)),
+            ("onehot", OneHotEncoder(handle_unknown="ignore")),
+        ]), categorical),
+    ])
+    return Pipeline([("prep", prep), ("model", LogisticRegression(max_iter=3000))])
+```
+
+Médias, medianas, modas e categorias devem ser aprendidas em cada conjunto de treinamento. Ajustar o imputador antes da validação permite que dados de validação influenciem a transformação.
+
+## 10. Comparar métodos sem superinterpretar
+
+```{python}
+folds = StratifiedKFold(5, shuffle=True, random_state=7)
+rows = []
+for strategy in ["mean", "median"]:
+    score = cross_validate(make_pipeline(strategy), work, target, cv=folds,
+                           scoring=["roc_auc", "recall", "accuracy"])
+    for metric in ["roc_auc", "recall", "accuracy"]:
+        rows.append({"estratégia": strategy, "métrica": metric,
+                     "média": score[f"test_{metric}"].mean(),
+                     "sd": score[f"test_{metric}"].std()})
+results = pd.DataFrame(rows)
+results.round(4)
+```
+
+```{python}
+sns.barplot(data=results, x="métrica", y="média", hue="estratégia")
+plt.ylim(.85, 1.01)
+plt.ylabel("média em validação")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Média e mediana produzem desempenho preditivo semelhante neste exercício. Isso não demonstra que os valores imputados estejam corretos, que parâmetros inferenciais sejam não enviesados ou que o mecanismo seja ignorável. Desempenho é apenas uma dimensão da avaliação.
+:::
+
+## 11. Imputação múltipla e regras de Rubin
+
+Geramos $m$ bases plausíveis, obtemos uma estimativa $\hat Q_l$ e uma variância $U_l$ em cada base e combinamos:
+
+$$\bar Q=\frac1m\sum_{l=1}^{m}\hat Q_l,$$
+
+$$\bar U=\frac1m\sum_{l=1}^{m}U_l,\qquad
+B=\frac{1}{m-1}\sum_{l=1}^{m}(\hat Q_l-\bar Q)^2,$$
+
+$$T=\bar U+\left(1+\frac1m\right)B.$$
+
+$\bar U$ representa incerteza média dentro das bases; $B$, desacordo entre imputações; $T$, a variância total combinada.
+
+## 12. Sensibilidade quando MNAR é plausível
+
+Uma análise delta modifica imputações construídas sob MAR:
+
+$$X_{mis}^{MNAR}=X_{mis}^{MAR}+\delta.$$
+
+```{python}
+base = df.hemo.fillna(df.hemo.median())
+deltas = np.linspace(-3, 3, 13)
+sensitivity = pd.DataFrame({
+    "delta": deltas,
+    "média": [base.where(df.hemo.notna(), base + d).mean() for d in deltas],
+})
+sensitivity.round(3)
+```
+
+```{python}
+plt.plot(sensitivity.delta, sensitivity["média"], marker="o", color="#6a3d9a")
+plt.axvline(0, color="black", linestyle="--")
+plt.xlabel(r"ajuste $\delta$ nos valores imputados")
+plt.ylabel("hemoglobina média")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+$\delta$ não é estimado magicamente pelos dados: ele representa cenários substantivos. A pergunta passa a ser se a conclusão muda em uma faixa que especialistas considerem plausível.
+:::
+
+## 13. Qualidade e viés de seleção
+
+Ausência é uma dimensão da qualidade. Também devemos verificar validade de domínio, consistência, duplicatas, unidades, atualidade e representatividade.
+
+Além disso, pode faltar uma unidade inteira. Se $S$ indica inclusão,
+
+$$P(Y,X\mid S=1)\neq P(Y,X)$$
+
+significa que a distribuição observada difere da população-alvo. Uma base pode estar completa e ainda assim representar mal a população.
+
+## 14. Checklist de auditoria
+
+- Como cada variável foi produzida e em que unidade?
+- Quais códigos significam ausente, desconhecido e não aplicável?
+- Quais padrões aparecem por coluna, linha, tempo e grupo?
+- Quem ficou fora da amostra?
+- Qual mecanismo é plausível e por quê?
+- O método foi ajustado sem vazamento?
+- A imputação respeita suporte e relações lógicas?
+- A conclusão resiste a cenários alternativos?
+
+## Referências
+
+- Little e Rubin, *Statistical Analysis with Missing Data*.
+- van Buuren, *Flexible Imputation of Missing Data*.
+- Hernán e Robins, *Causal Inference: What If*.
+- Kuhn e Johnson, *Feature Engineering and Selection*.
+- [Chronic Kidney Disease Dataset — Kaggle](https://www.kaggle.com/datasets/mansoordaku/ckdisease).

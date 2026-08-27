@@ -1,0 +1,214 @@
+---
+title: "Máxima verossimilhança: dos dados aos parâmetros"
+subtitle: "Material de apoio — Aula 18"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia constrói máxima verossimilhança a partir de um modelo Bernoulli. Vamos distinguir probabilidade de verossimilhança, derivar o estimador de $p$ e interpretar escore, curvatura e hipóteses do modelo.
+
+## Base de dados de apoio
+
+Usaremos [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset), do Kaggle, com licença CC0. Cada linha representa uma pessoa segurada; `smoker` será codificada como 1 para fumante e 0 para não fumante.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+df = pd.read_csv(Path("../16-correlacao/data/insurance.csv"))
+df.head()
+```
+
+::: {.callout-note title="Interpretação"}
+A unidade observacional é a pessoa, não uma consulta médica. Portanto, a proporção estimada descreve pessoas registradas nessa base e não pode ser automaticamente transportada para toda a população.
+:::
+
+```{python}
+x = (df["smoker"] == "yes").astype(int).to_numpy()
+n = len(x)
+S = x.sum()
+pd.Series({"n": n, "fumantes": S, "não_fumantes": n-S, "proporção": x.mean()})
+```
+
+## Modelo Bernoulli
+
+Assumimos
+
+$$X_i\overset{iid}{\sim}\operatorname{Bernoulli}(p).$$
+
+O parâmetro $p=P(X_i=1)$ é desconhecido. `iid` reúne duas hipóteses: as unidades são independentes e compartilham a mesma distribuição Bernoulli.
+
+Para $x_i\in\{0,1\}$,
+
+$$f(x_i;p)=p^{x_i}(1-p)^{1-x_i}.$$
+
+```{python}
+def bernoulli_mass(xi, p):
+    return p**xi * (1-p)**(1-xi)
+
+pd.DataFrame({
+    "x": [0, 1],
+    "f(x; p=0.2)": [bernoulli_mass(0, .2), bernoulli_mass(1, .2)]
+})
+```
+
+## Probabilidade e verossimilhança
+
+Na probabilidade, fixamos $p$ e variamos resultados possíveis $x$. Na verossimilhança, fixamos os dados observados e comparamos valores candidatos de $p$:
+
+$$L(p;x)=f(x;p).$$
+
+Embora a expressão algébrica seja a mesma, $L(p;x)$ não é uma distribuição de probabilidade para $p$.
+
+## Construção da verossimilhança conjunta
+
+Sob independência,
+
+$$
+L(p;x_1,\ldots,x_n)=\prod_{i=1}^n p^{x_i}(1-p)^{1-x_i}
+=p^S(1-p)^{n-S},
+$$
+
+em que $S=\sum_i x_i$ é o número de sucessos.
+
+```{python}
+def loglik_bernoulli(p, S, n):
+    return S*np.log(p)+(n-S)*np.log1p(-p)
+
+grid = np.linspace(.001, .999, 1000)
+ell = loglik_bernoulli(grid, S, n)
+p_grid = grid[np.argmax(ell)]
+pd.Series({"máximo_na_grade": p_grid, "proporção_amostral": S/n})
+```
+
+::: {.callout-note title="Interpretação"}
+Os dados entram na verossimilhança Bernoulli apenas por $S$ e $n$. Duas sequências com o mesmo número de fumantes produzem a mesma função de verossimilhança, desde que o modelo trate a ordem como irrelevante.
+:::
+
+```{python}
+plt.figure(figsize=(8, 4.5))
+plt.plot(grid, ell-ell.max(), linewidth=3)
+plt.axvline(S/n, color="darkorange", linestyle="--", label=f"p̂={S/n:.3f}")
+plt.xlabel("p"); plt.ylabel("log-verossimilhança relativa"); plt.legend(); plt.show()
+```
+
+## Por que tomar o log?
+
+Como $\log$ é estritamente crescente, ele preserva o ponto de máximo. Além disso,
+
+$$\log\prod_i f(x_i;p)=\sum_i\log f(x_i;p),$$
+
+evitando produtos numericamente minúsculos e simplificando derivadas.
+
+## Função escore e derivação
+
+A log-verossimilhança é
+
+$$\ell(p)=S\log p+(n-S)\log(1-p).$$
+
+Sua derivada, chamada **escore**, é
+
+$$U(p)=\ell'(p)=\frac{S}{p}-\frac{n-S}{1-p}.$$
+
+Igualando a zero:
+
+$$
+\frac{S}{p}=\frac{n-S}{1-p}
+\Longrightarrow S(1-p)=p(n-S)
+\Longrightarrow \widehat p=\frac Sn=\bar x.
+$$
+
+```{python}
+p_hat = S/n
+score_at_hat = S/p_hat-(n-S)/(1-p_hat)
+pd.Series({"p_hat": p_hat, "escore_em_p_hat": score_at_hat})
+```
+
+::: {.callout-note title="Interpretação"}
+O estimador não foi escolhido por hábito: ele é o valor de $p$ que torna a amostra observada mais verossímil dentro da família Bernoulli.
+:::
+
+## Verificação de máximo
+
+$$
+\ell''(p)=-\frac{S}{p^2}-\frac{n-S}{(1-p)^2}<0.
+$$
+
+A segunda derivada negativa mostra que a função é estritamente côncava quando há sucessos e fracassos. O ponto crítico é, portanto, o único máximo interior.
+
+```{python}
+second = -S/p_hat**2-(n-S)/(1-p_hat)**2
+second
+```
+
+## Curvatura e tamanho amostral
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 4.5))
+for nn in [20, 100, 500]:
+    ss = round(nn*p_hat)
+    yy = ss*np.log(grid)+(nn-ss)*np.log1p(-grid)
+    ax.plot(grid, yy-yy.max(), label=f"n={nn}")
+ax.set_ylim(-20, .5); ax.set_xlabel("p"); ax.set_ylabel("log-verossimilhança relativa")
+ax.legend(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Mantendo a proporção observada, aumentar $n$ não desloca muito o máximo, mas torna a curva mais estreita. Valores de $p$ afastados da estimativa perdem plausibilidade mais rapidamente.
+:::
+
+## O princípio geral
+
+Para parâmetros $\theta\in\Theta$,
+
+$$
+\widehat\theta_{MV}=\arg\max_{\theta\in\Theta}
+\ell(\theta;x),
+\qquad
+\ell(\theta;x)=\sum_i\log f(x_i;\theta).
+$$
+
+$\Theta$ é o espaço paramétrico e $f$ é a massa ou densidade postulada pelo modelo.
+
+## Exemplo Normal: estimação da média
+
+Se $X_i\overset{iid}{\sim}N(\mu,\sigma^2)$ com $\sigma^2$ conhecido,
+
+$$
+\ell(\mu)=C-\frac{1}{2\sigma^2}\sum_i(x_i-\mu)^2.
+$$
+
+Maximizar $\ell$ equivale a minimizar a soma de quadrados, cuja solução é $\widehat\mu=\bar x$.
+
+::: {.callout-note title="Interpretação"}
+A distribuição escolhida determina a forma da perda. A Normal produz perda quadrática; essa conexão será aplicada à regressão na Aula 19.
+:::
+
+## Limitações e validade
+
+O MLE é ótimo apenas em relação ao modelo especificado. Independência inadequada, heterogeneidade de $p$, seleção da amostra ou mensuração incorreta não desaparecem com uma derivação correta.
+
+::: {.callout-note title="Interpretação"}
+“Máxima verossimilhança” significa o melhor parâmetro dentro da família escolhida, e não prova de que a família representa bem o mecanismo gerador dos dados.
+:::
+
+## Exercícios de revisão
+
+1. Mostre que $L(p;1,1,0)=p^2(1-p)$.
+2. Explique por que $L(p;x)$ não precisa somar 1 sobre $p$.
+3. Derive o escore Bernoulli sem pular a regra da cadeia.
+4. O que mudaria se as observações fossem dependentes?
+5. Por que o log preserva o MLE?
+
+## Bibliografia
+
+- Wasserman, *All of Statistics*, capítulos 9 e 10.
+- Casella e Berger, *Statistical Inference*, capítulo 7.
+- Blitzstein e Hwang, *Introduction to Probability*, Bernoulli e Binomial.
+- James et al., *An Introduction to Statistical Learning*, máxima verossimilhança.

@@ -21,3 +21,14 @@ Os slides são escritos em Quarto Reveal.js.
 - [Aula 13: Testes de permutação](13-testes-permutacao.html)
 - [Aula 14: Permutação avançada](14-permutacao-avancada.html)
 - [Aula 15: Poder e múltiplos testes](15-poder-multiplos.html)
+- Aula 16: Correlação — *em revisão*
+- Aula 17: Regressão linear simples — *em revisão*
+- Aula 18: Máxima verossimilhança — *em revisão*
+- Aula 19: Verossimilhança na regressão — *em revisão*
+- Aula 20: Gradiente descendente — *em revisão*
+- Aula 21: Regressão linear múltipla — *em revisão*
+- Aula 22: Regressão logística — *em revisão*
+- Aula 23: Regularização — *em revisão*
+- Aula 24: Engenharia de atributos e validação cruzada — *em revisão*
+- Aula 25: KNN e prática de machine learning — *em revisão*
+- Aula 26: PCA e SVM aplicados — *em revisão*

@@ -126,8 +126,9 @@ Ao final da disciplina, espera-se que estudantes consigam:
 
 ## Módulos do curso
 
-O conteúdo segue a organização modular da disciplina. O Módulo 2 já reúne as
-Aulas 08–15; o Módulo 3 terá seus novos materiais produzidos nas Aulas 16–26.
+O conteúdo segue a organização modular da disciplina. O Módulo 2 reúne as
+Aulas 08–15; o Módulo 3 começa na Aula 16 com correlação e avança para
+regressão e aprendizado de máquina.
 
 ::: {.course-path}
 ::: {.path-step}
@@ -147,10 +148,9 @@ Aulas 08–15: estimadores, intervalos, testes, bootstrap, permutação, poder e
 múltiplos testes.
 :::
 
-::: {.path-step .mock-card}
-**Módulo 3 · Aulas 16–26 — em preparação**<br>
-Correlação, regressão e aprendizado de máquina, da modelagem linear à
-classificação e aos métodos não supervisionados.
+::: {.path-step}
+**Módulo 3 · Aulas 16–26**<br>
+Correlação, regressão e aprendizado de máquina. Aulas 16–26 disponíveis.
 :::
 :::
 
@@ -158,7 +158,7 @@ classificação e aos métodos não supervisionados.
 
 Consulte a sequência das aulas, a divisão por módulos e os links para os materiais publicados.
 
-[Abrir cronograma completo](cronograma.qmd){.btn .btn-primary}
+[Consultar programa e cronograma](cronograma.qmd){.btn .btn-primary}
 
 ## Dinâmica das aulas
 

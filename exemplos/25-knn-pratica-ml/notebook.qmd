@@ -1,0 +1,248 @@
+---
+title: "Aula 25 — KNN e a prática de machine learning"
+subtitle: "Guia de estudo executável"
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  error: false
+jupyter: python3
+---
+
+## 1. Pergunta e base de dados
+
+Este material acompanha uma análise completa: queremos classificar perfis associados à doença renal crônica (DRC). A base tem 400 pacientes, 24 atributos preditores e a resposta `classification`. Há medidas numéricas (creatinina, hemoglobina, glicose) e indicadores categóricos (hipertensão, diabetes, anemia), além de valores ausentes.
+
+::: {.callout-warning title="Escopo"}
+O estudo é didático. Desempenho nesta amostra não autoriza uso clínico: seriam necessárias validação externa, avaliação de vieses, governança e supervisão profissional.
+:::
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+sns.set_theme(style="whitegrid", context="notebook")
+DATA = Path("data/kidney_disease.csv")
+df = pd.read_csv(DATA)
+df.shape
+```
+
+## 2. Limpeza e descrição
+
+```{python}
+for col in df.select_dtypes(include=["object", "string"]):
+    df[col] = df[col].astype("string").str.strip().replace({"?": pd.NA, "": pd.NA})
+df["classification"] = df["classification"].str.replace("\t", "", regex=False).str.strip()
+
+numeric = ["age","bp","sg","al","su","bgr","bu","sc","sod","pot","hemo","pcv","wc","rc"]
+categorical = ["rbc","pc","pcc","ba","htn","dm","cad","appet","pe","ane"]
+for col in numeric:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+for col in categorical:
+    df[col] = df[col].astype(object).where(df[col].notna(), np.nan)
+
+df["classification"].value_counts()
+```
+
+```{python}
+summary = df[numeric].describe().T[["count", "mean", "std", "min", "50%", "max"]]
+summary.round(2)
+```
+
+```{python}
+missing = (100 * df[numeric + categorical].isna().mean()).sort_values(ascending=False)
+missing.head(12).round(1).to_frame("% ausente")
+```
+
+::: {.callout-note title="Interpretação"}
+A classe DRC é majoritária e a ausência de dados não é rara. Excluir todas as linhas incompletas reduziria a amostra e poderia alterar sua composição. Por isso, a imputação fará parte da pipeline e será aprendida somente no treinamento.
+:::
+
+## 3. Definição matemática do KNN
+
+Temos $\mathcal D=\{(x_i,y_i)\}_{i=1}^{n}$, com $x_i\in\mathbb R^p$ e $y_i\in\{0,1\}$. A distância euclidiana é
+
+$$d_2(x,z)=\sqrt{\sum_{j=1}^{p}(x_j-z_j)^2}.$$
+
+Aqui, $p$ é o número de atributos; $x_j$ e $z_j$ são os valores na coordenada $j$. Se $N_k(x)$ contém os índices dos $k$ exemplos mais próximos de $x$, então
+
+$$\hat p_k(x)=\frac{1}{k}\sum_{i\in N_k(x)}y_i,
+\qquad
+\hat f_k(x)=\mathbb 1\{\hat p_k(x)\geq 1/2\}.$$
+
+$\hat p_k(x)$ é a proporção local da classe 1, e $\mathbb 1\{\cdot\}$ vale 1 quando a condição é verdadeira.
+
+## 4. Por que padronizar?
+
+```{python}
+demo = df[["hemo", "bgr", "wc"]].dropna()
+demo.std().round(2)
+```
+
+A padronização $z_{ij}=(x_{ij}-\bar x_j)/s_j$ evita que a unidade numericamente maior domine a distância. Média, desvio-padrão e imputações devem ser estimados sem consultar o teste.
+
+## 5. Separação e baseline
+
+```{python}
+X = df[numeric + categorical]
+y = (df["classification"] == "ckd").astype(int)
+
+X_dev, X_test, y_dev, y_test = train_test_split(
+    X, y, test_size=0.20, stratify=y, random_state=20260827
+)
+
+print("desenvolvimento:", X_dev.shape, "teste:", X_test.shape)
+print("baseline majoritário:", round(y_dev.value_counts(normalize=True).max(), 3))
+```
+
+::: {.callout-note title="Interpretação"}
+O desenvolvimento serve para aprender transformações e escolher $k$. O teste fica reservado até o procedimento estar pronto. O baseline majoritário mede o que obteríamos sem usar os atributos.
+:::
+
+## 6. Pipeline sem vazamento
+
+```{python}
+preprocess = ColumnTransformer([
+    ("num", Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scale", StandardScaler()),
+    ]), numeric),
+    ("cat", Pipeline([
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("onehot", OneHotEncoder(handle_unknown="ignore")),
+    ]), categorical),
+])
+
+def knn_pipeline(k):
+    return Pipeline([
+        ("prep", preprocess),
+        ("knn", KNeighborsClassifier(n_neighbors=k)),
+    ])
+```
+
+A pipeline reaprende imputação, escala e codificação dentro de cada fold. Fazer essas transformações antes da validação revelaria informação dos folds de validação ao treinamento.
+
+## 7. Escolha de $k$ por validação cruzada
+
+```{python}
+folds = StratifiedKFold(5, shuffle=True, random_state=7)
+rows = []
+for k in range(1, 32, 2):
+    scores = cross_validate(
+        knn_pipeline(k), X_dev, y_dev, cv=folds,
+        scoring={"accuracy": "accuracy", "precision": "precision", "recall": "recall"}
+    )
+    rows.append({
+        "k": k,
+        "acurácia": scores["test_accuracy"].mean(),
+        "precisão": scores["test_precision"].mean(),
+        "recall": scores["test_recall"].mean(),
+    })
+
+cv = pd.DataFrame(rows)
+best_k = int(cv.loc[cv["acurácia"].idxmax(), "k"])
+cv.round(3)
+```
+
+```{python}
+ax = cv.plot(x="k", y=["acurácia", "precisão", "recall"], marker="o", figsize=(9, 4.5))
+ax.axvline(best_k, color="black", linestyle="--", label=f"k={best_k}")
+ax.set(ylabel="média na validação", ylim=(0.75, 1.01), title="Escolha de k no desenvolvimento")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+$k$ pequeno produz um modelo flexível; $k$ grande suaviza a fronteira. Nesta divisão, $k=1$ maximiza a acurácia média, mas uma escolha orientada por recall poderia seguir outro critério. A métrica deve ser definida pelo problema, não escolhida depois de observar o resultado mais favorável.
+:::
+
+## 8. Avaliação final
+
+```{python}
+final = knn_pipeline(best_k)
+final.fit(X_dev, y_dev)
+pred = final.predict(X_test)
+
+metrics = pd.Series({
+    "acurácia": accuracy_score(y_test, pred),
+    "precisão": precision_score(y_test, pred),
+    "recall": recall_score(y_test, pred),
+    "F1": f1_score(y_test, pred),
+})
+metrics.round(3)
+```
+
+As métricas são definidas a partir de verdadeiros positivos (VP), verdadeiros negativos (VN), falsos positivos (FP) e falsos negativos (FN):
+
+$$\operatorname{Acurácia}=\frac{VP+VN}{VP+VN+FP+FN},\quad
+\operatorname{Precisão}=\frac{VP}{VP+FP},\quad
+\operatorname{Recall}=\frac{VP}{VP+FN}.$$
+
+```{python}
+cm = confusion_matrix(y_test, pred)
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=["sem DRC", "com DRC"],
+            yticklabels=["sem DRC", "com DRC"])
+plt.xlabel("previsto")
+plt.ylabel("verdadeiro")
+plt.title("Matriz de confusão no teste reservado")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O modelo acerta 79 de 80 casos, mas o erro é um falso negativo. Em triagem, esse tipo de erro pode ter custo especialmente alto. A acurácia isolada não mostra isso; recall e matriz de confusão mostram.
+:::
+
+## 9. Inspeção do erro
+
+```{python}
+erros = X_test.copy()
+erros["verdadeiro"] = y_test
+erros["previsto"] = pred
+erros.loc[erros["verdadeiro"] != erros["previsto"],
+           ["age", "bp", "bgr", "sc", "hemo", "htn", "dm", "verdadeiro", "previsto"]]
+```
+
+Um erro individual não prova uma causa, mas ajuda a formular perguntas: o perfil está em uma região de sobreposição? Há muitas ausências? Esse subgrupo foi pouco representado? A análise de erros deve orientar investigação, não justificativas pós-hoc.
+
+## 10. Extensões e limites
+
+No KNN ponderado, vizinhos próximos recebem pesos maiores:
+
+$$\hat p(x)=\frac{\sum_{i\in N_k(x)}w_i(x)y_i}{\sum_{i\in N_k(x)}w_i(x)},
+\qquad w_i(x)=\frac{1}{d(x,x_i)+\varepsilon}.$$
+
+Para regressão, substituímos o voto pela média local: $\hat f_k(x)=k^{-1}\sum_{i\in N_k(x)}y_i$.
+
+Limitações centrais: previsão custosa, sensibilidade à representação, degradação em alta dimensão e ausência de extrapolação para regiões sem exemplos.
+
+## 11. Checklist final
+
+- pergunta, população, unidade e momento da previsão estão definidos?
+- o teste permaneceu isolado?
+- pré-processamento está dentro da pipeline?
+- há um baseline?
+- a métrica representa o custo dos erros?
+- foram mostradas saídas, matriz de confusão e exemplos de erro?
+- limitações e escopo de uso estão documentados?
+
+## Referências
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 2, 4 e 5.
+- Géron, *Hands-On Machine Learning*, capítulos 2 e 3.
+- Kuhn e Johnson, *Applied Predictive Modeling*, capítulos 4, 7 e 13.
+- [Chronic Kidney Disease Dataset — Kaggle](https://www.kaggle.com/datasets/mansoordaku/ckdisease).

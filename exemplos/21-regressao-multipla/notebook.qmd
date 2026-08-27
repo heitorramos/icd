@@ -1,0 +1,268 @@
+---
+title: "Regressão linear múltipla e introdução a GLMs"
+subtitle: "Material de apoio — Aula 21"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia formula regressão múltipla em notação matricial, implementa o ajuste e interpreta seus coeficientes. Ao final, introduz os três componentes de um modelo linear generalizado para preparar a regressão logística.
+
+## Base de dados de apoio
+
+Usaremos [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset), do Kaggle. Cada linha representa uma pessoa segurada.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+df = pd.read_csv(Path("../16-correlacao/data/insurance.csv"))
+df.head()
+```
+
+```{python}
+df.info()
+```
+
+```{python}
+df.describe(include="all").T
+```
+
+::: {.callout-note title="Interpretação"}
+A base combina variáveis quantitativas e categóricas. `charges` é assimétrica, tabagismo separa patamares e as regiões possuem quatro níveis. Essas propriedades determinam a codificação e orientam o diagnóstico.
+:::
+
+## Modelo estatístico
+
+Para $i=1,\ldots,n$,
+
+$$
+Y_i=\beta_0+\sum_{j=1}^p\beta_jx_{ij}+\varepsilon_i,
+\qquad E[\varepsilon_i\mid X_i]=0.
+$$
+
+$i$ indexa observações, $j$ indexa preditores, $x_{ij}$ é o valor do preditor $j$ para a observação $i$ e $\beta_j$ é seu coeficiente populacional.
+
+$\beta_j$ compara a média prevista após aumentar $X_j$ em uma unidade, mantendo fixos os demais preditores do modelo.
+
+::: {.callout-note title="Interpretação"}
+“Manter fixo” define uma comparação condicional, não uma intervenção. Variáveis omitidas, erro de mensuração e forma funcional inadequada ainda podem impedir uma leitura causal.
+:::
+
+## Codificação da matriz de projeto
+
+Usaremos `northeast` como referência regional e `female`, `no smoker` como referências dos indicadores binários.
+
+```{python}
+Xdf = pd.DataFrame({
+    "age": df["age"],
+    "bmi": df["bmi"],
+    "children": df["children"],
+    "smoker_yes": (df["smoker"] == "yes").astype(int),
+    "sex_male": (df["sex"] == "male").astype(int),
+})
+Xdf = pd.concat([
+    Xdf,
+    pd.get_dummies(df["region"], prefix="region", drop_first=True, dtype=int)
+], axis=1)
+Xdf.head()
+```
+
+::: {.callout-note title="Interpretação"}
+Remover uma categoria evita dependência linear perfeita entre o intercepto e os indicadores. Alterar a referência muda a parametrização, mas não muda os valores ajustados.
+:::
+
+## Forma matricial
+
+Com uma coluna de 1 para o intercepto,
+
+$$E[y\mid X]=X\beta,$$
+
+em que $X$ é $n\times(p+1)$, $\beta$ é $(p+1)\times1$ e $y$ é $n\times1$.
+
+```{python}
+X = np.column_stack([np.ones(len(df)), Xdf.to_numpy(float)])
+y = df["charges"].to_numpy(float)
+names = ["intercepto"] + list(Xdf.columns)
+pd.Series({"linhas_X": X.shape[0], "colunas_X": X.shape[1],
+           "tamanho_y": len(y), "posto_X": np.linalg.matrix_rank(X)})
+```
+
+O posto igual ao número de colunas confirma que os coeficientes estão identificados nesta codificação.
+
+## Perda e gradiente
+
+$$J(b)=\|y-Xb\|_2^2=(y-Xb)^T(y-Xb).$$
+
+Expandindo:
+
+$$J(b)=y^Ty-2b^TX^Ty+b^TX^TXb.$$
+
+Logo,
+
+$$\nabla_bJ(b)=-2X^T(y-Xb).$$
+
+O componente $j$ é $-2\sum_i x_{ij}e_i$: resíduos ponderados pela coluna $j$.
+
+## Ajuste numérico
+
+Usamos `lstsq`, que resolve o problema sem formar explicitamente $(X^TX)^{-1}$.
+
+```{python}
+beta = np.linalg.lstsq(X, y, rcond=None)[0]
+coef = pd.Series(beta, index=names, name="coeficiente")
+coef.round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Mantendo os demais preditores fixos, um ano adicional de idade corresponde a cerca de US$ 256,86, uma unidade de IMC a US$ 339,19 e ser fumante a aproximadamente US$ 23.848,54 na média prevista. Essas são associações condicionais do modelo.
+:::
+
+## Valores ajustados e qualidade
+
+```{python}
+prediction = X @ beta
+residual = y-prediction
+sse = np.sum(residual**2)
+sst = np.sum((y-y.mean())**2)
+pd.Series({
+    "R²": 1-sse/sst,
+    "RMSE": np.sqrt(np.mean(residual**2)),
+    "média_resíduos": residual.mean(),
+}).round(4)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+axes[0].scatter(y, prediction, s=10, alpha=.35)
+axes[0].plot([y.min(), y.max()], [y.min(), y.max()], "--", color="darkorange")
+axes[0].set(xlabel="observado", ylabel="ajustado")
+axes[1].scatter(prediction, residual, s=10, alpha=.35)
+axes[1].axhline(0, color="black", linestyle="--")
+axes[1].set(xlabel="ajustado", ylabel="resíduo")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O modelo múltiplo explica muito mais variação que idade isolada, sobretudo pela inclusão de tabagismo. Ainda há assimetria, valores extremos e variância residual desigual; mais $R^2$ não significa modelo plenamente adequado.
+:::
+
+## Interações
+
+Para permitir inclinações de idade distintas por tabagismo:
+
+$$
+E[Y]=\beta_0+\beta_1age+\beta_2smoker
++\beta_3(age\times smoker)+\cdots.
+$$
+
+```{python}
+X_inter = Xdf.copy()
+X_inter["age_x_smoker"] = X_inter["age"]*X_inter["smoker_yes"]
+Xi = np.column_stack([np.ones(len(df)), X_inter.to_numpy(float)])
+bi = np.linalg.lstsq(Xi, y, rcond=None)[0]
+pd.Series(bi, index=["intercepto"]+list(X_inter.columns)).loc[
+    ["age", "smoker_yes", "age_x_smoker"]
+].round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Com interação, o coeficiente de idade é a inclinação entre não fumantes; `age_x_smoker` é quanto essa inclinação muda entre fumantes. Termos principais devem permanecer para preservar a hierarquia do modelo.
+:::
+
+## Colinearidade
+
+Colinearidade ocorre quando colunas de $X$ são altamente relacionadas. Ela pode inflar a incerteza dos coeficientes sem destruir necessariamente a qualidade preditiva conjunta.
+
+```{python}
+numeric_corr = Xdf[["age", "bmi", "children"]].corr()
+numeric_corr.round(3)
+```
+
+Uma forma diagnóstica é observar a sensibilidade dos coeficientes a pequenas mudanças na amostra.
+
+## Bootstrap do vetor de coeficientes
+
+```{python}
+B = 1000
+boot = np.empty((B, X.shape[1]))
+for b in range(B):
+    idx = rng.integers(0, len(df), len(df))
+    boot[b] = np.linalg.lstsq(X[idx], y[idx], rcond=None)[0]
+
+summary = pd.DataFrame({
+    "estimativa": beta,
+    "q2.5": np.quantile(boot, .025, axis=0),
+    "q97.5": np.quantile(boot, .975, axis=0),
+}, index=names)
+summary.round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Cada intervalo mantém fixa a especificação do modelo e quantifica a variação sob reamostragem das pessoas observadas. Ele não incorpora incerteza sobre quais variáveis deveriam entrar nem corrige vieses do desenho observacional.
+:::
+
+## Validação e complexidade
+
+Adicionar preditores nunca aumenta a SSE de treinamento. Por isso, $R^2$ não diminui. Para avaliar generalização, precisamos separar dados de treinamento e validação ou usar validação cruzada.
+
+Mais colunas podem melhorar a aproximação, mas também aumentar variância, instabilidade e risco de capturar ruído.
+
+## Ponte para modelos lineares generalizados
+
+Um GLM possui:
+
+1. componente aleatório: distribuição de $Y_i\mid X_i$ na família exponencial;
+2. componente sistemático: $\eta_i=x_i^T\beta$;
+3. função de ligação: $g(\mu_i)=\eta_i$, com $\mu_i=E[Y_i\mid X_i]$.
+
+## O modelo normal é um GLM
+
+Na regressão linear normal:
+
+$$Y_i\mid X_i\sim N(\mu_i,\sigma^2),$$
+
+$$g(\mu_i)=\mu_i=x_i^T\beta.$$
+
+O link identidade deixa a média na mesma escala do preditor linear.
+
+## Antecipação da regressão logística
+
+Para resposta binária,
+
+$$Y_i\mid X_i\sim\operatorname{Bernoulli}(\pi_i),$$
+
+$$\log\left(\frac{\pi_i}{1-\pi_i}\right)=x_i^T\beta.$$
+
+Logo,
+
+$$\pi_i=\frac{1}{1+e^{-x_i^T\beta}},$$
+
+o que garante probabilidades entre 0 e 1.
+
+::: {.callout-note title="Interpretação"}
+A regressão logística preserva a matriz $X$ e o preditor linear $X\beta$. O que muda é a distribuição da resposta, a função de ligação e, consequentemente, a verossimilhança e a perda.
+:::
+
+## Questões de revisão
+
+1. Explique as dimensões de $X$, $\beta$, $y$ e $\nabla J$.
+2. Derive $\nabla J=-2X^T(y-X\beta)$.
+3. Interprete um coeficiente indicador e uma interação.
+4. Por que mudar a categoria de referência não muda previsões?
+5. Como colinearidade afeta interpretação e previsão?
+6. Quais são os três componentes de um GLM?
+
+## Bibliografia
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 3 e 4.
+- Faraway, *Linear Models with R*.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*.
+- McCullagh e Nelder, *Generalized Linear Models*.

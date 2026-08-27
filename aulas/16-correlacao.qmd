@@ -1,0 +1,73 @@
+---
+title: "Aula 16: Correlação"
+subtitle: "Associação linear, postos, condicionamento e limites"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Covariância, Pearson, Spearman, incerteza e limites da correlação.
+
+[Abrir slides](../slides/16-correlacao.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Análise reproduzível com derivações, resultados, interpretações e exercícios.
+
+[Abrir notebook](../exemplos/16-correlacao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Despesas médicas, idade, IMC, dependentes, tabagismo e região para 1.338 pessoas.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- construir covariância a partir de desvios em relação às médias;
+- definir a correlação de Pearson e sua interpretação geométrica;
+- comparar associação linear e monotônica com Pearson e Spearman;
+- reconhecer não linearidade, pontos influentes e restrição de amplitude;
+- distinguir correlações marginais e condicionais;
+- quantificar a incerteza da correlação amostral;
+- evitar interpretações causais indevidas.
+
+## Estudo de caso
+
+A base Medical Insurance Cost permite estudar como idade, IMC e despesas
+médicas variam conjuntamente. Tabagismo cria estratos com níveis e associações
+diferentes, mostrando por que uma correlação global pode ser insuficiente.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, seções sobre correlação e regressão linear.
+- James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo 3.
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, seções sobre covariância, correlação e modelos lineares.
+
+### Bibliografia complementar
+
+- Freedman, Pisani e Purves, *Statistics*, capítulos sobre correlação e estudos observacionais.
+- VanderPlas, *Python Data Science Handbook*, capítulos de visualização e análise exploratória.
+- [Computational and Inferential Thinking, seção 15.1](https://inferentialthinking.com/chapters/15/1/Correlation.html).
+- Tyler Vigen, [*Spurious Correlations*](https://www.tylervigen.com/spurious-correlations), exemplos para discutir busca múltipla e tendências comuns.
+
+Pearson e Spearman aparecem em textos introdutórios; restrição de amplitude,
+falácia ecológica, incerteza por bootstrap e condicionamento exigem a
+bibliografia complementar para uma discussão mais cuidadosa.

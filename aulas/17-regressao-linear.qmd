@@ -1,0 +1,65 @@
+---
+title: "Aula 17: Regressão linear simples"
+subtitle: "Média condicional, mínimos quadrados e diagnóstico"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+[Abrir slides](../slides/17-regressao-linear.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+[Abrir notebook](../exemplos/17-regressao-linear/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Dados de 1.338 pessoas seguradas, com idade, despesas médicas, tabagismo e outras características. Licença CC0.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- interpretar a regressão como modelo para $E[Y\mid X=x]$;
+- distinguir parâmetro, estimativa, erro e resíduo;
+- formular e derivar o estimador de mínimos quadrados;
+- interpretar intercepto, inclinação, $R^2$ e diagnósticos de resíduos;
+- usar bootstrap e permutação para estudar a incerteza da inclinação.
+
+## Escopo da aula
+
+A solução é obtida pela minimização convencional da soma dos resíduos ao quadrado, usando derivadas. A abordagem por projeções não será retomada, pois já foi estudada em outra disciplina. Máxima verossimilhança e gradiente descendente aparecem apenas como antecipação das próximas aulas.
+
+## Estudo de caso
+
+A base Medical Insurance Cost permite transformar a associação entre idade e
+despesas em uma regra explícita para a média condicional. O tabagismo revela
+estrutura nos resíduos e ajuda a discutir por que uma reta simples pode ser
+estatisticamente informativa, mas insuficiente para previsões individuais.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James, G.; Witten, D.; Hastie, T.; Tibshirani, R. *An Introduction to Statistical Learning*, cap. 3.
+- Diez, D.; Barr, C.; Çetinkaya-Rundel, M. *OpenIntro Statistics*, seção sobre regressão linear.
+
+### Bibliografia complementar
+
+- Wasserman, L. *All of Statistics*, seções sobre regressão linear e mínimos quadrados.
+- Bruce, P.; Bruce, A.; Gedeck, P. *Practical Statistics for Data Scientists*, capítulo sobre regressão.

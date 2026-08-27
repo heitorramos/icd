@@ -1,0 +1,328 @@
+---
+title: "Engenharia de atributos e validação cruzada"
+subtitle: "Material de apoio — Aula 24"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia transforma uma tabela heterogênea em matrizes adequadas para modelagem e mostra como comparar representações por validação cruzada sem contaminar o teste. Todas as transformações que aprendem parâmetros são refeitas dentro de cada divisão.
+
+## Base de dados de apoio
+
+Usaremos [New York City Airbnb Open Data](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data), do Kaggle. Cada linha representa um anúncio publicado em Nova York em 2019.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+df = pd.read_csv(Path("../03-tabelas-tipos/data/AB_NYC_2019.csv"))
+df.head()
+```
+
+```{python}
+df.info()
+```
+
+```{python}
+df.describe(include="all").T
+```
+
+::: {.callout-note title="Interpretação"}
+A base mistura números, categorias, coordenadas, texto e datas. `reviews_per_month` e `last_review` têm ausências relacionadas à falta de avaliações. `price` possui valores extremos e forte assimetria; usaremos $\log(1+price)$ como resposta e limitaremos a análise descritiva ao percentil 99 para evitar que poucos anúncios dominem os gráficos.
+:::
+
+## Análise descritiva
+
+```{python}
+work = df[(df["price"] > 0) & (df["price"] <= df["price"].quantile(.99))].copy()
+summary = work.groupby(["neighbourhood_group", "room_type"], observed=True)["price"].agg(
+    n="size", mediana="median", media="mean"
+)
+summary.round(1)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.boxplot(data=work, x="room_type", y="price", hue="neighbourhood_group",
+            showfliers=False, ax=axes[0])
+axes[0].tick_params(axis="x", rotation=18)
+sample = work.sample(6000, random_state=7)
+axes[1].scatter(sample["longitude"], sample["latitude"],
+                c=np.log1p(sample["price"]), s=6, alpha=.45)
+axes[1].set(xlabel="longitude", ylabel="latitude")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Apartamentos inteiros têm preços tipicamente maiores, especialmente em Manhattan. A localização espacial também exibe estrutura. Uma única relação linear entre latitude, longitude e preço dificilmente representa todos esses patamares.
+:::
+
+## Representação formal
+
+Uma função de atributos
+
+$$\phi:\mathcal X\rightarrow\mathbb R^p$$
+
+leva a observação bruta $x$ a $p$ números. Um modelo linear sobre a representação é
+
+$$\widehat y=\beta_0+\phi(x)^T\beta.$$
+
+$\mathcal X$ é o espaço original, que pode conter texto e categorias; $\phi_j(x)$ é o atributo transformado $j$; $\beta_j$ é seu coeficiente. O modelo pode ser não linear em $x$ e continuar linear nos parâmetros.
+
+## Transformações numéricas
+
+Para números não negativos e assimétricos, uma possibilidade é
+
+$$z=\log(1+x).$$
+
+Para curvatura, podemos usar uma base polinomial
+
+$$\phi(x)=(x,x^2,\ldots,x^d)^T.$$
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+sns.histplot(work["price"], bins=60, ax=axes[0])
+sns.histplot(np.log1p(work["price"]), bins=60, ax=axes[1])
+axes[0].set_title("price")
+axes[1].set_title("log(1 + price)")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O log comprime a cauda direita e faz com que erros relativos tenham mais influência. Uma previsão na escala log deve ser transformada de volta com cuidado; $\exp(\widehat y)-1$ estima uma mediana condicional sob várias formulações, não automaticamente a média do preço.
+:::
+
+## Interações
+
+Uma interação permite que o efeito de $x_1$ dependa de $x_2$:
+
+$$E[Y\mid x_1,x_2]=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_1x_2.$$
+
+Logo,
+
+$$\frac{\partial E[Y\mid x]}{\partial x_1}=\beta_1+\beta_3x_2.$$
+
+No Airbnb, uma interação entre `room_type` e Manhattan permite que a diferença entre quarto privado e apartamento inteiro varie nessa região.
+
+## One-hot encoding
+
+Para uma categoria nominal com níveis $c_1,\ldots,c_K$,
+
+$$z_k=\mathbb 1(x=c_k).$$
+
+Com intercepto, usamos $K-1$ colunas para evitar dependência linear perfeita.
+
+```{python}
+pd.get_dummies(work[["neighbourhood_group", "room_type"]],
+               drop_first=True, dtype=int).head()
+```
+
+::: {.callout-note title="Interpretação"}
+Os indicadores não impõem ordem entre regiões ou tipos de quarto. A categoria removida é referência para os coeficientes, mas as previsões não dependem de qual referência foi escolhida.
+:::
+
+## Valores ausentes
+
+```{python}
+work[["last_review", "reviews_per_month", "name", "host_name"]].isna().mean().sort_values(ascending=False).to_frame("proporção ausente")
+```
+
+Para uma coluna numérica, podemos combinar imputação e indicador:
+
+$$x_j^{imp}=x_j\text{ se observado; caso contrário, }m_j,$$
+
+$$r_j=\mathbb 1(x_j\text{ está ausente}).$$
+
+$m_j$ deve ser aprendido somente no treino. Aqui, preencher `reviews_per_month` com zero é substantivamente plausível para anúncios sem avaliações, e o indicador registra esse caso.
+
+::: {.callout-note title="Interpretação"}
+Imputar não recupera o valor verdadeiro. A regra apenas cria uma entrada utilizável pelo modelo; o indicador permite que ele represente diferença sistemática entre observado e ausente.
+:::
+
+## Texto e datas
+
+O título pode produzir atributos simples, como comprimento e presença de termos. Bag-of-words usa contagens $x_{ij}$ do termo $j$ no documento $i$; TF-IDF reduz o peso de termos muito frequentes.
+
+Datas podem produzir ano, mês, dia da semana ou tempo desde um evento. Para ciclos anuais,
+
+$$s=\sin(2\pi m/12),\qquad c=\cos(2\pi m/12),$$
+
+de modo que dezembro e janeiro fiquem próximos.
+
+## Construindo quatro representações
+
+```{python}
+def feature_frames(data):
+    base = pd.DataFrame({
+        "latitude": data["latitude"],
+        "longitude": data["longitude"],
+        "minimum_nights": data["minimum_nights"],
+        "number_of_reviews": data["number_of_reviews"],
+        "reviews_per_month": data["reviews_per_month"].fillna(0),
+        "availability_365": data["availability_365"],
+    }, index=data.index)
+
+    transformed = base.copy()
+    transformed["log_minimum_nights"] = np.log1p(data["minimum_nights"])
+    transformed["log_number_reviews"] = np.log1p(data["number_of_reviews"])
+    transformed["reviews_missing"] = data["reviews_per_month"].isna().astype(int)
+    transformed["name_length"] = data["name"].fillna("").str.len()
+
+    categories = pd.concat([
+        transformed,
+        pd.get_dummies(data[["neighbourhood_group", "room_type"]],
+                       drop_first=True, dtype=float)
+    ], axis=1)
+
+    enriched = categories.copy()
+    lat = data["latitude"]-data["latitude"].mean()
+    lon = data["longitude"]-data["longitude"].mean()
+    enriched["lat2"] = lat**2
+    enriched["lon2"] = lon**2
+    enriched["lat_lon"] = lat*lon
+    for column in [c for c in categories if c.startswith("room_type_")]:
+        enriched[f"{column}:Manhattan"] = categories[column]*(
+            data["neighbourhood_group"] == "Manhattan").astype(float)
+
+    return {"numéricos": base, "+ transformações": transformed,
+            "+ categorias": categories, "+ interações": enriched}
+
+frames = feature_frames(work)
+pd.Series({name: frame.shape[1] for name, frame in frames.items()}, name="n_atributos")
+```
+
+::: {.callout-note title="Interpretação"}
+Cada conjunto acrescenta uma hipótese: assimetria, ausência informativa, diferenças de grupo e efeitos condicionais. Mais colunas não garantem melhor generalização; essas hipóteses serão comparadas fora da amostra.
+:::
+
+## Vazamento e pipeline
+
+Uma pipeline pode ser representada por
+
+$$x\xrightarrow{T_{\widehat\gamma}}z\xrightarrow{f_{\widehat\beta}}\widehat y.$$
+
+$\widehat\gamma$ reúne parâmetros de transformação, como médias, escalas, imputações e vocabulário; $\widehat\beta$ reúne parâmetros do modelo. Ambos devem ser estimados apenas no treino.
+
+Se $T$ consulta validação ou teste, a avaliação usa informação que não estaria disponível em produção.
+
+## Treino, validação e teste
+
+- treino estima $\widehat\gamma$ e $\widehat\beta$;
+- validação escolhe representação e hiperparâmetros;
+- teste estima desempenho depois que as escolhas terminaram.
+
+Consultar o teste repetidamente adapta decisões a ele e destrói sua função de avaliação final.
+
+## Validação cruzada formal
+
+Divida os índices de desenvolvimento em $K$ conjuntos disjuntos $I_1,\ldots,I_K$. Para pipeline candidata $m$,
+
+$$\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K\frac1{|I_k|}
+\sum_{i\in I_k}L(y_i,\widehat f_m^{(-k)}(x_i)).$$
+
+$\widehat f_m^{(-k)}$ é ajustada sem $I_k$; $L$ é a perda; $|I_k|$ é o tamanho da parte de validação.
+
+## Implementação do ajuste Ridge
+
+Usaremos uma pequena penalização para estabilidade numérica. A Aula 23 derivou
+
+$$\widehat\beta=(X^TX+n\lambda I)^{-1}X^Ty.$$
+
+```{python}
+def ridge_predict(X_train, y_train, X_valid, lam=1e-3):
+    mean = X_train.mean(axis=0)
+    scale = X_train.std(axis=0)
+    scale[scale == 0] = 1
+    A = (X_train-mean)/scale
+    B = (X_valid-mean)/scale
+    y_mean = y_train.mean()
+    beta = np.linalg.solve(
+        A.T@A + len(A)*lam*np.eye(A.shape[1]),
+        A.T@(y_train-y_mean)
+    )
+    return y_mean+B@beta
+
+def rmse(y, prediction):
+    return np.sqrt(np.mean((y-prediction)**2))
+```
+
+## Validação cruzada das representações
+
+```{python}
+data = work.sample(12000, random_state=11)
+frames = feature_frames(data)
+y = np.log1p(data["price"].to_numpy(float))
+folds = np.array_split(rng.permutation(len(data)), 5)
+scores = {name: [] for name in frames}
+
+for k, valid in enumerate(folds):
+    train = np.concatenate([part for j, part in enumerate(folds) if j != k])
+    for name, frame in frames.items():
+        X = frame.to_numpy(float)
+        prediction = ridge_predict(X[train], y[train], X[valid])
+        scores[name].append(rmse(y[valid], prediction))
+
+pd.DataFrame(scores, index=[f"parte {k+1}" for k in range(5)]).round(4)
+```
+
+```{python}
+score_summary = pd.DataFrame(scores).agg(["mean", "std"]).T
+score_summary.columns = ["RMSE médio", "desvio entre partes"]
+score_summary.round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+Adicionar categorias gera a maior redução de RMSE: região e tipo de quarto não estavam bem representados pelas coordenadas e números isolados. Interações melhoram um pouco mais. A dispersão entre partes mostra que a comparação também tem variabilidade.
+:::
+
+## Visualizando a comparação
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.boxplot([scores[name] for name in scores], tick_labels=list(scores), showmeans=True)
+ax.set(ylabel="RMSE em validação", title="Comparação em cinco partes")
+ax.tick_params(axis="x", rotation=15)
+plt.tight_layout(); plt.show()
+```
+
+## Reajuste e teste final
+
+Após escolher a representação, ela deve ser reajustada em todo o conjunto de desenvolvimento. Só então o teste é usado uma vez. Em aplicações reais, o teste deve ter sido reservado antes de qualquer análise comparativa.
+
+O modelo intermediário de cada parte não é entregue: ele existe apenas para estimar o desempenho da pipeline.
+
+## A divisão deve simular o uso
+
+K-fold aleatório é adequado apenas quando observações são aproximadamente intercambiáveis. Adapte a divisão quando houver:
+
+- tempo: treine no passado e valide no futuro;
+- entidades repetidas: mantenha cada pessoa ou anfitrião em uma única parte;
+- classes raras: preserve proporções;
+- dependência espacial: separe regiões quando isso refletir a aplicação.
+
+::: {.callout-note title="Interpretação"}
+Se anúncios do mesmo anfitrião aparecem em treino e validação, o modelo pode explorar padrões específicos daquela entidade. Uma divisão por anfitrião mede melhor a generalização para anfitriões ainda não observados.
+:::
+
+## Síntese
+
+- a representação $\phi(x)$ define o que o modelo consegue aprender;
+- transformações numéricas, categorias, ausências, texto e tempo exigem escolhas próprias;
+- todo parâmetro de pré-processamento deve ser aprendido dentro do treino;
+- pipelines mantêm transformação e modelo juntos;
+- validação cruzada compara pipelines sem consumir o teste;
+- o desenho das partes deve reproduzir o uso real.
+
+## Bibliografia
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 5 e 6.
+- Kuhn e Johnson, *Feature Engineering and Selection*.
+- Zheng e Casari, *Feature Engineering for Machine Learning*.
+- Data 100, capítulos sobre feature engineering, validação e generalização.

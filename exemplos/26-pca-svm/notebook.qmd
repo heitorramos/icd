@@ -1,0 +1,306 @@
+---
+title: "PCA e SVM aplicados à Ciência de Dados"
+subtitle: "Material de apoio — Aula 26"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia usa PCA como transformação de representação e SVM como classificador. O foco é aplicado: formular o suficiente para interpretar hiperparâmetros, montar uma pipeline sem vazamento, comparar custo e desempenho e diagnosticar erros.
+
+## Base de dados de apoio
+
+Usaremos [Fashion-MNIST](https://www.kaggle.com/datasets/zalando-research/fashionmnist), disponível no Kaggle e mantido originalmente pela Zalando Research. Cada observação é uma imagem $28\times28$ em tons de cinza, associada a uma de dez classes.
+
+```{python}
+from pathlib import Path
+from time import perf_counter
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from PIL import Image
+from sklearn.decomposition import PCA
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+data = np.load(Path("data/fashion_mnist_sample.npz"))
+images, labels = data["images"], data["labels"]
+class_names = np.array(["Camiseta", "Calça", "Suéter", "Vestido", "Casaco",
+                        "Sandália", "Camisa", "Tênis", "Bolsa", "Bota"])
+pd.Series({"imagens": len(images), "altura": images.shape[1],
+           "largura": images.shape[2], "classes": len(np.unique(labels))})
+```
+
+## Análise descritiva
+
+```{python}
+pd.Series(labels).value_counts().sort_index().rename(index=dict(enumerate(class_names))).to_frame("n")
+```
+
+```{python}
+fig, axes = plt.subplots(2, 5, figsize=(10, 4))
+for label, ax in enumerate(axes.flat):
+    image = images[np.where(labels == label)[0][0]]
+    ax.imshow(image, cmap="gray")
+    ax.set_title(class_names[label])
+    ax.axis("off")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+A amostra local tem 600 imagens por classe, portanto acurácia não será dominada por uma classe majoritária. As classes de roupas superiores possuem contornos parecidos; bolsa, calça e alguns calçados são visualmente mais distintos.
+:::
+
+## Do gato à aproximação de baixo posto
+
+Uma imagem em tons de cinza é uma matriz $A\in\mathbb R^{m\times n}$. Se
+
+$$A=U\Sigma V^T,$$
+
+a aproximação de posto $k$ é
+
+$$A_k=U_k\Sigma_kV_k^T=\sum_{j=1}^k\sigma_ju_jv_j^T.$$
+
+$u_j$ e $v_j$ descrevem padrões verticais e horizontais; $\sigma_j$ mede a importância do padrão $j$.
+
+```{python}
+cat = Image.open(Path("../../slides/assets/aula26-pca-svm/cat-original.jpeg")).convert("L")
+cat.thumbnail((420, 280))
+A = np.asarray(cat, dtype=float)/255
+U, singular_values, Vt = np.linalg.svd(A, full_matrices=False)
+
+fig, axes = plt.subplots(1, 5, figsize=(13, 3))
+axes[0].imshow(A, cmap="gray", vmin=0, vmax=1); axes[0].set_title("Original")
+for ax, k in zip(axes[1:], [5, 20, 60, 120]):
+    Ak = (U[:, :k]*singular_values[:k]) @ Vt[:k]
+    ax.imshow(Ak, cmap="gray", vmin=0, vmax=1); ax.set_title(f"posto {k}")
+for ax in axes: ax.axis("off")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O posto 5 mantém apenas grandes regiões de luminosidade. Com 60 ou 120 termos, pelos e bordas reaparecem. A aproximação troca armazenamento e detalhe; o melhor $k$ depende do uso da imagem.
+:::
+
+## Taxa de armazenamento
+
+A imagem original guarda $mn$ números. A aproximação guarda $mk+k+kn$, portanto
+
+$$r_k=\frac{k(m+n+1)}{mn}.$$
+
+```{python}
+m, n = A.shape
+pd.DataFrame({
+    "posto": [5, 20, 60, 120],
+    "fração_armazenada": [k*(m+n+1)/(m*n) for k in [5,20,60,120]],
+    "energia_preservada": [np.sum(singular_values[:k]**2)/np.sum(singular_values**2)
+                            for k in [5,20,60,120]],
+}).round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+Energia preservada e qualidade perceptual não são sinônimos. Além disso, formatos reais usam codificação, quantização e metadados; a razão acima compara apenas números armazenados na matriz e nos fatores de baixo posto.
+:::
+
+## PCA como representação de observações
+
+Vetorizamos cada roupa em 784 pixels:
+
+$$x_i\in\mathbb R^{784}.$$
+
+Para a matriz centrada $X_c$, escrevemos
+
+$$X_c=U\Sigma V^T,\qquad Z=X_cV_k.$$
+
+$V_k$ contém as $k$ direções principais; $Z$ contém os escores das observações.
+
+```{python}
+X = images.reshape(len(images), -1).astype(float)/255
+permutation = rng.permutation(len(X))
+train, test = permutation[:4800], permutation[4800:]
+X_train, X_test = X[train], X[test]
+y_train, y_test = labels[train], labels[test]
+pca = PCA(n_components=150, svd_solver="randomized", random_state=7).fit(X_train)
+pd.Series({"X_treino": X_train.shape, "componentes": pca.components_.shape})
+```
+
+## Variância explicada
+
+$$\operatorname{PVE}_j=\frac{\sigma_j^2}{\sum_{\ell=1}^{r}\sigma_\ell^2}.$$
+
+```{python}
+cumulative = np.cumsum(pca.explained_variance_ratio_)
+pd.Series({
+    "componentes_para_80%": int(np.searchsorted(cumulative, .80)+1),
+    "componentes_para_90%": int(np.searchsorted(cumulative, .90)+1),
+    "componentes_para_95%": int(np.searchsorted(cumulative, .95)+1),
+})
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(np.arange(1, len(cumulative)+1), cumulative)
+ax.axhline(.90, color="darkorange", linestyle="--")
+ax.set(xlabel="componentes", ylabel="variância explicada acumulada")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+PCA preserva variação de $X$, não informação sobre a classe. O número de componentes necessário para classificação deve ser validado com o classificador, mesmo quando a curva de variância fornece um bom ponto de partida.
+:::
+
+## Projeção exploratória
+
+```{python}
+pca2 = PCA(n_components=2, random_state=7)
+Z2 = pca2.fit_transform(X_train)
+sample = rng.choice(len(Z2), 2200, replace=False)
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.scatter(Z2[sample, 0], Z2[sample, 1], c=y_train[sample],
+           cmap="tab10", s=8, alpha=.5)
+ax.set(xlabel="PC1", ylabel="PC2")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Duas componentes revelam grupos, mas várias classes se sobrepõem. Isso não implica que elas sejam inseparáveis no espaço com 50 componentes. Projeções bidimensionais são ferramentas exploratórias, não estimativas diretas da acurácia possível.
+:::
+
+## SVM por margem
+
+Na versão binária, a função de decisão é
+
+$$f(z)=w^Tz+b,\qquad \widehat y=\operatorname{sign}(f(z)).$$
+
+A margem geométrica entre $w^Tz+b=1$ e $w^Tz+b=-1$ é $2/\|w\|_2$. Com violações $\xi_i\ge0$:
+
+$$\min_{w,b,\xi}\frac12\|w\|_2^2+C\sum_i\xi_i,$$
+
+sujeito a $y_i(w^Tz_i+b)\ge1-\xi_i$. $C$ controla quanto custa violar a margem.
+
+## Hinge loss
+
+Uma forma equivalente usa
+
+$$L_i=\max\{0,1-y_if(z_i)\}.$$
+
+Pontos corretamente classificados e fora da margem têm perda zero. Pontos na margem, dentro dela ou classificados incorretamente influenciam a solução; os relevantes são vetores de suporte.
+
+## Kernel RBF
+
+$$K(z_i,z_j)=\exp(-\gamma\|z_i-z_j\|_2^2).$$
+
+$\gamma$ controla o alcance da similaridade e $C$ controla a penalização por violações. Ambos alteram a flexibilidade e devem ser escolhidos conjuntamente por validação.
+
+SVM não produz probabilidades nativas; calibração é uma etapa adicional quando probabilidades são necessárias.
+
+## Pipeline PCA + SVM
+
+```{python}
+def build_pipeline(n_components, C=10):
+    return Pipeline([
+        ("pca", PCA(n_components=n_components,
+                    svd_solver="randomized", random_state=7)),
+        ("svm", SVC(C=C, kernel="rbf", gamma="scale")),
+    ])
+
+results = []
+fitted = {}
+for k in [20, 50, 100, 150]:
+    model = build_pipeline(k)
+    start = perf_counter(); model.fit(X_train, y_train)
+    elapsed = perf_counter()-start
+    prediction = model.predict(X_test)
+    results.append((k, accuracy_score(y_test, prediction), elapsed))
+    fitted[k] = (model, prediction)
+
+pd.DataFrame(results, columns=["componentes", "acurácia", "tempo_s"]).round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+Com esta divisão, 50 componentes atingem aproximadamente 85% de acurácia. Mais componentes aumentam o tempo e não melhoram o teste. O resultado é específico da amostra, da implementação e dos hiperparâmetros utilizados.
+:::
+
+## Validação da pipeline inteira
+
+O PCA deve ser ajustado novamente dentro de cada parte. Ajustá-lo uma vez em todo o desenvolvimento permitiria que a validação influenciasse a representação.
+
+```{python}
+subset = rng.choice(len(X_train), 3000, replace=False)
+folds = StratifiedKFold(3, shuffle=True, random_state=7)
+grid = []
+for k in [30, 60, 100]:
+    for C in [1, 10, 30]:
+        scores = []
+        for fit, valid in folds.split(X_train[subset], y_train[subset]):
+            model = build_pipeline(k, C)
+            model.fit(X_train[subset][fit], y_train[subset][fit])
+            scores.append(model.score(X_train[subset][valid], y_train[subset][valid]))
+        grid.append((k, C, np.mean(scores), np.std(scores)))
+
+cv_results = pd.DataFrame(grid, columns=["componentes", "C", "acurácia_média", "desvio"])
+cv_results.round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+A tabela compara combinações, não etapas isoladas. A melhor combinação deve ser reajustada em todo o desenvolvimento e avaliada uma única vez no teste reservado.
+:::
+
+## Matriz de confusão
+
+```{python}
+best_k = max(results, key=lambda row: row[1])[0]
+prediction = fitted[best_k][1]
+cm = confusion_matrix(y_test, prediction, normalize="true")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(cm, cmap="Blues", vmin=0, vmax=1,
+            xticklabels=class_names, yticklabels=class_names, ax=ax)
+ax.set(xlabel="previsto", ylabel="verdadeiro")
+ax.tick_params(axis="x", rotation=35); ax.tick_params(axis="y", rotation=0)
+plt.tight_layout(); plt.show()
+```
+
+```{python}
+report = classification_report(y_test, prediction, target_names=class_names,
+                               output_dict=True, zero_division=0)
+pd.DataFrame(report).T.round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+Camisa é confundida com outras roupas superiores com maior frequência. Acurácia global esconde essa assimetria. O padrão de erros sugere onde investigar rótulos, exemplos adicionais ou representações de textura e contorno.
+:::
+
+## Quando PCA ajuda — e quando não
+
+PCA pode reduzir redundância, ruído, memória e custo. Pode atrapalhar quando baixa variância contém sinal preditivo, quando interpretação é central ou quando a projeção torna dados esparsos densos.
+
+Seu valor deve ser demonstrado fora da amostra, não presumido por uma porcentagem de variância explicada.
+
+## Quando SVM é apropriado
+
+SVM costuma ser competitivo em amostras médias com muitos atributos e boa escala. Kernels permitem fronteiras flexíveis, mas custo de memória e tempo pode crescer rapidamente com o número de observações.
+
+Para produção, considere também latência, atualização do modelo, calibração, estabilidade e explicabilidade.
+
+## Síntese
+
+- PCA reorganiza $X$ por direções de variação;
+- compressão e discriminação têm objetivos diferentes;
+- SVM constrói uma decisão por margem e vetores de suporte;
+- $k$, $C$ e $\gamma$ pertencem à mesma seleção de pipeline;
+- PCA deve ser ajustado dentro da validação;
+- tempo, acurácia e erros por classe orientam a escolha aplicada.
+
+## Bibliografia
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 9 e 12.
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 12 e 14.
+- Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, capítulos 10 e 12.
+- [Fashion-MNIST — Zalando Research](https://github.com/zalandoresearch/fashion-mnist).
+- [Exemplo do gato na aula de ALC](https://heitorramos.github.io/Slides_ALC/Aula11.html#/qual-foi-a-taxa-de-compressão).

@@ -39,6 +39,36 @@ $link-color: #0f6b78;
   margin-top: 0.55em;
 }
 
+.reveal section.quiz-question.quiz-visual > img.quiz-figure {
+  display: block;
+  height: 12.2rem !important;
+  margin: 0 auto 0.2rem !important;
+  max-height: 12.2rem !important;
+  max-width: 72% !important;
+  object-fit: contain;
+  width: auto !important;
+}
+
+.reveal section.quiz-question.quiz-visual > img.quiz-figure-wide {
+  display: block;
+  height: 10.2rem !important;
+  margin: 0 auto 0.15rem !important;
+  max-height: 10.2rem !important;
+  max-width: 86% !important;
+  object-fit: contain;
+  width: auto !important;
+}
+
+.reveal section.quiz-question.quiz-visual > p {
+  margin: 0.18em 0 0.35em;
+}
+
+.reveal section.quiz-question.quiz-visual .option-button {
+  font-size: 0.65em;
+  margin-bottom: 0.22em;
+  padding: 0.3em 0.55em;
+}
+
 .reveal .news-cycle-slide .columns .column:last-child {
   font-size: 0.78em;
 }
@@ -449,6 +479,17 @@ $link-color: #0f6b78;
   max-width: 92% !important;
   object-fit: contain;
   width: 92% !important;
+}
+
+.reveal section > img.aula16-covariance-quadrants,
+.reveal section > img.r-stretch.aula16-covariance-quadrants {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.15rem !important;
+  max-height: 30rem !important;
+  max-width: 94% !important;
+  object-fit: contain;
+  width: 94% !important;
 }
 
 .reveal section > img.r-stretch.wide-chart {

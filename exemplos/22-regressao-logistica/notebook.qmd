@@ -1,0 +1,205 @@
+---
+title: "Regressão logística como modelo linear generalizado"
+subtitle: "Material de apoio — Aula 22"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Construiremos a regressão logística como GLM Bernoulli, compararemos funções para mapear o preditor linear em probabilidade, derivaremos a entropia cruzada e implementaremos o ajuste por gradiente descendente.
+
+## Base de dados de apoio
+
+Usaremos [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset). A resposta será tabagismo; idade, IMC e despesas serão preditores. O exemplo é didático e descritivo, não uma recomendação de sistema para inferir comportamento pessoal.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme(style="whitegrid", context="notebook")
+df = pd.read_csv(Path("../16-correlacao/data/insurance.csv"))
+df.head()
+```
+
+```{python}
+y = (df["smoker"] == "yes").astype(int).to_numpy()
+df.groupby("smoker")[["age", "bmi", "charges"]].agg(["count", "mean", "median", "std"]).round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Fumantes representam cerca de 20,5% da base e possuem despesas muito maiores. Isso facilita a classificação, mas `charges` pode ser posterior ao comportamento e inadequado para uma previsão prospectiva.
+:::
+
+## Da resposta binária ao GLM
+
+$$Y_i\mid X_i=x_i\sim\operatorname{Bernoulli}(\pi_i),$$
+
+$$\eta_i=x_i^T\beta,$$
+
+$$g(\pi_i)=\eta_i.$$
+
+Esses são, respectivamente, componente aleatório, preditor linear e função de ligação.
+
+## Testando funções candidatas
+
+Precisamos de $h:\mathbb R\to(0,1)$ com $\pi=h(\eta)$. Uma função linear viola os limites; um degrau não fornece probabilidade gradual nem gradiente útil. CDFs contínuas funcionam: Normal produz probit, logística produz logit e valor extremo produz complementary log-log.
+
+```{python}
+eta = np.linspace(-6, 6, 400)
+candidates = pd.DataFrame({
+    "eta": eta,
+    "linear": .5+.15*eta,
+    "degrau": (eta >= 0).astype(float),
+    "arctan": .5+np.arctan(eta)/np.pi,
+    "logística": 1/(1+np.exp(-eta)),
+})
+candidates.head()
+```
+
+::: {.callout-note title="Interpretação"}
+Não há uma única função matemática capaz de mapear reais em probabilidades. O logit é especialmente conveniente porque lineariza os log-odds e fornece razões de odds simples para os coeficientes.
+:::
+
+## Logit e função logística
+
+$$g(\pi)=\log\frac{\pi}{1-\pi}=x^T\beta.$$
+
+Invertendo:
+
+$$\pi=\sigma(x^T\beta)=\frac1{1+e^{-x^T\beta}}.$$
+
+```{python}
+def sigmoid(z):
+    return 1/(1+np.exp(-np.clip(z, -30, 30)))
+
+pd.DataFrame({"eta": [-3, 0, 3], "probabilidade": sigmoid(np.array([-3, 0, 3]))})
+```
+
+## Odds e interpretação
+
+Odds são $\pi/(1-\pi)$. Como
+
+$$\log(odds)=x^T\beta,$$
+
+uma unidade adicional em $X_j$ multiplica as odds por $e^{\beta_j}$, mantendo os demais preditores fixos. Isso não é o mesmo que risco relativo nem implica efeito causal.
+
+## Verossimilhança e entropia cruzada
+
+$$L(\beta)=\prod_i\pi_i^{y_i}(1-\pi_i)^{1-y_i}.$$
+
+A log-verossimilhança negativa média é
+
+$$
+J(\beta)=-\frac1n\sum_i[y_i\log\pi_i+(1-y_i)\log(1-\pi_i)].
+$$
+
+Previsões confiantes e erradas recebem perda muito grande.
+
+## Gradiente
+
+Com $\pi=\sigma(X\beta)$,
+
+$$\nabla J(\beta)=\frac1nX^T(\pi-y).$$
+
+```{python}
+features = ["age", "bmi", "charges"]
+raw = df[features].to_numpy(float)
+mean, sd = raw.mean(axis=0), raw.std(axis=0)
+Z = (raw-mean)/sd
+X = np.column_stack([np.ones(len(df)), Z])
+
+def loss_grad(beta):
+    p = sigmoid(X@beta)
+    loss = -np.mean(y*np.log(p+1e-12)+(1-y)*np.log(1-p+1e-12))
+    gradient = X.T@(p-y)/len(y)
+    return loss, gradient, p
+```
+
+## Ajuste por gradiente descendente
+
+```{python}
+beta = np.zeros(X.shape[1])
+history = []
+for iteration in range(2500):
+    loss, gradient, probability = loss_grad(beta)
+    history.append(loss)
+    beta -= .15*gradient
+
+pd.Series(beta, index=["intercepto"]+features).round(4)
+```
+
+```{python}
+plt.figure(figsize=(8, 4))
+plt.semilogy(history)
+plt.xlabel("iteração"); plt.ylabel("entropia cruzada"); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O coeficiente positivo de `charges` indica odds maiores de tabagismo para despesas maiores, condicionado às demais variáveis. Idade e IMC possuem coeficientes negativos depois desse condicionamento; isso ilustra como a interpretação muda em um modelo múltiplo.
+:::
+
+## Probabilidade e limiar
+
+```{python}
+loss, gradient, probability = loss_grad(beta)
+for threshold in [.2, .5, .8]:
+    pred = probability >= threshold
+    tp = np.sum(pred & (y == 1)); fn = np.sum(~pred & (y == 1))
+    tn = np.sum(~pred & (y == 0)); fp = np.sum(pred & (y == 0))
+    print(threshold, {"sensibilidade": tp/(tp+fn), "especificidade": tn/(tn+fp),
+                      "acurácia": (tp+tn)/len(y)})
+```
+
+::: {.callout-note title="Interpretação"}
+O modelo estima probabilidades; o limiar pertence à decisão. Reduzi-lo aumenta sensibilidade e também falsos positivos. A escolha deve refletir custos e não apenas maximizar acurácia.
+:::
+
+## Calibração
+
+```{python}
+cal = pd.DataFrame({"p": probability, "y": y})
+cal["faixa"] = pd.qcut(cal.p, 10, duplicates="drop")
+calibration = cal.groupby("faixa", observed=True).agg(
+    probabilidade_média=("p", "mean"), frequência=("y", "mean"), n=("y", "size"))
+calibration.round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+Calibração pergunta se probabilidades correspondem a frequências observadas. Ela é diferente de discriminação: um modelo pode ordenar bem as classes e ainda produzir probabilidades sistematicamente exageradas.
+:::
+
+## Efeito marginal
+
+$$\frac{\partial\pi}{\partial x_j}=\beta_j\pi(1-\pi).$$
+
+Portanto, o efeito na escala de probabilidade depende da própria probabilidade. Ele é maior perto de 0,5 e menor nos extremos.
+
+::: {.callout-note title="Interpretação"}
+Uma razão de odds é constante no modelo, mas a mudança em pontos percentuais não é. Por isso, gráficos de probabilidades previstas costumam comunicar melhor o efeito substantivo.
+:::
+
+## Separação como limitação
+
+Separação perfeita ocorre quando alguma combinação dos preditores distingue integralmente as duas classes. Nesse caso, a verossimilhança pode continuar aumentando quando a magnitude dos coeficientes cresce, e o MLE finito pode não existir.
+
+Coeficientes muito grandes e falhas de convergência são sinais importantes. O tratamento desse problema será estudado na aula seguinte, dedicada à regularização.
+
+## Questões de revisão
+
+1. Quais são os três componentes do GLM logístico?
+2. Por que linear e degrau são escolhas ruins para $h(\eta)$?
+3. Derive a inversa do logit.
+4. Interprete $e^{\beta_j}$ e diferencie OR de RR.
+5. Explique a forma do gradiente $X^T(\pi-y)/n$.
+6. Diferencie probabilidade, limiar, classe, discriminação e calibração.
+
+## Bibliografia
+
+- James et al., *An Introduction to Statistical Learning*, capítulo 4.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*.
+- McCullagh e Nelder, *Generalized Linear Models*.
+- Data 100, classificação e regressão logística.

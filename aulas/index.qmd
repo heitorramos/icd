@@ -209,23 +209,133 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 
 :::
 
-::: {.modulo-bloco .modulo-3 .modulo-futuro}
+::: {.modulo-bloco .modulo-3}
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aulas 16–26 · em preparação.
+Aulas 16–26 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
-::: {.g-col-12}
-::: {.aula-card .mock-card}
-### Aulas 16–26
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 16
 
-## Correlação, regressão e aprendizado de máquina
+## Correlação
 
-O único módulo ainda sem os novos materiais. Abrangerá modelagem linear,
-funções de perda e verossimilhança, classificação, avaliação e métodos não
-supervisionados.
+Covariância, Pearson, Spearman, condicionamento, incerteza e causalidade.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 17
+
+## Regressão linear simples
+
+Média condicional, mínimos quadrados, interpretação, diagnóstico e incerteza.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 18
+
+## Máxima verossimilhança
+
+Modelos probabilísticos, Bernoulli, log-verossimilhança, escore e estimação.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 19
+
+## Verossimilhança na regressão
+
+Erros normais, equivalência com mínimos quadrados, variância e diagnóstico.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 20
+
+## Gradiente descendente
+
+Otimização iterativa da regressão, mini-batches e conexão com redes neurais.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 21
+
+## Regressão linear múltipla
+
+Vários preditores, notação matricial, interações e introdução a GLMs.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 22
+
+## Regressão logística
+
+GLM Bernoulli, logit, entropia cruzada, interpretação e avaliação.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 23
+
+## Regularização
+
+Viés–variância, Ridge, Lasso, Elastic Net, validação e estabilidade.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 24
+
+## Engenharia de atributos
+
+Representações, pipelines, vazamento e validação cruzada.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 25
+
+## KNN e prática de machine learning
+
+Distâncias, escolha de hiperparâmetros e fluxo completo de modelagem.
+
+**Material em revisão**
+:::
+:::
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### Aula 26
+
+## PCA e SVM aplicados
+
+Compressão, representação, margem, kernels e ciência de dados.
+
+**Material em revisão**
 :::
 :::
 :::

@@ -1,0 +1,62 @@
+---
+title: "Aula 19: Verossimilhança na regressão"
+subtitle: "Por que mínimos quadrados reaparece"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Modelo gaussiano, equivalência MLE–OLS, variância e diagnóstico.
+
+[Abrir slides](../slides/19-verossimilhanca-regressao.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Derivação completa, resultados executados e interpretação da normalidade.
+
+[Abrir notebook](../exemplos/19-verossimilhanca-regressao/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Despesas médicas e idade, com tabagismo usado no diagnóstico dos resíduos.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- formular $Y\mid X$ como modelo normal;
+- derivar a log-verossimilhança da regressão;
+- provar a equivalência entre MLE gaussiano e OLS;
+- distinguir $\operatorname{SSE}/n$ e $\operatorname{SSE}/(n-2)$;
+- explicar quando a normalidade é — e não é — necessária;
+- usar resíduos para revisar o modelo.
+
+## Estudo de caso
+
+A mesma regressão entre idade e despesas da Aula 17 recebe agora uma interpretação probabilística. O tabagismo revela que a equivalência matemática não garante adequação substantiva do modelo simples.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulo 3.
+- Wasserman, *All of Statistics*, MLE e regressão.
+
+### Bibliografia complementar
+
+- Faraway, *Linear Models with R*, capítulos 2–4.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*, capítulos 6–11.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*, diagnóstico.

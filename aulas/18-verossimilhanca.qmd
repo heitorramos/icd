@@ -1,0 +1,60 @@
+---
+title: "Aula 18: Máxima verossimilhança"
+subtitle: "Dos dados aos parâmetros"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Construção intuitiva e formal da verossimilhança, log-verossimilhança e escore.
+
+[Abrir slides](../slides/18-verossimilhanca.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Derivações, código executado, interpretações e exercícios de revisão.
+
+[Abrir notebook](../exemplos/18-verossimilhanca/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Medical Insurance Cost: tabagismo como exemplo Bernoulli em 1.338 pessoas.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- distinguir probabilidade e verossimilhança;
+- construir a verossimilhança de dados independentes;
+- derivar o MLE Bernoulli e interpretar o escore;
+- compreender por que usamos log-verossimilhança;
+- reconhecer que estimação não valida automaticamente o modelo.
+
+## Estudo de caso
+
+A proporção de fumantes na base fornece um exemplo binário concreto. A construção preserva a progressão do material original — uma observação, duas observações, amostra geral e derivação — sem repetir slides apenas para revelar etapas.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Wasserman, *All of Statistics*, capítulos 9 e 10.
+- Casella e Berger, *Statistical Inference*, capítulo 7.
+
+### Bibliografia complementar
+
+- Blitzstein e Hwang, *Introduction to Probability*, Bernoulli e Binomial.
+- James et al., *An Introduction to Statistical Learning*, máxima verossimilhança.

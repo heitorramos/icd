@@ -1,0 +1,258 @@
+---
+title: "Gradiente descendente aplicado à regressão"
+subtitle: "Material de apoio — Aula 20"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia mostra como minimizar numericamente a perda quadrática, primeiro com um parâmetro e depois com intercepto e inclinação. Também compara batch, SGD e mini-batch e conecta o algoritmo ao treinamento de redes neurais.
+
+## Base de dados de apoio
+
+Usaremos [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset), do Kaggle. A continuidade com as Aulas 17–19 permite conferir o resultado iterativo contra a solução OLS conhecida.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+rng = np.random.default_rng(20260827)
+df = pd.read_csv(Path("../16-correlacao/data/insurance.csv"))
+df[["age", "charges", "smoker"]].head()
+```
+
+::: {.callout-note title="Interpretação"}
+Cada linha representa uma pessoa. O objetivo computacional será reproduzir a reta OLS de despesas por idade, não construir uma explicação causal das despesas.
+:::
+
+## Por que padronizar?
+
+```{python}
+x = df["age"].to_numpy(float)
+y = df["charges"].to_numpy(float)
+xz = (x-x.mean())/x.std()
+yz = (y-y.mean())/y.std()
+pd.DataFrame({"original_x": x, "padronizado_x": xz,
+              "original_y": y, "padronizado_y": yz}).describe().round(3)
+```
+
+Padronizar coloca as variáveis em escalas comparáveis. Isso não é necessário para a fórmula fechada de OLS, mas melhora a geometria da otimização iterativa.
+
+## Um parâmetro: regressão pela origem
+
+Considere $\widehat y_i=\beta x_i$ e
+
+$$J(\beta)=\frac1n\sum_i(y_i-\beta x_i)^2.$$
+
+A derivada é
+
+$$J'(\beta)=-\frac2n\sum_i x_i(y_i-\beta x_i).$$
+
+```{python}
+def loss_one(beta):
+    return np.mean((yz-beta*xz)**2)
+
+def grad_one(beta):
+    return -2*np.mean(xz*(yz-beta*xz))
+
+beta_ols = np.sum(xz*yz)/np.sum(xz**2)
+pd.Series({"beta_OLS": beta_ols, "gradiente_em_OLS": grad_one(beta_ols)})
+```
+
+::: {.callout-note title="Interpretação"}
+Como as duas variáveis estão padronizadas, a inclinação OLS é a correlação de Pearson: aproximadamente 0,299. O gradiente praticamente zero confirma que estamos no mínimo numérico.
+:::
+
+## Implementação do gradiente descendente
+
+$$\beta_{t+1}=\beta_t-\eta J'(\beta_t).$$
+
+```{python}
+def gradient_descent_one(beta0=-0.7, eta=.25, max_iter=100, tol=1e-10):
+    beta = beta0
+    history = []
+    for iteration in range(max_iter):
+        loss = loss_one(beta)
+        gradient = grad_one(beta)
+        history.append((iteration, beta, loss, gradient))
+        beta_new = beta-eta*gradient
+        if abs(beta_new-beta) < tol:
+            beta = beta_new
+            break
+        beta = beta_new
+    return beta, pd.DataFrame(history, columns=["iteração", "beta", "perda", "gradiente"])
+
+beta_gd, history = gradient_descent_one()
+pd.Series({"beta_GD": beta_gd, "beta_OLS": beta_ols,
+           "diferença": beta_gd-beta_ols, "iterações": len(history)})
+```
+
+::: {.callout-note title="Interpretação"}
+Gradiente descendente não produz uma nova estimativa estatística neste caso: ele é um método computacional que aproxima o mesmo minimizador de OLS.
+:::
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+axes[0].plot(history["iteração"], history["beta"])
+axes[0].axhline(beta_ols, color="darkorange", linestyle="--")
+axes[0].set(xlabel="iteração", ylabel="beta", title="Parâmetro")
+axes[1].semilogy(history["iteração"], history["perda"]-loss_one(beta_ols)+1e-14)
+axes[1].set(xlabel="iteração", ylabel="excesso de perda", title="Convergência")
+plt.tight_layout(); plt.show()
+```
+
+## Taxa de aprendizado
+
+```{python}
+summary = []
+for eta in [.02, .25, .9, 1.05]:
+    beta, hist = gradient_descent_one(eta=eta, max_iter=80, tol=0)
+    summary.append({"eta": eta, "beta_final": beta,
+                    "perda_final": loss_one(beta),
+                    "menor_perda": hist.perda.min()})
+pd.DataFrame(summary)
+```
+
+::: {.callout-note title="Interpretação"}
+Taxa pequena converge lentamente; uma taxa adequada reduz rapidamente a perda; taxa excessiva oscila ou diverge. A direção do gradiente é local e não determina sozinha o tamanho seguro do passo.
+:::
+
+## Dois parâmetros
+
+Agora
+
+$$J(\beta_0,\beta_1)=\frac1n\sum_i(y_i-\beta_0-\beta_1x_i)^2,$$
+
+$$
+\nabla J=-\frac2n
+\begin{bmatrix}
+\sum_i e_i\\
+\sum_i x_ie_i
+\end{bmatrix}.
+$$
+
+```{python}
+def loss_grad(theta, xx=xz, yy=yz):
+    prediction = theta[0]+theta[1]*xx
+    error = yy-prediction
+    loss = np.mean(error**2)
+    gradient = np.array([-2*np.mean(error), -2*np.mean(xx*error)])
+    return loss, gradient
+
+def fit_batch(eta=.2, max_iter=200):
+    theta = np.zeros(2)
+    out = []
+    for t in range(max_iter):
+        loss, gradient = loss_grad(theta)
+        out.append((t, *theta, loss, np.linalg.norm(gradient)))
+        theta = theta-eta*gradient
+    return theta, pd.DataFrame(out, columns=["iteração","beta0","beta1","perda","norma_grad"])
+
+theta_gd, hist2 = fit_batch()
+theta_gd
+```
+
+Na escala padronizada, o intercepto é aproximadamente zero e a inclinação é aproximadamente 0,299.
+
+```{python}
+X = np.column_stack([np.ones(len(xz)), xz])
+theta_ols = np.linalg.solve(X.T@X, X.T@yz)
+pd.DataFrame({"GD": theta_gd, "OLS": theta_ols,
+              "diferença": theta_gd-theta_ols}, index=["beta0", "beta1"])
+```
+
+::: {.callout-note title="Interpretação"}
+A comparação contra uma solução conhecida é um teste de implementação. Se GD não se aproxima de OLS nesta perda convexa, devemos investigar código, taxa, escala ou critério de parada.
+:::
+
+## Verificação numérica do gradiente
+
+Uma aproximação por diferenças finitas é
+
+$$
+\frac{\partial J}{\partial\theta_j}
+\approx\frac{J(\theta+h e_j)-J(\theta-h e_j)}{2h}.
+$$
+
+```{python}
+theta_test = np.array([.3, -.2])
+_, analytic = loss_grad(theta_test)
+h = 1e-6
+numeric = []
+for j in range(2):
+    step = np.zeros(2); step[j] = h
+    numeric.append((loss_grad(theta_test+step)[0]-loss_grad(theta_test-step)[0])/(2*h))
+pd.DataFrame({"analítico": analytic, "numérico": numeric}, index=["beta0", "beta1"])
+```
+
+::: {.callout-note title="Interpretação"}
+Gradient checking detecta sinais trocados, fatores esquecidos e erros de indexação. Essa prática continua útil em modelos muito maiores.
+:::
+
+## Batch, SGD e mini-batch
+
+```{python}
+def fit_minibatch(batch_size, eta=.04, epochs=30):
+    theta = np.zeros(2); records = []
+    for epoch in range(epochs):
+        ids = rng.permutation(len(xz))
+        for start in range(0, len(ids), batch_size):
+            ii = ids[start:start+batch_size]
+            _, gradient = loss_grad(theta, xz[ii], yz[ii])
+            theta -= eta*gradient
+        records.append((epoch, *theta, loss_grad(theta)[0]))
+    return theta, pd.DataFrame(records, columns=["época","beta0","beta1","perda"])
+
+results = []
+for batch in [1, 64, len(xz)]:
+    theta, hist = fit_minibatch(batch)
+    results.append({"batch": batch, "beta0": theta[0], "beta1": theta[1],
+                    "perda": loss_grad(theta)[0]})
+pd.DataFrame(results)
+```
+
+::: {.callout-note title="Interpretação"}
+SGD atualiza com baixo custo, mas mantém ruído. Batch completo é suave, porém caro. Mini-batch é o compromisso dominante em aprendizado profundo porque combina paralelismo e atualizações frequentes.
+:::
+
+## Conexão com redes neurais
+
+Um neurônio calcula $z=w^Tx+b$ e $a=\phi(z)$. Em uma rede, a propagação para frente produz previsões, a perda compara previsão e resposta, e backpropagation usa a regra da cadeia para calcular $\nabla_WJ$ e $\nabla_bJ$.
+
+O otimizador então aplica uma atualização como
+
+$$W_{t+1}=W_t-\eta\nabla_WJ.$$
+
+Backpropagation calcula gradientes; SGD ou Adam decide como usá-los.
+
+## Limitações práticas
+
+- superfícies de redes neurais não são convexas;
+- inicialização influencia o caminho;
+- gradientes podem desaparecer ou explodir;
+- perda de treino baixa não garante generalização;
+- taxa, batch, regularização e validação interagem.
+
+O algoritmo é simples; o comportamento do sistema completo não é.
+
+## Questões de revisão
+
+1. Derive o gradiente de $J(\beta_0,\beta_1)$.
+2. Explique por que subtraímos, e não somamos, o gradiente.
+3. Diferencie iteração, batch e época.
+4. Por que padronização pode acelerar convergência?
+5. Qual é a diferença entre backpropagation e gradiente descendente?
+6. Como você testaria uma implementação de GD para regressão?
+
+## Bibliografia
+
+- Data 100, *Principles and Techniques of Data Science*, otimização.
+- James et al., *An Introduction to Statistical Learning*.
+- Goodfellow, Bengio e Courville, *Deep Learning*, capítulos 6 e 8.
+- Géron, *Hands-On Machine Learning*, treinamento e redes neurais.
+- Ruder, *An Overview of Gradient Descent Optimization Algorithms*.

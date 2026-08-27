@@ -1,0 +1,61 @@
+---
+title: "Aula 24: Engenharia de atributos"
+subtitle: "Representações, pipelines e validação cruzada"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Transformações por tipo de dado, vazamento, pipelines e validação cruzada.
+
+[Abrir slides](../slides/24-engenharia-atributos-cv.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Construção de atributos, K-fold manual, resultados e interpretações.
+
+[Abrir notebook](../exemplos/24-engenharia-atributos-cv/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+New York City Airbnb Open Data, com categorias, localização, texto e ausências.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- formalizar representações por uma função de atributos;
+- transformar números, categorias, ausências, datas e textos;
+- organizar transformações e modelo em pipelines;
+- reconhecer e evitar vazamento;
+- diferenciar treino, validação e teste;
+- comparar pipelines por validação cruzada.
+
+## Estudo de caso
+
+O preço de anúncios do Airbnb é modelado por representações crescentes. A validação em cinco partes mostra quanto transformações, categorias e interações melhoram a generalização fora da amostra.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 5 e 6.
+- Kuhn e Johnson, *Feature Engineering and Selection*.
+
+### Bibliografia complementar
+
+- Zheng e Casari, *Feature Engineering for Machine Learning*.
+- Data 100, capítulos sobre feature engineering, validação e generalização.

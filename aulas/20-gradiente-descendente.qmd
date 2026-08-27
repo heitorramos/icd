@@ -1,0 +1,61 @@
+---
+title: "Aula 20: Gradiente descendente"
+subtitle: "Da regressão ao treinamento de redes neurais"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Gradientes, taxa de aprendizado, convergência, mini-batches e redes neurais.
+
+[Abrir slides](../slides/20-gradiente-descendente.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Implementação completa, resultados, testes do gradiente e interpretações.
+
+[Abrir notebook](../exemplos/20-gradiente-descendente/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Despesas médicas e idade para comparar GD, OLS e MLE.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- interpretar derivada e gradiente como direções locais;
+- implementar gradiente descendente na regressão;
+- compreender taxa de aprendizado, escala e convergência;
+- comparar batch, SGD e mini-batch;
+- relacionar gradiente, backpropagation e treinamento de redes neurais.
+
+## Estudo de caso
+
+A regressão idade–despesas fornece uma solução OLS conhecida para validar a implementação iterativa. A aula termina mostrando como a mesma regra de atualização escala para milhares ou milhões de pesos em redes neurais.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- Data 100, *Principles and Techniques of Data Science*, otimização.
+- James et al., *An Introduction to Statistical Learning*.
+
+### Bibliografia complementar
+
+- Goodfellow, Bengio e Courville, *Deep Learning*, capítulos 6 e 8.
+- Géron, *Hands-On Machine Learning*, treinamento e redes neurais.
+- Ruder, *An Overview of Gradient Descent Optimization Algorithms*.

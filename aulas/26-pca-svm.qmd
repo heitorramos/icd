@@ -1,0 +1,61 @@
+---
+title: "Aula 26: PCA e SVM aplicados"
+subtitle: "Representação, classificação e ciência de dados"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Compressão, PCA, margem, kernels e pipeline aplicada.
+
+[Abrir slides](../slides/26-pca-svm.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Compressão do gato, PCA, SVM, validação e diagnóstico executados.
+
+[Abrir notebook](../exemplos/26-pca-svm/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Fashion-MNIST: 10 classes de roupas em imagens $28\times28$.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/zalando-research/fashionmnist){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- usar baixo posto para compreender compressão;
+- aplicar PCA como transformação de representação;
+- revisar SVM por margem, vetores de suporte e kernels;
+- validar conjuntamente PCA e SVM;
+- comparar desempenho, custo e padrão de erros;
+- conectar os métodos ao fluxo de ciência de dados.
+
+## Estudo de caso
+
+Imagens do Fashion-MNIST são comprimidas por PCA e classificadas por SVM com kernel RBF. O exemplo mostra que mais componentes não significam necessariamente maior acurácia e que toda a pipeline deve ser validada conjuntamente.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 9 e 12.
+- Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, capítulos 10 e 12.
+
+### Bibliografia complementar
+
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 12 e 14.
+- Fashion-MNIST, Zalando Research.

@@ -1,0 +1,235 @@
+---
+title: "Verossimilhança gaussiana e regressão linear"
+subtitle: "Material de apoio — Aula 19"
+format: {html: {toc: true, code-fold: show, code-tools: true}}
+execute: {echo: true, warning: false, message: false}
+---
+
+## Objetivos
+
+Este guia formula a regressão como modelo probabilístico, deriva sua log-verossimilhança e mostra por que máxima verossimilhança gaussiana e mínimos quadrados estimam os mesmos coeficientes. A discussão final esclarece o papel real da normalidade.
+
+## Base de dados de apoio
+
+Continuamos com [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset). A resposta é `charges`, o preditor é `age` e `smoker` será usado no diagnóstico.
+
+```{python}
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid", context="notebook")
+df = pd.read_csv(Path("../16-correlacao/data/insurance.csv"))
+df[["age", "charges", "smoker"]].head()
+```
+
+::: {.callout-note title="Interpretação"}
+Cada linha é uma pessoa. A regressão simples descreve despesas médias por idade; ela não incorpora todas as características que distinguem indivíduos com a mesma idade.
+:::
+
+## Modelo para a média condicional
+
+$$Y_i=\beta_0+\beta_1x_i+\varepsilon_i,
+\qquad E[\varepsilon_i\mid X_i=x_i]=0.$$
+
+$Y_i$ é a resposta, $x_i$ o preditor, $\beta_0$ o intercepto, $\beta_1$ a inclinação e $\varepsilon_i$ o erro populacional. A condição de média zero implica
+
+$$E[Y_i\mid X_i=x_i]=\beta_0+\beta_1x_i.$$
+
+## Acrescentando uma distribuição
+
+Para construir a verossimilhança gaussiana, assumimos
+
+$$\varepsilon_i\overset{iid}{\sim}N(0,\sigma^2).$$
+
+Equivalentemente,
+
+$$Y_i\mid X_i=x_i\sim N(\beta_0+\beta_1x_i,\sigma^2).$$
+
+A média depende de $x_i$ e a variância condicional é constante.
+
+## Densidade condicional
+
+$$
+f(y_i\mid x_i;\beta_0,\beta_1,\sigma^2)
+=\frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left[-\frac{(y_i-\beta_0-\beta_1x_i)^2}{2\sigma^2}\right].
+$$
+
+O termo $y_i-\beta_0-\beta_1x_i$ é o erro vertical relativo a uma reta candidata. Erros maiores recebem densidade menor.
+
+## Verossimilhança conjunta
+
+Sob independência condicional,
+
+$$
+L(\beta_0,\beta_1,\sigma^2)
+=\prod_{i=1}^n f(y_i\mid x_i;\beta_0,\beta_1,\sigma^2).
+$$
+
+Tomando log:
+
+$$
+\ell=-\frac n2\log(2\pi)-\frac n2\log(\sigma^2)
+-\frac{1}{2\sigma^2}\sum_i(y_i-\beta_0-\beta_1x_i)^2.
+$$
+
+## Equivalência com mínimos quadrados
+
+Para $\sigma^2>0$ fixo, os dois primeiros termos não dependem dos coeficientes. Portanto,
+
+$$
+\arg\max_{\beta_0,\beta_1}\ell
+=\arg\min_{\beta_0,\beta_1}
+\sum_i(y_i-\beta_0-\beta_1x_i)^2.
+$$
+
+::: {.callout-note title="Interpretação"}
+OLS e máxima verossimilhança gaussiana não são dois algoritmos que coincidiram por acaso. O log negativo da densidade normal é uma constante mais o erro quadrático escalado.
+:::
+
+## Cálculo manual dos coeficientes
+
+```{python}
+x = df["age"].to_numpy(float)
+y = df["charges"].to_numpy(float)
+xbar, ybar = x.mean(), y.mean()
+b1 = np.sum((x-xbar)*(y-ybar))/np.sum((x-xbar)**2)
+b0 = ybar-b1*xbar
+yhat = b0+b1*x
+resid = y-yhat
+pd.Series({"beta0": b0, "beta1": b1}).round(4)
+```
+
+```{python}
+plt.figure(figsize=(8, 5))
+sns.scatterplot(data=df, x="age", y="charges", hue="smoker", alpha=.4)
+order = np.argsort(x)
+plt.plot(x[order], yhat[order], color="darkorange", linewidth=3)
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Um ano adicional de idade está associado a aproximadamente US$ 257,72 na despesa média prevista. O grande espalhamento vertical mostra que idade isolada produz previsões individuais frágeis.
+:::
+
+## Verificação numérica da equivalência
+
+```{python}
+sigma2 = np.mean(resid**2)
+
+def sse(beta0, beta1):
+    return np.sum((y-beta0-beta1*x)**2)
+
+def loglik(beta0, beta1, sigma2):
+    return (-len(y)/2*np.log(2*np.pi)
+            -len(y)/2*np.log(sigma2)
+            -sse(beta0, beta1)/(2*sigma2))
+
+candidates = pd.DataFrame({
+    "modelo": ["inclinação menor", "OLS/MLE", "inclinação maior"],
+    "beta1": [.5*b1, b1, 1.5*b1],
+})
+candidates["beta0"] = ybar-candidates.beta1*xbar
+candidates["SSE"] = [sse(a,b) for a,b in zip(candidates.beta0,candidates.beta1)]
+candidates["logLik"] = [loglik(a,b,sigma2) for a,b in zip(candidates.beta0,candidates.beta1)]
+candidates.round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+O candidato com menor SSE é exatamente o de maior log-verossimilhança. Alterar a inclinação enquanto a reta passa pelo centro dos dados piora ambos os critérios em direções opostas.
+:::
+
+## Estimação da variância
+
+Maximizando em $\sigma^2$:
+
+$$
+\widehat\sigma^2_{MV}=\frac1n\sum_i e_i^2.
+$$
+
+```{python}
+sigma2_mle = np.mean(resid**2)
+sigma2_unbiased = np.sum(resid**2)/(len(y)-2)
+pd.Series({
+    "sigma_MLE": np.sqrt(sigma2_mle),
+    "sigma_corrigido": np.sqrt(sigma2_unbiased),
+}).round(2)
+```
+
+::: {.callout-note title="Interpretação"}
+Dividir por $n$ maximiza a verossimilhança. Dividir por $n-2$ corrige o viés causado pela estimação de intercepto e inclinação. “MLE” e “não viesado” são propriedades diferentes.
+:::
+
+## Os resíduos precisam ser normais?
+
+Não para calcular OLS. A minimização da SSE é uma operação algébrica que não exige distribuição. Para que OLS estime a média condicional sem viés sistemático, a condição essencial é $E[\varepsilon\mid X]=0$.
+
+Normalidade é usada para declarar a verossimilhança gaussiana correta e obter certas distribuições exatas de estatísticas em amostras finitas.
+
+## Erros e resíduos
+
+- $\varepsilon_i$ é o erro populacional não observado;
+- $e_i=y_i-\widehat y_i$ é o resíduo após estimar a reta;
+- resíduos somam zero quando há intercepto;
+- resíduos não são independentes entre si;
+- sua distribuição serve como aproximação diagnóstica à distribuição dos erros.
+
+## Diagnóstico da base
+
+```{python}
+diagnostics = pd.DataFrame({
+    "ajustado": yhat,
+    "resíduo": resid,
+    "fumante": df["smoker"],
+})
+diagnostics.groupby("fumante")["resíduo"].agg(["count", "mean", "std"]).round(2)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+sns.histplot(resid, kde=True, ax=axes[0])
+sns.scatterplot(data=diagnostics, x="ajustado", y="resíduo", hue="fumante", alpha=.5, ax=axes[1])
+axes[1].axhline(0, color="black", linestyle="--")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Os resíduos são assimétricos e o tabagismo separa dois patamares. O problema mais evidente não é apenas “falta de normalidade”: a função média está mal especificada porque omite uma variável fortemente associada às despesas.
+:::
+
+## Consequências de violações
+
+| hipótese | se falhar |
+|---|---|
+| média linear correta | coeficientes podem resumir uma forma inadequada |
+| $E[\varepsilon\mid X]=0$ | associação pode estar enviesada por estrutura omitida |
+| variância constante | erro-padrão clássico pode estar errado |
+| independência | produto da verossimilhança e incerteza usual falham |
+| normalidade | inferência exata gaussiana e previsão normal podem falhar |
+
+## Outras distribuições, outras perdas
+
+Para a Normal,
+
+$$-\log f(e)=C+e^2/(2\sigma^2).$$
+
+Por isso aparece a perda quadrática. Erros Laplace produzem perda absoluta; Bernoulli produz log-loss. Escolher uma distribuição é também escolher como discrepâncias serão penalizadas.
+
+## Questões de revisão
+
+1. Derive a log-verossimilhança gaussiana a partir do produto.
+2. Identifique os termos constantes em $\beta_0,\beta_1$.
+3. Por que maximizar $-\operatorname{SSE}/(2\sigma^2)$ equivale a minimizar SSE?
+4. Diferencie erro normal, resíduo aparentemente normal e média condicional correta.
+5. Por que o padrão por tabagismo sugere revisar a média, não apenas a variância?
+
+## Bibliografia
+
+- James et al., *An Introduction to Statistical Learning*, capítulo 3.
+- Wasserman, *All of Statistics*, MLE e regressão.
+- Faraway, *Linear Models with R*, capítulos 2–4.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*, capítulos 6–11.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*, diagnóstico.

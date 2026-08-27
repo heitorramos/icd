@@ -1,0 +1,62 @@
+---
+title: "Aula 22: Regressão logística"
+subtitle: "Probabilidades, classificação e GLMs"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+GLM Bernoulli, funções candidatas, logit, verossimilhança e avaliação.
+
+[Abrir slides](../slides/22-regressao-logistica.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Derivações, implementação por gradiente, resultados e interpretações.
+
+[Abrir notebook](../exemplos/22-regressao-logistica/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Medical Insurance Cost com tabagismo como resposta binária.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- construir regressão logística como GLM Bernoulli;
+- comparar funções candidatas para mapear reais em probabilidades;
+- derivar logit, verossimilhança, log-loss e gradiente;
+- interpretar coeficientes em log-odds e razões de odds;
+- separar probabilidade, limiar e decisão;
+- avaliar discriminação e calibração.
+
+## Estudo de caso
+
+O tabagismo é modelado a partir de idade, IMC e despesas. O exemplo mostra boa separação, mas também permite discutir disponibilidade temporal das features e limites éticos de inferir características pessoais.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulo 4.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*.
+
+### Bibliografia complementar
+
+- Fox, *Applied Regression Analysis and Generalized Linear Models*.
+- McCullagh e Nelder, *Generalized Linear Models*.
+- Data 100, classificação e regressão logística.

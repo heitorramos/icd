@@ -1,0 +1,61 @@
+---
+title: "Aula 25: KNN e a prática de machine learning"
+subtitle: "Do problema à avaliação final"
+---
+
+## Materiais da aula
+
+::: {.grid .recursos-grid}
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Slides
+
+Vizinhanças, escala, escolha de $k$, métricas e fluxo completo de ML.
+
+[Abrir slides](../slides/25-knn-pratica-ml.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Material de apoio
+
+Análise executada e guia autocontido para reproduzir a pipeline.
+
+[Abrir notebook](../exemplos/25-knn-pratica-ml/notebook.qmd){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-4}
+::: {.recurso-card}
+### Base de dados de apoio
+
+Chronic Kidney Disease: 400 registros clínicos, variáveis mistas e ausências.
+
+[Abrir base no Kaggle](https://www.kaggle.com/datasets/mansoordaku/ckdisease){.btn .btn-outline-primary}
+:::
+:::
+:::
+
+## Objetivos
+
+- formalizar classificação por vizinhos próximos;
+- compreender o efeito de distância, escala e $k$;
+- construir uma pipeline sem vazamento;
+- escolher hiperparâmetros no desenvolvimento;
+- interpretar matriz de confusão, precisão, recall e F1;
+- reconhecer limites técnicos e substantivos do estudo.
+
+## Estudo de caso
+
+A aula usa dados sobre doença renal crônica para integrar descrição, pré-processamento, KNN, validação cruzada e avaliação final. O exercício é educacional e não constitui um sistema de diagnóstico.
+
+## Bibliografia da aula
+
+### Bibliografia principal
+
+- James et al., *An Introduction to Statistical Learning*, capítulos 2, 4 e 5.
+- Géron, *Hands-On Machine Learning*, capítulos 2 e 3.
+
+### Bibliografia complementar
+
+- Kuhn e Johnson, *Applied Predictive Modeling*, capítulos 4, 7 e 13.
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 2 e 13.
