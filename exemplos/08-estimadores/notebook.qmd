@@ -3,8 +3,8 @@ title: "Estimadores com Palmer Penguins"
 subtitle: "Notebook das Aulas 08 e 09"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -21,6 +21,18 @@ Ao final, você deve conseguir:
 - estimar viés, variância, erro padrão e risco;
 - explicar o efeito do tamanho da amostra;
 - comparar média, mediana e média aparada sob diferentes perdas.
+
+## Como estudar este capítulo
+
+As Aulas 08 e 09 respondem a duas perguntas complementares. Primeiro: **como uma estatística calculada em uma amostra se comporta se repetirmos a amostragem?** Depois: **como escolher entre estimadores que cometem erros de maneiras diferentes?** A distribuição amostral liga essas duas perguntas.
+
+Começaremos distinguindo parâmetro, estimador e estimativa. A simulação transforma o estimador em uma variável: extraímos muitas amostras, calculamos uma estimativa em cada uma e observamos sua distribuição. O centro revela viés; a dispersão revela variabilidade; a perda traduz o custo de cada erro; e o risco combina esses elementos em um desempenho médio.
+
+A base completa será tratada como uma população didática. Isso permite conhecer o parâmetro verdadeiro e verificar os estimadores, algo que normalmente não é possível em um estudo real. Ao ler os resultados, separe sempre o que ocorre nesta população construída do princípio estatístico que a simulação pretende ilustrar.
+
+### Transição da Aula 08 para a Aula 09
+
+A Aula 08 concentra-se em amostragem, distribuição amostral, viés, variância e erro padrão. A Aula 09 parte desses objetos para comparar estimadores sob funções de perda, robustez e risco. O segundo assunto depende do primeiro: não existe “melhor estimador” sem especificar o processo de dados e o tipo de erro que queremos evitar.
 
 # 1. Download da base
 

@@ -1,13 +1,21 @@
 ---
 title: "Engenharia de atributos e validação cruzada"
 subtitle: "Material de apoio — Aula 24"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia transforma uma tabela heterogênea em matrizes adequadas para modelagem e mostra como comparar representações por validação cruzada sem contaminar o teste. Todas as transformações que aprendem parâmetros são refeitas dentro de cada divisão.
+
+## Como estudar este capítulo
+
+Algoritmos não recebem “significados”; recebem números organizados em uma matriz. Engenharia de atributos é o trabalho de transformar a informação disponível em uma representação que torne os padrões relevantes mais acessíveis ao modelo. Isso inclui codificar categorias, tratar ausências, transformar escalas, representar datas e criar interações justificadas pelo problema.
+
+Uma boa transformação precisa satisfazer duas condições. Ela deve fazer sentido para a pergunta e deve poder ser reproduzida quando chegarem novos dados. Se uma etapa usa informações do conjunto de validação ou teste para aprender médias, categorias ou escalas, ocorre vazamento e a avaliação se torna otimista.
+
+O capítulo compara representações, não apenas algoritmos. Para cada alternativa, acompanhe o caminho completo: dados brutos, transformação aprendida no treino, matriz resultante, ajuste, validação e avaliação final. Assim fica claro que a pipeline inteira — e não somente o estimador — constitui o modelo aplicado.
 
 ## Base de dados de apoio
 
@@ -286,7 +294,7 @@ Adicionar categorias gera a maior redução de RMSE: região e tipo de quarto n�
 
 ```{python}
 fig, ax = plt.subplots(figsize=(9, 4))
-ax.boxplot([scores[name] for name in scores], tick_labels=list(scores), showmeans=True)
+ax.boxplot([scores[name] for name in scores], labels=list(scores), showmeans=True)
 ax.set(ylabel="RMSE em validação", title="Comparação em cinco partes")
 ax.tick_params(axis="x", rotation=15)
 plt.tight_layout(); plt.show()
@@ -309,6 +317,50 @@ K-fold aleatório é adequado apenas quando observações são aproximadamente i
 
 ::: {.callout-note title="Interpretação"}
 Se anúncios do mesmo anfitrião aparecem em treino e validação, o modelo pode explorar padrões específicos daquela entidade. Uma divisão por anfitrião mede melhor a generalização para anfitriões ainda não observados.
+:::
+
+## Engenharia de atributos passo a passo
+
+1. **Comece pela pergunta e pelo momento da previsão.** Isso determina quais
+   informações poderiam estar disponíveis.
+2. **Audite os tipos.** Números, categorias, datas e textos precisam de
+   representações distintas.
+3. **Crie uma versão simples.** Ela funciona como baseline e mostra quanto cada
+   nova transformação realmente acrescenta.
+4. **Acrescente transformações com uma justificativa.** Log pode representar
+   relações multiplicativas; interações permitem que um efeito dependa de outro;
+   one-hot encoding representa categorias sem impor ordem artificial.
+5. **Coloque tudo na pipeline.** Imputação, escala, agrupamento de categorias e
+   seleção devem ser aprendidos somente no treino.
+6. **Valide a representação inteira.** A comparação não é apenas entre modelos,
+   mas entre maneiras de apresentar os dados ao modelo.
+7. **Faça análise de erro.** Descubra para quais preços, bairros ou tipos de
+   imóvel a representação ainda falha.
+
+## Como reconhecer vazamento
+
+Pergunte, para cada coluna e transformação:
+
+- essa informação existiria antes da resposta?
+- a estatística foi calculada usando linhas de validação ou teste?
+- há registros da mesma pessoa ou grupo nos dois lados da divisão?
+- uma agregação usa dados futuros?
+- a escolha foi influenciada pelo resultado final do teste?
+
+Vazamento pode produzir uma validação excelente e um sistema inútil fora da
+amostra. Ele não é corrigido escolhendo um algoritmo mais robusto.
+
+## A divisão deve parecer com o uso futuro
+
+K-fold aleatório é adequado quando as unidades são aproximadamente
+intercambiáveis. Dados temporais devem respeitar ordem; várias linhas da mesma
+pessoa devem permanecer juntas; aplicações geográficas podem exigir regiões
+inteiras fora do treino.
+
+::: {.callout-note title="Ideia central"}
+Engenharia de atributos é a tradução entre o problema real e a linguagem do
+modelo. Uma transformação útil preserva informação relevante e evita oferecer
+ao algoritmo informação que ele não teria no momento da aplicação.
 :::
 
 ## Síntese

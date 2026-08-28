@@ -1,13 +1,21 @@
 ---
 title: "Regularização: viés, variância e estabilidade"
 subtitle: "Material de apoio — Aula 23"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia explica por que baixo erro de treinamento não garante generalização, deriva Ridge e compara as penalizações $L_0$, $L_1$ e $L_2$. O estudo numérico usa apenas NumPy para tornar explícitas as etapas de padronização, ajuste e validação.
+
+## Como estudar este capítulo
+
+Um modelo pode aprender tão bem os detalhes da amostra de treinamento que passa a reproduzir também seu ruído. Regularização responde a esse problema acrescentando ao ajuste um custo para modelos excessivamente complexos. Aceitamos um pouco mais de erro no treinamento em troca de coeficientes mais estáveis e melhor desempenho em dados novos.
+
+O parâmetro $\lambda$ controla essa troca: quando é pequeno, a prioridade permanece no ajuste; quando cresce, a penalização ganha força. Ridge reduz continuamente os coeficientes, enquanto Lasso pode levar alguns exatamente a zero. Nenhuma delas torna automaticamente o modelo bom: representação, divisão dos dados e validação continuam essenciais.
+
+Preste atenção especial à ordem do processo. A padronização deve ser aprendida somente com o conjunto de treinamento de cada divisão; $\lambda$ deve ser escolhido na validação; o teste deve ser usado uma única vez para estimar o desempenho final. Essa disciplina evita que informação futura influencie o modelo.
 
 ## Base de dados de apoio
 
@@ -279,6 +287,54 @@ Na separação perfeita, a verossimilhança logística pode favorecer coeficient
 Regularização não corrige variáveis omitidas, mudança de distribuição, rótulos enviesados ou vazamento. Ela produz estimativas deliberadamente enviesadas; intervalos e testes clássicos de OLS não devem ser reutilizados ingenuamente após seleção ou penalização.
 
 Para previsão, reporte validação e desempenho final. Para inferência, descreva a seleção e use um procedimento compatível com ela.
+
+## Regularização passo a passo
+
+Regularizar não significa simplesmente “diminuir coeficientes”. O procedimento
+completo é:
+
+1. **Construir uma representação candidata.** Ela pode conter muitos atributos,
+   transformações e termos correlacionados.
+2. **Separar desenvolvimento e teste.** O teste não participa da escolha da
+   intensidade de regularização.
+3. **Padronizar dentro da pipeline.** Sem escala comparável, a penalidade trata
+   unidades diferentes de modo desigual.
+4. **Escolher uma família.** Ridge reduz todos os coeficientes; Lasso também pode
+   zerar alguns; Elastic Net combina os dois comportamentos.
+5. **Testar vários valores de $\lambda$.** Valores pequenos se aproximam do
+   modelo não regularizado; valores grandes simplificam mais.
+6. **Escolher por validação.** Comparamos desempenho médio e estabilidade, não
+   apenas erro de treinamento.
+7. **Reajustar e avaliar uma vez no teste.** Essa avaliação representa a pipeline
+   pronta.
+
+## Como entender Ridge e Lasso
+
+Ridge é especialmente útil quando muitos atributos carregam informação
+parecida. Em vez de permitir coeficientes grandes e instáveis, distribui a
+contribuição de forma mais suave.
+
+Lasso pode gerar um modelo mais curto, mas “coeficiente zero” não prova que a
+variável seja cientificamente irrelevante. Com atributos muito correlacionados,
+pequenas mudanças nos dados podem fazer o método escolher um representante
+diferente.
+
+Elastic Net costuma ser uma alternativa quando queremos alguma seleção sem
+abandonar completamente grupos de atributos correlacionados.
+
+## O que observar nas saídas
+
+- curva de validação: onde o erro deixa de melhorar de forma relevante;
+- caminho dos coeficientes: quais termos encolhem cedo e quais permanecem;
+- diferença entre treino e validação: indício do compromisso viés–variância;
+- estabilidade entre folds ou reamostragens;
+- desempenho final e padrão de erros no teste.
+
+::: {.callout-note title="Interpretação"}
+O melhor $\lambda$ não é uma constante da base. Ele depende dos atributos, da
+padronização, da métrica, das divisões e do modelo. Por isso toda a pipeline deve
+ser validada em conjunto.
+:::
 
 ## Síntese
 

@@ -1,13 +1,21 @@
 ---
 title: "Gradiente descendente aplicado à regressão"
 subtitle: "Material de apoio — Aula 20"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia mostra como minimizar numericamente a perda quadrática, primeiro com um parâmetro e depois com intercepto e inclinação. Também compara batch, SGD e mini-batch e conecta o algoritmo ao treinamento de redes neurais.
+
+## Como estudar este capítulo
+
+Nas aulas anteriores conseguimos encontrar os coeficientes da regressão por uma solução direta. O gradiente descendente resolve a mesma tarefa por aproximações sucessivas: parte de um palpite, mede como a perda muda ao redor dele e dá um pequeno passo na direção que reduz essa perda.
+
+Para entender o algoritmo, acompanhe quatro objetos: os **parâmetros atuais**, a **perda**, o **gradiente** e a **taxa de aprendizado**. O gradiente indica direção e intensidade local da mudança; a taxa determina quanto dessa indicação será usado. Depois de cada atualização, calculamos tudo novamente porque o ponto de partida mudou.
+
+Os gráficos de convergência não são ornamentais. Eles permitem verificar se a perda diminui, se o passo é pequeno demais, se o algoritmo oscila ou se diverge. O objetivo deste capítulo é que você consiga não apenas executar o algoritmo, mas também explicar por que uma execução funcionou ou falhou.
 
 ## Base de dados de apoio
 
@@ -239,6 +247,53 @@ Backpropagation calcula gradientes; SGD ou Adam decide como usá-los.
 - taxa, batch, regularização e validação interagem.
 
 O algoritmo é simples; o comportamento do sistema completo não é.
+
+## O algoritmo explicado passo a passo
+
+Gradiente descendente repete uma ideia simples:
+
+1. **Começar com parâmetros iniciais.** Eles podem ser zero ou pequenos valores
+   aleatórios, dependendo do modelo.
+2. **Produzir previsões.** Usamos os parâmetros atuais para calcular
+   $\widehat y$.
+3. **Medir o erro.** A função de perda resume quão ruins são essas previsões.
+4. **Calcular o gradiente.** Ele informa em qual direção a perda aumenta mais
+   rapidamente para cada parâmetro.
+5. **Andar na direção contrária.** Atualizamos
+   $\beta\leftarrow\beta-\eta\nabla J(\beta)$.
+6. **Repetir até estabilizar.** Monitoramos perda, gradiente e mudanças nos
+   parâmetros.
+
+$\eta$ é a taxa de aprendizado. Ela controla o tamanho do passo, não a direção.
+Se for muito pequena, o algoritmo demora; se for muito grande, pode ultrapassar
+o mínimo repetidamente ou divergir.
+
+## Como diagnosticar a execução
+
+- **A perda cai suavemente:** comportamento esperado no exemplo quadrático.
+- **A perda oscila:** a taxa pode estar alta ou as escalas muito diferentes.
+- **A perda vira `NaN`:** passos grandes podem ter causado estouro numérico.
+- **A perda para longe da referência OLS:** reveja derivada, sinal, intercepto e
+  padronização.
+- **Treino melhora e validação piora:** o problema é generalização, não
+  convergência computacional.
+
+Batch usa toda a base em cada passo. SGD usa uma observação e produz trajetória
+ruidosa. Mini-batch usa pequenos grupos, aproveitando processamento vetorial sem
+perder totalmente a rapidez das atualizações frequentes.
+
+## A conexão com redes neurais
+
+Em uma rede, a perda depende de muitos parâmetros encadeados. *Backpropagation*
+aplica a regra da cadeia para calcular os gradientes; o otimizador usa esses
+gradientes para atualizar os pesos. A lógica é a mesma deste exemplo, embora a
+superfície deixe de ser uma quadrática simples.
+
+::: {.callout-warning title="Convergência não é qualidade científica"}
+Chegar a uma perda pequena mostra que o algoritmo otimizou o objetivo. Não
+garante que o modelo generalize, que os dados representem a população ou que a
+relação seja causal.
+:::
 
 ## Questões de revisão
 

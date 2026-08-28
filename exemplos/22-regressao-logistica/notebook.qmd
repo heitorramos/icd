@@ -1,13 +1,21 @@
 ---
 title: "Regressão logística como modelo linear generalizado"
 subtitle: "Material de apoio — Aula 22"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Construiremos a regressão logística como GLM Bernoulli, compararemos funções para mapear o preditor linear em probabilidade, derivaremos a entropia cruzada e implementaremos o ajuste por gradiente descendente.
+
+## Como estudar este capítulo
+
+A regressão linear não é adequada quando a resposta assume apenas zero ou um: a reta pode produzir valores menores que zero ou maiores que um, e a variabilidade de uma resposta binária não é constante. A regressão logística preserva a ideia de combinar atributos linearmente, mas transforma esse escore em uma probabilidade válida.
+
+Há três etapas conceituais. Primeiro, modelamos $Y_i$ por uma Bernoulli. Depois, construímos o preditor linear $\eta_i=x_i^T\beta$. Por fim, usamos a função logística para ligar $\eta_i$ à probabilidade $\pi_i$. Essa decomposição é a ponte para os modelos lineares generalizados.
+
+Durante o estudo, mantenha separadas a estimação e a decisão. O modelo estima probabilidades; somente depois um limiar transforma probabilidades em classes. Métricas de discriminação, calibração e custos dos erros respondem a perguntas diferentes e devem ser interpretadas separadamente.
 
 ## Base de dados de apoio
 
@@ -77,6 +85,10 @@ def sigmoid(z):
 
 pd.DataFrame({"eta": [-3, 0, 3], "probabilidade": sigmoid(np.array([-3, 0, 3]))})
 ```
+
+::: {.callout-note title="Interpretação"}
+O escore zero corresponde a probabilidade 0,5. Escores negativos produzem probabilidades abaixo de 0,5 e escores positivos, acima. A relação não é linear: a mesma mudança no escore altera mais a probabilidade perto do centro do que nos extremos.
+:::
 
 ## Odds e interpretação
 
@@ -186,6 +198,51 @@ Uma razão de odds é constante no modelo, mas a mudança em pontos percentuais 
 Separação perfeita ocorre quando alguma combinação dos preditores distingue integralmente as duas classes. Nesse caso, a verossimilhança pode continuar aumentando quando a magnitude dos coeficientes cresce, e o MLE finito pode não existir.
 
 Coeficientes muito grandes e falhas de convergência são sinais importantes. O tratamento desse problema será estudado na aula seguinte, dedicada à regularização.
+
+## A regressão logística passo a passo
+
+O fluxo completo é:
+
+1. **Codificar a resposta.** Definimos claramente o que significa zero e um.
+2. **Construir um escore linear.** O modelo combina os atributos em
+   $\eta=x^T\beta$.
+3. **Transformar o escore em probabilidade.** A função logística comprime
+   qualquer valor real para o intervalo entre zero e um.
+4. **Comparar probabilidade e resposta observada.** A entropia cruzada penaliza
+   previsões confiantes que contradizem o resultado.
+5. **Ajustar os coeficientes.** O gradiente indica como alterar cada coeficiente
+   para reduzir essa perda.
+6. **Avaliar probabilidades.** Verificamos discriminação e calibração antes de
+   converter probabilidades em classes.
+7. **Escolher um limiar para a decisão.** O limiar depende do custo dos erros e
+   não precisa ser 0,5.
+
+## Como ler um coeficiente
+
+O coeficiente atua primeiro sobre o logaritmo das odds. Exponenciá-lo produz uma
+razão de odds. Se $e^{\beta_j}=1{,}5$, uma unidade adicional no atributo está
+associada a odds 50% maiores, mantendo os outros atributos constantes.
+
+Isso não quer dizer que a probabilidade aumente 50%. A mesma razão de odds pode
+representar uma pequena mudança quando a probabilidade inicial é baixa e uma
+mudança diferente perto de 0,5. Para comunicação, é útil mostrar probabilidades
+previstas para alguns perfis concretos.
+
+## Discriminação, calibração e limiar
+
+- **Discriminação:** positivos recebem escores maiores que negativos?
+- **Calibração:** previsões de 70% acontecem aproximadamente 70% das vezes?
+- **Limiar:** a partir de qual probabilidade tomaremos uma ação?
+
+Essas perguntas são diferentes. Um modelo pode ordenar bem e ainda produzir
+probabilidades ruins. Também pode estar bem calibrado e não separar os grupos o
+suficiente para uma aplicação específica.
+
+::: {.callout-warning title="Momento da previsão"}
+Um atributo só pode entrar se estiver disponível quando a previsão será feita.
+Neste exemplo, `charges` ajuda a identificar tabagismo, mas pode ser posterior ao
+comportamento e inadequado para uma aplicação prospectiva.
+:::
 
 ## Questões de revisão
 

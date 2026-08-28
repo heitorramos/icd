@@ -1,13 +1,21 @@
 ---
 title: "Máxima verossimilhança: dos dados aos parâmetros"
 subtitle: "Material de apoio — Aula 18"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia constrói máxima verossimilhança a partir de um modelo Bernoulli. Vamos distinguir probabilidade de verossimilhança, derivar o estimador de $p$ e interpretar escore, curvatura e hipóteses do modelo.
+
+## Como estudar este capítulo
+
+Máxima verossimilhança é uma estratégia geral para transformar uma hipótese probabilística em uma estimativa. O raciocínio é: escolhemos um modelo para o modo como os dados poderiam ter sido gerados, observamos a amostra e procuramos o valor do parâmetro que torna essa amostra mais compatível com o modelo.
+
+O exemplo Bernoulli foi escolhido porque permite enxergar todas as etapas sem álgebra excessiva. A resposta vale zero ou um, o parâmetro $p$ representa a chance de sucesso e a proporção amostral surgirá como consequência da maximização — não como uma fórmula entregue de antemão. Depois, a mesma lógica será aplicada à distribuição Normal e, na Aula 19, à regressão linear.
+
+Não confunda três objetos: os **dados** são aquilo que foi observado; o **parâmetro** é uma característica desconhecida do modelo; o **estimador** é uma regra calculada com os dados para aproximar o parâmetro. A verossimilhança compara valores possíveis do parâmetro mantendo os dados fixos.
 
 ## Base de dados de apoio
 
@@ -196,6 +204,46 @@ O MLE é ótimo apenas em relação ao modelo especificado. Independência inade
 
 ::: {.callout-note title="Interpretação"}
 “Máxima verossimilhança” significa o melhor parâmetro dentro da família escolhida, e não prova de que a família representa bem o mecanismo gerador dos dados.
+:::
+
+## Máxima verossimilhança passo a passo
+
+O procedimento pode ser entendido sem começar pelas derivadas:
+
+1. **Escolhemos um modelo para cada observação.** Para tabagismo, usamos
+   Bernoulli porque a resposta é zero ou um.
+2. **Propomos um valor para o parâmetro.** Por exemplo, $p=0{,}10$ afirma que a
+   chance de uma pessoa ser fumante é 10% dentro do modelo.
+3. **Calculamos quão compatíveis os dados são com esse valor.** A
+   verossimilhança combina as contribuições de todas as pessoas.
+4. **Repetimos para outros valores de $p$.** A curva mostra quais valores
+   tornam os dados observados mais plausíveis.
+5. **Escolhemos o máximo.** Na Bernoulli, o máximo coincide com a proporção
+   observada de fumantes.
+
+O logaritmo não muda qual valor vence. Ele transforma produtos em somas, deixa
+a conta mais estável e facilita a derivação.
+
+### Um exemplo pequeno
+
+Suponha a sequência `1, 0, 0, 1, 0`. Temos dois sucessos em cinco observações.
+Para $p=0{,}2$, a verossimilhança é proporcional a
+$0{,}2^2(0{,}8)^3$. Para $p=0{,}4$, ela é proporcional a
+$0{,}4^2(0{,}6)^3$. Ao comparar todos os valores entre zero e um, o máximo
+ocorre em $\widehat p=2/5=0{,}4$.
+
+### O que a curva nos ensina
+
+O ponto mais alto fornece a estimativa. A largura da região próxima ao máximo
+indica estabilidade: uma curva estreita distingue melhor valores candidatos;
+uma curva plana indica que vários valores explicam os dados de modo parecido.
+Esse é o motivo intuitivo pelo qual amostras maiores costumam produzir
+estimativas mais precisas.
+
+::: {.callout-warning title="Cuidado"}
+A verossimilhança sempre compara parâmetros dentro do modelo escolhido. Se a
+independência ou a distribuição estiverem inadequadas, maximizar a função não
+corrige o problema de modelagem.
 :::
 
 ## Exercícios de revisão

@@ -2,7 +2,11 @@
 title: "Aula 04 — Análise Exploratória com a Olist"
 subtitle: "Estrutura, granularidade, escopo, temporalidade e corretude"
 author: "Introdução à Ciência de Dados — DCC/UFMG"
-format: html
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-summary: "Mostrar código"
 jupyter: python3
 execute:
   echo: true
@@ -20,6 +24,14 @@ Este material desenvolve uma auditoria exploratória completa de uma base relaci
 4. interpretar ausências à luz do processo de geração dos dados;
 5. avaliar escopo, temporalidade e regras de validade;
 6. produzir uma análise descritiva reproduzível.
+
+## Como estudar este capítulo
+
+Análise exploratória não é uma lista automática de gráficos. É uma investigação sobre como os dados foram produzidos, organizados e conectados. Na Olist, um pedido pode ter vários itens e vários pagamentos; portanto, juntar tabelas sem compreender suas granularidades pode multiplicar linhas e alterar totais silenciosamente.
+
+O capítulo constrói uma tabela analítica sem perder o vínculo com as tabelas originais. Primeiro identificamos a unidade de cada arquivo e suas chaves. Depois verificamos cardinalidades, agregamos relações um-para-muitos e validamos os `merge`. Só então estudamos tempo, ausências, valores extremos e relações entre variáveis.
+
+Em cada etapa, registre uma pequena conclusão: o que uma linha representa antes e depois da transformação, quais linhas podem desaparecer ou se repetir e como verificar que os totais continuam coerentes. Essa prática transforma o notebook em uma auditoria reproduzível, e não apenas em código que “rodou sem erro”.
 
 ## A base Olist
 

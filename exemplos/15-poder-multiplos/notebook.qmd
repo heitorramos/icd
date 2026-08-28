@@ -3,8 +3,8 @@ title: "Poder e múltiplos testes com Cookie Cats"
 subtitle: "Notebook de estudo da Aula 15"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -17,6 +17,14 @@ Este notebook usa um experimento A/B em um jogo móvel para conectar quatro idei
 2. bootstrap recentralizado como outra forma de simular $H_0$;
 3. bootstrap usual como construção natural da incerteza sob $H_A$;
 4. poder e múltiplos testes como problemas de planejamento.
+
+## Como estudar este capítulo
+
+Poder e multiplicidade tratam das consequências de repetir decisões estatísticas. Poder é a probabilidade de detectar um efeito específico quando ele realmente existe. Ele depende do tamanho do efeito, da variabilidade, do tamanho amostral, do nível de significância e do procedimento de teste. Por isso, não existe “o poder do teste” sem definir uma alternativa.
+
+Quando várias hipóteses são testadas, aumentam as oportunidades de falsos positivos. Bonferroni e Holm controlam a probabilidade de ao menos um falso positivo na família (FWER). Benjamini–Hochberg controla a proporção esperada de falsos positivos entre as descobertas (FDR). Esses objetivos são diferentes e conduzem a decisões diferentes.
+
+O exemplo Cookie Cats conecta todo o fluxo: usamos permutação para representar $H_0$, bootstrap usual para representar incerteza próxima à alternativa observada e simulação para estudar poder. Depois repetimos o raciocínio para várias métricas. Ao ler as saídas, identifique sempre qual distribuição está sendo construída e qual erro o procedimento pretende controlar.
 
 # 1. Download da base
 

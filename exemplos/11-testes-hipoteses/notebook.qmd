@@ -3,8 +3,8 @@ title: "Testes de hipóteses com pedidos Olist"
 subtitle: "Notebook de estudo da Aula 11"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -14,6 +14,14 @@ execute:
 Este notebook transforma a pergunta operacional da Aula 11 em um teste completo.
 Você irá formular hipóteses, construir a distribuição nula, comparar três formas
 de calcular o valor-p e estudar erros tipo I, poder e importância prática.
+
+## Como estudar este capítulo
+
+Um teste de hipóteses é um procedimento para medir compatibilidade entre dados e uma afirmação de referência. Ele começa antes do cálculo: definimos a população, o parâmetro, a hipótese nula, a alternativa e uma estatística que represente o afastamento relevante.
+
+Depois construímos o comportamento da estatística **se a hipótese nula fosse verdadeira**. O valor observado é comparado com essa distribuição de referência. O valor-p corresponde à proporção de resultados nulos tão ou mais extremos que o observado, na direção definida pela alternativa.
+
+O capítulo apresenta cálculo exato, aproximação Normal e simulação para a mesma pergunta. Compare os métodos e observe que todos dependem do mesmo modelo nulo. Ao final, separe claramente evidência estatística, tamanho do efeito e importância prática: rejeitar $H_0$ não informa, por si só, se a diferença é grande ou útil.
 
 # 1. A base e a pergunta
 

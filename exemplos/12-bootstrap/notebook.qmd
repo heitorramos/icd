@@ -3,12 +3,20 @@ title: "Airbnb NYC 2019: uma introdução ao bootstrap"
 format:
   html:
     toc: true
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 jupyter: python3
 execute:
   enabled: true
 ---
+
+## Objetivos e roteiro de estudo
+
+O bootstrap aproxima a distribuição amostral usando a própria amostra como uma população empírica. Este capítulo explica por que reamostramos **com reposição**, como cada réplica é construída, o que a distribuição das réplicas representa e como ela pode ser usada para estimar erro padrão, viés e intervalos de confiança.
+
+O raciocínio deve ser acompanhado em três níveis. A amostra original produz a estimativa observada. Cada reamostra produz uma réplica bootstrap. O conjunto de muitas réplicas aproxima a variabilidade que teríamos ao repetir a coleta sob condições semelhantes. Não confunda a quantidade de réplicas com o tamanho da amostra: aumentar $B$ reduz o ruído da simulação, mas não cria novas observações independentes.
+
+Começaremos com o intervalo percentil e depois compararemos outros métodos. As fórmulas são acompanhadas de interpretação, vantagens e limitações. Antes de escolher um intervalo, verifique se as observações são representativas, se a unidade de reamostragem respeita a dependência dos dados e se a estatística não está em uma situação muito irregular.
 
 ## A base
 

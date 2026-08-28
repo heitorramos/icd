@@ -1,7 +1,11 @@
 ---
 title: "Aula 03 — Tabelas e tipos de dados com Airbnb NYC"
 subtitle: "Material de estudo"
-format: html
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-summary: "Mostrar código"
 jupyter: python3
 execute:
   echo: true
@@ -28,6 +32,14 @@ Ao final, você deverá conseguir:
 - documentar decisões de limpeza.
 
 Fonte: <https://www.kaggle.com/datasets/thedevastator/airbnbs-nyc-overview>.
+
+## Como estudar este capítulo
+
+Antes de analisar dados, precisamos entender o que a tabela representa. Uma coluna chamada `price` pode parecer autoexplicativa, mas sua interpretação depende da unidade, do período, da moeda e do processo de coleta. Da mesma forma, o tipo `int64` informa como o computador armazenou valores, não se a variável é uma medida, uma categoria ou um identificador.
+
+Este capítulo segue o percurso de uma primeira leitura profissional: identificar a unidade observacional, consultar o dicionário, verificar dimensões e tipos, investigar ausências e duplicatas, aplicar regras de validade e somente então resumir grupos. Cada operação em pandas responde a uma pergunta sobre a base; ela não deve ser executada apenas porque faz parte de uma receita.
+
+Antes de abrir cada código, formule o resultado esperado. Depois da saída, descreva em palavras o que mudou na tabela, quantas observações foram afetadas e que decisão analítica isso sustenta. O objetivo é aprender simultaneamente a linguagem das tabelas e o raciocínio necessário para trabalhar com elas.
 
 # 1. Preparação
 
@@ -599,7 +611,7 @@ wide
 `stack` faz o caminho inverso.
 
 ```{python}
-wide.stack(future_stack=True).head(8)
+wide.stack().head(8)
 ```
 
 ## Formato largo e formato longo

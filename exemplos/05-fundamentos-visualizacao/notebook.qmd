@@ -2,7 +2,11 @@
 title: "Material de apoio — Fundamentos de visualização"
 subtitle: "Palmer Penguins e Datasaurus Dozen"
 jupyter: python3
-format: html
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   echo: true
   warning: false
@@ -11,6 +15,14 @@ execute:
 ## Objetivos
 
 Este notebook conecta tipos de variáveis, perguntas e representações. Ao final, você deverá conseguir construir e interpretar barras, histogramas, ECDFs, estimativas de densidade por kernel (KDE), boxplots, violinplots e dispersões.
+
+## Como estudar este capítulo
+
+Um gráfico é uma forma de codificar dados em marcas visuais — pontos, linhas ou áreas — e associá-las a posição, comprimento, cor e forma. A escolha deve partir da pergunta e do tipo das variáveis. Contagens de categorias, distribuição de uma medida e relação entre duas medidas exigem representações diferentes.
+
+O capítulo compara gráficos que respondem a perguntas próximas, mas não idênticas. Histograma e KDE enfatizam a forma da distribuição; a ECDF permite ler proporções acumuladas; boxplot resume posição e dispersão; violinplot acrescenta uma estimativa da densidade. Nenhuma dessas opções é universalmente superior.
+
+Ao estudar uma figura, procure descrevê-la antes de julgá-la: identifique eixos, unidade, população, padrão principal e exceções. Depois compare sua leitura com os resumos numéricos. O Datasaurus mostra por que médias, desvios e correlações iguais podem esconder formas completamente distintas.
 
 ```{python}
 from pathlib import Path
@@ -205,7 +217,7 @@ resumo = datasaurus.groupby("dataset").apply(
         "media_x": d.x.mean(), "media_y": d.y.mean(),
         "var_x": d.x.var(), "var_y": d.y.var(),
         "correlacao": d.x.corr(d.y),
-    }), include_groups=False
+    })
 ).round(2)
 resumo
 ```

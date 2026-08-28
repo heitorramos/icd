@@ -13,6 +13,14 @@ execute:
 jupyter: python3
 ---
 
+## Como estudar este capítulo
+
+Este capítulo usa o KNN para percorrer uma prática completa de machine learning. O método é simples: para classificar uma nova observação, procuramos exemplos de treinamento próximos e usamos suas classes como evidência. A simplicidade ajuda a enxergar decisões que também aparecem em métodos mais sofisticados.
+
+O KNN praticamente não possui uma etapa de treinamento tradicional; o trabalho ocorre na previsão. Por isso, escala, escolha da distância, número de vizinhos e presença de atributos irrelevantes têm grande impacto. A validação cruzada ajuda a escolher $k$, mas não substitui a análise do problema nem autoriza interpretação clínica.
+
+Ao estudar, siga o percurso da observação nova: ela passa pelo mesmo tratamento de valores ausentes e pela mesma padronização aprendida no treino; suas distâncias são calculadas; os vizinhos são selecionados; os votos são agregados; e a previsão é comparada com o resultado observado. As métricas resumem diferentes tipos de acerto e erro e precisam ser lidas à luz do objetivo.
+
 ## 1. Pergunta e base de dados
 
 Este material acompanha uma análise completa: queremos classificar perfis associados à doença renal crônica (DRC). A base tem 400 pacientes, 24 atributos preditores e a resposta `classification`. Há medidas numéricas (creatinina, hemoglobina, glicose) e indicadores categóricos (hipertensão, diabetes, anemia), além de valores ausentes.
@@ -93,6 +101,10 @@ $\hat p_k(x)$ é a proporção local da classe 1, e $\mathbb 1\{\cdot\}$ vale 1 
 demo = df[["hemo", "bgr", "wc"]].dropna()
 demo.std().round(2)
 ```
+
+::: {.callout-note title="Interpretação"}
+As escalas originais são muito diferentes. Sem padronização, uma diferença em `wc` poderia dominar a distância mesmo quando variações em hemoglobina ou glicemia fossem mais informativas. Padronizar não escolhe a importância clínica dos atributos; apenas evita que a unidade de medida determine o resultado.
+:::
 
 A padronização $z_{ij}=(x_{ij}-\bar x_j)/s_j$ evita que a unidade numericamente maior domine a distância. Média, desvio-padrão e imputações devem ser estimados sem consultar o teste.
 
@@ -217,7 +229,9 @@ erros.loc[erros["verdadeiro"] != erros["previsto"],
            ["age", "bp", "bgr", "sc", "hemo", "htn", "dm", "verdadeiro", "previsto"]]
 ```
 
+::: {.callout-note title="Interpretação"}
 Um erro individual não prova uma causa, mas ajuda a formular perguntas: o perfil está em uma região de sobreposição? Há muitas ausências? Esse subgrupo foi pouco representado? A análise de erros deve orientar investigação, não justificativas pós-hoc.
+:::
 
 ## 10. Extensões e limites
 
@@ -230,7 +244,63 @@ Para regressão, substituímos o voto pela média local: $\hat f_k(x)=k^{-1}\sum
 
 Limitações centrais: previsão custosa, sensibilidade à representação, degradação em alta dimensão e ausência de extrapolação para regiões sem exemplos.
 
-## 11. Checklist final
+## 11. KNN passo a passo
+
+1. **Definir a resposta e os atributos.** O que significa ser classe positiva e
+   quais informações existem para uma nova pessoa?
+2. **Separar desenvolvimento e teste.** Todas as decisões seguintes usam apenas
+   o desenvolvimento.
+3. **Tratar valores ausentes e categorias.** Essas transformações são aprendidas
+   dentro da pipeline.
+4. **Colocar atributos em escalas comparáveis.** KNN usa distância; uma variável
+   com números maiores pode dominar sem padronização.
+5. **Calcular as distâncias.** Para cada nova observação, medimos sua proximidade
+   aos exemplos de treinamento.
+6. **Selecionar os $k$ mais próximos.** A previsão de classificação usa o voto;
+   na regressão, usa a média das respostas vizinhas.
+7. **Escolher $k$ por validação.** $k$ pequeno reage a detalhes e ruído; $k$
+   grande produz decisões mais suaves.
+8. **Avaliar no teste reservado.** Matriz de confusão e métricas revelam tipos de
+   acerto e erro.
+
+## Exemplo curto de uma previsão
+
+Considere cinco vizinhos com classes `1, 1, 0, 1, 0`. Para $k=5$, três dos cinco
+são positivos, então a frequência local é $3/5=0{,}60$ e a previsão, com limiar
+0,5, é classe 1.
+
+Essa frequência não é automaticamente uma probabilidade bem calibrada. Ela diz
+como as classes estão distribuídas naquela vizinhança da amostra.
+
+## Por que muitas dimensões dificultam o método?
+
+Com poucos atributos, é fácil imaginar pontos realmente próximos. Ao adicionar
+muitas dimensões, os dados ficam espalhados e mesmo o vizinho mais próximo pode
+estar distante em várias coordenadas. O método passa a precisar de mais dados e
+fica mais sensível à escolha dos atributos.
+
+Por isso, antes de aplicar KNN em uma base grande, vale perguntar se todas as
+variáveis ajudam a definir semelhança. Remover ruído ou construir uma
+representação melhor pode ser mais importante do que testar muitos valores de
+$k$.
+
+## Como ler as métricas
+
+- acurácia: quantos casos foram classificados corretamente no total;
+- precisão: entre os previstos como positivos, quantos eram positivos;
+- recall: entre os positivos reais, quantos foram encontrados;
+- F1: compromisso entre precisão e recall.
+
+Na base renal, um único falso negativo merece atenção mesmo quando a acurácia é
+alta. A métrica deve refletir a consequência do erro, e não apenas produzir o
+maior número.
+
+::: {.callout-warning title="Escopo do resultado"}
+O teste avalia esta pipeline nesta amostra. Ele não transforma o exercício em
+ferramenta clínica nem garante que o desempenho se repita em outro hospital.
+:::
+
+## 12. Checklist final
 
 - pergunta, população, unidade e momento da previsão estão definidos?
 - o teste permaneceu isolado?

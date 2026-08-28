@@ -1,13 +1,21 @@
 ---
 title: "Verossimilhança gaussiana e regressão linear"
 subtitle: "Material de apoio — Aula 19"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia formula a regressão como modelo probabilístico, deriva sua log-verossimilhança e mostra por que máxima verossimilhança gaussiana e mínimos quadrados estimam os mesmos coeficientes. A discussão final esclarece o papel real da normalidade.
+
+## Como estudar este capítulo
+
+Na Aula 17, a reta foi escolhida por minimizar a soma dos resíduos ao quadrado. Agora perguntamos: **qual modelo probabilístico conduz exatamente ao mesmo critério?** A resposta aparece quando supomos que, para cada valor dos preditores, a resposta oscila ao redor da reta segundo uma distribuição Normal com variância constante.
+
+O capítulo separa duas camadas que muitas vezes são misturadas. A primeira é a **média condicional**, descrita pela reta. A segunda é a **distribuição das observações ao redor dessa média**, descrita pelo termo de erro. A normalidade pertence à segunda camada. Ela não é necessária para desenhar a reta de mínimos quadrados, mas sustenta a forma específica da verossimilhança e os procedimentos inferenciais usuais em amostras pequenas.
+
+Ao acompanhar as equações, identifique sempre o papel de cada termo: $y_i$ é a resposta observada, $x_i^T\beta$ é a média prevista, $y_i-x_i^T\beta$ é o resíduo correspondente e $\sigma^2$ controla a dispersão ao redor da reta.
 
 ## Base de dados de apoio
 
@@ -217,6 +225,51 @@ Para a Normal,
 $$-\log f(e)=C+e^2/(2\sigma^2).$$
 
 Por isso aparece a perda quadrática. Erros Laplace produzem perda absoluta; Bernoulli produz log-loss. Escolher uma distribuição é também escolher como discrepâncias serão penalizadas.
+
+## Da reta à verossimilhança: o caminho completo
+
+Nesta aula, acrescentamos uma camada probabilística à regressão da Aula 17:
+
+1. **A reta fornece a média.** Para cada idade $x_i$, calculamos
+   $\mu_i=\beta_0+\beta_1x_i$.
+2. **Os indivíduos não ficam exatamente sobre a média.** Representamos a
+   diferença por um erro $\varepsilon_i$.
+3. **Escolhemos uma distribuição para esses erros.** A Normal descreve erros
+   simétricos em torno de zero, com escala controlada por $\sigma$.
+4. **Cada reta candidata gera densidades diferentes para os dados.** Uma reta
+   distante dos pontos atribui densidade pequena às observações.
+5. **Multiplicamos as contribuições.** Sob independência, obtemos a
+   verossimilhança conjunta.
+6. **Maximizamos.** Com erros normais e variância constante, isso equivale a
+   minimizar a soma dos quadrados dos resíduos.
+
+Essa equivalência explica por que mínimos quadrados reaparece. O quadrado está
+no expoente da densidade Normal; ao tomar o log, ele se transforma justamente na
+soma de quadrados.
+
+## Os resíduos precisam parecer perfeitamente normais?
+
+Não. A reta pode ser calculada mesmo quando a distribuição dos resíduos não é
+Normal. A normalidade é mais importante para intervalos e testes clássicos em
+amostras pequenas.
+
+Na prática, olhamos primeiro para problemas mais estruturais:
+
+- tendência curva nos resíduos: a média não foi bem representada;
+- formato de funil: a variabilidade muda com o valor previsto;
+- grupos separados: pode faltar uma variável importante;
+- poucos resíduos extremos: algumas observações podem dominar o ajuste;
+- dependência temporal ou por pessoa: a informação efetiva é menor do que o
+  número de linhas sugere.
+
+O QQ-plot é uma parte desse diagnóstico, não um teste que aprova ou reprova
+sozinho toda a regressão.
+
+::: {.callout-note title="Ideia central"}
+Mínimos quadrados diz como escolher a reta. A hipótese Normal explica como
+transformar a distância dos pontos à reta em uma verossimilhança e em
+procedimentos de inferência.
+:::
 
 ## Questões de revisão
 

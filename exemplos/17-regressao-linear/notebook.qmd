@@ -4,7 +4,7 @@ subtitle: "Material de apoio — Aula 17"
 format:
   html:
     toc: true
-    code-fold: show
+    code-fold: false
     code-tools: true
 execute:
   echo: true
@@ -15,6 +15,14 @@ execute:
 ## Objetivos
 
 Este guia desenvolve a regressão linear simples como um modelo estatístico para a média condicional. Ao final, você deverá saber formular o problema de mínimos quadrados, derivar seus estimadores, interpretar o ajuste e reconhecer suas limitações.
+
+## Como estudar este capítulo
+
+A regressão começa com uma mudança de pergunta. Em vez de resumir apenas a associação entre `age` e `charges`, queremos descrever **como o valor médio de despesas varia com a idade**. A reta é uma aproximação dessa média condicional, não uma promessa de acertar a despesa de cada pessoa.
+
+O capítulo acompanha uma análise completa: conhecemos a base, visualizamos a relação, definimos o modelo, encontramos a reta que minimiza os erros quadráticos e verificamos o que ficou nos resíduos. As derivações mostram de onde vêm os coeficientes; elas não substituem a interpretação. Em cada etapa, procure responder três perguntas: o que entrou no cálculo, o que saiu dele e qual afirmação substantiva esse resultado sustenta.
+
+Ao abrir um bloco de código, relacione seus elementos ao texto. `X` representa os valores do preditor, `y` a resposta, `fitted` os valores médios estimados e `residuals` a diferença entre observado e ajustado. Essa tradução entre conceito e objeto computacional é parte central do aprendizado.
 
 ## Base de dados de apoio
 
@@ -84,6 +92,10 @@ local = (df.groupby(bins, observed=True)
                 n=("charges", "size")))
 local.round(2)
 ```
+
+::: {.callout-note title="Interpretação"}
+As médias por faixa etária sugerem crescimento das despesas com a idade, mas a quantidade de observações e a dispersão dentro de cada faixa também importam. A regressão substituirá esses degraus por uma função contínua; isso simplifica o padrão, mas não elimina a variabilidade individual.
+:::
 
 O alvo da regressão é a função
 
@@ -209,6 +221,10 @@ plt.legend()
 plt.show()
 ```
 
+::: {.callout-note title="Interpretação"}
+A reta acompanha uma tendência média crescente, mas os pontos permanecem muito dispersos ao redor dela. A separação visual entre fumantes e não fumantes antecipa que idade, sozinha, não descreve adequadamente a estrutura das despesas.
+:::
+
 ## Qualidade do ajuste
 
 Definimos
@@ -307,6 +323,32 @@ Um valor-p pequeno indica que uma inclinação tão extrema seria rara após rom
 ## Previsão média não é previsão individual
 
 $\widehat y(x_0)=\widehat\beta_0+\widehat\beta_1x_0$ estima a média para unidades com $X=x_0$. Um intervalo para essa média é mais estreito que um intervalo de previsão para uma nova unidade, pois este último inclui também a variabilidade individual dos erros. A construção paramétrica desses intervalos será aprofundada depois.
+
+## Como acompanhar uma regressão do início ao fim
+
+Uma regressão não começa pelo comando que ajusta a reta. O caminho de análise é:
+
+1. **Definir a pergunta.** Aqui queremos descrever como a despesa média varia
+   com a idade. Isso não é o mesmo que afirmar que envelhecer causa a diferença.
+2. **Conhecer as variáveis.** Verificamos unidade, valores ausentes, amplitude e
+   possíveis grupos, como fumantes e não fumantes.
+3. **Visualizar.** O diagrama de dispersão mostra se uma reta é uma aproximação
+   razoável e revela regiões com poucos dados ou valores influentes.
+4. **Escolher o critério.** Mínimos quadrados escolhe a reta que minimiza a soma
+   dos quadrados dos resíduos.
+5. **Interpretar os coeficientes.** O intercepto é a previsão quando a idade é
+   zero; como esse valor está fora da faixa relevante, ele tem pouca utilidade
+   substantiva. A inclinação descreve a variação média prevista por ano.
+6. **Ler os resíduos.** Padrões nos resíduos indicam aspectos que a reta não
+   representou, como curvatura, grupos ou mudança de variabilidade.
+7. **Quantificar incerteza.** Bootstrap e permutação respondem perguntas
+   diferentes sobre estabilidade e associação.
+
+::: {.callout-note title="Interpretação do resultado"}
+Uma inclinação positiva resume uma tendência média. Ela não significa que todas
+as pessoas mais velhas tenham despesas maiores nem que a reta produza uma
+previsão individual exata.
+:::
 
 ## O que fica para as próximas aulas
 

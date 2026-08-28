@@ -3,8 +3,8 @@ title: "Testes de permutação em um experimento A/B"
 subtitle: "Notebook de estudo das Aulas 13 e 14"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -14,6 +14,14 @@ execute:
 Este notebook usa uma única campanha A/B para construir o teste de permutação,
 auditar suas hipóteses e avançar para estatísticas robustas e permutações
 estratificadas. Ao final, você deverá saber **o que pode ser permutado e por quê**.
+
+## Como estudar este capítulo
+
+O teste de permutação constrói a distribuição nula quebrando, de maneira controlada, a associação entre grupo e resposta. Em um experimento aleatorizado, a atribuição original dos rótulos fornece a justificativa: sob a hipótese de ausência de efeito, redistribuições compatíveis com o desenho são alternativas plausíveis à atribuição observada.
+
+Cada permutação conserva os valores da resposta e reorganiza os rótulos permitidos. Calculamos a mesma estatística em todas as réplicas e comparamos o efeito observado com essa distribuição nula. O valor-p é a fração de estatísticas permutadas tão ou mais extremas que a observada.
+
+As Aulas 13 e 14 compartilham este capítulo. A primeira desenvolve o caso A/B básico. A segunda pergunta o que muda com estatísticas assimétricas, estratos, pares ou dependência. A regra central é preservar o desenho: não se deve permutar livremente observações que só são trocáveis dentro de blocos ou pares.
 
 # 1. Download da base
 
@@ -229,7 +237,6 @@ def stratified_stat(frame, label_col="permuted"):
     pieces = frame.groupby("most ads day").apply(
         lambda x: x.loc[x[label_col] == "ad", "converted"].mean()
                 - x.loc[x[label_col] == "psa", "converted"].mean(),
-        include_groups=False,
     )
     weights = frame["most ads day"].value_counts(normalize=True)
     return np.sum(pieces * weights[pieces.index])

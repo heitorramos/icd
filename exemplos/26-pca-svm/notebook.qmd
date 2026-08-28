@@ -1,13 +1,21 @@
 ---
 title: "PCA e SVM aplicados à Ciência de Dados"
 subtitle: "Material de apoio — Aula 26"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia usa PCA como transformação de representação e SVM como classificador. O foco é aplicado: formular o suficiente para interpretar hiperparâmetros, montar uma pipeline sem vazamento, comparar custo e desempenho e diagnosticar erros.
+
+## Como estudar este capítulo
+
+PCA e SVM resolvem problemas diferentes. PCA cria uma nova representação dos dados, buscando direções que concentram variabilidade. SVM usa as observações para construir uma fronteira de decisão com margem ampla. Eles podem aparecer na mesma pipeline, mas PCA não é uma etapa obrigatória para SVM e maior variância não significa necessariamente maior poder de classificação.
+
+O exemplo de imagens torna concreta a ideia de representação. Cada pixel começa como um atributo; o PCA combina pixels em componentes e permite reconstruções aproximadas. Em seguida, comparamos um classificador usando os atributos originais e outro usando componentes, observando desempenho, custo e padrões de erro.
+
+Leia o capítulo como uma comparação controlada. A divisão dos dados e as métricas permanecem as mesmas; o que muda é a representação entregue ao classificador. Isso permite discutir quando a redução dimensional preserva informação útil, quando descarta sinais discriminativos e por que toda transformação aprendida deve permanecer dentro da pipeline de validação.
 
 ## Base de dados de apoio
 
@@ -287,6 +295,54 @@ Seu valor deve ser demonstrado fora da amostra, não presumido por uma porcentag
 SVM costuma ser competitivo em amostras médias com muitos atributos e boa escala. Kernels permitem fronteiras flexíveis, mas custo de memória e tempo pode crescer rapidamente com o número de observações.
 
 Para produção, considere também latência, atualização do modelo, calibração, estabilidade e explicabilidade.
+
+## PCA passo a passo
+
+1. **Organizar a matriz.** Linhas representam exemplos e colunas representam
+   atributos — neste caso, intensidades dos pixels.
+2. **Centralizar.** Subtraímos a média de cada coluna para que PCA descreva
+   variações em torno de um perfil médio.
+3. **Encontrar direções principais.** A primeira captura a maior variação
+   possível; as seguintes capturam variações novas e ortogonais.
+4. **Projetar.** Cada imagem passa a ser descrita por seus escores nas componentes.
+5. **Escolher quantas componentes manter.** Variância explicada e desempenho da
+   tarefa ajudam nessa decisão.
+6. **Reconstruir quando necessário.** Multiplicamos os escores pelas direções
+   para aproximar a imagem original e observar o que foi perdido.
+
+PCA não sabe quais são as classes. Ele preserva variação, não necessariamente a
+informação mais útil para classificação.
+
+## SVM passo a passo
+
+1. **Representar os exemplos.** Escala e PCA, se utilizados, são ajustados apenas
+   com o treino.
+2. **Procurar uma fronteira.** O SVM busca separar as classes deixando uma margem
+   ampla entre elas.
+3. **Identificar os vetores de suporte.** São os exemplos próximos da fronteira
+   que efetivamente determinam sua posição.
+4. **Permitir alguns erros.** O parâmetro $C$ controla o compromisso entre margem
+   ampla e violações no treinamento.
+5. **Usar kernel quando a fronteira linear não basta.** O RBF mede semelhança
+   local; $\gamma$ controla quão local é essa influência.
+6. **Validar a pipeline.** Número de componentes, $C$ e $\gamma$ são escolhidos
+   sem consultar o teste.
+
+## Como interpretar a comparação
+
+Se PCA reduz muito o número de atributos e mantém desempenho semelhante, pode
+valer a pena pelo custo e pela estabilidade. Se o SVM sem PCA funciona melhor,
+componentes de baixa variância podem conter informação discriminativa.
+
+A matriz de confusão mostra quais peças de roupa se confundem. Classes com forma
+parecida, como camisa e camiseta, tendem a exigir representações mais detalhadas
+do que categorias visualmente distintas.
+
+::: {.callout-note title="Ideia central"}
+PCA muda a representação; SVM usa essa representação para construir uma
+fronteira. Como uma etapa altera a entrada da outra, ambas devem ser avaliadas
+como uma única pipeline.
+:::
 
 ## Síntese
 

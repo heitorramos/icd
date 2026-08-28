@@ -1,13 +1,21 @@
 ---
 title: "Regressão linear múltipla e introdução a GLMs"
 subtitle: "Material de apoio — Aula 21"
-format: {html: {toc: true, code-fold: show, code-tools: true}}
+format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
 ---
 
 ## Objetivos
 
 Este guia formula regressão múltipla em notação matricial, implementa o ajuste e interpreta seus coeficientes. Ao final, introduz os três componentes de um modelo linear generalizado para preparar a regressão logística.
+
+## Como estudar este capítulo
+
+A regressão múltipla amplia a reta simples para situações em que várias características ajudam a explicar a resposta. A novidade mais importante não é apenas adicionar colunas à matriz: a interpretação passa a ser **condicional**. O coeficiente de idade descreve a variação associada à idade quando os demais atributos do modelo são mantidos fixos.
+
+O capítulo começa pela construção da matriz de projeto, porque cada coluna corresponde a uma escolha de representação: variável numérica, indicador de categoria ou interação. Depois ajustamos o modelo, interpretamos os coeficientes e investigamos dois desafios: interações, nas quais o efeito de uma variável depende de outra, e colinearidade, que dificulta separar contribuições individuais.
+
+Use a notação matricial como um mapa compacto. Cada linha de $X$ representa uma observação, cada coluna um atributo e $\beta$ contém um coeficiente por coluna. O produto $X\beta$ produz todas as médias previstas de uma vez. A intuição continua sendo a mesma da regressão simples.
 
 ## Base de dados de apoio
 
@@ -248,6 +256,53 @@ o que garante probabilidades entre 0 e 1.
 
 ::: {.callout-note title="Interpretação"}
 A regressão logística preserva a matriz $X$ e o preditor linear $X\beta$. O que muda é a distribuição da resposta, a função de ligação e, consequentemente, a verossimilhança e a perda.
+:::
+
+## Como interpretar o modelo sem se perder nos coeficientes
+
+O modelo múltiplo é uma extensão da reta: continuamos descrevendo uma média,
+mas agora com várias informações simultâneas. Um roteiro seguro é:
+
+1. **Definir a resposta e a unidade observacional.** Neste exemplo, cada linha é
+   uma pessoa e a resposta são suas despesas.
+2. **Escolher atributos disponíveis para a pergunta.** Idade, IMC e tabagismo
+   entram por razões diferentes e possuem unidades diferentes.
+3. **Codificar categorias.** Uma categoria vira referência; os coeficientes das
+   demais expressam diferenças em relação a ela.
+4. **Ajustar o modelo.** O algoritmo encontra a combinação de coeficientes que
+   reduz os resíduos.
+5. **Interpretar um coeficiente por vez.** A leitura sempre inclui “mantendo os
+   demais atributos do modelo constantes”.
+6. **Verificar se essa comparação é plausível.** Combinações raras de atributos
+   podem levar a interpretações apoiadas por poucos dados.
+7. **Analisar resíduos e validação.** Um bom coeficiente isolado não substitui a
+   avaliação do modelo completo.
+
+### Variável categórica
+
+Se `smoker=yes` é comparado com `smoker=no`, seu coeficiente representa a
+diferença média prevista entre fumantes e não fumantes com a mesma idade e o
+mesmo IMC, segundo o modelo. Isso é uma comparação condicional, não
+automaticamente um efeito causal.
+
+### Interação
+
+Uma interação responde a perguntas como: “a relação entre IMC e despesas muda
+entre fumantes e não fumantes?”. Ao incluí-la, passamos a ter uma inclinação para
+o grupo de referência e uma correção dessa inclinação para o outro grupo.
+
+## Colinearidade em linguagem prática
+
+Quando dois atributos trazem quase a mesma informação, o modelo pode prever bem,
+mas ter dificuldade para decidir quanto do efeito atribuir a cada coeficiente.
+Sinais podem mudar e erros-padrão podem aumentar. Antes de retirar variáveis
+mecanicamente, volte à pergunta: precisamos de previsão ou de interpretação
+separada dos coeficientes?
+
+::: {.callout-note title="Leitura recomendada"}
+Leia primeiro a previsão produzida para perfis concretos e só depois examine os
+coeficientes. Isso reduz o risco de interpretar um termo fora da escala, da
+categoria de referência ou das interações do modelo.
 :::
 
 ## Questões de revisão

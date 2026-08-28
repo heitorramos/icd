@@ -2,7 +2,11 @@
 title: "Material de apoio — Boas práticas de visualização"
 subtitle: "TMDB 5000 Movie Dataset"
 jupyter: python3
-format: html
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   echo: true
   warning: false
@@ -11,6 +15,14 @@ execute:
 ## Objetivos
 
 Neste notebook, a mesma base será representada de maneiras diferentes. O objetivo é justificar escolhas de escala, ordem, cor, destaque, contexto e transformação.
+
+## Como estudar este capítulo
+
+Boas práticas de visualização não são regras decorativas. Escala, ordem, transformação e cor alteram aquilo que o leitor consegue comparar e podem mudar a impressão produzida pelos mesmos dados. O critério central é comunicar a estrutura relevante sem esconder incerteza, contexto ou limitações.
+
+Usaremos a base TMDB para reconstruir gráficos deliberadamente problemáticos e comparar versões corrigidas. Em cada par, pergunte: qual afirmação a primeira versão parece sustentar, qual decisão visual produziu essa impressão e o que muda na versão revisada? Esse contraste ajuda a aprender mais do que uma lista de proibições.
+
+O código mostra como implementar as escolhas, mas a parte essencial é a justificativa. Uma transformação logarítmica, por exemplo, é útil quando queremos comparar ordens de grandeza; ela não apaga valores extremos nem torna automaticamente a distribuição “correta”. Um bom gráfico deve permitir que o leitor reconheça o que foi transformado.
 
 ```{python}
 from pathlib import Path

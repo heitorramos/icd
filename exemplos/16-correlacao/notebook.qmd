@@ -3,8 +3,8 @@ title: "Correlação com despesas médicas"
 subtitle: "Material de estudo da Aula 16"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -20,6 +20,12 @@ entre variáveis quantitativas. Ao final, você deve conseguir:
 4. reconhecer não linearidade, pontos influentes e restrição de amplitude;
 5. distinguir correlação marginal e condicional;
 6. quantificar a incerteza de uma correlação amostral.
+
+## Como estudar este capítulo
+
+O fio condutor é uma pergunta simples: **quando duas variáveis mudam juntas, como podemos descrever esse padrão sem confundir associação com causalidade?** Começaremos pelo gráfico de dispersão, porque um único coeficiente nunca conta toda a história. Em seguida, construiremos covariância, Pearson e Spearman a partir daquilo que se observa no gráfico.
+
+Leia cada bloco nesta ordem: primeiro identifique a pergunta, depois examine a figura ou a tabela, tente antecipar o resultado e somente então abra o código. O código registra como a análise foi produzida; a interpretação explica o que ela permite concluir. Ao final, você deve conseguir escolher uma medida de associação, reconhecer situações em que ela engana e redigir uma conclusão compatível com os dados.
 
 # 1. Obtenção e preparação da base
 
@@ -270,7 +276,7 @@ controla tabagismo, IMC ou acesso aos serviços de saúde.
 rng = np.random.default_rng(1616)
 x_curve = np.linspace(-3, 3, 250)
 y_curve = x_curve**2 + rng.normal(0, .45, len(x_curve))
-print("Pearson:", pearsonr(x_curve, y_curve).statistic)
+print("Pearson:", pearsonr(x_curve, y_curve)[0])
 sns.scatterplot(x=x_curve, y=y_curve)
 plt.show()
 ```
@@ -345,7 +351,7 @@ example["d"] = example["R"]-example["S"]
 example["d²"] = example["d"]**2
 print(example)
 print("Spearman pela fórmula:", 1-6*example["d²"].sum()/(4*(4**2-1)))
-print("Spearman pelo SciPy:", spearmanr(x_example, y_example).statistic)
+print("Spearman pelo SciPy:", spearmanr(x_example, y_example)[0])
 ```
 
 ::: {.callout-note title="Interpretação"}
@@ -365,8 +371,8 @@ $\sum_i d_i^2$ pressupõe ausência de empates; sem a correção apropriada, ela
 não deve ser usada.
 
 ```{python}
-pearson_age = pearsonr(df.age, df.charges).statistic
-spearman_age = spearmanr(df.age, df.charges).statistic
+pearson_age = pearsonr(df.age, df.charges)[0]
+spearman_age = spearmanr(df.age, df.charges)[0]
 print(f"Pearson:  {pearson_age:.3f}")
 print(f"Spearman: {spearman_age:.3f}")
 ```
@@ -422,7 +428,7 @@ ser transportada sem considerar o desenho amostral.
 ```{python}
 print("Global BMI-despesas:", df.bmi.corr(df.charges))
 conditional = df.groupby("smoker").apply(
-    lambda g: g.bmi.corr(g.charges), include_groups=False
+    lambda g: g.bmi.corr(g.charges)
 )
 conditional
 ```
@@ -536,6 +542,10 @@ Em ambos os casos:
 8. Refaça a análise usando `children` e explique por que o coeficiente é pequeno.
 
 # Bibliografia
+
+Para uma primeira leitura, use *Introduction to Modern Statistics* e o material
+de *Computational and Inferential Thinking*. ISLR conecta correlação à regressão;
+Freedman aprofunda interpretação e riscos em estudos observacionais.
 
 - Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, correlação e regressão linear.
 - James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo 3.

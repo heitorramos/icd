@@ -3,8 +3,8 @@ title: "TCL, intervalos e testes com dados Olist"
 subtitle: "Notebook das Aulas 10 e 11"
 format:
   html:
-    code-fold: show
-    code-summary: "Ocultar código"
+    code-fold: false
+    code-summary: "Mostrar código"
 execute:
   enabled: true
 ---
@@ -24,6 +24,18 @@ Ao final, você deve conseguir:
 - formular hipóteses e calcular uma estatística de teste;
 - estimar um p-valor por aproximação e por simulação;
 - investigar erros tipo I e poder estatístico.
+
+## Como estudar este capítulo
+
+Este material conecta variação amostral e decisão estatística. O Teorema Central do Limite descreve por que, sob condições adequadas, a distribuição de muitas médias amostrais se aproxima de uma Normal. Essa aproximação permite calcular erros padrão e intervalos sem enumerar todas as amostras possíveis.
+
+O ponto de partida não é a curva Normal, mas a repetição imaginária do estudo. Cada nova amostra produz uma média diferente. A distribuição dessas médias é a distribuição amostral; seu desvio padrão é o erro padrão. Um intervalo de confiança usa essa variabilidade para construir um procedimento que cobre o parâmetro em uma proporção conhecida de repetições.
+
+Na parte de testes, a pergunta muda: verificamos quão incompatível a estatística observada é com uma hipótese nula. O valor-p não é a probabilidade de a hipótese ser verdadeira; ele é calculado assumindo a hipótese nula. Leia as simulações como representações de experimentos repetidos e não como tentativas de “provar” uma afirmação.
+
+### Duas aulas, um encadeamento
+
+A Aula 10 desenvolve LGN, TCL, erro padrão e intervalos. A Aula 11 utiliza a mesma lógica de distribuição amostral para construir testes, erros tipo I e poder. O material específico e mais detalhado da Aula 11 complementa este capítulo com uma análise completa da taxa de atrasos.
 
 # 1. Download da base
 
