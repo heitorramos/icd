@@ -50,6 +50,13 @@ O notebook deve estar organizado como um relatório reproduzível, com as seçõ
 Estes catálogos são bons pontos de partida para encontrar dados documentados e adequados ao projeto:
 
 - [Kaggle Datasets](https://www.kaggle.com/datasets) — bases de temas variados;
+- [Our World in Data](https://ourworldindata.org/) — dados globais documentados sobre saúde, população, economia, energia, ambiente e outros temas;
+- [World Bank Open Data](https://data.worldbank.org/) — indicadores internacionais de desenvolvimento, saúde, educação, economia, infraestrutura e meio ambiente;
+- [Base dos Dados](https://basedosdados.org/) — bases públicas brasileiras tratadas e padronizadas, adequadas para cruzamentos e análises reproduzíveis;
+- [IBGE — SIDRA](https://sidra.ibge.gov.br/) — dados oficiais sobre população, trabalho, renda, produção, preços e território;
+- [Microdados do Inep](https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/microdados-1) — dados de educação, Enem, Enade, Censo Escolar e Educação Superior;
+- [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/pt_BR/) — dados sobre eleições, candidaturas, eleitorado, resultados e prestação de contas;
+- [MapBiomas](https://plataforma.brasil.mapbiomas.org/) — dados sobre cobertura e uso da terra, água, agricultura e transformações ambientais;
 - [OpenDataSUS](https://opendatasus.saude.gov.br/) — dados abertos do Sistema Único de Saúde;
 - [DATASUS — transferência de arquivos](https://datasus.saude.gov.br/transferencia-de-arquivos/) — arquivos dos sistemas de informação em saúde;
 - [Portal Brasileiro de Dados Abertos](https://dados.gov.br/home) — catálogo de bases publicadas por órgãos do Governo Federal.
