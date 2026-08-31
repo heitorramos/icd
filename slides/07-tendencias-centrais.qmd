@@ -210,6 +210,15 @@ entrada: valores x_1, x_2, ..., x_n
 4. plotar (v_j, F_n(v_j)) como uma função em degraus
 ```
 
+```python
+from statsmodels.distributions.empirical_distribution import ECDF
+
+duration = songs["duration_min"].dropna()
+ecdf = ECDF(duration)
+
+ecdf(4)  # fração com duração <= 4 minutos: 0.89
+```
+
 A CDF empírica transforma cada valor observado em uma pergunta acumulada:
 "que fração da amostra já apareceu até aqui?".
 
@@ -229,11 +238,13 @@ Leitura: a curva mostra diretamente a fração acumulada até cada duração.
 <summary>Código do gráfico</summary>
 
 ```python
-x = np.sort(songs["duration_min"])
-y = np.arange(1, len(x) + 1) / len(x)
+from statsmodels.distributions.empirical_distribution import ECDF
+
+duration = songs["duration_min"].dropna()
+ecdf = ECDF(duration)
 
 fig, ax = plt.subplots(figsize=(8, 4.5))
-ax.plot(x, y, color="#d95f02", linewidth=2.5)
+ax.step(ecdf.x, ecdf.y, where="post", color="#d95f02", linewidth=2.5)
 ax.axvline(4, color="#17324d", linestyle="--")
 ax.set_xlabel("duração (minutos)")
 ax.set_ylabel("fração acumulada")
