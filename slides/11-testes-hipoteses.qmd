@@ -610,7 +610,7 @@ Pergunta operacional: essa diferença justifica uma ação?
 
 ## Significância não é importância
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Estatística
 

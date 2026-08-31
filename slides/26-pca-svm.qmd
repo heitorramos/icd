@@ -31,7 +31,7 @@ PCA reorganiza a representação; SVM constrói uma fronteira de decisão.
 
 ## Comece com uma imagem conhecida
 
-![](assets/aula26-pca-svm/cat-original.jpeg){fig-alt="Fotografia de um gato usada como exemplo de compressão por baixo posto." width="72%"}
+![](assets/aula26-pca-svm/cat-original.jpeg){fig-alt="Fotografia de um gato usada como exemplo de compressão por baixo posto." width="84%"}
 
 Em tons de cinza, a imagem é uma matriz $A\in\mathbb R^{m\times n}$: cada posição guarda a intensidade de um pixel.
 
@@ -49,7 +49,7 @@ Guardamos apenas os $k$ padrões dominantes.
 
 ## O posto controla detalhe e armazenamento
 
-![](assets/aula26-pca-svm/gato-postos.png){fig-alt="Gato original e aproximações de postos 5, 20, 60 e 120." width="76%"}
+![](assets/aula26-pca-svm/gato-postos.png){fig-alt="Gato original e aproximações de postos 5, 20, 60 e 120." width="90%"}
 
 Poucos componentes preservam estrutura global; detalhes finos reaparecem conforme $k$ cresce.
 

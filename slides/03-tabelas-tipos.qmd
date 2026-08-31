@@ -422,7 +422,7 @@ não uma medida contínua com distâncias iguais.
 
 ## Valores ausentes {.smaller}
 
-![](assets/aula03-airbnb/valores-ausentes.png){fig-alt="Contagem de valores ausentes em quatro colunas da base Airbnb." width="72%"}
+![](assets/aula03-airbnb/valores-ausentes.png){fig-alt="Contagem de valores ausentes em quatro colunas da base Airbnb." width="88%"}
 
 `last_review` e `reviews_per_month` faltam exatamente nas mesmas 10.052 linhas.
 

@@ -50,7 +50,7 @@ Uso exclusivamente didático. Um modelo clínico exigiria validação externa, g
 
 ## O que há nas colunas?
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="50%"}
 **Medidas numéricas**
 
@@ -290,7 +290,7 @@ scores = cross_validate(pipeline, X_dev, y_dev, cv=cv,
 
 ## Matriz de confusão
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="52%"}
 |               | Prevê 0 | Prevê 1 |
 |---------------|---------|---------|

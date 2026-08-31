@@ -323,7 +323,7 @@ finish("robustez-outlier.png")
 
 ## Nenhum resumo vence sempre
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Média
 
@@ -395,7 +395,7 @@ finish("comparacao-estimadores.png")
 
 ## Viés e variância puxam em direções diferentes
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Baixo viés
 
@@ -459,7 +459,7 @@ Eficiência sempre depende do modelo e das suposições.
 
 ## Não viés e consistência não são sinônimos
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Não viesado
 

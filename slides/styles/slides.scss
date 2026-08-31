@@ -457,8 +457,8 @@ $link-color: #0f6b78;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  max-height: 23.5rem;
-  max-width: min(100%, 30rem);
+  max-height: 29rem;
+  max-width: min(96%, 52rem);
   object-fit: contain;
 }
 
@@ -467,10 +467,37 @@ $link-color: #0f6b78;
   height: auto !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  max-height: 21rem !important;
-  max-width: min(100%, 30rem) !important;
+  max-height: 29rem !important;
+  max-width: min(96%, 52rem) !important;
   width: auto !important;
   object-fit: contain;
+}
+
+.reveal section > img.r-stretch.aula08-figure-large {
+  height: 28.5rem !important;
+  max-height: 28.5rem !important;
+  max-width: 94% !important;
+  object-fit: contain;
+  width: 94% !important;
+}
+
+.reveal .columns.concept-cards {
+  align-items: stretch;
+  gap: 1.2rem;
+}
+
+.reveal .columns.concept-cards > .column {
+  background: #f6f9fb;
+  border: 1px solid #d8e2e8;
+  border-radius: 0.65rem;
+  box-shadow: 0 0.16rem 0.42rem rgb(23 50 77 / 8%);
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+}
+
+.reveal .columns.concept-cards > .column h3 {
+  color: #17324d;
+  margin-top: 0;
 }
 
 .reveal section > img.r-stretch.aula07-figure-large {
@@ -493,8 +520,8 @@ $link-color: #0f6b78;
 }
 
 .reveal section > img.r-stretch.wide-chart {
-  max-height: 22rem !important;
-  max-width: min(100%, 38rem) !important;
+  max-height: 27.5rem !important;
+  max-width: min(96%, 48rem) !important;
 }
 
 .reveal section > img.r-stretch.price-distribution-chart {

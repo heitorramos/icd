@@ -79,7 +79,7 @@ Dos 344 registros, 342 têm massa corporal observada. Esses 342 formam nossa pop
 
 ## Nossa população didática
 
-![](assets/aula08-estimadores/populacao-massa.png){fig-alt="Histograma da massa corporal dos pinguins, empilhado por espécie, com a média da população marcada em 4202 gramas."}
+![](assets/aula08-estimadores/populacao-massa.png){.r-stretch .aula08-figure-large fig-alt="Histograma da massa corporal dos pinguins, empilhado por espécie, com a média da população marcada em 4202 gramas."}
 
 ::: {.callout-note}
 Nesta aula, os registros completos serão nossa **população conhecida**. Assim podemos verificar se as estimativas funcionam.
@@ -104,7 +104,7 @@ finish("populacao-massa.png")
 
 ## População finita ou processo gerador?
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### População finita
 
@@ -136,7 +136,7 @@ Amostragem troca completude por velocidade — e exige quantificar a incerteza.
 
 ## População e amostra
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### População
 
@@ -206,7 +206,7 @@ O estimador é uma função; a estimativa é o resultado.
 
 ## Duas linhas de estimação
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Paramétrica
 
@@ -295,7 +295,7 @@ $$
 
 ## Proporções também variam entre amostras
 
-![](assets/aula08-estimadores/proporcao-gentoo.png){fig-alt="Histograma das proporções de pinguins Gentoo em cinco mil amostras de tamanho 40, centrado na proporção populacional."}
+![](assets/aula08-estimadores/proporcao-gentoo.png){.r-stretch .aula08-figure-large fig-alt="Histograma das proporções de pinguins Gentoo em cinco mil amostras de tamanho 40, centrado na proporção populacional."}
 
 Com $n=40$, os valores possíveis avançam em passos de $1/40=0{,}025$.
 
@@ -359,7 +359,7 @@ Para estudar um estimador, precisamos imaginar muitas amostras possíveis.
 
 ## A distribuição amostral
 
-![](assets/aula08-estimadores/distribuicao-amostral.png){fig-alt="À esquerda, dez amostras e suas médias; à direita, histograma de quatro mil médias amostrais."}
+![](assets/aula08-estimadores/distribuicao-amostral.png){.r-stretch .aula08-figure-large fig-alt="À esquerda, dez amostras e suas médias; à direita, histograma de quatro mil médias amostrais."}
 
 Não é a distribuição dos dados. É a distribuição de uma **estatística** entre amostras repetidas.
 
@@ -388,7 +388,7 @@ finish("distribuicao-amostral.png")
 
 ## Teoria e simulação se complementam
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Teoria
 
@@ -447,7 +447,7 @@ Não viesado não significa correto em toda amostra.
 
 ## Um estimador pode errar sem ter viés
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Erro de uma estimativa
 
@@ -471,7 +471,7 @@ $$
 
 ## Há outro tipo de viés
 
-![](assets/aula08-estimadores/amostragem-enviesada.png){fig-alt="Distribuições das médias de amostras aleatórias de toda a população e de amostras apenas de pinguins Gentoo, mostrando forte deslocamento."}
+![](assets/aula08-estimadores/amostragem-enviesada.png){.r-stretch .aula08-figure-large fig-alt="Distribuições das médias de amostras aleatórias de toda a população e de amostras apenas de pinguins Gentoo, mostrando forte deslocamento."}
 
 Selecionar apenas pinguins Gentoo desloca toda a distribuição das estimativas.
 
@@ -496,7 +496,7 @@ finish("amostragem-enviesada.png")
 
 ## Viés de seleção não é viés algébrico
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Estimador viesado
 
@@ -528,7 +528,7 @@ Menor variância significa estimativas mais estáveis entre amostras.
 
 ## O tamanho da amostra controla a precisão
 
-![](assets/aula08-estimadores/tamanho-amostra.png){fig-alt="Curvas de densidade das médias amostrais para amostras de tamanho 10, 30 e 80, cada vez mais concentradas em torno da média populacional."}
+![](assets/aula08-estimadores/tamanho-amostra.png){.r-stretch .aula08-figure-large fig-alt="Curvas de densidade das médias amostrais para amostras de tamanho 10, 30 e 80, cada vez mais concentradas em torno da média populacional."}
 
 Todas se concentram em torno de $\mu$, mas amostras maiores oscilam menos.
 
@@ -577,7 +577,7 @@ Para reduzir o erro padrão pela metade, precisamos multiplicar $n$ por quatro.
 
 ## A simulação confirma a fórmula
 
-![](assets/aula08-estimadores/erro-padrao.png){fig-alt="Linhas quase coincidentes comparando o erro padrão simulado e a fórmula sigma sobre raiz de n para diferentes tamanhos de amostra."}
+![](assets/aula08-estimadores/erro-padrao.png){.r-stretch .aula08-figure-large fig-alt="Linhas quase coincidentes comparando o erro padrão simulado e a fórmula sigma sobre raiz de n para diferentes tamanhos de amostra."}
 
 O padrão empírico acompanha $\sigma/\sqrt{n}$.
 
@@ -614,7 +614,7 @@ Mais dados reduzem a variabilidade aleatória — se o mecanismo de amostragem f
 
 ## A convergência não é monotônica
 
-![](assets/aula08-estimadores/convergencia-media.png){fig-alt="Média acumulada da massa corporal ao longo de 2500 observações, oscilando e depois se estabilizando perto da média populacional."}
+![](assets/aula08-estimadores/convergencia-media.png){.r-stretch .aula08-figure-large fig-alt="Média acumulada da massa corporal ao longo de 2500 observações, oscilando e depois se estabilizando perto da média populacional."}
 
 A média pode se afastar temporariamente de $\mu$, mas suas oscilações tendem a diminuir.
 
@@ -648,7 +648,7 @@ Queremos a massa média de todas as espécies, mas coletamos apenas pinguins Gen
 
 ## Mais dados não curam seleção ruim
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="48%"}
 ### Aumentar $n$
 
@@ -678,7 +678,7 @@ O formato da população não precisa ser Normal.
 
 ## Médias podem parecer normais
 
-![](assets/aula08-estimadores/tcl-assimetria.png){fig-alt="Uma população fortemente assimétrica à direita e uma distribuição aproximadamente normal de médias de amostras de tamanho 30."}
+![](assets/aula08-estimadores/tcl-assimetria.png){.r-stretch .aula08-figure-large fig-alt="Uma população fortemente assimétrica à direita e uma distribuição aproximadamente normal de médias de amostras de tamanho 30."}
 
 O TCL descreve a distribuição das **médias**, não transforma os dados originais.
 

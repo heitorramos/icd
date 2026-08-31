@@ -493,7 +493,7 @@ desenvolvido ao longo do semestre.
 
 ## Ementa: compreender os dados
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="50%"}
 **Exploração de dados**
 
@@ -512,7 +512,7 @@ desenvolvido ao longo do semestre.
 
 ## Ementa: aprender com os dados
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="50%"}
 **Modelagem**
 
@@ -531,7 +531,7 @@ desenvolvido ao longo do semestre.
 
 ## Aulas teóricas e práticas
 
-::: {.columns}
+::: {.columns .concept-cards}
 ::: {.column width="50%"}
 **Teoria**
 
