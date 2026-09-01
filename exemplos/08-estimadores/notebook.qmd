@@ -270,6 +270,71 @@ cruza zero nas medianas.
 A perda quadrática cresce rapidamente com erros grandes e atinge o mínimo na média. A perda absoluta cresce linearmente e é minimizada pela mediana; por isso, ela é menos dominada pelo valor extremo de 6.100 g.
 :::
 
+## 8.1 Quando a direção do erro também importa
+
+As perdas anteriores são **simétricas**: errar duas unidades para baixo ou para
+cima produz o mesmo custo. Isso nem sempre representa o problema real. Se
+$a$ é a estimativa e $x$ é o valor real, definimos o erro por
+
+$$
+e=a-x.
+$$
+
+Assim, $e<0$ significa **subestimação**, $e>0$ significa **superestimação** e
+$e=0$ significa acerto. Suponha que uma subestimação custe três vezes mais que
+uma superestimação de mesma magnitude. Uma perda possível é
+
+$$
+L(e)=
+\begin{cases}
+3e^2, & e<0,\\
+e^2, & e\geq 0.
+\end{cases}
+$$
+
+Por exemplo, $L(-2)=12$, enquanto $L(2)=4$. A magnitude do erro é a mesma,
+mas sua consequência não é.
+
+Considere agora os três valores $1$, $2$ e $3$. Sob perda quadrática simétrica,
+o centro ótimo é a média, $a^*=2$. Com a perda assimétrica acima, um candidato
+entre $2$ e $3$ superestima os valores $1$ e $2$, mas subestima o valor $3$.
+Portanto, sua perda total é
+
+$$
+R(a)=(a-1)^2+(a-2)^2+3(a-3)^2,
+\qquad 2<a<3,
+$$
+
+em que $R(a)$ é o risco empírico, isto é, a soma das perdas nos três valores.
+Derivando em relação à estimativa $a$,
+
+$$
+\begin{aligned}
+R'(a)
+&=2(a-1)+2(a-2)+6(a-3)\\
+&=10a-24.
+\end{aligned}
+$$
+
+Igualando a derivada a zero,
+
+$$
+10a-24=0
+\quad\Longrightarrow\quad
+a^*=2{,}4.
+$$
+
+O resultado está de fato no intervalo usado na derivação, $2<a<3$. A solução
+se desloca acima da média porque estimativas baixas ficam mais expostas ao erro
+que recebeu peso três. O procedimento aceita alguma superestimação adicional
+para reduzir subestimações mais caras.
+
+::: {.callout-note title="Interpretação"}
+A melhor estimativa não depende apenas dos dados. Ela depende também da função
+de perda, que traduz as consequências de cada decisão. Sob perda quadrática
+assimétrica, o ótimo é chamado de **expectil**; a média é o caso simétrico.
+:::
+
 # 9. Comparando estimadores pelo risco
 
 ```{python}

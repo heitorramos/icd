@@ -114,6 +114,19 @@ Em outros problemas, ocorre o contrário:
 
 Quando subestimar custa mais, a estimativa ótima se desloca para cima.
 
+::: {.callout-note title="Exemplo: dados 1, 2 e 3"}
+Com perda quadrática simétrica, o ótimo é a média: $a^*=2$.
+
+Se subestimar custa três vezes mais, para $2<a<3$:
+
+$$
+R(a)=(a-1)^2+(a-2)^2+3(a-3)^2,
+\qquad R'(a)=10a-24.
+$$
+
+Logo, $R'(a)=0$ implica $a^*=2{,}4$: o ótimo sobe para evitar a subestimação mais cara.
+:::
+
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
