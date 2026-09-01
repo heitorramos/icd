@@ -234,7 +234,7 @@ campo para separar seu efeito das diferenças naturais do terreno.
 
 Queremos estudar o efeito de um tratamento.
 
-::: {.columns}
+::: {.columns .equal-height-blocks}
 ::: {.column width="50%"}
 ::: {.experiment-group-card .control-card}
 <div class="experiment-card-title">Controle</div>
@@ -285,7 +285,7 @@ Fonte: CDC, Dateline: CDC, https://stacks.cdc.gov/view/cdc/21420/cdc_21420_DS1.p
 
 ## Dois desenhos no mesmo estudo
 
-::: {.columns}
+::: {.columns .equal-height-blocks}
 ::: {.column width="50%"}
 ::: {.experiment-group-card .control-card}
 **Placebo randomizado**
