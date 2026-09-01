@@ -481,6 +481,8 @@ $link-color: #0f6b78;
   width: 94% !important;
 }
 
+// Padrão visual dos decks: cartões paralelos têm a mesma altura e recebem
+// bordas superiores em azul-petróleo, laranja, verde e roxo, nessa ordem.
 .reveal .columns.concept-cards {
   align-items: stretch !important;
   display: flex !important;
@@ -491,10 +493,23 @@ $link-color: #0f6b78;
   align-self: stretch;
   background: #f6f9fb;
   border: 1px solid #d8e2e8;
+  border-top: 0.28rem solid #0f6b78;
   border-radius: 0.65rem;
   box-shadow: 0 0.16rem 0.42rem rgb(23 50 77 / 8%);
   box-sizing: border-box;
   padding: 0.75rem 1rem;
+}
+
+.reveal .columns.concept-cards > .column:nth-child(4n + 2) {
+  border-top-color: #d95f02;
+}
+
+.reveal .columns.concept-cards > .column:nth-child(4n + 3) {
+  border-top-color: #3a7d44;
+}
+
+.reveal .columns.concept-cards > .column:nth-child(4n + 4) {
+  border-top-color: #6a4c93;
 }
 
 .reveal .columns.equal-height-blocks {
@@ -574,10 +589,23 @@ $link-color: #0f6b78;
 .reveal .icd-card {
   background: #f5f7f8;
   border: 1px solid #dbe3e7;
+  border-top: 0.28rem solid #0f6b78;
   border-radius: 8px;
   box-sizing: border-box;
   height: 100%;
   padding: 0.75rem;
+}
+
+.reveal .icd-grid > .icd-card:nth-child(4n + 2) {
+  border-top-color: #d95f02;
+}
+
+.reveal .icd-grid > .icd-card:nth-child(4n + 3) {
+  border-top-color: #3a7d44;
+}
+
+.reveal .icd-grid > .icd-card:nth-child(4n + 4) {
+  border-top-color: #6a4c93;
 }
 
 .reveal .icd-card p {
@@ -754,20 +782,25 @@ $link-color: #0f6b78;
 .reveal .sampling-method,
 .reveal .data-type-block {
   background: #f5f7f8;
-  border-left: 0.2rem solid #0f6b78;
+  border: 1px solid #dbe3e7;
+  border-top: 0.24rem solid #0f6b78;
   box-sizing: border-box;
   min-height: 7.2rem;
   padding: 0.65rem 0.8rem;
 }
+
+.reveal .sampling-method:nth-child(4n + 2) { border-top-color: #d95f02; }
+.reveal .sampling-method:nth-child(4n + 3) { border-top-color: #3a7d44; }
+.reveal .sampling-method:nth-child(4n + 4) { border-top-color: #6a4c93; }
 
 .reveal .sampling-method p,
 .reveal .data-type-block p {
   margin: 0.25rem 0;
 }
 
-.reveal .type-ordinal { border-left-color: #d95f02; }
-.reveal .type-discrete { border-left-color: #3a7d44; }
-.reveal .type-continuous { border-left-color: #b23b3b; }
+.reveal .type-ordinal { border-top-color: #d95f02; }
+.reveal .type-discrete { border-top-color: #3a7d44; }
+.reveal .type-continuous { border-top-color: #6a4c93; }
 
 .reveal .groupby-airbnb-flow {
   align-items: center;
@@ -807,16 +840,17 @@ $link-color: #0f6b78;
 
 .reveal .join-card {
   background: #f5f7f8;
-  border-left: 0.2rem solid #0f6b78;
+  border: 1px solid #dbe3e7;
+  border-top: 0.28rem solid #0f6b78;
   box-sizing: border-box;
   height: 100%;
   min-height: 6.4rem;
   padding: 0.8rem 1rem;
 }
 
-.reveal .join-card:nth-child(2) { border-left-color: #d95f02; }
-.reveal .join-card:nth-child(3) { border-left-color: #3a7d44; }
-.reveal .join-card:nth-child(4) { border-left-color: #b23b3b; }
+.reveal .join-card:nth-child(2) { border-top-color: #d95f02; }
+.reveal .join-card:nth-child(3) { border-top-color: #3a7d44; }
+.reveal .join-card:nth-child(4) { border-top-color: #6a4c93; }
 
 .reveal .join-card p {
   margin: 0.3rem 0;
