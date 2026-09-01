@@ -50,6 +50,7 @@ O notebook deve estar organizado como um relatório reproduzível, com as seçõ
 Estes catálogos são bons pontos de partida para encontrar dados documentados e adequados ao projeto:
 
 - [Kaggle Datasets](https://www.kaggle.com/datasets) — bases de temas variados;
+- [OpenML](https://www.openml.org/) — plataforma aberta com bases documentadas, tarefas de aprendizado de máquina e resultados experimentais reproduzíveis;
 - [Our World in Data](https://ourworldindata.org/) — dados globais documentados sobre saúde, população, economia, energia, ambiente e outros temas;
 - [World Bank Open Data](https://data.worldbank.org/) — indicadores internacionais de desenvolvimento, saúde, educação, economia, infraestrutura e meio ambiente;
 - [Base dos Dados](https://basedosdados.org/) — bases públicas brasileiras tratadas e padronizadas, adequadas para cruzamentos e análises reproduzíveis;
