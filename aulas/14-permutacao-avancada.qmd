@@ -17,11 +17,12 @@ Extensões para métricas assimétricas, estratos, pares e clusters.
 :::
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
-### Notebook
+### Material de apoio
 
-O mesmo notebook das duas aulas, agora com estatísticas robustas e estratificação.
+Capítulo de estudo com estatísticas robustas, estratos, pares, clusters,
+studentização, multiplicidade e hipóteses nulas.
 
-[Abrir notebook](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
+[Abrir material](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
 :::
 :::
 

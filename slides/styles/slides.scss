@@ -560,8 +560,10 @@ $link-color: #0f6b78;
 }
 
 .reveal section > img.r-stretch[src*="tres-distribuicoes"] {
-  max-height: 22rem !important;
-  max-width: min(100%, 38rem) !important;
+  height: auto !important;
+  max-height: 28rem !important;
+  max-width: 96% !important;
+  width: 96% !important;
 }
 
 .reveal .statement {
