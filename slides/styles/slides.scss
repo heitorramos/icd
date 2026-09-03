@@ -530,6 +530,15 @@ $link-color: #0f6b78;
   margin-top: 0;
 }
 
+// Cartões compactos usados para comparar métodos de estimação na Aula 09.
+.reveal .columns.concept-cards.estimation-methods {
+  font-size: 0.88em;
+}
+
+.reveal .columns.concept-cards.estimation-methods > .column h3 {
+  font-size: 0.9em;
+}
+
 .reveal section > img.r-stretch.aula07-figure-large {
   height: 29rem !important;
   max-height: 29rem !important;

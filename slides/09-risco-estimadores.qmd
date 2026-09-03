@@ -69,36 +69,6 @@ Para resumir uma variável numérica, poderíamos usar:
 Sem definir o custo dos erros, “melhor” não tem significado.
 :::
 
-## Como os parâmetros são estimados?
-
-::: {.columns .concept-cards}
-::: {.column width="31%"}
-### Momentos
-
-Iguala resumos do modelo aos resumos observados.
-
-**Objetivo:** reproduzir características como média e variância.
-:::
-
-::: {.column width="31%"}
-### Máxima verossimilhança
-
-Escolhe o parâmetro sob o qual os dados observados são mais compatíveis.
-
-**Objetivo:** ajustar um modelo probabilístico.
-:::
-
-::: {.column width="31%"}
-### Mínima perda
-
-Escolhe o parâmetro que minimiza uma penalização definida.
-
-**Objetivo:** reduzir os erros relevantes para a decisão.
-:::
-:::
-
-Uma mesma estimativa pode surgir por caminhos diferentes. A média amostral é um exemplo.
-
 ## Um pequeno exemplo
 
 Considere as massas, em gramas:
@@ -325,6 +295,36 @@ finish("funcoes-perda.png")
 ```
 
 </details>
+
+## Mínima perda não é o único caminho
+
+::: {.columns .concept-cards .estimation-methods}
+::: {.column width="31%"}
+### Momentos
+
+Iguala resumos do modelo aos resumos observados.
+
+**Objetivo:** reproduzir características como média e variância.
+:::
+
+::: {.column width="31%"}
+### Máxima verossimilhança
+
+Escolhe o parâmetro sob o qual os dados observados são mais compatíveis.
+
+**Objetivo:** ajustar um modelo probabilístico.
+:::
+
+::: {.column width="31%"}
+### Mínima perda
+
+Escolhe o parâmetro que minimiza uma penalização definida.
+
+**Objetivo:** reduzir os erros relevantes para a decisão.
+:::
+:::
+
+Nesta aula, construímos média e mediana por **mínima perda**. Esse é apenas um dos caminhos para estimar parâmetros: uma mesma estimativa pode surgir de princípios diferentes.
 
 ## Por que a média sente o outlier?
 
