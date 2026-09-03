@@ -43,7 +43,8 @@ def finish(name):
 plt.figure(figsize=(9, 5.2))
 sns.histplot(data=penguins, x="body_mass_g", hue="species", bins=22,
              palette=COLORS, multiple="stack", edgecolor="white")
-plt.axvline(mu, color=INK, lw=3, label=f"média da população = {mu:,.0f} g")
+plt.axvline(mu, color=INK, lw=3,
+            label=f"média da população = {mu:,.0f} g".replace(",", "."))
 plt.xlabel("Massa corporal (g)")
 plt.ylabel("Número de pinguins")
 plt.title("A população que queremos resumir")
@@ -59,9 +60,10 @@ plt.scatter(ordered["body_mass_g"], np.zeros(len(ordered)), s=18, color="#cbd5da
 chosen = ordered[ordered["sample"]]
 plt.scatter(chosen["body_mass_g"], np.zeros(len(chosen)), s=70, color=ORANGE,
             edgecolor="white", linewidth=.8, label="amostra (n = 20)")
-plt.axvline(mu, color=INK, lw=2.5, label=f"μ = {mu:,.0f} g")
+plt.axvline(mu, color=INK, lw=2.5,
+            label=f"μ = {mu:,.0f} g".replace(",", "."))
 plt.axvline(chosen["body_mass_g"].mean(), color=ORANGE, lw=2.5, ls="--",
-            label=f"x̄ = {chosen['body_mass_g'].mean():,.0f} g")
+            label=f"x̄ = {chosen['body_mass_g'].mean():,.0f} g".replace(",", "."))
 plt.yticks([])
 plt.xlabel("Massa corporal (g)")
 plt.title("Uma amostra revela apenas parte da população")
@@ -124,7 +126,8 @@ biased_means = sample_means(gentoo, 30)
 plt.figure(figsize=(9, 5.2))
 sns.kdeplot(means_30, fill=True, alpha=.25, color=BLUE, lw=3, label="amostra de toda a população")
 sns.kdeplot(biased_means, fill=True, alpha=.20, color=ORANGE, lw=3, label="amostra apenas de Gentoo")
-plt.axvline(mu, color=INK, lw=2.5, ls="--", label=f"μ = {mu:,.0f} g")
+plt.axvline(mu, color=INK, lw=2.5, ls="--",
+            label=f"μ = {mu:,.0f} g".replace(",", "."))
 plt.xlabel("Média amostral (g)")
 plt.ylabel("Densidade")
 plt.title("Uma amostra maior não corrige seleção enviesada")
@@ -234,7 +237,8 @@ sequence = rng.choice(masses, size=2500, replace=True)
 running_mean = np.cumsum(sequence) / np.arange(1, len(sequence) + 1)
 plt.figure(figsize=(9, 5.2))
 plt.plot(np.arange(1, len(sequence) + 1), running_mean, color=BLUE, lw=2)
-plt.axhline(mu, color=ORANGE, lw=3, ls="--", label=f"μ = {mu:,.0f} g")
+plt.axhline(mu, color=ORANGE, lw=3, ls="--",
+            label=f"μ = {mu:,.0f} g".replace(",", "."))
 plt.xscale("log")
 plt.xlabel("Número de observações (escala log)")
 plt.ylabel("Média acumulada (g)")

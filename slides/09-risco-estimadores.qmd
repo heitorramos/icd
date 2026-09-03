@@ -69,6 +69,36 @@ Para resumir uma variável numérica, poderíamos usar:
 Sem definir o custo dos erros, “melhor” não tem significado.
 :::
 
+## Como os parâmetros são estimados?
+
+::: {.columns .concept-cards}
+::: {.column width="31%"}
+### Momentos
+
+Iguala resumos do modelo aos resumos observados.
+
+**Objetivo:** reproduzir características como média e variância.
+:::
+
+::: {.column width="31%"}
+### Máxima verossimilhança
+
+Escolhe o parâmetro sob o qual os dados observados são mais compatíveis.
+
+**Objetivo:** ajustar um modelo probabilístico.
+:::
+
+::: {.column width="31%"}
+### Mínima perda
+
+Escolhe o parâmetro que minimiza uma penalização definida.
+
+**Objetivo:** reduzir os erros relevantes para a decisão.
+:::
+:::
+
+Uma mesma estimativa pode surgir por caminhos diferentes. A média amostral é um exemplo.
+
 ## Um pequeno exemplo
 
 Considere as massas, em gramas:
@@ -528,15 +558,22 @@ Se estimamos massa em gramas:
 
 ## Decomposição do risco
 
-Somando e subtraindo $E[\widehat{\theta}]$:
+Defina $m=E[\widehat\theta]$. Somamos e subtraímos $m$ no erro:
 
 $$
 \begin{aligned}
-\operatorname{MSE}(\widehat{\theta})
-&=E[(\widehat{\theta}-\theta)^2]\\
-&=\operatorname{Var}(\widehat{\theta})+B(\widehat{\theta})^2
+\widehat\theta-\theta
+&=(\widehat\theta-m)+(m-\theta),\\[2mm]
+E[(\widehat\theta-\theta)^2]
+&=E[(\widehat\theta-m)^2]
++2(m-\theta)E[\widehat\theta-m]
++(m-\theta)^2,\\
+&=\operatorname{Var}(\widehat\theta)+0+B(\widehat\theta)^2.
 \end{aligned}
 $$
+
+O termo cruzado desaparece porque $E[\widehat\theta-m]=0$; além disso,
+$B(\widehat\theta)=m-\theta$.
 
 ::: {.statement}
 Risco = variância + viés².

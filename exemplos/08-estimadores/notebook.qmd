@@ -395,6 +395,95 @@ O **parâmetro** é uma característica fixa da população ou do processo gerad
 
 Um estimador é não viesado quando $\mathbb E[\widehat\theta]=\theta$, consistente quando se aproxima de $\theta$ à medida que $n$ cresce e preciso quando sua variância é pequena. Erro padrão é o desvio-padrão da distribuição amostral; não é o desvio-padrão dos indivíduos.
 
+## Métodos para construir estimadores
+
+Depois de definir o parâmetro de interesse, ainda precisamos escolher uma regra
+para estimá-lo. Há diferentes princípios de construção. Eles podem produzir a
+mesma fórmula em um problema simples, mas partem de objetivos distintos e podem
+divergir em outros modelos.
+
+### Método dos momentos
+
+Um **momento** é um resumo de uma distribuição. O primeiro momento é
+$\mathbb E[X]$; momentos de ordens maiores ajudam a descrever dispersão e forma.
+O método dos momentos iguala momentos teóricos, que dependem dos parâmetros, aos
+momentos calculados na amostra.
+
+Se um modelo possui média $\mathbb E[X]=\mu$, igualamos
+
+$$
+\mathbb E[X]=\mu
+\qquad\text{a}\qquad
+\frac1n\sum_{i=1}^{n}x_i=\bar x.
+$$
+
+Isso fornece $\widehat\mu_{MM}=\bar x$. O objetivo é encontrar parâmetros que
+façam características importantes do modelo coincidir com características dos
+dados. O método costuma ser simples e transparente, mas não garante, por si só,
+o estimador de menor variância.
+
+### Máxima verossimilhança
+
+A máxima verossimilhança começa com um modelo probabilístico
+$f(x\mid\theta)$. Para dados independentes, a verossimilhança é
+
+$$
+\mathcal L(\theta;x_1,\ldots,x_n)
+=\prod_{i=1}^{n}f(x_i\mid\theta).
+$$
+
+Aqui, $x_1,\ldots,x_n$ são os dados observados, $\theta$ é o parâmetro candidato
+e $f(x_i\mid\theta)$ mede a compatibilidade da observação com o modelo. O método
+escolhe
+
+$$
+\widehat\theta_{MV}
+=\arg\max_{\theta}\mathcal L(\theta;x_1,\ldots,x_n).
+$$
+
+Seu objetivo é encontrar o valor do parâmetro sob o qual os dados observados são
+mais compatíveis com o modelo assumido. A verossimilhança não é a probabilidade
+de $\theta$: os dados ficam fixos e comparamos diferentes valores do parâmetro.
+A Aula 18 desenvolverá esse princípio com mais cuidado.
+
+### Minimização de uma perda ou de um critério
+
+Outra possibilidade é escolher diretamente o valor que minimiza uma penalização:
+
+$$
+\widehat\theta
+=\arg\min_a\sum_{i=1}^{n}L(a,x_i),
+$$
+
+em que $a$ é um valor candidato e $L(a,x_i)$ é o custo de representar $x_i$ por
+$a$. Sob perda quadrática, o ótimo é a média; sob perda absoluta, é a mediana.
+O objetivo aqui é alinhar a estimativa ao tipo de erro relevante para a decisão.
+Mínimos quadrados, estudados posteriormente em regressão, seguem essa lógica.
+
+### Por que os métodos às vezes concordam?
+
+Para estimar a média de um modelo Normal, a média amostral aparece por três
+caminhos:
+
+- iguala a média teórica à média observada no método dos momentos;
+- maximiza a verossimilhança Normal;
+- minimiza a soma dos erros quadráticos.
+
+Essa coincidência não torna os princípios equivalentes. O método dos momentos
+busca compatibilidade entre resumos; máxima verossimilhança usa o modelo
+probabilístico completo; mínima perda formaliza o custo dos erros. Em outros
+problemas, eles podem gerar estimadores diferentes.
+
+::: {.callout-note title="Interpretação"}
+Antes de comparar estimadores, pergunte qual parâmetro está sendo estimado, qual
+modelo foi assumido e qual critério definiu a regra. “Como calcular” e “por que
+essa regra é adequada” são perguntas diferentes.
+:::
+
+Há ainda outros princípios. Na estimação bayesiana, por exemplo, combinamos a
+verossimilhança com uma distribuição a priori e resumimos a distribuição a
+posteriori segundo uma perda. Essa abordagem não será formalizada nesta aula.
+
 ## Perda quadrática e média
 
 Para escolher um centro $a$ pela perda quadrática,
@@ -413,10 +502,67 @@ Para $L(a)=\sum_i|x_i-a|$, a função não é diferenciável nos dados. Fora des
 
 ## Risco, viés e variância
 
-Sob perda quadrática,
+Sob perda quadrática, o risco de $\widehat\theta$ para estimar $\theta$ é
 
-$$\operatorname{MSE}(\widehat\theta)=\mathbb E[(\widehat\theta-\theta)^2]
-=\operatorname{Var}(\widehat\theta)+\operatorname{Bias}(\widehat\theta)^2.$$
+$$
+\operatorname{MSE}(\widehat\theta)
+=\mathbb E[(\widehat\theta-\theta)^2].
+$$
+
+Aqui, $\theta$ é o parâmetro fixo, $\widehat\theta$ é o estimador aleatório e a
+esperança considera todas as amostras que poderiam ser obtidas pelo mesmo
+procedimento. Para decompor o erro, escreva
+
+$$m=\mathbb E[\widehat\theta].$$
+
+Somar e subtrair $m$ não altera a diferença:
+
+$$
+\widehat\theta-\theta
+=(\widehat\theta-m)+(m-\theta).
+$$
+
+O primeiro termo mede a oscilação do estimador em torno de seu próprio valor
+esperado. O segundo é o viés, pois
+$m-\theta=\mathbb E[\widehat\theta]-\theta$.
+Elevando ao quadrado e tomando a esperança,
+
+$$
+\begin{aligned}
+\mathbb E[(\widehat\theta-\theta)^2]
+&=\mathbb E\left[
+(\widehat\theta-m)^2
++2(\widehat\theta-m)(m-\theta)
++(m-\theta)^2
+\right]\\
+&=\mathbb E[(\widehat\theta-m)^2]
++2(m-\theta)\mathbb E[\widehat\theta-m]
++(m-\theta)^2.
+\end{aligned}
+$$
+
+Agora aparecem três termos:
+
+1. $\mathbb E[(\widehat\theta-m)^2]=\operatorname{Var}(\widehat\theta)$;
+2. $\mathbb E[\widehat\theta-m]=\mathbb E[\widehat\theta]-m=m-m=0$;
+3. $(m-\theta)^2=\operatorname{Bias}(\widehat\theta)^2$.
+
+Portanto,
+
+$$
+\boxed{
+\operatorname{MSE}(\widehat\theta)
+=\operatorname{Var}(\widehat\theta)
++\operatorname{Bias}(\widehat\theta)^2
+}.
+$$
+
+::: {.callout-note title="Interpretação"}
+O MSE separa duas fontes de erro. A variância mede quanto a estimativa muda entre
+amostras; o viés mede quanto o centro dessas estimativas fica afastado do
+parâmetro. O termo cruzado não é ignorado: ele é exatamente zero porque os
+desvios em torno do próprio valor esperado têm média zero.
+:::
 
 Um pequeno viés pode ser aceitável se reduzir bastante a variância. A melhor escolha depende da população, da perda e do custo dos erros. Robustez descreve sensibilidade à contaminação; a mediana possui ponto de ruptura muito maior que a média, enquanto a média aparada oferece um compromisso.
 
