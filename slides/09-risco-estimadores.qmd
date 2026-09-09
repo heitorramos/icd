@@ -108,23 +108,51 @@ Em outros problemas, ocorre o contrário:
 - falso negativo versus falso positivo;
 - atraso versus capacidade ociosa.
 
-## Perdas podem ser assimétricas
+## Perdas podem ser assimétricas {.smaller}
 
 ![](assets/aula08-estimadores/perda-assimetrica.png){fig-alt="Comparação entre uma perda quadrática simétrica e uma perda que penaliza subestimações três vezes mais."}
 
-Quando subestimar custa mais, a estimativa ótima se desloca para cima.
-
-::: {.callout-note title="Exemplo: dados 1, 2 e 3"}
-Com perda quadrática simétrica, o ótimo é a média: $a^*=2$.
-
-Se subestimar custa três vezes mais, para $2<a<3$:
+::: {.callout-note title="Exemplo completo: dados 1, 2 e 3"}
+Escolhemos uma estimativa $a$ para representar $x_1=1$, $x_2=2$ e $x_3=3$.
+Com perda quadrática simétrica,
 
 $$
-R(a)=(a-1)^2+(a-2)^2+3(a-3)^2,
-\qquad R'(a)=10a-24.
+R(a)=\sum_{i=1}^{3}(a-x_i)^2,
+\qquad R'(a)=2(a-1)+2(a-2)+2(a-3)=6a-12.
 $$
 
-Logo, $R'(a)=0$ implica $a^*=2{,}4$: o ótimo sobe para evitar a subestimação mais cara.
+Portanto, $R'(a)=0$ em $a^*=2$, a média dos dados.
+
+Agora, suponha que **subestimar** ($a<x$) custe três vezes mais:
+
+$$
+L(a,x)=
+\begin{cases}
+3(a-x)^2, & a<x,\\
+(a-x)^2, & a\geq x.
+\end{cases}
+\qquad
+R(a)=\sum_{i=1}^{3}L(a,x_i).
+$$
+
+No intervalo $2<a<3$, $a$ superestima 1 e 2, mas subestima 3. Por isso,
+
+$$
+\begin{aligned}
+R(a)&=(a-1)^2+(a-2)^2+3(a-3)^2,\\
+R'(a)&=2(a-1)+2(a-2)+6(a-3)=10a-24.
+\end{aligned}
+$$
+
+Assim,
+
+$$
+R'(a)=0
+\quad\Longrightarrow\quad
+a^*=\frac{24}{10}=2{,}4.
+$$
+
+A solução é coerente com o intervalo assumido, pois $2<2{,}4<3$. Como cada parcela de $R(a)$ é convexa, esse ponto estacionário é o **mínimo global**. O ótimo sobe de 2 para 2,4: aceitamos erros um pouco maiores para 1 e 2 a fim de reduzir a subestimação mais cara de 3.
 :::
 
 <details class="code-fold">
@@ -206,16 +234,19 @@ $\widehat\theta=\bar{x}$ é o único mínimo global.
 A média não foi escolhida por convenção: ela resolve exatamente o problema de minimizar erros quadráticos.
 :::
 
-## Erro absoluto
+## Erro absoluto médio (MAE)
 
 $$
-L_1(\widehat{\theta})
+\operatorname{MAE}(\widehat{\theta})
 =\frac{1}{n}\sum_{i=1}^{n}|\widehat{\theta}-x_i|
 $$
 
+**MAE** significa *Mean Absolute Error* — erro absoluto médio.
+
+Aqui, $x_i$ é a observação, $\widehat\theta$ é o valor usado para representá-la e $n$ é o número de observações.
+
 - cresce linearmente com o erro;
 - reduz a influência de valores extremos;
-- muda de inclinação em cada observação.
 
 ## A inclinação conta observações de cada lado
 
@@ -543,6 +574,28 @@ $$
 Ele mede o erro quadrático médio que esperamos antes de observar a amostra.
 
 Unidade: o quadrado da unidade do parâmetro.
+
+## O risco absoluto é o MAE
+
+Em amostragens repetidas, o erro absoluto médio de um estimador é:
+
+$$
+\operatorname{MAE}(\widehat\theta)
+=E\left[|\widehat\theta-\theta|\right].
+$$
+
+Com $B$ simulações, podemos estimá-lo por:
+
+$$
+\widehat{\operatorname{MAE}}
+=\frac{1}{B}\sum_{b=1}^{B}|\widehat\theta^{(b)}-\theta|.
+$$
+
+- $\theta$: parâmetro verdadeiro;
+- $\widehat\theta^{(b)}$: estimativa obtida na repetição $b$;
+- $B$: número de repetições.
+
+O MAE fica na unidade original e penaliza o erro linearmente. Diferentemente do MSE, ele não possui a decomposição simples $\text{variância}+\text{viés}^2$.
 
 ## RMSE volta à unidade original
 

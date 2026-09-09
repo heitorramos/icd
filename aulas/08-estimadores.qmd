@@ -77,6 +77,17 @@ No notebook, altere o tamanho das amostras e compare o erro padrão empírico co
 $\sigma/\sqrt{n}$. Depois restrinja a coleta a uma espécie e explique por que
 aumentar $n$ não elimina o viés de seleção.
 
+## Agradecimento
+
+::: {.callout-note}
+Agradecemos ao aluno **Otavio Henrique Lopes**, do curso de Ciência da
+Computação, por apontar a necessidade de corrigir o slide *“Da Bernoulli à
+Binomial”*. Sua observação motivou explicitar que, para uma população finita
+amostrada sem reposição, a contagem segue exatamente uma distribuição
+Hipergeométrica; a Binomial é uma aproximação adequada quando a população é
+muito grande em relação à amostra.
+:::
+
 ## Bibliografia da aula
 
 ### Bibliografia principal

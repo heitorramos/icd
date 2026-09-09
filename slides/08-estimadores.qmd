@@ -324,7 +324,7 @@ finish("proporcao-gentoo.png")
 
 ## Da Bernoulli à Binomial
 
-O número de Gentoo em uma amostra de tamanho $n$ é:
+Se $Y_1,\ldots,Y_n$ são **independentes** e têm a mesma probabilidade $p$, o número de Gentoo é:
 
 $$
 K=\sum_{i=1}^{n}Y_i \sim Binomial(n,p)
@@ -335,6 +335,18 @@ P(K=k)=\binom{n}{k}p^k(1-p)^{n-k}
 $$
 
 E como $\widehat{p}=K/n$, a Binomial também descreve a proporção.
+
+::: {.callout-note title="E se a população for finita?"}
+Ao retirar uma amostra **sem reposição** de uma população com $N$ indivíduos, dos quais $M$ são Gentoo, as observações não são independentes. Nesse caso, a distribuição exata é
+
+$$
+K\sim\operatorname{Hipergeométrica}(N,M,n),
+\qquad
+P(K=k)=\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}.
+$$
+
+A Binomial com $p=M/N$ é uma boa aproximação quando a população é muito grande em relação à amostra — ou quando a coleta é feita com reposição. Portanto, a Hipergeométrica é o modelo mais adequado para a população finita deste exemplo.
+:::
 
 ## O que varia entre amostras? {.quiz-question}
 

@@ -182,6 +182,74 @@ print(f"Erro padrão estimado: {erro_padrao:.1f} g")
 O centro das médias simuladas deve ficar próximo de $\mu$, sinal de pouco viés. Já o desvio padrão dessas médias é o erro padrão: ele mede quanto a estimativa mudaria entre amostras do mesmo tamanho.
 :::
 
+## 5.1 Proporções: Binomial ou Hipergeométrica?
+
+Para estudar a proporção de pinguins Gentoo, defina $Y_i=1$ quando o indivíduo
+selecionado é Gentoo e $Y_i=0$ caso contrário. Cada observação isolada tem
+distribuição Bernoulli. A distribuição da soma
+
+$$
+K=\sum_{i=1}^{n}Y_i
+$$
+
+depende, porém, do desenho amostral. Se os $Y_i$ forem independentes e tiverem
+a mesma probabilidade $p$, então $K\sim\operatorname{Binomial}(n,p)$. Isso
+ocorre em amostragem com reposição ou quando pensamos em observações
+independentes de um processo gerador.
+
+Se retirarmos $n$ indivíduos **sem reposição** de uma população finita com $N$
+indivíduos e $M$ Gentoo, a distribuição exata será
+
+$$
+K\sim\operatorname{Hipergeométrica}(N,M,n),
+\qquad
+P(K=k)=\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}.
+$$
+
+A diferença aparece porque, sem reposição, cada seleção altera a composição da
+população restante. A média é a mesma nos dois modelos, $E[K]=np$, mas a
+variância hipergeométrica contém a **correção para população finita**:
+
+$$
+\operatorname{Var}(K)
+=np(1-p)\frac{N-n}{N-1}.
+$$
+
+```{python}
+especies = penguins["species"].to_numpy()
+N = len(especies)
+M = np.sum(especies == "Gentoo")
+n = 40
+p = M / N
+repeticoes = 5000
+
+sem_reposicao = np.array([
+    np.sum(rng.choice(especies, size=n, replace=False) == "Gentoo")
+    for _ in range(repeticoes)
+])
+com_reposicao = np.array([
+    np.sum(rng.choice(especies, size=n, replace=True) == "Gentoo")
+    for _ in range(repeticoes)
+])
+
+pd.DataFrame({
+    "modelo": ["sem reposição", "com reposição"],
+    "média simulada": [sem_reposicao.mean(), com_reposicao.mean()],
+    "variância simulada": [sem_reposicao.var(ddof=1), com_reposicao.var(ddof=1)],
+    "variância teórica": [
+        n * p * (1 - p) * (N - n) / (N - 1),
+        n * p * (1 - p),
+    ],
+}).round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+As duas contagens têm praticamente a mesma média. Sem reposição, contudo, a
+variabilidade é menor: a correção $(N-n)/(N-1)$ registra a dependência entre as
+seleções. Quando $N$ é muito grande em relação a $n$, essa correção fica próxima
+de 1 e a Binomial se torna uma boa aproximação da Hipergeométrica.
+:::
+
 
 # 6. Tamanho da amostra
 
@@ -356,11 +424,13 @@ for nome, valores in estimadores.items():
     vies = valores.mean() - mu
     variancia = valores.var(ddof=0)
     mse = np.mean((valores - mu) ** 2)
+    mae = np.mean(np.abs(valores - mu))
     resultados.append({
         "estimador": nome,
         "viés": vies,
         "variância": variancia,
         "MSE": mse,
+        "MAE": mae,
         "viés² + variância": vies ** 2 + variancia,
     })
 
@@ -496,9 +566,42 @@ $$L'(a)=2\sum_{i=1}^n(a-x_i)=2\left(na-\sum_i x_i\right).$$
 
 A condição $L'(a)=0$ fornece $a=\bar x$. Como $L''(a)=2n>0$, a média é o mínimo global.
 
-## Perda absoluta e mediana
+## Perda absoluta, MAE e mediana
 
-Para $L(a)=\sum_i|x_i-a|$, a função não é diferenciável nos dados. Fora desses pontos, cada observação à esquerda contribui inclinação $+1$ e cada observação à direita contribui $-1$. A inclinação muda de negativa para positiva quando há ao menos metade das observações de cada lado: essa é precisamente a condição de mediana.
+Para um valor $a$ usado para representar $n$ observações, o **erro absoluto
+médio** (*Mean Absolute Error*, MAE) é
+
+$$
+\operatorname{MAE}(a)
+=\frac{1}{n}\sum_{i=1}^{n}|x_i-a|.
+$$
+
+O fator $1/n$ muda a escala, mas não o ponto que minimiza a soma. A função não
+é diferenciável nos dados. Fora desses pontos, cada observação à esquerda
+contribui inclinação $+1$ e cada observação à direita contribui $-1$. A
+inclinação muda de negativa para positiva quando há ao menos metade das
+observações de cada lado: essa é precisamente a condição de mediana.
+
+Quando avaliamos um estimador $\widehat\theta$ em amostragens repetidas, usamos
+a versão populacional
+
+$$
+\operatorname{MAE}(\widehat\theta)
+=\mathbb E\left[|\widehat\theta-\theta|\right].
+$$
+
+Se realizamos $B$ simulações e obtemos
+$\widehat\theta^{(1)},\ldots,\widehat\theta^{(B)}$, estimamos essa esperança por
+
+$$
+\widehat{\operatorname{MAE}}
+=\frac{1}{B}\sum_{b=1}^{B}|\widehat\theta^{(b)}-\theta|.
+$$
+
+O MAE permanece na unidade original do parâmetro e penaliza erros linearmente.
+Ele costuma ser menos dominado por erros extremos do que o MSE. Em
+contrapartida, não admite a decomposição simples em variância mais viés ao
+quadrado que veremos a seguir.
 
 ## Risco, viés e variância
 
