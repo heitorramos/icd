@@ -335,15 +335,18 @@ Enviar um lembrete dois dias antes do prazo aumenta entregas no prazo?
 Esse exemplo substitui o ensaio de vacina por um cenário mais próximo da
 disciplina.
 
-## Desenho do experimento
+## Desenho do experimento {.experiment-diagram-large}
 
 ```{mermaid}
+%%| fig-width: 13
+%%| fig-height: 6
+%%{init: {"themeVariables": {"fontSize": "26px"}, "flowchart": {"nodeSpacing": 54, "rankSpacing": 58, "useMaxWidth": true}}}%%
 flowchart LR
   A["Turma"] --> B["Sorteio"]
   B --> C["Controle"]
   B --> D["Lembrete"]
-  C --> E["Entregou no prazo?"]
-  D --> F["Entregou no prazo?"]
+  C --> E["Entregou<br/>no prazo?"]
+  D --> F["Entregou<br/>no prazo?"]
   E --> G["Comparação"]
   F --> G
 ```
@@ -440,9 +443,26 @@ Quando bem desenhado, esse trabalho pode sugerir hipóteses causais.
 
 ## John Snow
 
-Médico inglês, frequentemente associado ao início da epidemiologia moderna.
+::: {.columns .john-snow-introduction}
+::: {.column width="45%"}
+![](assets/original/john-snow-portrait.jpg){.john-snow-portrait fig-alt="Retrato fotográfico do médico inglês John Snow, sentado e vestindo traje escuro."}
+
+<p class="image-credit">John Snow, c. 1856. Wikimedia Commons, domínio público.</p>
+:::
+
+::: {.column width="50%"}
+**Médico inglês**, frequentemente associado ao início da epidemiologia moderna.
 
 Viveu entre 1813 e 1858.
+
+Também realizou contribuições importantes para a anestesiologia e para o estudo da transmissão da cólera.
+:::
+:::
+
+::: notes
+Retrato: “John Snow (cropped).jpg”, Wikimedia Commons, domínio público.
+https://commons.wikimedia.org/wiki/File:John_Snow_(cropped).jpg
+:::
 
 ## Londres na época {.smaller}
 
@@ -519,21 +539,22 @@ O mapa transforma localização em evidência.
 Snow procurou uma comparação justa dentro dos dados observacionais.
 :::
 
-## Desenhando a confusão
+## Desenhando a confusão {.confounding-diagram-large}
 
 ```{mermaid}
-%%| fig-width: 10
-%%| fig-height: 4.4
+%%| fig-width: 13
+%%| fig-height: 6
+%%{init: {"themeVariables": {"fontSize": "28px"}, "flowchart": {"nodeSpacing": 56, "rankSpacing": 62, "useMaxWidth": true}}}%%
 flowchart LR
-  C["Pobreza e condições urbanas"]:::confounder
-  A["Companhia / fonte da água"]:::exposure
-  M["Qualidade da água"]:::mediator
+  C["Pobreza e<br/>condições urbanas"]:::confounder
+  A["Companhia ou<br/>fonte da água"]:::exposure
+  M["Qualidade<br/>da água"]:::mediator
   Y["Cólera"]:::outcome
 
   A -->|altera| M
   M -->|afeta| Y
-  C -.->|influencia a exposição| A
-  C -.->|também afeta o risco| Y
+  C -.->|influencia| A
+  C -.->|afeta o risco| Y
 
   classDef confounder fill:#fff0e8,stroke:#d95f02,stroke-width:3px,color:#17324d
   classDef exposure fill:#eef3f5,stroke:#0f6b78,stroke-width:3px,color:#17324d

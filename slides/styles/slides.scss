@@ -217,6 +217,84 @@ $link-color: #0f6b78;
   width: 92%;
 }
 
+.reveal .john-snow-introduction {
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.reveal .john-snow-portrait {
+  display: block;
+  margin: 0 auto;
+  max-height: 25.5rem;
+  object-fit: contain;
+  width: 100%;
+}
+
+.reveal .john-snow-introduction .image-credit {
+  color: #66727a;
+  font-size: 0.42em;
+  margin: 0.2rem auto 0;
+  text-align: center;
+}
+
+.reveal section.confounding-diagram-large .cell-output-display,
+.reveal section.confounding-diagram-large figure,
+.reveal section.confounding-diagram-large figure > div {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.reveal section.confounding-diagram-large .cell {
+  margin: 0 auto;
+  width: 96%;
+}
+
+.reveal section.confounding-diagram-large .mermaid {
+  margin: 0;
+  width: 100%;
+}
+
+.reveal section.confounding-diagram-large .mermaid svg {
+  height: 31rem !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.reveal section.confounding-diagram-large .mermaid .nodeLabel,
+.reveal section.confounding-diagram-large .mermaid .edgeLabel,
+.reveal section.confounding-diagram-large .mermaid .label text {
+  font-size: 28px !important;
+}
+
+.reveal section.experiment-diagram-large .cell {
+  left: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -44%);
+  width: 96%;
+}
+
+.reveal section.experiment-diagram-large .cell-output-display,
+.reveal section.experiment-diagram-large figure,
+.reveal section.experiment-diagram-large figure > div,
+.reveal section.experiment-diagram-large .mermaid {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.reveal section.experiment-diagram-large .mermaid svg {
+  height: 30.5rem !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.reveal section.experiment-diagram-large .mermaid .nodeLabel,
+.reveal section.experiment-diagram-large .mermaid .edgeLabel,
+.reveal section.experiment-diagram-large .mermaid .label text {
+  font-size: 26px !important;
+}
+
 .reveal .snow-stage {
   border-radius: 0.35rem;
   box-shadow: 0 0.28rem 0.8rem rgba(23, 50, 77, 0.12);
