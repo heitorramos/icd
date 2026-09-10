@@ -103,25 +103,36 @@ finish("populacao-entrega.png")
 
 ## Uma amostra é imperfeita
 
-![](assets/aula10-tcl-inferencia/amostra-entrega.png){fig-alt="Distribuição populacional do tempo de entrega comparada a um histograma de uma amostra de 50 pedidos."}
+![](assets/aula10-tcl-inferencia/amostra-entrega.png){.wide-chart fig-alt="Dois histogramas de densidade lado a lado, construídos com amostras independentes de 30 tempos de entrega da mesma população Olist, cada um acompanhado por sua densidade estimada por KDE."}
 
-Outra amostra produziria outro histograma e outra média.
+Duas amostras da mesma população produzem histogramas, médias e estimativas da densidade diferentes. Com apenas 30 observações, a variabilidade amostral fica fácil de perceber.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
-sample = rng.choice(delivery, size=50, replace=False)
-plt.figure(figsize=(9, 5.2))
-sns.kdeplot(delivery, color=LIGHT, lw=4, label="população")
-sns.histplot(sample, bins=12, stat="density", color=ORANGE, alpha=.45, label="amostra n = 50")
-plt.axvline(mu, color=INK, lw=2, ls="--", label=f"μ = {mu:.1f}")
-plt.axvline(sample.mean(), color=ORANGE, lw=3, label=f"x̄ = {sample.mean():.1f}")
-plt.xlim(0, 60)
-plt.xlabel("Tempo de entrega (dias)")
-plt.ylabel("Densidade")
-plt.title("Uma amostra não reproduz perfeitamente a população")
-plt.legend()
+sample_a = rng.choice(delivery, size=30, replace=False)
+sample_b = rng.choice(delivery, size=30, replace=False)
+bins = np.arange(0, 61, 5)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.8), sharex=True, sharey=True)
+for ax, sample, label, color in [
+    (axes[0], sample_a, "Amostra A", BLUE),
+    (axes[1], sample_b, "Amostra B", ORANGE),
+]:
+    sns.histplot(sample, bins=bins, stat="density", color=color, alpha=.48, ax=ax)
+    sns.kdeplot(
+        sample, color=color, lw=3, cut=0, clip=(0, 60),
+        label=r"KDE: $\hat f_h(x)$", ax=ax,
+    )
+    ax.axvline(mu, color=INK, lw=2, ls="--", label=f"μ = {mu:.1f}")
+    ax.axvline(sample.mean(), color=color, lw=3, label=f"x̄ = {sample.mean():.1f}")
+    ax.set_xlim(0, 60)
+    ax.set_xlabel("Tempo de entrega (dias)")
+    ax.set_title(f"{label}: n = 30")
+    ax.legend()
+axes[0].set_ylabel("Densidade")
+axes[1].set_ylabel("")
 finish("amostra-entrega.png")
 ```
 
@@ -290,6 +301,40 @@ $$
 
 Se $n/N<10\%$, a correção costuma ser pequena.
 
+## Condições usuais para aplicar o TCL
+
+Para a média amostral na versão clássica:
+
+::: {.icd-grid .tcl-conditions-grid}
+::: {.icd-card}
+**Amostragem adequada**
+
+O mecanismo de coleta deve sustentar a inferência para a população de interesse.
+:::
+
+::: {.icd-card}
+**Independência**
+
+As observações devem ser independentes ou ter dependência suficientemente fraca.
+:::
+
+::: {.icd-card}
+**Variância finita**
+
+Precisamos de $E[X_i]=\mu$ e $0<\operatorname{Var}(X_i)=\sigma^2<\infty$.
+:::
+
+::: {.icd-card}
+**Tamanho suficiente**
+
+Assimetria, caudas pesadas e outliers exigem amostras maiores. Não existe um $n=30$ universal.
+:::
+:::
+
+::: {.statement}
+Sem reposição, $n/N<10\%$ permite tratar a dependência como pequena. Para frações maiores, usamos a correção para população finita.
+:::
+
 ## O formato inicial pode ser muito diferente
 
 ![](assets/aula10-tcl-inferencia/tcl-tres-populacoes.png){fig-alt="Populações uniforme, assimétrica e bimodal, com distribuições de médias amostrais aproximadamente normais."}
@@ -330,6 +375,45 @@ O tamanho adequado depende de:
 - dependência entre observações;
 - estatística utilizada;
 - precisão desejada.
+
+## Uma amostra pequena pode esconder a cauda
+
+![](assets/aula10-tcl-inferencia/cauda-pesada-amostras-20-100-large.png){.heavy-tail-three-panel fig-alt="Três painéis. O primeiro mostra uma população lognormal fortemente assimétrica e com cauda pesada. O segundo mostra uma amostra aleatória de vinte observações que parece quase simétrica e não contém valores da cauda longa. O terceiro mostra uma amostra de cem observações na qual a assimetria e a cauda ficam visíveis."}
+
+A aparência de uma única amostra não garante que a população seja simétrica. Com $n=20$, valores raros podem não aparecer; com $n=100$, a amostra tem mais oportunidade de revelar a cauda.
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+sigma_log = 1.15
+x = np.linspace(0.03, 25, 1200)
+population_pdf = (
+    np.exp(-(np.log(x) ** 2) / (2 * sigma_log**2))
+    / (x * sigma_log * np.sqrt(2 * np.pi))
+)
+
+rng_shape = np.random.default_rng(20260228)
+small_sample = rng_shape.lognormal(mean=0, sigma=sigma_log, size=20)
+larger_sample = rng_shape.lognormal(mean=0, sigma=sigma_log, size=100)
+
+fig, axes = plt.subplots(1, 3, figsize=(14.2, 4.8))
+axes[0].plot(x, population_pdf, color=BLUE, lw=3)
+axes[0].fill_between(x, population_pdf, color=BLUE, alpha=.22)
+axes[0].set(xlim=(0, 25), title="População com cauda pesada")
+
+sns.histplot(small_sample, bins=np.linspace(0, 3, 7), stat="density",
+             color=ORANGE, alpha=.62, ax=axes[1])
+sns.kdeplot(small_sample, color=ORANGE, lw=3, cut=0, clip=(0, 3), ax=axes[1])
+axes[1].set(xlim=(0, 3), title="Uma amostra de n = 20")
+
+sns.histplot(larger_sample, bins=np.linspace(0, 15, 11), stat="density",
+             color=PURPLE, alpha=.58, ax=axes[2])
+sns.kdeplot(larger_sample, color=PURPLE, lw=3, cut=0, clip=(0, 15), ax=axes[2])
+axes[2].set(xlim=(0, 15), title="Outra amostra: n = 100")
+```
+
+</details>
 
 ## Padronizar remove unidade e escala
 
@@ -424,6 +508,14 @@ finish("erro-padrao-entrega.png")
 
 </details>
 
+## Pino ou região de confiança?
+
+![](assets/aula10-tcl-inferencia/tirinha-gps-confianca.png){.confidence-gps-analogy fig-alt="Tirinha em dois quadros com mapas idênticos. No primeiro, um pino marca uma localização e representa a estimativa pontual. No segundo, um círculo ao redor do pino representa a região de incerteza associada ao intervalo de confiança."}
+
+::: {.statement .confidence-gps-takeaway}
+Em repetições, 95% das regiões construídas pelo procedimento contêm a localização verdadeira.
+:::
+
 ## Do TCL para uma faixa plausível
 
 Se aproximadamente 95% das médias satisfazem:
@@ -432,7 +524,26 @@ $$
 -1{,}96<\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}<1{,}96
 $$
 
-podemos reorganizar a desigualdade para isolar $\mu$.
+como $\sigma/\sqrt{n}>0$, multiplicamos os três termos pelo erro padrão:
+
+$$
+-1{,}96\frac{\sigma}{\sqrt n}<\bar X-\mu
+<1{,}96\frac{\sigma}{\sqrt n}.
+$$
+
+Subtraímos $\bar X$, multiplicamos por $-1$ e invertemos as desigualdades:
+
+$$
+\bar X+1{,}96\frac{\sigma}{\sqrt n}>\mu>
+\bar X-1{,}96\frac{\sigma}{\sqrt n}.
+$$
+
+Em ordem crescente:
+
+$$
+\boxed{\bar X-1{,}96\frac{\sigma}{\sqrt n}<\mu<
+\bar X+1{,}96\frac{\sigma}{\sqrt n}}
+$$
 
 ## Estimativa pontual não mostra precisão
 
@@ -469,6 +580,10 @@ Para um intervalo bilateral:
 | 99% | 2,576 |
 
 Mais confiança exige alcançar uma área maior da distribuição.
+
+## Uma previsão infalível {.bugs-forecast-slide}
+
+![](assets/aula10-tcl-inferencia/tirinha-intervalo-prazo-codigo.png){.bugs-forecast-comic fig-alt="Tirinha em três quadros. Uma gerente pergunta quanto tempo falta para o código ficar pronto. Um desenvolvedor responde que levará entre cinco minutos e seis meses. No último quadro, ele conclui: cobertura excelente, precisão nem tanto."}
 
 ## Intervalo de confiança para a média
 
@@ -530,7 +645,7 @@ Evite dizer:
 
 > Há 95% de probabilidade de $\mu$ estar neste intervalo.
 
-Na interpretação frequencista, a aleatoriedade está no procedimento.
+Na interpretação frequentista, a aleatoriedade está no procedimento.
 
 ## Confiança descreve repetição
 
@@ -610,7 +725,7 @@ Ela diminui quando:
 
 ## Planejar a amostra pela precisão
 
-![](assets/aula10-tcl-inferencia/margem-tamanho.png){fig-alt="Curva decrescente da margem de erro em função do tamanho da amostra."}
+![](assets/aula10-tcl-inferencia/margem-tamanho-ate-1400.png){fig-alt="Curva azul decrescente da margem de erro em função do tamanho da amostra, prolongada até a interseção correspondente a aproximadamente 1400 observações e margem de meio dia."}
 
 Dobrar a precisão exige aproximadamente quadruplicar $n$.
 
@@ -618,18 +733,22 @@ Dobrar a precisão exige aproximadamente quadruplicar $n$.
 <summary>Código do gráfico</summary>
 
 ```python
-ns_margin = np.arange(20, 1001, 10)
+need_half_day = (1.96 * sigma / .5) ** 2
+ns_margin = np.linspace(20, need_half_day, 300)
 margin = 1.96 * sigma / np.sqrt(ns_margin)
 plt.figure(figsize=(9, 5.2))
 plt.plot(ns_margin, margin, color=BLUE, lw=3)
 for target in [1.0, .5]:
     need = (1.96 * sigma / target) ** 2
-    plt.axhline(target, color=ORANGE, lw=1.5, ls="--")
+    plt.hlines(target, xmin=0, xmax=need, color=ORANGE, lw=1.5, ls="--")
     plt.scatter(need, target, color=ORANGE, s=70)
+plt.annotate(r"$n\approx 1400$", xy=(need_half_day, .5), xytext=(1120, .78),
+             arrowprops={"arrowstyle": "->", "color": INK})
+plt.xlim(0, 1450)
 plt.xlabel("Tamanho da amostra")
 plt.ylabel("Margem de erro 95% (dias)")
 plt.title("Planejar n começa pela precisão desejada")
-finish("margem-tamanho.png")
+finish("margem-tamanho-ate-1400.png")
 ```
 
 </details>
@@ -684,6 +803,76 @@ $$
 \widehat{p}\pm1{,}96\widehat{\operatorname{SE}}(\widehat{p})
 $$
 
+## Amostras Pareadas
+
+Cada unidade fornece duas medidas relacionadas. Preservamos o par calculando uma única diferença:
+
+$$
+D_i=Y_i-X_i,
+\qquad
+\bar D=\frac{1}{n}\sum_{i=1}^nD_i.
+$$
+
+O intervalo para a diferença média $\mu_D$ é
+
+$$
+\bar D\ \pm\ t^*_{n-1}\frac{s_D}{\sqrt n}.
+$$
+
+::: {.icd-grid .paired-samples-grid}
+::: {.icd-card}
+**Por que usamos $t^*$?**
+
+Como $\sigma_D$ é desconhecido, usamos $s_D$. Sob diferenças Normais,
+$T=(\bar D-\mu_D)/(s_D/\sqrt n)$ segue $t_{n-1}$, que tem caudas mais pesadas.
+:::
+
+::: {.icd-card}
+**Quando $t$ se aproxima da Normal?**
+
+À medida que $n$ cresce, $t_{n-1}\to N(0,1)$. Para $n>30$, $t^*$ já costuma ser próximo de $z^*$; em 95%, $t^*_{29}=2{,}045$ e $z^*=1{,}96$.
+:::
+:::
+
+As duas medidas do par podem ser dependentes; as diferenças $D_1,\ldots,D_n$ devem ser independentes entre pares.
+
+## Exemplo numérico pareado {.smaller}
+
+Cinco pedidos têm prazo estimado $X_i$ e tempo efetivo $Y_i$, em dias. Definimos $D_i=Y_i-X_i$.
+
+:::: {.columns}
+::: {.column width="45%"}
+
+| Pedido | $X_i$ | $Y_i$ | $D_i$ |
+|---:|---:|---:|---:|
+| 1 | 12 | 10 | $-2$ |
+| 2 | 10 | 11 | $1$ |
+| 3 | 15 | 12 | $-3$ |
+| 4 | 9 | 8 | $-1$ |
+| 5 | 14 | 13 | $-1$ |
+
+:::
+::: {.column width="55%"}
+
+$$
+\bar D=-1{,}20,\qquad s_D=1{,}48,
+\qquad \operatorname{SE}(\bar D)=\frac{1{,}48}{\sqrt5}=0{,}66.
+$$
+
+Como $n=5$, usamos $t^*_{4}=2{,}776$ para 95% de confiança:
+
+$$
+-1{,}20\pm2{,}776(0{,}66)
+=[-3{,}04;\ 0{,}64]\text{ dias}.
+$$
+
+::: {.callout-note title="Interpretação"}
+Em média, os pedidos chegaram 1,2 dia antes do previsto. Como o intervalo contém zero, os dados também são compatíveis com diferença média nula.
+:::
+
+:::
+::::
+
 ## Atividade: comunique a incerteza
 
 Uma amostra de 100 pedidos tem média de 13,1 dias e desvio padrão de 9 dias.
@@ -693,6 +882,14 @@ Uma amostra de 100 pedidos tem média de 13,1 dias e desvio padrão de 9 dias.
 3. Interprete sem atribuir probabilidade ao parâmetro.
 4. Como reduzir a margem pela metade?
 5. Que suposição seria mais preocupante?
+
+## Resposta: comunique a incerteza
+
+1. **Erro padrão:** $\operatorname{SE}=9/\sqrt{100}=0{,}9$ dia.
+2. **IC de 95%:** $13{,}1\pm1{,}96(0{,}9)=13{,}1\pm1{,}764$, portanto $[11{,}34;14{,}86]$ dias.
+3. **Interpretação:** usando um procedimento que cobre $\mu$ em cerca de 95% das repetições, estimamos o tempo médio populacional entre 11,34 e 14,86 dias.
+4. **Metade da margem:** mantendo variabilidade e confiança, precisamos de aproximadamente $4n=400$ pedidos.
+5. **Maior preocupação:** os 100 pedidos precisam representar a população-alvo e fornecer observações aproximadamente independentes. Concentração em poucos vendedores ou períodos viola essa condição.
 
 ## O que aprendemos
 

@@ -641,6 +641,36 @@ $link-color: #0f6b78;
   max-width: min(96%, 48rem) !important;
 }
 
+// Painel triplo da Aula 10: ocupa toda a largura útil sem ultrapassar o slide.
+.reveal section > img.heavy-tail-three-panel {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.2rem !important;
+  max-height: 25.5rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+// Analogia visual que introduz estimativa pontual e intervalo de confiança.
+.reveal section > img.confidence-gps-analogy {
+  display: block;
+  height: auto !important;
+  margin: 0.25rem auto 0.2rem !important;
+  max-height: 27rem !important;
+  max-width: 98% !important;
+  object-fit: contain;
+  width: 98% !important;
+}
+
+.reveal .confidence-gps-takeaway {
+  font-size: 0.78em;
+  line-height: 1.15;
+  margin: 0.12rem auto 0;
+  max-width: 100%;
+  padding: 0.3rem 0 0.3rem 0.75rem;
+}
+
 .reveal section > img.r-stretch.price-distribution-chart {
   max-height: 21rem !important;
   max-width: min(100%, 47rem) !important;
@@ -699,6 +729,87 @@ $link-color: #0f6b78;
 
 .reveal .icd-card p {
   margin-bottom: 0;
+}
+
+.reveal .tcl-conditions-grid {
+  grid-template-columns: 1fr 1fr;
+  margin: 0.45rem 0 0.55rem;
+}
+
+.reveal .tcl-conditions-grid .icd-card {
+  font-size: 0.76em;
+  min-height: 6.4rem;
+  padding: 0.62rem 0.8rem;
+}
+
+.reveal .tcl-conditions-grid .icd-card p {
+  line-height: 1.18;
+  margin: 0.16rem 0;
+}
+
+.reveal .paired-samples-grid {
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0.45rem;
+}
+
+.reveal .paired-samples-grid .icd-card {
+  font-size: 0.78em;
+  min-height: 6.2rem;
+  padding: 0.65rem 0.85rem;
+}
+
+.reveal .paired-samples-grid .icd-card p {
+  line-height: 1.18;
+  margin: 0.16rem 0;
+}
+
+.reveal section.bugs-forecast-slide img.bugs-forecast-comic {
+  display: block;
+  height: auto !important;
+  margin: 0.35rem auto 0 !important;
+  max-height: 27rem !important;
+  max-width: 98% !important;
+  object-fit: contain;
+  width: 98% !important;
+}
+
+.reveal .five-lenses-grid {
+  gap: 0.8rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 1rem auto 0;
+  width: 96%;
+}
+
+.reveal .five-lenses-grid > .icd-card {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.76em;
+  grid-column: span 2;
+  justify-content: center;
+  min-height: 7.2rem;
+  padding: 0.8rem 0.9rem;
+  text-align: center;
+}
+
+.reveal .five-lenses-grid > .icd-card:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.reveal .five-lenses-grid > .icd-card:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.reveal .five-lenses-grid > .icd-card p {
+  line-height: 1.2;
+  margin: 0.18rem 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.reveal .five-lenses-grid > .icd-card p:first-child {
+  color: #17324d;
+  font-size: 1.05em;
 }
 
 .reveal .theorem-grid {

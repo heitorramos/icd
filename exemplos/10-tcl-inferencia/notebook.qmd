@@ -55,7 +55,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from scipy.stats import binom, norm
+from scipy.stats import binom, norm, t
 
 sns.set_theme(style="whitegrid", context="notebook")
 rng = np.random.default_rng(20260824)
@@ -109,6 +109,60 @@ A distribuição amostral descreve como a estatística varia entre amostras. O T
 
 ![](../../slides/assets/aula10-tcl-inferencia/populacao-entrega.png){fig-alt="Distribuição populacional do tempo de entrega."}
 
+## 3.1 Duas amostras da mesma população
+
+Uma amostra representa apenas uma das muitas seleções que poderiam ter sido
+obtidas. Para tornar essa ideia visível, retiramos duas amostras independentes
+de 30 pedidos da mesma população didática e usamos exatamente os mesmos
+intervalos e escalas nos dois histogramas. Como agora comparamos densidades,
+normalizamos os histogramas para que a área total seja 1. A curva sobreposta é
+uma estimativa não paramétrica da função densidade de probabilidade obtida por
+KDE (*kernel density estimation*).
+
+```{python}
+comparison_rng = np.random.default_rng(20260909)
+sample_a = comparison_rng.choice(delivery, size=30, replace=False)
+sample_b = comparison_rng.choice(delivery, size=30, replace=False)
+bins_samples = np.arange(0, 61, 5)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.8), sharex=True, sharey=True)
+for ax, sample, label, color in [
+    (axes[0], sample_a, "Amostra A", "#0f6b78"),
+    (axes[1], sample_b, "Amostra B", "#d95f02"),
+]:
+    sns.histplot(
+        sample, bins=bins_samples, stat="density", color=color, alpha=.48, ax=ax
+    )
+    sns.kdeplot(
+        sample, color=color, linewidth=3, cut=0, clip=(0, 60),
+        label=r"KDE: $\hat f_h(x)$", ax=ax,
+    )
+    ax.axvline(mu, color="#17324d", linewidth=2, linestyle="--",
+               label=f"μ = {mu:.1f}")
+    ax.axvline(sample.mean(), color=color, linewidth=3,
+               label=f"x̄ = {sample.mean():.1f}")
+    ax.set_xlim(0, 60)
+    ax.set_xlabel("Tempo de entrega (dias)")
+    ax.set_title(f"{label}: n = 30")
+    ax.legend()
+axes[0].set_ylabel("Densidade")
+axes[1].set_ylabel("")
+plt.show()
+
+print(f"Média da amostra A: {sample_a.mean():.2f} dias")
+print(f"Média da amostra B: {sample_b.mean():.2f} dias")
+print(f"Média populacional: {mu:.2f} dias")
+```
+
+::: {.callout-note title="Interpretação"}
+Os histogramas e as curvas $\hat f_h(x)$ diferem mesmo com o mesmo tamanho
+amostral e a mesma população de origem. As médias também não coincidem entre si
+nem com $\mu$. Essa diferença não indica erro no cálculo: ela representa a
+variabilidade natural introduzida pela seleção aleatória de apenas 30 pedidos.
+O estimador KDE suaviza o histograma, mas também varia de uma amostra para outra
+e depende da largura de banda $h$ usada na suavização.
+:::
+
 # 4. Distribuição amostral da média
 
 ```{python}
@@ -145,6 +199,89 @@ As médias amostrais permanecem centradas perto da média populacional, enquanto
 
 # 5. Padronização
 
+## Condições usuais para aplicar o TCL
+
+Na versão clássica para a média, o TCL parte de observações independentes e
+provenientes da mesma distribuição, com média $\mu$ e variância finita
+$\sigma^2$. Em aplicações, essas hipóteses precisam ser conectadas ao modo como
+os dados foram coletados:
+
+- **Amostragem adequada:** o mecanismo de seleção deve sustentar a inferência
+  para a população de interesse. O TCL não corrige viés de seleção.
+- **Independência:** medidas repetidas, séries temporais, redes e amostras por
+  conglomerados podem exigir métodos que representem a dependência.
+- **Variância finita:** caudas tão pesadas que produzam variância infinita ficam
+  fora do TCL clássico.
+- **Tamanho suficiente:** não existe uma regra universal $n\geq30$. Quanto
+  maiores a assimetria e o peso das caudas, maior tende a ser a amostra
+  necessária para uma aproximação Normal satisfatória.
+
+Em uma população finita de tamanho $N$, a amostragem sem reposição introduz
+dependência. Quando $n/N<10\%$, ela costuma ser pequena. Para frações amostrais
+maiores, o erro padrão da média incorpora a correção
+
+$$
+\operatorname{SE}(\bar X)=\frac{\sigma}{\sqrt n}
+\sqrt{\frac{N-n}{N-1}}.
+$$
+
+Aqui, $N$ é o tamanho da população e $n$ é o tamanho da amostra.
+
+## Uma amostra pequena pode esconder a cauda
+
+Considere uma população lognormal, fortemente assimétrica à direita. Mesmo
+assim, uma amostra pequena pode não conter nenhum valor raro da cauda e produzir
+um histograma que parece aproximadamente simétrico. Uma segunda amostra, agora
+com 100 observações, ajuda a visualizar como o aumento de $n$ torna mais provável
+capturar valores da cauda.
+
+```{python}
+sigma_log = 1.15
+x = np.linspace(0.03, 25, 1200)
+population_pdf = (
+    np.exp(-(np.log(x) ** 2) / (2 * sigma_log**2))
+    / (x * sigma_log * np.sqrt(2 * np.pi))
+)
+
+rng_shape = np.random.default_rng(20260228)
+small_sample = rng_shape.lognormal(mean=0, sigma=sigma_log, size=20)
+larger_sample = rng_shape.lognormal(mean=0, sigma=sigma_log, size=100)
+
+fig, axes = plt.subplots(1, 3, figsize=(14.2, 4.8))
+axes[0].plot(x, population_pdf, color="#0f6b78", linewidth=3)
+axes[0].fill_between(x, population_pdf, color="#0f6b78", alpha=.22)
+axes[0].set(xlim=(0, 25), title="População com cauda pesada",
+            xlabel="Valor de X", ylabel="Densidade")
+
+sns.histplot(small_sample, bins=np.linspace(0, 3, 7), stat="density",
+             color="#d95f02", alpha=.62, ax=axes[1])
+sns.kdeplot(small_sample, color="#d95f02", linewidth=3,
+            cut=0, clip=(0, 3), ax=axes[1])
+axes[1].set(xlim=(0, 3), title="Uma amostra de n = 20",
+            xlabel="Valor observado de X", ylabel="Densidade")
+
+sns.histplot(larger_sample, bins=np.linspace(0, 15, 11), stat="density",
+             color="#6a4c93", alpha=.58, ax=axes[2])
+sns.kdeplot(larger_sample, color="#6a4c93", linewidth=3,
+            cut=0, clip=(0, 15), ax=axes[2])
+axes[2].set(xlim=(0, 15), title="Outra amostra: n = 100",
+            xlabel="Valor observado de X", ylabel="Densidade")
+plt.show()
+
+print(f"Maior valor observado na amostra: {small_sample.max():.2f}")
+print(f"Maior valor observado com n=100: {larger_sample.max():.2f}")
+print(f"Percentil 99% da população: {np.exp(sigma_log * 2.326):.2f}")
+```
+
+::: {.callout-note title="Interpretação"}
+Na amostra de tamanho 20, o maior valor ficou muito abaixo do percentil 99% da
+população e o histograma não revelou a cauda longa. Na amostra de tamanho 100,
+aparecem valores bem maiores e a assimetria fica clara. O segundo resultado é
+mais provável com uma amostra maior, mas não é garantido em uma realização
+específica. Por isso, a ausência visual de assimetria em uma amostra pequena
+não justifica automaticamente a aproximação Normal da média.
+:::
+
 ```{python}
 n = 50
 means = sample_means(delivery, n)
@@ -163,6 +300,68 @@ Depois de subtrair $\mu$ e dividir pelo erro padrão, a distribuição fica apro
 
 
 # 6. Um intervalo de confiança
+
+Uma analogia útil vem do **GPS**. O pino no mapa funciona como uma estimativa
+pontual: a média amostral $\bar X$ fornece uma localização específica para a
+média populacional $\mu$. Essa estimativa é informativa, mas sozinha não mostra
+quanto poderia variar se repetíssemos a amostragem.
+
+O círculo de precisão do GPS funciona como uma região de confiança. Em uma
+dimensão, seu análogo é o intervalo $[L,U]$, que reúne valores plausíveis para
+$\mu$ de acordo com a variabilidade amostral. Aumentar a região eleva a
+frequência com que o procedimento cobre o parâmetro, mas diminui a precisão da
+estimativa.
+
+::: {.callout-note title="A analogia e a interpretação frequentista"}
+Imagine repetir a coleta e obter um novo pino e uma nova região a cada amostra.
+Um procedimento de 95% produz intervalos que contêm o parâmetro fixo em
+aproximadamente 95% dessas repetições. Depois que observamos uma amostra e
+calculamos seu intervalo, ele contém ou não contém $\mu$.
+:::
+
+O TCL fornece, sob as condições discutidas anteriormente, a aproximação
+
+$$
+-1{,}96<\frac{\bar X-\mu}{\sigma/\sqrt n}<1{,}96.
+$$
+
+Aqui, $\bar X$ é a média amostral, $\mu$ é a média populacional, $\sigma$ é o
+desvio padrão populacional e $n$ é o tamanho da amostra. O termo
+$\sigma/\sqrt n$ é o erro padrão de $\bar X$.
+
+Para obter uma faixa para $\mu$, primeiro multiplicamos toda a desigualdade por
+$\sigma/\sqrt n$. Esse termo é positivo, portanto as desigualdades mantêm o
+sentido:
+
+$$
+-1{,}96\frac{\sigma}{\sqrt n}<\bar X-\mu
+<1{,}96\frac{\sigma}{\sqrt n}.
+$$
+
+Em seguida, subtraímos $\bar X$ dos três termos:
+
+$$
+-\bar X-1{,}96\frac{\sigma}{\sqrt n}<-\mu<
+-\bar X+1{,}96\frac{\sigma}{\sqrt n}.
+$$
+
+Ao multiplicar por $-1$, precisamos inverter o sentido das desigualdades:
+
+$$
+\bar X+1{,}96\frac{\sigma}{\sqrt n}>\mu>
+\bar X-1{,}96\frac{\sigma}{\sqrt n}.
+$$
+
+Reordenando do menor para o maior, isolamos $\mu$:
+
+$$
+\boxed{\bar X-1{,}96\frac{\sigma}{\sqrt n}<\mu<
+\bar X+1{,}96\frac{\sigma}{\sqrt n}}.
+$$
+
+Na prática, $\sigma$ costuma ser desconhecido. O exemplo abaixo substitui o
+erro padrão populacional por sua estimativa $s/\sqrt n$, em que $s$ é o desvio
+padrão calculado na amostra.
 
 ```{python}
 sample = rng.choice(delivery, size=100, replace=False)
@@ -200,6 +399,14 @@ print(f"Cobertura simulada: {coverage:.2%}")
 A cobertura simulada deve ficar próxima do nível nominal. Aumentar o valor crítico eleva a cobertura, mas também produz intervalos mais largos; reduzir o valor crítico faz a troca oposta.
 :::
 
+::: {.callout-tip title="Uma previsão infalível"}
+Perguntado sobre quanto tempo falta para entregar o código pronto, um
+desenvolvedor responde: “entre 5 minutos e 6 meses”. A faixa tem grande chance
+de conter o prazo verdadeiro, mas sua precisão e sua utilidade são praticamente
+nulas. Intervalos de confiança também envolvem esse compromisso: aumentar a
+cobertura exige, mantidos os demais fatores, aceitar intervalos mais largos.
+:::
+
 
 Altere `z_star` para 1,645 e 2,576. Compare cobertura e largura média.
 
@@ -213,9 +420,176 @@ for margin in [2.0, 1.0, 0.5]:
     print(margin, required_n(sigma, margin))
 ```
 
+A curva abaixo prolonga a relação entre margem de erro e tamanho amostral até
+o ponto necessário para obter uma margem de aproximadamente meio dia. A linha
+azul termina em $n\approx1400$, deixando visível a interseção com a meta
+$m=0{,}5$.
+
+```{python}
+need_half_day = (1.96 * sigma / 0.5) ** 2
+ns_margin = np.linspace(20, need_half_day, 300)
+margin_curve = 1.96 * sigma / np.sqrt(ns_margin)
+
+plt.figure(figsize=(9, 5.2))
+plt.plot(ns_margin, margin_curve, color="#0f6b78", linewidth=3)
+for target in [1.0, 0.5]:
+    need = (1.96 * sigma / target) ** 2
+    plt.hlines(target, xmin=0, xmax=need, color="#d95f02",
+               linewidth=1.5, linestyle="--")
+    plt.scatter(need, target, color="#d95f02", s=70)
+plt.annotate(r"$n\approx 1400$", xy=(need_half_day, 0.5), xytext=(1120, 0.78),
+             arrowprops={"arrowstyle": "->", "color": "#17324d"})
+plt.xlim(0, 1450)
+plt.xlabel("Tamanho da amostra")
+plt.ylabel("Margem de erro de 95% (dias)")
+plt.title("Planejar n começa pela precisão desejada")
+plt.show()
+```
+
 ::: {.callout-note title="Interpretação"}
 Como $n$ depende do inverso do quadrado da margem, reduzir a margem de erro pela metade exige aproximadamente quatro vezes mais observações, mantidos o nível de confiança e a variabilidade.
 :::
+
+## 8.1 Amostras pareadas
+
+Em alguns estudos, as duas medidas comparadas pertencem à mesma unidade. Isso
+acontece em desenhos antes e depois, em pares formados por características
+semelhantes e na comparação entre uma previsão e o resultado observado para o
+mesmo caso. Tratar essas medidas como duas amostras independentes desperdiça o
+pareamento e calcula a incerteza de forma inadequada.
+
+Para cada par, definimos uma única variável diferença:
+
+$$
+D_i=Y_i-X_i.
+$$
+
+$X_i$ é a primeira medida da unidade $i$, $Y_i$ é a segunda medida e $D_i$ é a
+mudança observada dentro do par. O problema passa a ser uma inferência para a
+média populacional das diferenças, $\mu_D=E[D_i]$. A estimativa é
+
+$$
+\bar D=\frac{1}{n}\sum_{i=1}^nD_i,
+$$
+
+e seu erro padrão estimado é $s_D/\sqrt n$, em que $s_D$ é o desvio padrão das
+diferenças. Quando as condições da distribuição t são adequadas, usamos
+
+$$
+\bar D\pm t^*_{n-1}\frac{s_D}{\sqrt n}.
+$$
+
+O valor $t^*_{n-1}$ é o quantil da distribuição t com $n-1$ graus de liberdade.
+Ele aparece porque o desvio padrão populacional das diferenças, $\sigma_D$, é
+desconhecido e precisa ser substituído pelo desvio padrão amostral $s_D$. Essa
+substituição acrescenta incerteza. Se as diferenças são Normais, a estatística
+
+$$
+T=\frac{\bar D-\mu_D}{s_D/\sqrt n}
+$$
+
+segue exatamente uma distribuição t com $n-1$ graus de liberdade. A distribuição
+t tem caudas mais pesadas que a Normal, produzindo valores críticos um pouco
+maiores em amostras pequenas. À medida que $n$ cresce, $t_{n-1}$ converge para
+$N(0,1)$. A regra $n>30$ é uma referência prática: nesse ponto, os quantis já
+costumam ser próximos, embora a convergência seja gradual. Para um intervalo de
+95%, por exemplo, $t^*_{29}=2{,}045$, enquanto $z^*=1{,}96$.
+
+As duas medidas dentro de cada par podem ser dependentes. A condição relevante
+é que as diferenças de pares distintos sejam independentes, além de uma forma
+aproximadamente Normal para $D_i$ quando $n$ é pequeno.
+
+### Exemplo numérico simples
+
+Considere cinco pedidos. $X_i$ é o prazo estimado, $Y_i$ é o tempo efetivo de
+entrega e $D_i=Y_i-X_i$. Uma diferença negativa representa uma entrega anterior
+ao prazo estimado.
+
+```{python}
+estimated_days = np.array([12, 10, 15, 9, 14])
+actual_days = np.array([10, 11, 12, 8, 13])
+differences = actual_days - estimated_days
+
+n_example = len(differences)
+d_bar_example = differences.mean()
+s_d_example = differences.std(ddof=1)
+se_example = s_d_example / np.sqrt(n_example)
+t_star_example = t.ppf(0.975, df=n_example - 1)
+margin_example = t_star_example * se_example
+ci_example = (d_bar_example - margin_example, d_bar_example + margin_example)
+
+paired_table = pd.DataFrame({
+    "pedido": np.arange(1, n_example + 1),
+    "prazo_estimado": estimated_days,
+    "tempo_efetivo": actual_days,
+    "diferenca": differences,
+})
+display(paired_table)
+print(f"Média das diferenças: {d_bar_example:.2f} dias")
+print(f"Desvio padrão das diferenças: {s_d_example:.2f} dias")
+print(f"Erro padrão: {se_example:.2f} dia")
+print(f"t* com 4 graus de liberdade: {t_star_example:.3f}")
+print(f"IC de 95%: [{ci_example[0]:.2f}, {ci_example[1]:.2f}] dias")
+```
+
+::: {.callout-note title="Interpretação"}
+A diferença média observada é $-1{,}20$ dia: nessa pequena amostra, as entregas
+ocorreram, em média, antes do previsto. O intervalo $[-3{,}04;0{,}64]$ contém
+zero, portanto os dados também são compatíveis com ausência de diferença média.
+O cálculo usa a variabilidade **das cinco diferenças**, não os desvios padrão de
+$X$ e $Y$ separadamente.
+:::
+
+Na base Olist, a data estimada e a data efetiva de entrega pertencem ao mesmo
+pedido. Portanto, `delay_days` já representa uma diferença pareada:
+
+```{python}
+paired_differences = orders["delay_days"].dropna().to_numpy()
+n_pairs = len(paired_differences)
+d_bar = paired_differences.mean()
+s_d = paired_differences.std(ddof=1)
+se_d = s_d / np.sqrt(n_pairs)
+t_star = t.ppf(0.975, df=n_pairs - 1)
+paired_ci = (d_bar - t_star * se_d, d_bar + t_star * se_d)
+
+print(f"Número de pares: {n_pairs:,}")
+print(f"Diferença média: {d_bar:.2f} dias")
+print(f"Erro padrão: {se_d:.3f} dia")
+print(f"IC de 95% para a diferença média: [{paired_ci[0]:.2f}, {paired_ci[1]:.2f}]")
+```
+
+::: {.callout-note title="Interpretação"}
+Valores negativos de `delay_days` indicam entrega anterior à data estimada.
+O intervalo estima a antecipação ou o atraso médio, mantendo juntas as duas
+datas de cada pedido. Ele não compara dois grupos independentes.
+:::
+
+## 8.2 Resposta da atividade de comunicação
+
+Para $n=100$, $\bar x=13{,}1$ dias e $s=9$ dias, o erro padrão estimado é
+
+$$
+\widehat{\operatorname{SE}}(\bar X)=\frac{9}{\sqrt{100}}=0{,}9\text{ dia}.
+$$
+
+Usando a aproximação Normal solicitada na atividade,
+
+$$
+13{,}1\pm1{,}96(0{,}9)
+=13{,}1\pm1{,}764
+=[11{,}34;14{,}86]\text{ dias}.
+$$
+
+Usando um procedimento que cobre $\mu$ em cerca de 95% das repetições, estimamos
+o tempo médio da população-alvo entre 11,34 e 14,86 dias. Essa frase descreve a
+cobertura do procedimento, não uma probabilidade de 95% atribuída ao parâmetro
+fixo.
+
+Mantendo o mesmo nível de confiança e a mesma variabilidade, reduzir a margem
+pela metade exige aproximadamente quadruplicar a amostra, passando de 100 para
+400 pedidos. A suposição mais preocupante é que os pedidos representem a
+população-alvo e sejam aproximadamente independentes. Uma amostra concentrada
+em poucos vendedores, clientes ou períodos pode produzir dependência e viés.
 
 # 9. Testando a taxa de atraso
 

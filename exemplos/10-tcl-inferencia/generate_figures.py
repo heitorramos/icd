@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from math import erf, sqrt
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -66,6 +67,36 @@ def sample_means(values, n, reps=5000):
     return np.array([rng.choice(values, size=n, replace=True).mean() for _ in range(reps)])
 
 
+def generate_margin_figure():
+    """Gera somente a curva usada no planejamento amostral."""
+    need_half_day = (1.96 * sigma / 0.5) ** 2
+    ns_margin = np.linspace(20, need_half_day, 300)
+    margin = 1.96 * sigma / np.sqrt(ns_margin)
+    plt.figure(figsize=(9, 5.2))
+    plt.plot(ns_margin, margin, color=BLUE, lw=3)
+    for target in [1.0, 0.5]:
+        need = (1.96 * sigma / target) ** 2
+        plt.hlines(target, xmin=0, xmax=need, color=ORANGE, lw=1.5, ls="--")
+        plt.scatter(need, target, color=ORANGE, s=70)
+    plt.annotate(
+        "$n\\approx 1400$",
+        xy=(need_half_day, 0.5),
+        xytext=(1120, 0.78),
+        color=INK,
+        arrowprops={"arrowstyle": "->", "color": INK, "lw": 1.5},
+    )
+    plt.xlim(0, 1450)
+    plt.xlabel("Tamanho da amostra")
+    plt.ylabel("Margem de erro 95% (dias)")
+    plt.title("Planejar n começa pela precisão desejada")
+    finish("margem-tamanho-ate-1400.png")
+
+
+if os.environ.get("ICD_FIGURE_TARGET") == "margem-tamanho":
+    generate_margin_figure()
+    raise SystemExit(0)
+
+
 # 1. População: tempo de entrega.
 plt.figure(figsize=(9, 5.2))
 sns.histplot(delivery, bins=np.arange(0, 61, 2), color=BLUE)
@@ -77,18 +108,35 @@ plt.title("O tempo de entrega é assimétrico à direita")
 plt.legend()
 finish("populacao-entrega.png")
 
-# 2. Uma amostra sobre a população.
-sample = rng.choice(delivery, size=50, replace=False)
-plt.figure(figsize=(9, 5.2))
-sns.kdeplot(delivery, color=LIGHT, lw=4, label="população")
-sns.histplot(sample, bins=12, stat="density", color=ORANGE, alpha=.45, label="amostra n = 50")
-plt.axvline(mu, color=INK, lw=2, ls="--", label=f"μ = {mu:.1f}")
-plt.axvline(sample.mean(), color=ORANGE, lw=3, label=f"x̄ = {sample.mean():.1f}")
-plt.xlim(0, 60)
-plt.xlabel("Tempo de entrega (dias)")
-plt.ylabel("Densidade")
-plt.title("Uma amostra não reproduz perfeitamente a população")
-plt.legend()
+# 2. Duas amostras independentes da mesma população.
+# Preserva a sequência aleatória histórica das figuras seguintes.
+_ = rng.choice(delivery, size=50, replace=False)
+comparison_rng = np.random.default_rng(20260909)
+sample_a = comparison_rng.choice(delivery, size=30, replace=False)
+sample_b = comparison_rng.choice(delivery, size=30, replace=False)
+bins_samples = np.arange(0, 61, 5)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.8), sharex=True, sharey=True)
+for ax, sample, label, color in [
+    (axes[0], sample_a, "Amostra A", BLUE),
+    (axes[1], sample_b, "Amostra B", ORANGE),
+]:
+    sns.histplot(
+        sample, bins=bins_samples, stat="density", color=color, alpha=.48, ax=ax
+    )
+    sns.kdeplot(
+        sample, color=color, lw=3, cut=0, clip=(0, 60),
+        label=r"KDE: $\hat f_h(x)$", ax=ax,
+    )
+    ax.axvline(mu, color=INK, lw=2, ls="--", label=f"μ = {mu:.1f}")
+    ax.axvline(sample.mean(), color=color, lw=3, label=f"x̄ = {sample.mean():.1f}")
+    ax.set_xlim(0, 60)
+    ax.set_xlabel("Tempo de entrega (dias)")
+    ax.set_title(f"{label}: n = 30")
+    ax.legend(fontsize=10)
+axes[0].set_ylabel("Densidade")
+axes[1].set_ylabel("")
+fig.suptitle("Duas amostras da mesma população podem ter formas diferentes", fontweight="bold")
 finish("amostra-entrega.png")
 
 # 3. Distribuições amostrais por n.
@@ -236,18 +284,7 @@ plt.title("Mais confiança exige um intervalo mais largo")
 finish("confianca-largura.png")
 
 # 10. Margem de erro e tamanho de amostra.
-ns_margin = np.arange(20, 1001, 10)
-margin = 1.96 * sigma / np.sqrt(ns_margin)
-plt.figure(figsize=(9, 5.2))
-plt.plot(ns_margin, margin, color=BLUE, lw=3)
-for target in [1.0, .5]:
-    need = (1.96 * sigma / target) ** 2
-    plt.axhline(target, color=ORANGE, lw=1.5, ls="--")
-    plt.scatter(need, target, color=ORANGE, s=70)
-plt.xlabel("Tamanho da amostra")
-plt.ylabel("Margem de erro 95% (dias)")
-plt.title("Planejar n começa pela precisão desejada")
-finish("margem-tamanho.png")
+generate_margin_figure()
 
 # 11. Distribuição amostral da taxa de atraso.
 prop_means = np.array([rng.choice(late, size=1200, replace=True).mean() for _ in range(5000)])
