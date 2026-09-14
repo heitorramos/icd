@@ -19,6 +19,9 @@ subtitle: "Média condicional, mínimos quadrados e diagnóstico"
 ### Material de apoio
 
 [Abrir notebook](../exemplos/17-regressao-linear/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/17-regressao-linear/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

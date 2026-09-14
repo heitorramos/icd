@@ -28,6 +28,9 @@ Fundamentos de visualização, percepção, histogramas, ECDF, KDE, Palmer Pengu
 Notebook executado com código, resultados, exercícios e respostas sugeridas.
 
 [Abrir notebook](../exemplos/05-fundamentos-visualizacao/notebook.qmd){.btn .btn-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/05-fundamentos-visualizacao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

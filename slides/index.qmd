@@ -31,4 +31,4 @@ Os slides são escritos em Quarto Reveal.js.
 - Aula 23: Regularização — *em revisão*
 - Aula 24: Engenharia de atributos e validação cruzada — *em revisão*
 - Aula 25: KNN e prática de machine learning — *em revisão*
-- Aula 26: PCA e SVM aplicados — *em revisão*
+- Aula 26: PCA aplicado à classificação — *em revisão*

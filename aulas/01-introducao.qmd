@@ -22,6 +22,9 @@ Apresentação usada em sala.
 Primeiro contato com uma tabela de dados.
 
 [Abrir notebook](../exemplos/01-introducao-dados/notebook.ipynb){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/01-introducao-dados/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

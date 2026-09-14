@@ -23,6 +23,9 @@ Tabelas, tipos semânticos, pandas, validação e operações agrupadas.
 Estudo completo e reproduzível da base Airbnb NYC 2019.
 
 [Abrir notebook](../exemplos/03-tabelas-tipos/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/03-tabelas-tipos/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

@@ -1,5 +1,5 @@
 ---
-title: "PCA e SVM aplicados"
+title: "PCA aplicado à classificação"
 subtitle: "Aula 26 — Módulo 3: representação, classificação e ciência de dados"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 institute: '<div class="title-brand-lockup"><img class="brand-horizontal" src="assets/brand/dcc-ufmg-horizontal-color.png" alt="Departamento de Ciência da Computação — UFMG"></div>'
@@ -10,13 +10,13 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">ICD: Aula 26 — PCA e SVM aplicados</span><a class="lecture-footer-button" href="../aulas/26-pca-svm.html">voltar para a Aula</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 26 — PCA aplicado à classificação</span><a class="lecture-footer-button" href="../aulas/26-pca-svm.html">voltar para a Aula</a>'
 execute: {enabled: false, echo: false}
 ---
 
-## Dois métodos, uma pipeline
+## Representação e decisão
 
-PCA reorganiza a representação; SVM constrói uma fronteira de decisão.
+PCA reorganiza a representação; regressão logística e KNN tomam decisões nessa nova representação.
 
 > Em ciência de dados, o ganho aparece quando representação, modelo e avaliação são tratados como um único procedimento.
 
@@ -25,8 +25,8 @@ PCA reorganiza a representação; SVM constrói uma fronteira de decisão.
 - revisitar PCA por compressão e visualização;
 - usar o gato como exemplo de aproximação de baixo posto;
 - aplicar PCA a imagens do Fashion-MNIST;
-- revisar margem, vetores de suporte e kernels;
-- combinar PCA e SVM em uma pipeline validada;
+- comparar regressão logística e KNN sobre a mesma representação;
+- combinar PCA e os classificadores em pipelines validadas;
 - discutir custo, interpretação e limites.
 
 ## Comece com uma imagem conhecida
@@ -200,164 +200,180 @@ X_reconstructed = pca.mean_ + Z[:, :k] @ pca.components_[:k]
 
 Após PCA, cada imagem é um ponto $z_i\in\mathbb R^k$.
 
-SVM procura uma fronteira com boa separação geométrica. Na versão binária:
+Usaremos duas regras já conhecidas:
 
-$$f(z)=w^Tz+b,$$
+- **regressão logística:** aprende uma relação global entre componentes e probabilidades;
+- **KNN:** decide pela classe das observações mais próximas.
 
-e a decisão é $\widehat y=\operatorname{sign}(f(z))$.
+## Logística transforma escore em probabilidade
 
-## A margem mede distância à fronteira
+No caso binário,
 
-Os hiperplanos $w^Tz+b=1$ e $w^Tz+b=-1$ têm distância
+$$P(Y=1\mid Z=z)=\frac{1}{1+e^{-(\beta_0+\beta^Tz)}}.$$
 
-$$\frac{2}{\|w\|_2}.$$
+$z$ contém os componentes da imagem; $\beta_0$ é o intercepto; $\beta$ reúne os coeficientes. A fronteira para limiar $0{,}5$ satisfaz $\beta_0+\beta^Tz=0$.
 
-Maximizar a margem equivale a controlar $\|w\|_2$. Pontos longe da fronteira pouco alteram a solução.
+## No problema multiclasse
 
-## Vetores de suporte definem a solução
+Para cada classe $c\in\{1,\ldots,C\}$, a versão multinomial usa
 
-![](assets/aula26-pca-svm/svm-margem.png){.wide-chart fig-alt="Fronteira linear, margens e vetores de suporte entre duas classes projetadas."}
+$$P(Y=c\mid Z=z)=\frac{e^{\beta_{0c}+\beta_c^Tz}}
+{\sum_{j=1}^{C}e^{\beta_{0j}+\beta_j^Tz}}.$$
 
-Os círculos destacam observações na margem ou dentro dela: são os vetores de suporte.
+As probabilidades são positivas e somam 1. Prevemos a classe de maior probabilidade.
+
+## KNN decide por vizinhança
+
+Se $\mathcal N_K(z)$ contém os índices dos $K$ pontos de treino mais próximos de $z$,
+
+$$\widehat y(z)=\operatorname{moda}\{y_i:i\in\mathcal N_K(z)\}.$$
+
+$K$ é o número de vizinhos; $y_i$ é a classe do vizinho $i$. Não há uma equação global para a fronteira.
+
+## $K$ controla a flexibilidade
+
+::: {.columns}
+::: {.column width="48%"}
+### $K$ pequeno
+
+- decisões muito locais;
+- fronteira irregular;
+- maior sensibilidade a ruído.
+:::
+::: {.column width="48%"}
+### $K$ grande
+
+- vizinhança mais ampla;
+- fronteira mais suave;
+- detalhes locais podem desaparecer.
+:::
+:::
+
+## A mesma representação, duas decisões
+
+![](assets/aula26-pca-svm/fronteiras-logistica-knn.png){.wide-chart fig-alt="Fronteiras da regressão logística e do KNN para camiseta e camisa nas duas primeiras componentes principais."}
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
-model = SVC(kernel="linear", C=1).fit(Z, y)
-margin = model.decision_function(grid)
-support = model.support_vectors_
+logistic = LogisticRegression().fit(Z2, y)
+knn = KNeighborsClassifier(n_neighbors=15).fit(Z2, y)
 ```
 </details>
 
-## A margem rígida quase nunca basta
+## O que o gráfico evidencia?
 
-Dados reais se sobrepõem e contêm ruído. A margem suave permite violações por variáveis $\xi_i\ge0$:
+- a logística impõe uma fronteira linear no espaço das componentes;
+- o KNN acompanha padrões locais e pode criar regiões irregulares;
+- nenhuma fronteira resolve toda a sobreposição entre camisa e camiseta;
+- trocar o modelo não recupera informação descartada pelo PCA.
 
-$$\min_{w,b,\xi}\frac12\|w\|_2^2+C\sum_{i=1}^n\xi_i$$
+## Quiz: qual diferença é estrutural? {.quiz-question}
 
-sujeito a $y_i(w^Tz_i+b)\ge1-\xi_i$.
+- [A logística aprende parâmetros globais; o KNN consulta vizinhos no momento da previsão]{.correct data-explanation="A natureza global ou local da regra muda a forma da fronteira e o custo de previsão."}
+- [Somente a logística depende da escala]{data-explanation="O KNN depende diretamente das distâncias e também é sensível à escala."}
+- [Somente o KNN pode tratar mais de duas classes]{data-explanation="Ambos possuem extensões multiclasse."}
 
-## O que significam os termos?
+## Distância define o que é vizinho
 
-- $w$ e $b$: definem a fronteira;
-- $y_i\in\{-1,+1\}$: classe da observação $i$;
-- $\xi_i$: tamanho da violação da margem;
-- $C>0$: custo total dessas violações;
-- $\|w\|_2^2/2$: penalização que favorece margem larga.
+No KNN com distância euclidiana,
 
-## Hinge loss oferece outra leitura
+$$d(z_i,z)=\sqrt{\sum_{j=1}^{k}(z_{ij}-z_j)^2}.$$
 
-A perda de uma observação é
+$z_{ij}$ é o escore da imagem $i$ na componente $j$; $z_j$ é o escore da nova imagem. Componentes com maior dispersão contribuem mais para a distância.
 
-$$L_i=\max\{0,1-y_if(z_i)\}.$$
+## Escala continua importante
 
-- margem correta e suficiente: $L_i=0$;
-- correto, mas dentro da margem: $0<L_i<1$;
-- classificado incorretamente: $L_i>1$.
+Todos os pixels do Fashion-MNIST compartilham unidade e faixa. Após PCA, as primeiras componentes têm maior variância por construção.
 
-$C$ troca margem por violações.
+Manter essa escala dá mais peso às direções que explicam mais variação. Padronizar os escores responderia a outra hipótese: todas as componentes deveriam pesar igualmente.
 
-## $C$ controla flexibilidade
+## PCA e o classificador têm papéis distintos
 
-- $C$ grande: pune fortemente erros, produz fronteira mais sensível;
-- $C$ pequeno: aceita violações e amplia a regularização;
-- o efeito depende da escala e do kernel;
-- $C$ é hiperparâmetro, não probabilidade.
+PCA pode reduzir redundância, custo e ruído, mas também remover sinal discriminativo. Depois:
 
-Escolha-o por validação, não pelo treino.
+- a logística estima coeficientes e probabilidades;
+- o KNN armazena o treino e consulta vizinhos.
 
-## Escala altera distâncias e margens
+O benefício do PCA precisa aparecer fora da amostra.
 
-Se um atributo varia entre 0 e 1 e outro entre 0 e 10.000, o segundo domina produtos internos e distâncias.
+## Uma pipeline para cada modelo
 
-Padronização deve ser aprendida dentro de cada parte de validação. No Fashion-MNIST, todos os pixels já compartilham a mesma unidade e faixa.
+$$X\xrightarrow{\text{centrar}}X_c
+\xrightarrow{\text{PCA}_k}Z
+\xrightarrow{\text{classificador}}\widehat Y.$$
 
-## Kernels alteram a noção de similaridade
+O classificador pode ser $\operatorname{Logística}_C$ ou $\operatorname{KNN}_K$. Aqui, $C$ controla a regularização logística e $K$ é o número de vizinhos.
 
-SVM pode usar um produto interno implícito
+## Tudo é aprendido dentro do treino
 
-$$K(z_i,z_j)=\langle\phi(z_i),\phi(z_j)\rangle.$$
+Em cada divisão de validação:
 
-Não precisamos construir explicitamente $\phi(z)$. O kernel define quais padrões são considerados próximos.
+1. calculamos a média dos pixels no treino;
+2. estimamos as componentes no treino;
+3. projetamos treino e validação nessas componentes;
+4. ajustamos e avaliamos o classificador.
 
-## O kernel RBF cria fronteiras flexíveis
-
-$$K(z_i,z_j)=\exp(-\gamma\|z_i-z_j\|_2^2).$$
-
-- $\gamma$ pequeno: influência ampla e fronteira suave;
-- $\gamma$ grande: influência local e fronteira complexa;
-- `gamma="scale"` usa a dispersão observada como ponto de partida.
-
-## $C$ e $\gamma$ devem ser escolhidos juntos
-
-$C$ regula violações; $\gamma$ regula o alcance da similaridade.
-
-Uma combinação pode compensar parcialmente a outra. Procurar cada parâmetro isoladamente pode perder boas regiões do espaço de hiperparâmetros.
-
-## Multiclasse combina problemas binários
-
-SVM é originalmente binário. Implementações multiclasse usam estratégias como:
-
-- one-vs-rest: uma classe contra as demais;
-- one-vs-one: um classificador para cada par;
-- funções de decisão conjuntas.
-
-No Fashion-MNIST, a implementação utilizada combina classificadores binários internamente.
-
-## A saída não é probabilidade nativa
-
-$f(z)$ mede posição relativa à fronteira, não uma probabilidade calibrada.
-
-Quando probabilidades são necessárias, uma etapa adicional de calibração deve ser ajustada e validada. Isso aumenta custo e deve permanecer dentro da pipeline.
-
-## PCA e SVM resolvem gargalos diferentes
-
-PCA pode:
-
-- reduzir ruído e redundância;
-- diminuir memória e tempo;
-- facilitar visualização;
-- remover também informação discriminativa.
-
-SVM usa a representação resultante para construir a decisão.
-
-## A pipeline completa
-
-$$X\xrightarrow{\text{centrar}}
-X_c\xrightarrow{\text{PCA}_k}Z
-\xrightarrow{\text{SVM}_{C,\gamma}}\widehat Y.$$
-
-Os parâmetros de centralização, PCA e SVM são aprendidos apenas no treino de cada parte.
+Projetar toda a base antes da validação causa vazamento.
 
 ## Mais componentes não garantem desempenho
 
-![](assets/aula26-pca-svm/pca-svm-desempenho.png){.wide-chart fig-alt="Acurácia e tempo do SVM para diferentes números de componentes PCA."}
+![](assets/aula26-pca-svm/pca-modelos-desempenho.png){.wide-chart fig-alt="Acurácia e tempo total da regressão logística e do KNN para diferentes números de componentes PCA e para os 784 pixels."}
 
-Nesta amostra, 50 componentes atingem cerca de 85%; mais dimensões custam mais sem melhorar o teste.
+O ponto em 784 usa os pixels originais; os demais usam PCA.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
 Pipeline([("pca", PCA(n_components=k)),
-          ("svm", SVC(C=10, kernel="rbf"))])
+          ("modelo", LogisticRegression())])
+Pipeline([("pca", PCA(n_components=k)),
+          ("modelo", KNeighborsClassifier(n_neighbors=7))])
 ```
 </details>
 
+## Leia desempenho e custo juntos
+
+A regressão logística precisa ajustar coeficientes, enquanto o KNN transfere grande parte do custo para a previsão. Nesta amostra, o próprio PCA tem custo visível. Reduzir a dimensão pode:
+
+- acelerar ou tornar a pipeline mais lenta, conforme o volume e a implementação;
+- preservar a acurácia até certo ponto;
+- prejudicar cada modelo em ritmos distintos.
+
+Não existe um número de componentes ótimo sem especificar o modelo e a métrica.
+
 ## Valide a pipeline inteira
 
-![](assets/aula26-pca-svm/cv-pca-svm.png){.wide-chart fig-alt="Acurácia de validação para combinações de componentes PCA e C do SVM."}
+![](assets/aula26-pca-svm/cv-pca-modelos.png){.wide-chart fig-alt="Acurácia de validação para componentes PCA e hiperparâmetros da regressão logística e do KNN."}
 
-Cada célula reajusta PCA e SVM dentro das partes; projetar toda a base antes causaria vazamento.
+Cada célula reajusta PCA e classificador dentro das partes de validação.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
 for k in components_grid:
-    for C in C_grid:
-        score[k, C] = cross_validate(Pipeline([PCA(k), SVC(C=C)]))
+    for value in hyperparameter_grid:
+        score[k, value] = cross_validate(make_pipeline(PCA(k), model(value)))
 ```
 </details>
 
+## O que estamos escolhendo?
+
+::: {.columns}
+::: {.column width="48%"}
+### Representação
+
+$k$: quantas componentes serão entregues ao modelo.
+:::
+::: {.column width="48%"}
+### Regra de decisão
+
+$C$: regularização logística; ou $K$: tamanho da vizinhança no KNN.
+:::
+:::
+
+A combinação escolhida é reajustada em todo o conjunto de desenvolvimento e só então avaliada no teste reservado.
+
 ## Acurácia esconde quais classes confundem
 
-![](assets/aula26-pca-svm/matriz-confusao.png){.wide-chart fig-alt="Matriz de confusão normalizada do SVM após PCA."}
+![](assets/aula26-pca-svm/matriz-confusao.png){.wide-chart fig-alt="Matriz de confusão normalizada do melhor classificador avaliado após a comparação com PCA."}
 
 Roupas superiores semelhantes concentram os erros; bolsa e calçados são mais fáceis nesta amostra.
 
@@ -400,14 +416,30 @@ O benefício deve aparecer fora da amostra.
 
 PCA não é uma etapa obrigatória.
 
-## Quando SVM é uma boa escolha
+## Logística ou KNN?
 
-- amostras médias e muitos atributos;
-- fronteiras complexas com kernels;
-- representação bem escalada;
-- necessidade de um classificador forte com poucos ajustes conceituais.
+::: {.columns}
+::: {.column width="48%"}
+### Logística
 
-Para milhões de observações, SVM com RBF pode ficar caro.
+- probabilidades explícitas;
+- fronteira global e interpretável;
+- treino mais caro, previsão rápida.
+:::
+::: {.column width="48%"}
+### KNN
+
+- regra local e flexível;
+- quase nenhum treino;
+- previsão e armazenamento mais caros.
+:::
+:::
+
+## A dimensão afeta o KNN especialmente
+
+Em alta dimensão, distâncias tendem a se tornar menos informativas: muitos pontos parecem igualmente distantes. É uma manifestação da **maldição da dimensionalidade**.
+
+PCA pode ajudar o KNN ao remover direções redundantes, desde que preserve a estrutura local relevante para as classes.
 
 ## A conexão com ciência de dados
 
@@ -424,7 +456,7 @@ O caso reúne o ciclo completo:
 
 - [Não; PCA deve ser ajustado no treino de cada parte]{.correct data-explanation="As componentes dependem da distribuição dos dados e não podem consultar a validação."}
 - [Sim; PCA não usa os rótulos]{data-explanation="Mesmo sem Y, PCA aprende médias e direções a partir de X."}
-- [Somente quando usamos kernel linear]{data-explanation="O risco de vazamento independe do kernel posterior."}
+- [Somente quando usamos regressão logística]{data-explanation="O risco de vazamento independe do classificador posterior."}
 
 ## Quiz: mais componentes sempre ajudam? {.quiz-question}
 
@@ -436,21 +468,20 @@ O caso reúne o ciclo completo:
 
 - PCA cria uma representação compacta por direções de variação;
 - compressão e classificação têm objetivos diferentes;
-- SVM decide por margem e vetores de suporte;
-- kernels ampliam flexibilidade e custo;
-- PCA, escala e SVM formam uma única pipeline;
+- regressão logística e KNN constroem decisões de maneiras diferentes;
+- PCA e o classificador formam uma única pipeline;
 - desempenho, tempo e padrão de erros devem ser avaliados juntos.
 
 ## Encerramento do módulo
 
-Correlação, regressão, verossimilhança, otimização, regularização, engenharia de atributos, validação, KNN, PCA e SVM formam um vocabulário integrado.
+Correlação, regressão, verossimilhança, otimização, regularização, engenharia de atributos, validação, KNN, regressão logística e PCA formam um vocabulário integrado.
 
 O objetivo não é apenas conhecer algoritmos: é construir análises reproduzíveis que generalizem e respondam a uma pergunta real.
 
 ## Bibliografia
 
-- James et al., *An Introduction to Statistical Learning*, caps. 9 e 12.
-- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, caps. 12 e 14.
+- James et al., *An Introduction to Statistical Learning*, caps. 4 e 12.
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, caps. 4, 13 e 14.
 - Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, caps. 10 e 12.
 - [Fashion-MNIST — Zalando Research](https://github.com/zalandoresearch/fashion-mnist).
 - [Exemplo do gato na aula de ALC](https://heitorramos.github.io/Slides_ALC/Aula11.html#/qual-foi-a-taxa-de-compressão).

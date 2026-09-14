@@ -22,6 +22,9 @@ Transformações por tipo de dado, vazamento, pipelines e validação cruzada.
 Construção de atributos, K-fold manual, resultados e interpretações.
 
 [Abrir notebook](../exemplos/24-engenharia-atributos-cv/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/24-engenharia-atributos-cv/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

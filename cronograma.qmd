@@ -43,7 +43,7 @@ Eventuais alterações serão comunicadas pelo
 | 23 | **05/11/2026** | Regularização | Em revisão |
 | 24 | **10/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
 | 25 | **12/11/2026** | KNN e prática completa de machine learning | Em revisão |
-| 26 | **17/11/2026** | PCA e SVM aplicados | Em revisão |
+| 26 | **17/11/2026** | PCA aplicado à classificação | Em revisão |
 | **Prova 2** | **19/11/2026** | **Prova 2** | — |
 | **TP** | **24/11/2026** | Apresentações do projeto final | [Orientações](projeto.qmd) |
 | **TP** | **26/11/2026** | Apresentações do projeto final | [Orientações](projeto.qmd) |

@@ -24,6 +24,9 @@ Apresentação usada em sala.
 Análise guiada do dataset Billboard.
 
 [Abrir notebook](../exemplos/07-tendencias-centrais/notebook.ipynb){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/07-tendencias-centrais/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

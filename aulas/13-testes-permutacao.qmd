@@ -22,6 +22,9 @@ Construção do teste de permutação em uma campanha A/B real.
 Análise reprodutível, simulação da distribuição nula e exercícios.
 
 [Abrir notebook](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/13-permutacao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

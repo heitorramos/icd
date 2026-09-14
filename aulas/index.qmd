@@ -331,9 +331,9 @@ Distâncias, escolha de hiperparâmetros e fluxo completo de modelagem.
 ::: {.aula-card}
 ### Aula 26
 
-## PCA e SVM aplicados
+## PCA aplicado à classificação
 
-Compressão, representação, margem, kernels e ciência de dados.
+Compressão, representação, regressão logística, KNN e ciência de dados.
 
 **Material em revisão**
 :::

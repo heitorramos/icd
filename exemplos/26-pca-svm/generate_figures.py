@@ -9,9 +9,9 @@ from PIL import Image
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "slides/assets/aula26-pca-svm"
@@ -97,46 +97,81 @@ for c,k in enumerate(components): axes[0,c].set_title("Original" if k is None el
 for ax in axes.flat: ax.set_xticks([]); ax.set_yticks([])
 save(fig,"fashion-reconstrucoes.png")
 
-# SVM margin on a synthetic 2D projection of two classes
-mask=np.isin(ytr,[0,9]); X2=Z[mask]; y2=np.where(ytr[mask]==9,1,-1)
-linear=SVC(kernel="linear",C=1).fit(X2,y2)
+# Logistic regression and KNN boundaries on the same PCA projection.
+mask=np.isin(ytr,[0,6]); X2=Z[mask]; y2=np.where(ytr[mask]==6,1,0)
+logistic=LogisticRegression(C=1,solver="saga",max_iter=300,tol=.01,
+                            random_state=7).fit(X2,y2)
+knn=KNeighborsClassifier(n_neighbors=15,weights="distance").fit(X2,y2)
 xg=np.linspace(X2[:,0].min(),X2[:,0].max(),250); yg=np.linspace(X2[:,1].min(),X2[:,1].max(),250); XX,YY=np.meshgrid(xg,yg)
-decision=linear.decision_function(np.c_[XX.ravel(),YY.ravel()]).reshape(XX.shape)
-fig,ax=plt.subplots(figsize=(8.5,5.3)); ax.scatter(X2[:,0],X2[:,1],c=y2,cmap="coolwarm",s=10,alpha=.4)
-ax.contour(XX,YY,decision,levels=[-1,0,1],colors=["grey","black","grey"],linestyles=["--","-","--"])
-sv=linear.support_vectors_; ax.scatter(sv[:,0],sv[:,1],s=45,facecolors="none",edgecolors="black",label="vetores de suporte")
-ax.set(xlabel="PC1",ylabel="PC2",title="A margem depende dos pontos mais próximos"); ax.legend()
-save(fig,"svm-margem.png")
+grid_points=np.c_[XX.ravel(),YY.ravel()]
+fig,axes=plt.subplots(1,2,figsize=(12,5.2),sharex=True,sharey=True)
+for ax,model,title in [(axes[0],logistic,"Logística: fronteira global"),(axes[1],knn,"KNN: fronteira local")]:
+    probability=model.predict_proba(grid_points)[:,1].reshape(XX.shape)
+    ax.contourf(XX,YY,probability,levels=np.linspace(0,1,11),cmap="RdBu",alpha=.28)
+    ax.contour(XX,YY,probability,levels=[.5],colors="black",linewidths=2)
+    ax.scatter(X2[:,0],X2[:,1],c=y2,cmap="coolwarm",s=10,alpha=.45)
+    ax.set(xlabel="PC1",ylabel="PC2",title=title)
+fig.suptitle("A mesma representação permite regras de decisão diferentes")
+save(fig,"fronteiras-logistica-knn.png")
 
-# Pipeline comparisons and confusion matrix
+# Pipeline comparisons and confusion matrix. Time includes fit and prediction.
 results=[]
-for ncomp in [20,50,100,150]:
-    model=Pipeline([("pca",PCA(n_components=ncomp,svd_solver="randomized",random_state=7)),("svm",SVC(C=10,kernel="rbf",gamma="scale"))])
-    t0=perf_counter(); model.fit(Xtr,ytr); fit_time=perf_counter()-t0
-    pred=model.predict(Xte); results.append((ncomp,accuracy_score(yte,pred),fit_time,model,pred))
-res=pd.DataFrame([(k,a,t) for k,a,t,_,_ in results],columns=["componentes","acurácia","tempo"])
-fig,axes=plt.subplots(1,2,figsize=(11,4.5)); axes[0].plot(res.componentes,res.acurácia,marker="o",lw=3,color=BLUE); axes[0].set(xlabel="componentes PCA",ylabel="acurácia",title="Compressão pode preservar desempenho")
-axes[1].plot(res.componentes,res.tempo,marker="o",lw=3,color=ORANGE); axes[1].set(xlabel="componentes PCA",ylabel="tempo de ajuste (s)",title="Mais dimensões custam mais")
-save(fig,"pca-svm-desempenho.png")
+models={
+    "Logística": lambda: LogisticRegression(C=1,solver="saga",max_iter=300,
+                                               tol=.01,random_state=7),
+    "KNN": lambda: KNeighborsClassifier(n_neighbors=7,weights="distance"),
+}
+for model_name,builder in models.items():
+    for ncomp in [20,50,100,150]:
+        model=Pipeline([("pca",PCA(n_components=ncomp,svd_solver="randomized",random_state=7)),("modelo",builder())])
+        t0=perf_counter(); model.fit(Xtr,ytr); pred=model.predict(Xte); elapsed=perf_counter()-t0
+        results.append((model_name,ncomp,accuracy_score(yte,pred),elapsed,model,pred))
+    model=builder(); t0=perf_counter(); model.fit(Xtr,ytr); pred=model.predict(Xte); elapsed=perf_counter()-t0
+    results.append((model_name,784,accuracy_score(yte,pred),elapsed,model,pred))
+res=pd.DataFrame([(m,k,a,t) for m,k,a,t,_,_ in results],columns=["modelo","componentes","acurácia","tempo_total"])
+fig,axes=plt.subplots(1,2,figsize=(12,4.8))
+xpos=np.arange(5); xlabels=["20","50","100","150","sem PCA\n(784 pixels)"]
+for model_name,color,marker in [("Logística",BLUE,"o"),("KNN",ORANGE,"s")]:
+    part=res[res.modelo==model_name]
+    axes[0].plot(xpos,part.acurácia,marker=marker,lw=2.7,color=color,label=model_name)
+    axes[1].plot(xpos,part.tempo_total,marker=marker,lw=2.7,color=color,label=model_name)
+axes[0].set(xlabel="representação",ylabel="acurácia",title="PCA afeta cada modelo de modo diferente")
+axes[1].set(xlabel="representação",ylabel="ajuste + previsão (s)",title="O PCA também tem custo")
+for ax in axes: ax.legend(); ax.set_xticks(xpos,xlabels)
+save(fig,"pca-modelos-desempenho.png")
 
-best=max(results,key=lambda x:x[1]); cm=confusion_matrix(yte,best[4],normalize="true")
+best=max(results,key=lambda x:x[2]); cm=confusion_matrix(yte,best[5],normalize="true")
 fig,ax=plt.subplots(figsize=(8,6.5)); sns.heatmap(cm,cmap="Blues",vmin=0,vmax=1,xticklabels=names,yticklabels=names,ax=ax)
-ax.set(xlabel="previsto",ylabel="verdadeiro",title=f"SVM após PCA ({best[0]} componentes)"); ax.tick_params(axis="x",rotation=35); ax.tick_params(axis="y",rotation=0)
+representation="pixels" if best[1]==784 else f"{best[1]} componentes"
+ax.set(xlabel="previsto",ylabel="verdadeiro",title=f"{best[0]} com {representation}"); ax.tick_params(axis="x",rotation=35); ax.tick_params(axis="y",rotation=0)
 save(fig,"matriz-confusao.png")
 
-# CV grid for applied hyperparameter selection
-subset=rng.choice(len(Xtr),3000,replace=False); skf=StratifiedKFold(3,shuffle=True,random_state=7)
-components_grid=[30,60,100]; C_grid=[1,10,30]; grid=np.zeros((len(components_grid),len(C_grid)))
-for i,k in enumerate(components_grid):
-    for j,C in enumerate(C_grid):
-        fold=[]
-        for a,b in skf.split(Xtr[subset],ytr[subset]):
-            pipe=Pipeline([("pca",PCA(n_components=k,svd_solver="randomized",random_state=7)),("svm",SVC(C=C,kernel="rbf",gamma="scale"))])
-            pipe.fit(Xtr[subset][a],ytr[subset][a]); fold.append(pipe.score(Xtr[subset][b],ytr[subset][b]))
-        grid[i,j]=np.mean(fold)
-fig,ax=plt.subplots(figsize=(7.5,5.2)); sns.heatmap(grid,annot=True,fmt=".3f",cmap="YlGnBu",xticklabels=C_grid,yticklabels=components_grid,ax=ax)
-ax.set(xlabel="C do SVM",ylabel="componentes PCA",title="A pipeline inteira é escolhida por validação")
-save(fig,"cv-pca-svm.png")
+# CV grids for applied hyperparameter selection.
+subset=rng.choice(len(Xtr),1200,replace=False); skf=StratifiedKFold(3,shuffle=True,random_state=7)
+components_grid=[30,60,100]
+settings=[("Logística",[.1,1,10],lambda value: LogisticRegression(C=value,solver="saga",max_iter=300,tol=.01,random_state=7),"C"),
+          ("KNN",[3,7,15],lambda value: KNeighborsClassifier(n_neighbors=value,weights="distance"),"vizinhos")]
+fold_scores={(name,k,value): [] for name,values,_,_ in settings
+             for k in components_grid for value in values}
+for fit,valid in skf.split(Xtr[subset],ytr[subset]):
+    pca_fold=PCA(n_components=max(components_grid),svd_solver="randomized",
+                 iterated_power=2,random_state=7)
+    Zfit=pca_fold.fit_transform(Xtr[subset][fit]); Zvalid=pca_fold.transform(Xtr[subset][valid])
+    for model_name,values,builder,_ in settings:
+        for k in components_grid:
+            for value in values:
+                classifier=builder(value).fit(Zfit[:,:k],ytr[subset][fit])
+                fold_scores[(model_name,k,value)].append(classifier.score(Zvalid[:,:k],ytr[subset][valid]))
+fig,axes=plt.subplots(1,2,figsize=(11.5,4.8))
+for ax,(model_name,values,builder,xlabel) in zip(axes,settings):
+    grid=np.zeros((len(components_grid),len(values)))
+    for i,k in enumerate(components_grid):
+        for j,value in enumerate(values):
+            grid[i,j]=np.mean(fold_scores[(model_name,k,value)])
+    sns.heatmap(grid,annot=True,fmt=".3f",cmap="YlGnBu",xticklabels=values,yticklabels=components_grid,ax=ax,cbar=False)
+    ax.set(xlabel=xlabel,ylabel="componentes PCA",title=model_name)
+fig.suptitle("Representação e hiperparâmetro são validados em conjunto")
+save(fig,"cv-pca-modelos.png")
 
 print(res.round(4).to_string(index=False))
-print("best",best[0],best[1])
+print("best",best[0],best[1],best[2])

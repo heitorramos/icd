@@ -1,0 +1,28 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const match = window.location.pathname.match(/\/exemplos\/(.+)\/notebook\.html$/);
+  if (!match) return;
+
+  const target = `https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/${match[1]}/notebook-colab.ipynb`;
+  const titleBlock = document.querySelector("#title-block-header");
+  if (!titleBlock || titleBlock.querySelector(".colab-launch")) return;
+
+  const wrapper = document.createElement("p");
+  wrapper.className = "colab-launch";
+
+  const link = document.createElement("a");
+  link.href = target;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.setAttribute("aria-label", "Abrir este material no Google Colab");
+
+  const badge = document.createElement("img");
+  badge.src = "https://colab.research.google.com/assets/colab-badge.svg";
+  badge.alt = "Abrir no Google Colab";
+  badge.loading = "lazy";
+
+  link.appendChild(badge);
+  wrapper.appendChild(link);
+  titleBlock.appendChild(wrapper);
+});
+</script>

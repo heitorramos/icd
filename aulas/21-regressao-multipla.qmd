@@ -22,6 +22,9 @@ Notação matricial, interpretação, interações, colinearidade e introdução
 Derivações, ajuste executado, bootstrap, diagnósticos e interpretações.
 
 [Abrir notebook](../exemplos/21-regressao-multipla/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/21-regressao-multipla/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

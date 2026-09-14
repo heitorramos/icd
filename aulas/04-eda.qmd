@@ -28,6 +28,9 @@ Deck com 45 slides, códigos abertos, resultados e gráficos construídos com a 
 Notebook executado com auditoria, merges, exercícios e respostas comentadas.
 
 [Abrir notebook](../exemplos/04-eda-olist/notebook.qmd){.btn .btn-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/04-eda-olist/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

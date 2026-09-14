@@ -23,6 +23,9 @@ Apresentação usada em sala.
 Experimento A/B e o estudo de John Snow.
 
 [Experimento A/B](../exemplos/02-experimento-ab/notebook.ipynb){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/02-experimento-ab/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 [John Snow](../exemplos/01-john-snow/exemplo.qmd){.btn .btn-outline-primary}
 :::
 :::

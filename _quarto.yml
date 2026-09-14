@@ -9,6 +9,7 @@ project:
     - "slides/*.qmd"
     - "exemplos/**/*.qmd"
     - "exemplos/**/*.ipynb"
+    - "!exemplos/**/notebook-colab.ipynb"
 
 website:
   title: "Introdução à Ciência de Dados"
@@ -68,7 +69,9 @@ format:
     theme:
       - cosmo
       - site/styles/icd.scss
-    include-after-body: site/version.html
+    include-after-body:
+      - site/version.html
+      - site/colab-link.html
     toc: true
     toc-depth: 3
     lang: pt-BR

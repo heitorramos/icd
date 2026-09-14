@@ -23,6 +23,9 @@ População, amostra, distribuição amostral, viés e variância.
 Simulações com a base Palmer Penguins.
 
 [Abrir notebook](../exemplos/08-estimadores/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/08-estimadores/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

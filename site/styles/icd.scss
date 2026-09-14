@@ -151,6 +151,16 @@ table {
   margin-right: 0.35rem;
 }
 
+.colab-launch {
+  margin: 1rem 0 0;
+}
+
+.colab-launch img {
+  display: block;
+  width: auto;
+  height: 32px;
+}
+
 .recurso-indisponivel {
   color: var(--icd-muted);
   background: var(--icd-band);

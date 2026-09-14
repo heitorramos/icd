@@ -28,6 +28,9 @@ Escalas, condicionamento, cor, transformações, contexto, ruído e ética da co
 Notebook executado com comparações, redesenhos e exercícios de crítica visual.
 
 [Abrir notebook](../exemplos/06-boas-praticas-visualizacao/notebook.qmd){.btn .btn-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/06-boas-praticas-visualizacao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 

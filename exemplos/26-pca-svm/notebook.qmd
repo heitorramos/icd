@@ -1,5 +1,5 @@
 ---
-title: "PCA e SVM aplicados à Ciência de Dados"
+title: "PCA aplicado à classificação"
 subtitle: "Material de apoio — Aula 26"
 format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
@@ -7,11 +7,11 @@ execute: {echo: true, warning: false, message: false}
 
 ## Objetivos
 
-Este guia usa PCA como transformação de representação e SVM como classificador. O foco é aplicado: formular o suficiente para interpretar hiperparâmetros, montar uma pipeline sem vazamento, comparar custo e desempenho e diagnosticar erros.
+Este guia usa PCA como transformação de representação e compara dois classificadores já estudados: regressão logística e KNN. O foco é aplicado: compreender o papel de cada etapa, montar pipelines sem vazamento, comparar custo e desempenho e diagnosticar erros.
 
 ## Como estudar este capítulo
 
-PCA e SVM resolvem problemas diferentes. PCA cria uma nova representação dos dados, buscando direções que concentram variabilidade. SVM usa as observações para construir uma fronteira de decisão com margem ampla. Eles podem aparecer na mesma pipeline, mas PCA não é uma etapa obrigatória para SVM e maior variância não significa necessariamente maior poder de classificação.
+PCA e classificação resolvem problemas diferentes. PCA cria uma representação que concentra variabilidade sem consultar os rótulos. A regressão logística aprende probabilidades por uma relação global; o KNN decide pela composição de uma vizinhança local. PCA não é obrigatório para nenhum deles, e maior variância explicada não significa necessariamente maior poder de classificação.
 
 O exemplo de imagens torna concreta a ideia de representação. Cada pixel começa como um atributo; o PCA combina pixels em componentes e permite reconstruções aproximadas. Em seguida, comparamos um classificador usando os atributos originais e outro usando componentes, observando desempenho, custo e padrões de erro.
 
@@ -30,10 +30,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
 from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.model_selection import StratifiedKFold
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
 
 sns.set_theme(style="whitegrid", context="notebook")
 rng = np.random.default_rng(20260827)
@@ -180,91 +181,203 @@ plt.tight_layout(); plt.show()
 Duas componentes revelam grupos, mas várias classes se sobrepõem. Isso não implica que elas sejam inseparáveis no espaço com 50 componentes. Projeções bidimensionais são ferramentas exploratórias, não estimativas diretas da acurácia possível.
 :::
 
-## SVM por margem
+## Duas regras de classificação conhecidas
 
-Na versão binária, a função de decisão é
+Depois do PCA, a observação $x_i\in\mathbb R^{784}$ passa a ser representada pelo escore $z_i\in\mathbb R^k$. A redução muda os atributos entregues ao modelo, mas não determina como a classe será escolhida. Compararemos uma regra global e paramétrica com uma regra local baseada em distância.
 
-$$f(z)=w^Tz+b,\qquad \widehat y=\operatorname{sign}(f(z)).$$
+Na regressão logística binária,
 
-A margem geométrica entre $w^Tz+b=1$ e $w^Tz+b=-1$ é $2/\|w\|_2$. Com violações $\xi_i\ge0$:
+$$P(Y=1\mid Z=z)=\frac{1}{1+e^{-(\beta_0+\beta^Tz)}}.$$
 
-$$\min_{w,b,\xi}\frac12\|w\|_2^2+C\sum_i\xi_i,$$
+$z$ é o vetor de componentes da imagem; $\beta_0$ é o intercepto; $\beta$ contém os coeficientes estimados. Com limiar $0{,}5$, a fronteira satisfaz $\beta_0+\beta^Tz=0$. No caso multiclasse, o modelo estima uma probabilidade para cada classe e escolhe a maior.
 
-sujeito a $y_i(w^Tz_i+b)\ge1-\xi_i$. $C$ controla quanto custa violar a margem.
+No KNN, seja $\mathcal N_K(z)$ o conjunto dos índices dos $K$ exemplos de treino mais próximos de $z$. A previsão é
 
-## Hinge loss
+$$\widehat y(z)=\operatorname{moda}\{y_i:i\in\mathcal N_K(z)\}.$$
 
-Uma forma equivalente usa
+$K$ é o número de vizinhos e $y_i$ é o rótulo do vizinho $i$. Um $K$ pequeno cria decisões mais locais e sensíveis; um $K$ grande suaviza a fronteira.
 
-$$L_i=\max\{0,1-y_if(z_i)\}.$$
+::: {.callout-note title="Interpretação"}
+A regressão logística resume o treino em coeficientes e prevê rapidamente. O KNN praticamente apenas armazena o treino, mas precisa calcular distâncias ao prever. PCA pode alterar tanto a qualidade dessas decisões quanto seu custo computacional.
+:::
 
-Pontos corretamente classificados e fora da margem têm perda zero. Pontos na margem, dentro dela ou classificados incorretamente influenciam a solução; os relevantes são vetores de suporte.
+## Visualizando as duas fronteiras
 
-## Kernel RBF
-
-$$K(z_i,z_j)=\exp(-\gamma\|z_i-z_j\|_2^2).$$
-
-$\gamma$ controla o alcance da similaridade e $C$ controla a penalização por violações. Ambos alteram a flexibilidade e devem ser escolhidos conjuntamente por validação.
-
-SVM não produz probabilidades nativas; calibração é uma etapa adicional quando probabilidades são necessárias.
-
-## Pipeline PCA + SVM
+Para tornar a comparação visível, restringimos temporariamente o problema a camiseta versus camisa e usamos somente PC1 e PC2.
 
 ```{python}
-def build_pipeline(n_components, C=10):
+mask = np.isin(y_train, [0, 6])
+Z_binary = Z2[mask]
+y_binary = (y_train[mask] == 6).astype(int)
+
+logistic_2d = LogisticRegression(
+    solver="saga", max_iter=300, tol=.01, random_state=7
+).fit(Z_binary, y_binary)
+knn_2d = KNeighborsClassifier(n_neighbors=15, weights="distance").fit(
+    Z_binary, y_binary
+)
+
+x_grid = np.linspace(Z_binary[:, 0].min(), Z_binary[:, 0].max(), 220)
+y_grid = np.linspace(Z_binary[:, 1].min(), Z_binary[:, 1].max(), 220)
+XX, YY = np.meshgrid(x_grid, y_grid)
+grid_points = np.c_[XX.ravel(), YY.ravel()]
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharex=True, sharey=True)
+for ax, model, title in [
+    (axes[0], logistic_2d, "Logística: fronteira global"),
+    (axes[1], knn_2d, "KNN: fronteira local"),
+]:
+    probability = model.predict_proba(grid_points)[:, 1].reshape(XX.shape)
+    ax.contourf(XX, YY, probability, levels=np.linspace(0, 1, 11),
+                cmap="RdBu", alpha=.28)
+    ax.contour(XX, YY, probability, levels=[.5], colors="black")
+    ax.scatter(Z_binary[:, 0], Z_binary[:, 1], c=y_binary,
+               cmap="coolwarm", s=10, alpha=.45)
+    ax.set(title=title, xlabel="PC1", ylabel="PC2")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+A fronteira logística é uma reta porque o logito é linear nos dois componentes. O KNN acompanha irregularidades locais. Ainda assim, ambos erram na região de sobreposição: limitar a representação a duas componentes descartou informação que nenhum classificador consegue reconstruir.
+:::
+
+## Distâncias após o PCA
+
+O KNN usa, neste exemplo, a distância euclidiana:
+
+$$d(z_i,z)=\sqrt{\sum_{j=1}^{k}(z_{ij}-z_j)^2}.$$
+
+$z_{ij}$ é o escore da imagem de treino $i$ na componente $j$, e $z_j$ é o escore da nova imagem nessa componente. As primeiras componentes possuem maior variância e, portanto, tendem a contribuir mais para essa distância. Padronizar os escores daria peso semelhante a todas as componentes e representaria uma escolha substantivamente diferente.
+
+## Pipelines PCA + classificação
+
+```{python}
+def build_pipeline(n_components, model_name, value):
+    if model_name == "Logística":
+        classifier = LogisticRegression(
+            C=value, solver="saga", max_iter=300, tol=.01, random_state=7
+        )
+    else:
+        classifier = KNeighborsClassifier(n_neighbors=value, weights="distance")
     return Pipeline([
         ("pca", PCA(n_components=n_components,
                     svd_solver="randomized", random_state=7)),
-        ("svm", SVC(C=C, kernel="rbf", gamma="scale")),
+        ("modelo", classifier),
     ])
 
 results = []
 fitted = {}
-for k in [20, 50, 100, 150]:
-    model = build_pipeline(k)
-    start = perf_counter(); model.fit(X_train, y_train)
-    elapsed = perf_counter()-start
-    prediction = model.predict(X_test)
-    results.append((k, accuracy_score(y_test, prediction), elapsed))
-    fitted[k] = (model, prediction)
+for model_name, value in [("Logística", 1), ("KNN", 7)]:
+    for k in [20, 50, 100, 150]:
+        model = build_pipeline(k, model_name, value)
+        start = perf_counter()
+        model.fit(X_train, y_train)
+        prediction = model.predict(X_test)
+        elapsed = perf_counter() - start
+        results.append((model_name, k, accuracy_score(y_test, prediction), elapsed))
+        fitted[(model_name, k)] = (model, prediction)
 
-pd.DataFrame(results, columns=["componentes", "acurácia", "tempo_s"]).round(4)
+    baseline = (LogisticRegression(C=1, solver="saga", max_iter=300,
+                                   tol=.01, random_state=7) if model_name == "Logística"
+                else KNeighborsClassifier(n_neighbors=7, weights="distance"))
+    start = perf_counter()
+    baseline.fit(X_train, y_train)
+    prediction = baseline.predict(X_test)
+    elapsed = perf_counter() - start
+    results.append((model_name, 784, accuracy_score(y_test, prediction), elapsed))
+    fitted[(model_name, 784)] = (baseline, prediction)
+
+results_df = pd.DataFrame(
+    results, columns=["modelo", "dimensões", "acurácia", "tempo_total_s"]
+)
+results_df.round(4)
 ```
 
 ::: {.callout-note title="Interpretação"}
-Com esta divisão, 50 componentes atingem aproximadamente 85% de acurácia. Mais componentes aumentam o tempo e não melhoram o teste. O resultado é específico da amostra, da implementação e dos hiperparâmetros utilizados.
+O resultado em 784 dimensões é a referência sem PCA. Os demais combinam redução e classificação. Compare cada modelo consigo mesmo antes de comparar um modelo com o outro: assim distinguimos o efeito da representação do efeito da regra de decisão.
+:::
+
+## Visualizando desempenho e custo
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+xpos = np.arange(5)
+xlabels = ["20", "50", "100", "150", "sem PCA\n(784 pixels)"]
+for model_name, part in results_df.groupby("modelo"):
+    axes[0].plot(xpos, part["acurácia"], marker="o", label=model_name)
+    axes[1].plot(xpos, part["tempo_total_s"], marker="o", label=model_name)
+axes[0].set(xlabel="representação", ylabel="acurácia")
+axes[1].set(xlabel="representação", ylabel="ajuste + previsão (s)")
+for ax in axes:
+    ax.legend()
+    ax.set_xticks(xpos, xlabels)
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+O tempo reúne ajuste e previsão. Isso é importante porque o KNN tem ajuste muito barato, mas previsão relativamente cara. Nesta amostra pequena, o custo de estimar o PCA domina várias pipelines, e o KNN nos pixels originais é especialmente rápido graças à implementação otimizada. Ganhos computacionais não devem ser presumidos: dependem do tamanho da base, do número de previsões e da implementação.
 :::
 
 ## Validação da pipeline inteira
 
-O PCA deve ser ajustado novamente dentro de cada parte. Ajustá-lo uma vez em todo o desenvolvimento permitiria que a validação influenciasse a representação.
+O PCA deve ser reajustado dentro de cada parte da validação. Ajustá-lo uma única vez em todo o conjunto de desenvolvimento permitiria que as observações de validação influenciassem a representação.
 
 ```{python}
-subset = rng.choice(len(X_train), 3000, replace=False)
+subset = rng.choice(len(X_train), 1200, replace=False)
 folds = StratifiedKFold(3, shuffle=True, random_state=7)
 grid = []
-for k in [30, 60, 100]:
-    for C in [1, 10, 30]:
-        scores = []
-        for fit, valid in folds.split(X_train[subset], y_train[subset]):
-            model = build_pipeline(k, C)
-            model.fit(X_train[subset][fit], y_train[subset][fit])
-            scores.append(model.score(X_train[subset][valid], y_train[subset][valid]))
-        grid.append((k, C, np.mean(scores), np.std(scores)))
+settings = {
+    "Logística": [0.1, 1, 10],
+    "KNN": [3, 7, 15],
+}
+component_grid = [30, 60, 100]
+fold_scores = {(name, k, value): [] for name, values in settings.items()
+               for k in component_grid for value in values}
 
-cv_results = pd.DataFrame(grid, columns=["componentes", "C", "acurácia_média", "desvio"])
+for fit, valid in folds.split(X_train[subset], y_train[subset]):
+    # Um único PCA de 100 componentes é ajustado no treino desta parte.
+    # Seus primeiros k componentes são exatamente a representação PCA_k.
+    pca_fold = PCA(n_components=max(component_grid), svd_solver="randomized",
+                   iterated_power=2, random_state=7)
+    Z_fit = pca_fold.fit_transform(X_train[subset][fit])
+    Z_valid = pca_fold.transform(X_train[subset][valid])
+
+    for model_name, values in settings.items():
+        for k in component_grid:
+            for value in values:
+                if model_name == "Logística":
+                    classifier = LogisticRegression(
+                        C=value, solver="saga", max_iter=300,
+                        tol=.01, random_state=7
+                    )
+                else:
+                    classifier = KNeighborsClassifier(
+                        n_neighbors=value, weights="distance"
+                    )
+                classifier.fit(Z_fit[:, :k], y_train[subset][fit])
+                score = classifier.score(Z_valid[:, :k], y_train[subset][valid])
+                fold_scores[(model_name, k, value)].append(score)
+
+for (model_name, k, value), scores in fold_scores.items():
+    grid.append((model_name, k, value, np.mean(scores), np.std(scores)))
+
+cv_results = pd.DataFrame(
+    grid, columns=["modelo", "componentes", "hiperparâmetro",
+                  "acurácia_média", "desvio"]
+)
 cv_results.round(4)
 ```
 
 ::: {.callout-note title="Interpretação"}
-A tabela compara combinações, não etapas isoladas. A melhor combinação deve ser reajustada em todo o desenvolvimento e avaliada uma única vez no teste reservado.
+Na regressão logística, o hiperparâmetro exibido é $C$, o inverso da intensidade de regularização: valores menores regularizam mais. No KNN, ele é $K$, o número de vizinhos. A validação escolhe simultaneamente a representação e a flexibilidade do modelo.
 :::
 
 ## Matriz de confusão
 
 ```{python}
-best_k = max(results, key=lambda row: row[1])[0]
-prediction = fitted[best_k][1]
+best_row = results_df.loc[results_df["acurácia"].idxmax()]
+best_key = (best_row["modelo"], int(best_row["dimensões"]))
+prediction = fitted[best_key][1]
 cm = confusion_matrix(y_test, prediction, normalize="true")
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.heatmap(cm, cmap="Blues", vmin=0, vmax=1,
@@ -290,11 +403,11 @@ PCA pode reduzir redundância, ruído, memória e custo. Pode atrapalhar quando 
 
 Seu valor deve ser demonstrado fora da amostra, não presumido por uma porcentagem de variância explicada.
 
-## Quando SVM é apropriado
+## Como escolher entre logística e KNN
 
-SVM costuma ser competitivo em amostras médias com muitos atributos e boa escala. Kernels permitem fronteiras flexíveis, mas custo de memória e tempo pode crescer rapidamente com o número de observações.
+Prefira a regressão logística quando probabilidades, uma fronteira global, previsão rápida ou interpretação dos coeficientes forem importantes. Considere KNN quando decisões locais fizerem sentido, a base de treino couber em memória e a latência de previsão for aceitável.
 
-Para produção, considere também latência, atualização do modelo, calibração, estabilidade e explicabilidade.
+Em alta dimensão, distâncias podem perder contraste: muitos pontos parecem igualmente distantes. PCA pode ajudar o KNN ao remover direções redundantes, mas somente se preservar a estrutura local relevante. Para produção, considere também atualização, armazenamento, latência, calibração e explicabilidade.
 
 ## PCA passo a passo
 
@@ -313,25 +426,32 @@ Para produção, considere também latência, atualização do modelo, calibraç
 PCA não sabe quais são as classes. Ele preserva variação, não necessariamente a
 informação mais útil para classificação.
 
-## SVM passo a passo
+## Regressão logística passo a passo
 
-1. **Representar os exemplos.** Escala e PCA, se utilizados, são ajustados apenas
-   com o treino.
-2. **Procurar uma fronteira.** O SVM busca separar as classes deixando uma margem
-   ampla entre elas.
-3. **Identificar os vetores de suporte.** São os exemplos próximos da fronteira
-   que efetivamente determinam sua posição.
-4. **Permitir alguns erros.** O parâmetro $C$ controla o compromisso entre margem
-   ampla e violações no treinamento.
-5. **Usar kernel quando a fronteira linear não basta.** O RBF mede semelhança
-   local; $\gamma$ controla quão local é essa influência.
-6. **Validar a pipeline.** Número de componentes, $C$ e $\gamma$ são escolhidos
-   sem consultar o teste.
+1. **Receber a representação.** Pixels ou componentes entram como atributos.
+2. **Calcular escores.** Cada classe recebe uma combinação linear dos atributos.
+3. **Transformar em probabilidades.** A função logística, ou sua extensão
+   multiclasse, produz valores positivos que somam 1.
+4. **Escolher a classe.** A maior probabilidade determina a previsão padrão.
+5. **Controlar a regularização.** O parâmetro $C$ deve ser selecionado por
+   validação; valores menores impõem maior regularização.
+6. **Avaliar probabilidades e classes.** Acurácia não substitui calibração ou
+   análise da matriz de confusão.
+
+## KNN passo a passo
+
+1. **Receber a representação.** A escala define o significado das distâncias.
+2. **Armazenar o treino.** Não há estimação de uma fronteira paramétrica global.
+3. **Calcular distâncias.** Para cada nova imagem, buscamos exemplos próximos.
+4. **Selecionar $K$ vizinhos.** $K$ pequeno é mais local; $K$ grande suaviza.
+5. **Agregar os rótulos.** Usamos votação simples ou ponderada pela distância.
+6. **Validar a pipeline.** Componentes e vizinhos são escolhidos sem consultar
+   o teste.
 
 ## Como interpretar a comparação
 
 Se PCA reduz muito o número de atributos e mantém desempenho semelhante, pode
-valer a pena pelo custo e pela estabilidade. Se o SVM sem PCA funciona melhor,
+valer a pena pelo custo e pela estabilidade. Se um modelo sem PCA funciona melhor,
 componentes de baixa variância podem conter informação discriminativa.
 
 A matriz de confusão mostra quais peças de roupa se confundem. Classes com forma
@@ -339,24 +459,25 @@ parecida, como camisa e camiseta, tendem a exigir representações mais detalhad
 do que categorias visualmente distintas.
 
 ::: {.callout-note title="Ideia central"}
-PCA muda a representação; SVM usa essa representação para construir uma
-fronteira. Como uma etapa altera a entrada da outra, ambas devem ser avaliadas
-como uma única pipeline.
+PCA muda a representação; regressão logística e KNN usam essa representação de
+maneiras diferentes. Como uma etapa altera a entrada da outra, cada combinação
+deve ser avaliada como uma única pipeline.
 :::
 
 ## Síntese
 
 - PCA reorganiza $X$ por direções de variação;
 - compressão e discriminação têm objetivos diferentes;
-- SVM constrói uma decisão por margem e vetores de suporte;
-- $k$, $C$ e $\gamma$ pertencem à mesma seleção de pipeline;
+- regressão logística constrói probabilidades por uma relação global;
+- KNN decide localmente a partir de distâncias;
+- componentes, regularização e número de vizinhos pertencem à seleção da pipeline;
 - PCA deve ser ajustado dentro da validação;
 - tempo, acurácia e erros por classe orientam a escolha aplicada.
 
 ## Bibliografia
 
-- James et al., *An Introduction to Statistical Learning*, capítulos 9 e 12.
-- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 12 e 14.
+- James et al., *An Introduction to Statistical Learning*, capítulos 4 e 12.
+- Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 4, 13 e 14.
 - Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, capítulos 10 e 12.
 - [Fashion-MNIST — Zalando Research](https://github.com/zalandoresearch/fashion-mnist).
 - [Exemplo do gato na aula de ALC](https://heitorramos.github.io/Slides_ALC/Aula11.html#/qual-foi-a-taxa-de-compressão).

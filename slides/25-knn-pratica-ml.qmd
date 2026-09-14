@@ -459,7 +459,7 @@ Treinamento é barato, mas prever exige comparar uma nova observação com muito
 
 ## Próxima aula
 
-Na Aula 26, mudaremos a representação com PCA e construiremos fronteiras de margem com SVM.
+Na Aula 26, mudaremos a representação com PCA e compararemos regressão logística e KNN nessa nova representação.
 
 ## Bibliografia
 

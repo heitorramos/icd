@@ -22,6 +22,9 @@ Gradientes, taxa de aprendizado, convergência, mini-batches e redes neurais.
 Implementação completa, resultados, testes do gradiente e interpretações.
 
 [Abrir notebook](../exemplos/20-gradiente-descendente/notebook.qmd){.btn .btn-outline-primary}
+<!-- colab-link:start -->
+[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/20-gradiente-descendente/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
+<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}
