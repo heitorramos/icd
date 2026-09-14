@@ -89,8 +89,9 @@ amostra de 1.200 pedidos. Isso permite repetir o experimento em simulações.
 
 ```{python}
 rng = np.random.default_rng(20260824)
+sample_rng = np.random.default_rng(13)
 late = orders["late"].to_numpy()
-sample = rng.choice(late, size=1200, replace=False)
+sample = sample_rng.choice(late, size=1200, replace=False)
 n = len(sample)
 k = int(sample.sum())
 p_hat = sample.mean()
@@ -138,12 +139,20 @@ A distribuição nula mostra as taxas que surgiriam apenas por flutuação amost
 p_sim = (1 + np.sum(null_proportions >= p_hat)) / (len(null_proportions) + 1)
 p_exact = binom.sf(k - 1, n=n, p=p0)
 se0 = np.sqrt(p0 * (1-p0) / n)
-z = (p_hat-p0) / se0
-p_normal = norm.sf(z)
+z_cc = (k - 0.5 - n*p0) / np.sqrt(n*p0*(1-p0))
+p_normal = norm.sf(z_cc)
 
 pd.Series({"simulação": p_sim, "Binomial exata": p_exact,
-           "aproximação Normal": p_normal})
+           "Normal com correção de continuidade": p_normal})
 ```
+
+Para a amostra usada nos slides, $n=1200$, $k=115$ e $\widehat p=0{,}0958$. Os resultados esperados são aproximadamente 0,0265 por simulação, 0,0268 pela Binomial exata e 0,0245 pela aproximação Normal com correção de continuidade.
+
+::: {.callout-note title="Por que usamos 114,5?"}
+A Binomial é discreta: $K\ge115$ inclui os inteiros 115, 116 e assim por diante. A Normal é contínua, então representamos a massa associada ao inteiro 115 pelo intervalo de 114,5 a 115,5. Logo, a cauda equivalente começa em 114,5. Essa correção reduz o erro provocado pela substituição de uma distribuição discreta por uma contínua.
+:::
+
+A pequena diferença restante decorre do erro de Monte Carlo na simulação e do fato de a Normal ainda ser uma aproximação.
 
 
 Explique por que os resultados são próximos e em quais amostras a aproximação
@@ -166,6 +175,22 @@ que a amostra não forneceu evidência suficiente contra esse modelo no nível
 escolhido.
 
 # 9. Erro tipo I
+
+O erro tipo I ocorre quando rejeitamos $H_0$ apesar de ela ser verdadeira. Para um teste calibrado com nível exato $\alpha$,
+
+$$
+P_{H_0}(\text{rejeitar }H_0)=\alpha,
+$$
+
+em que $P_{H_0}$ indica que a probabilidade é calculada sob a hipótese nula. Portanto, se repetíssemos o estudo muitas vezes em situações nas quais $H_0$ fosse verdadeira, a fração de rejeições tenderia a $\alpha$.
+
+Há uma precisão importante: a definição geral de um teste de nível $\alpha$ exige
+
+$$
+P_{H_0}(\text{rejeitar }H_0)\leq\alpha.
+$$
+
+A igualdade ocorre quando o teste usa exatamente todo o nível disponível. Em testes com estatísticas discretas, como certos testes binomiais exatos, nem sempre existe uma região de rejeição cuja probabilidade sob $H_0$ seja exatamente $\alpha$. Nesse caso, o teste costuma ser conservador e sua probabilidade real de erro tipo I fica abaixo de $\alpha$.
 
 ```{python}
 def rejection_rate(true_p, n=1200, reps=10000, alpha=.05):
@@ -294,6 +319,25 @@ Reduzir $\alpha$ diminui falsos positivos, mas pode reduzir poder. Poder cresce 
 “Rejeitar $H_0$” não significa provar $H_A$; “não rejeitar” não prova equivalência. Com amostras grandes, efeitos irrelevantes podem ser significativos. Sempre reporte estimativa, intervalo e consequência substantiva, além do valor-p.
 
 Testes unilaterais só são defensáveis quando a direção foi escolhida antes de observar os dados e efeitos na direção oposta não levariam à mesma ação. Fazer muitos testes aumenta a chance de falsos positivos e exige definir uma família e uma estratégia de correção.
+
+## Como reduzir falsos positivos quando há muitos testes
+
+Se realizamos vários testes, cresce a probabilidade de encontrar ao menos um resultado significativo apenas por flutuação amostral. Com 20 testes independentes, todos sob hipóteses nulas verdadeiras e cada um com $\alpha=0{,}05$, essa probabilidade é
+
+$$
+P(\text{ao menos um falso positivo})
+=1-(1-0{,}05)^{20}\approx 0{,}64.
+$$
+
+Três estratégias ajudam em momentos diferentes da pesquisa:
+
+- **Pré-registro:** antes de observar os resultados, registrar as hipóteses, os desfechos, os critérios de exclusão e o plano de análise. Isso distingue análises confirmatórias das explorações feitas depois de olhar os dados e reduz a liberdade para selecionar apenas resultados favoráveis. Pré-registro não altera matematicamente um valor-p.
+- **Correções para múltiplos testes:** ajustar os limiares de rejeição ou os valores-p levando em conta a família de testes realizada. Bonferroni e Holm, por exemplo, controlam a probabilidade de ao menos um falso positivo na família. A Aula 15 detalha diferentes critérios e procedimentos.
+- **Validação externa:** verificar a conclusão em uma amostra, período, instituição ou população independente daquela usada para descobrir o resultado. Um achado que se repete oferece evidência de generalização; um achado que não se repete pode depender de acaso ou de características particulares da amostra original.
+
+::: {.callout-note title="Interpretação"}
+Essas medidas não são sinônimas. A correção atua na regra estatística da família de testes; o pré-registro melhora a transparência do processo; e a validação externa procura evidência independente. Em um estudo bem planejado, as três podem ser usadas em conjunto.
+:::
 
 # Questões de revisão da Aula 11
 

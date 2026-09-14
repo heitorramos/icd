@@ -356,22 +356,32 @@ $$
 O p-valor exato unilateral é:
 
 $$
-P(K\ge115\mid p=0{,}08)
+P(K\ge115\mid p=0{,}08)=\boxed{0{,}0268}
 $$
 
 Não precisamos aproximar uma variável discreta por uma Normal.
 
-## Aproximação Normal
+## Aproximação Normal com correção de continuidade {.smaller}
 
-Podemos usar a Normal quando os números esperados de sucessos e falhas são suficientes:
+::: {.callout-note title="Correção de continuidade"}
+A Binomial só assume valores inteiros, enquanto a Normal é contínua. Ao aproximar
+$K$ por uma variável Normal $Y$, usamos
+
+$$K\ge115\quad\Longrightarrow\quad Y\ge114{,}5.$$
+
+A massa do inteiro 115 é representada pelo intervalo de 114,5 a 115,5.
+:::
+
+As condições valem: $np_0=96\ge10$ e $n(1-p_0)=1.104\ge10$.
+Sob $H_0$, $Y$ tem média 96 e variância $1200(0{,}08)(0{,}92)=88{,}32$.
 
 $$
-np_0\ge10,
-\qquad
-n(1-p_0)\ge10
+z_{cc}=\frac{114{,}5-96}{\sqrt{1200(0{,}08)(0{,}92)}}=1{,}97
 $$
 
-Aqui: 96 atrasos e 1.104 não atrasos são esperados sob $H_0$.
+$$
+P(Z\ge1{,}97)=\boxed{0{,}0245}
+$$
 
 ## A Normal aproxima a Binomial
 
@@ -407,12 +417,23 @@ print(f"Amostra teste: n={len(obs)}, k={k_obs}, p_hat={p_hat:.5f}, z={z_obs:.3f}
 
 ## Simulação sob a hipótese nula
 
-Também podemos gerar muitas amostras com $p=0{,}08$:
+Também podemos gerar 100 mil amostras com $p=0{,}08$:
 
-```{python}
-#| echo: true
-nulos = rng.binomial(n=1200, p=0.08, size=10000) / 1200
-pvalor = (nulos >= p_observado).mean()
+$$
+p\text{-valor}_{\mathrm{sim}}
+=\frac{1+\#\{K_b\ge115\}}{100000+1}
+=\boxed{0{,}0265}
+$$
+
+O acréscimo de 1 evita um p-valor simulado igual a zero.
+$K_b$ é o número de atrasos na simulação $b$ sob $H_0$.
+
+```python
+B = 100_000
+rng_pvalor = np.random.default_rng(20260914)
+contagens_nulas = rng_pvalor.binomial(n=1200, p=0.08, size=B)
+pvalor_sim = (1 + np.sum(contagens_nulas >= 115)) / (B + 1)
+print(f"p-valor por simulação = {pvalor_sim:.4f}")
 ```
 
 Simulação torna a lógica visível e generaliza para estatísticas complexas.
@@ -445,6 +466,24 @@ No contexto:
 > Concluir que a taxa excede 8% quando ela é exatamente 8%.
 
 Sua probabilidade é controlada por $\alpha$.
+
+## Erro tipo I e nível $\alpha$
+
+Para um teste calibrado com nível exato $\alpha$:
+
+$$
+\boxed{P_{H_0}(\text{rejeitar }H_0)=\alpha}
+$$
+
+**Interpretação.** Se $H_0$ for verdadeira e repetirmos o estudo, rejeitaremos $H_0$ em uma fração $\alpha$ das repetições. O símbolo $P_{H_0}$ indica que a probabilidade é calculada supondo $H_0$ verdadeira.
+
+**Precisão matemática.** Em geral, um teste de nível $\alpha$ garante
+
+$$
+P_{H_0}(\text{rejeitar }H_0)\leq\alpha.
+$$
+
+Testes discretos podem ser conservadores. A igualdade vale quando o teste usa exatamente todo o nível $\alpha$.
 
 ## Alpha aparece nas repetições
 
@@ -635,7 +674,27 @@ P(\text{ao menos um falso positivo})
 =1-0{,}95^{20}\approx64\%
 $$
 
-Pré-registo, correções e validação externa ajudam a controlar o problema.
+São estratégias complementares — apenas a segunda é uma correção matemática:
+
+::: {.columns .concept-cards}
+::: {.column width="32%"}
+### Pré-registro
+
+Definir hipóteses, desfechos e análises **antes de observar os resultados** reduz escolhas oportunistas.
+:::
+
+::: {.column width="32%"}
+### Correções
+
+Ajustar o limiar ou os valores-p (por exemplo, Bonferroni ou Holm) controla o erro da **família de testes**.
+:::
+
+::: {.column width="32%"}
+### Validação externa
+
+Verificar o achado em **novos dados independentes** testa se ele se repete fora da amostra original.
+:::
+:::
 
 ## Teste unilateral ou bilateral?
 
