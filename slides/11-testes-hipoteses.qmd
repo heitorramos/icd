@@ -361,19 +361,56 @@ $$
 
 Não precisamos aproximar uma variável discreta por uma Normal.
 
-## Aproximação Normal com correção de continuidade {.smaller}
+## A Normal aproxima a Binomial {#a-normal-aproxima-a-binomial .smaller}
 
 ::: {.callout-note title="Correção de continuidade"}
-A Binomial só assume valores inteiros, enquanto a Normal é contínua. Ao aproximar
-$K$ por uma variável Normal $Y$, usamos
+A massa do inteiro $k$ é representada pela área da Normal entre os dois pontos
+médios adjacentes.
 
-$$K\ge115\quad\Longrightarrow\quad Y\ge114{,}5.$$
+![](assets/aula11-testes-hipoteses/correcao-continuidade-detalhada.svg){fig-alt="Distribuição Binomial sobreposta por uma curva Normal. As barras a partir de K igual a 7 e a área Normal a partir de 6,5 estão destacadas para mostrar a correção de continuidade." width="88%" fig-align="center"}
 
-A massa do inteiro 115 é representada pelo intervalo de 114,5 a 115,5.
+$$
+P(K\le k)\approx P(Y\le k+0{,}5),
+\qquad
+P(K\ge k)\approx P(Y\ge k-0{,}5).
+$$
+
+<details class="code-fold">
+<summary>Código da figura</summary>
+
+```python
+from math import comb, pi, sqrt
+
+n, p = 10, 0.5
+k = np.arange(n + 1)
+pmf = np.array([comb(n, int(i)) * p**i * (1-p)**(n-i) for i in k])
+
+mu, sigma = n*p, np.sqrt(n*p*(1-p))
+x = np.linspace(-0.5, 10.5, 1200)
+pdf = np.exp(-0.5*((x-mu)/sigma)**2) / (sigma*np.sqrt(2*pi))
+
+plt.bar(k, pmf, width=.86, color=[ORANGE if i >= 7 else "#c9d8df" for i in k])
+plt.plot(x, pdf, color=TEAL, linewidth=3)
+plt.fill_between(x, 0, pdf, where=x >= 6.5, color=ORANGE, alpha=.20)
+plt.axvline(6.5, color=ORANGE, linestyle="--")
+```
+
+</details>
 :::
+
+## Aproximação Normal no exemplo
 
 As condições valem: $np_0=96\ge10$ e $n(1-p_0)=1.104\ge10$.
 Sob $H_0$, $Y$ tem média 96 e variância $1200(0{,}08)(0{,}92)=88{,}32$.
+
+::: {.callout-note title="Aplicação da regra"}
+Queremos a cauda superior $P(K\ge115)$. Para incluir toda a massa do inteiro
+115, a área contínua começa na borda esquerda desse valor:
+
+$$
+P(K\ge115)\approx P(Y\ge114{,}5).
+$$
+:::
 
 $$
 z_{cc}=\frac{114{,}5-96}{\sqrt{1200(0{,}08)(0{,}92)}}=1{,}97
@@ -382,38 +419,6 @@ $$
 $$
 P(Z\ge1{,}97)=\boxed{0{,}0245}
 $$
-
-## A Normal aproxima a Binomial
-
-![](assets/aula10-tcl-inferencia/binomial-normal.png){fig-alt="Probabilidades da Binomial para número de caras em 30 lançamentos e curva da aproximação Normal."}
-
-A aproximação é melhor no centro e com contagens esperadas grandes.
-
-<details class="code-fold">
-<summary>Código do gráfico</summary>
-
-```python
-n_small, p_small = 30, .5
-k = np.arange(n_small + 1)
-from math import comb
-pmf = np.array([comb(n_small, int(i)) * p_small**i * (1-p_small)**(n_small-i) for i in k])
-normal = np.exp(-((k-n_small*p_small)/np.sqrt(n_small*p_small*(1-p_small)))**2/2)
-normal = normal / normal.sum()
-plt.figure(figsize=(9, 5.2))
-plt.vlines(k, 0, pmf, color=BLUE, lw=4, label="Binomial exata")
-plt.plot(k, normal, color=ORANGE, lw=3, label="aproximação Normal")
-plt.xlabel("Número de caras em 30 lançamentos")
-plt.ylabel("Probabilidade")
-plt.title("A Normal aproxima a Binomial no centro")
-plt.legend()
-finish("binomial-normal.png")
-
-print(f"Figuras geradas em {OUT}")
-print(f"N={len(orders)}; média={mu:.3f}; sigma={sigma:.3f}; atraso={p_late:.5f}")
-print(f"Amostra teste: n={len(obs)}, k={k_obs}, p_hat={p_hat:.5f}, z={z_obs:.3f}, p-valor={1-normal_cdf(z_obs):.4f}")
-```
-
-</details>
 
 ## Simulação sob a hipótese nula
 

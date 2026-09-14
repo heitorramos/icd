@@ -148,8 +148,18 @@ pd.Series({"simulação": p_sim, "Binomial exata": p_exact,
 
 Para a amostra usada nos slides, $n=1200$, $k=115$ e $\widehat p=0{,}0958$. Os resultados esperados são aproximadamente 0,0265 por simulação, 0,0268 pela Binomial exata e 0,0245 pela aproximação Normal com correção de continuidade.
 
+![](../../slides/assets/aula11-testes-hipoteses/correcao-continuidade-detalhada.svg){fig-alt="Distribuição Binomial sobreposta por uma curva Normal. A cauda discreta a partir de K igual a 7 é comparada com a área Normal iniciada em 6,5." width="92%" fig-align="center"}
+
 ::: {.callout-note title="Por que usamos 114,5?"}
-A Binomial é discreta: $K\ge115$ inclui os inteiros 115, 116 e assim por diante. A Normal é contínua, então representamos a massa associada ao inteiro 115 pelo intervalo de 114,5 a 115,5. Logo, a cauda equivalente começa em 114,5. Essa correção reduz o erro provocado pela substituição de uma distribuição discreta por uma contínua.
+A Binomial concentra probabilidade nos valores inteiros. Quando a aproximamos por uma Normal contínua, representamos a massa associada ao inteiro $k$ pela área da curva entre os pontos médios $k-0{,}5$ e $k+0{,}5$. Para incluir toda a massa de $k$, uma probabilidade acumulada até $k$ precisa terminar na borda direita, $k+0{,}5$. Uma cauda que começa em $k$ precisa começar na borda esquerda, $k-0{,}5$:
+
+$$
+P(K\le k)\approx P(Y\le k+0{,}5),
+\qquad
+P(K\ge k)\approx P(Y\ge k-0{,}5).
+$$
+
+Assim, somamos 0,5 ao aproximar uma probabilidade acumulada até $k$ e subtraímos 0,5 ao aproximar uma cauda que começa em $k$. Neste exemplo, $K\ge115$ inclui os inteiros 115, 116 e assim por diante. A cauda Normal equivalente começa em 114,5, logo $P(K\ge115)\approx P(Y\ge114{,}5)$.
 :::
 
 A pequena diferença restante decorre do erro de Monte Carlo na simulação e do fato de a Normal ainda ser uma aproximação.

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="440" viewBox="0 0 1100 440" role="img" aria-labelledby="title desc">
+  <title id="title">Correção de continuidade detalhada na aproximação da Binomial pela Normal</title>
+  <desc id="desc">Barras e pontos mostram a distribuição Binomial com n igual a 10 e p igual a 0,5. A curva mostra a aproximação Normal. Para representar a cauda K maior ou igual a 7, a área Normal começa em 6,5.</desc>
+  <defs>
+    <clipPath id="plot"><rect x="78" y="38" width="924" height="324"/></clipPath>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#d95f02"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="440" fill="#ffffff"/>
+
+  <g stroke="#dbe3e7" stroke-width="1.5">
+    <line x1="78" y1="362" x2="1002" y2="362"/>
+    <line x1="78" y1="302" x2="1002" y2="302"/>
+    <line x1="78" y1="242" x2="1002" y2="242"/>
+    <line x1="78" y1="182" x2="1002" y2="182"/>
+    <line x1="78" y1="122" x2="1002" y2="122"/>
+    <line x1="78" y1="62" x2="1002" y2="62"/>
+  </g>
+
+  <g clip-path="url(#plot)">
+    <path d="M622 168 C645 197 665 222 694 232 C735 276 764 310 782 323 C824 344 862 353 910 358 C948 361 978 362 1002 362 L1002 362 L622 362 Z"
+          fill="#d95f02" fill-opacity="0.20"/>
+
+    <g stroke="#ffffff" stroke-width="2">
+      <rect x="92"  y="360.8" width="64" height="1.2"  fill="#c9d8df"/>
+      <rect x="176" y="350.3" width="64" height="11.7" fill="#c9d8df"/>
+      <rect x="260" y="309.3" width="64" height="52.7" fill="#c9d8df"/>
+      <rect x="344" y="221.4" width="64" height="140.6" fill="#c9d8df"/>
+      <rect x="428" y="115.9" width="64" height="246.1" fill="#c9d8df"/>
+      <rect x="512" y="66.9"  width="64" height="295.1" fill="#c9d8df"/>
+      <rect x="596" y="115.9" width="64" height="246.1" fill="#c9d8df"/>
+      <rect x="680" y="221.4" width="64" height="140.6" fill="#d95f02" fill-opacity="0.88"/>
+      <rect x="764" y="309.3" width="64" height="52.7" fill="#d95f02" fill-opacity="0.88"/>
+      <rect x="848" y="350.3" width="64" height="11.7" fill="#d95f02" fill-opacity="0.88"/>
+      <rect x="932" y="360.8" width="64" height="1.2" fill="#d95f02" fill-opacity="0.88"/>
+    </g>
+
+    <path d="M124 360 C170 357 212 346 250 326 C300 299 332 255 376 226 C410 174 450 105 544 59 C638 105 678 174 712 226 C756 255 788 299 838 326 C876 346 918 357 964 360"
+          fill="none" stroke="#0f6b78" stroke-width="5" stroke-linecap="round"/>
+
+    <g fill="#17324d">
+      <circle cx="124" cy="360.8" r="6"/><circle cx="208" cy="350.3" r="6"/>
+      <circle cx="292" cy="309.3" r="6"/><circle cx="376" cy="221.4" r="6"/>
+      <circle cx="460" cy="115.9" r="6"/><circle cx="544" cy="66.9" r="6"/>
+      <circle cx="628" cy="115.9" r="6"/><circle cx="712" cy="221.4" r="6"/>
+      <circle cx="796" cy="309.3" r="6"/><circle cx="880" cy="350.3" r="6"/>
+      <circle cx="964" cy="360.8" r="6"/>
+    </g>
+  </g>
+
+  <line x1="78" y1="362" x2="1002" y2="362" stroke="#536471" stroke-width="2.5"/>
+  <line x1="78" y1="38" x2="78" y2="362" stroke="#536471" stroke-width="2.5"/>
+  <line x1="670" y1="48" x2="670" y2="369" stroke="#d95f02" stroke-width="3" stroke-dasharray="8 7"/>
+
+  <g font-family="Atkinson Hyperlegible, Source Sans Pro, Arial, sans-serif" fill="#17324d">
+    <text x="540" y="426" text-anchor="middle" font-size="23">contagem</text>
+    <text x="24" y="205" text-anchor="middle" font-size="22" transform="rotate(-90 24 205)">probabilidade / densidade</text>
+    <text x="124" y="389" text-anchor="middle" font-size="18">0</text>
+    <text x="208" y="389" text-anchor="middle" font-size="18">1</text>
+    <text x="292" y="389" text-anchor="middle" font-size="18">2</text>
+    <text x="376" y="389" text-anchor="middle" font-size="18">3</text>
+    <text x="460" y="389" text-anchor="middle" font-size="18">4</text>
+    <text x="544" y="389" text-anchor="middle" font-size="18">5</text>
+    <text x="628" y="389" text-anchor="middle" font-size="18">6</text>
+    <text x="712" y="389" text-anchor="middle" font-size="18">7</text>
+    <text x="796" y="389" text-anchor="middle" font-size="18">8</text>
+    <text x="880" y="389" text-anchor="middle" font-size="18">9</text>
+    <text x="964" y="389" text-anchor="middle" font-size="18">10</text>
+    <text x="62" y="368" text-anchor="end" font-size="17">0</text>
+    <text x="62" y="308" text-anchor="end" font-size="17">0,05</text>
+    <text x="62" y="248" text-anchor="end" font-size="17">0,10</text>
+    <text x="62" y="188" text-anchor="end" font-size="17">0,15</text>
+    <text x="62" y="128" text-anchor="end" font-size="17">0,20</text>
+    <text x="62" y="68" text-anchor="end" font-size="17">0,25</text>
+  </g>
+
+  <text x="670" y="389" text-anchor="middle" font-family="Atkinson Hyperlegible, Source Sans Pro, Arial, sans-serif" font-size="19" font-weight="700" fill="#d95f02">6,5</text>
+
+  <g font-family="Atkinson Hyperlegible, Source Sans Pro, Arial, sans-serif">
+    <rect x="94" y="48" width="260" height="50" rx="10" fill="#eef3f5" stroke="#0f6b78" stroke-width="2"/>
+    <text x="224" y="80" text-anchor="middle" font-size="23" font-weight="700" fill="#17324d">P(K ≥ 7) ≈ P(Y ≥ 6,5)</text>
+
+    <rect x="743" y="82" width="282" height="78" rx="10" fill="#fff3e9" stroke="#d95f02" stroke-width="2"/>
+    <text x="884" y="111" text-anchor="middle" font-size="19" font-weight="700" fill="#17324d">subtraímos 0,5</text>
+    <text x="884" y="137" text-anchor="middle" font-size="18" fill="#17324d">para incluir toda a barra de K = 7</text>
+    <line x1="768" y1="155" x2="680" y2="196" stroke="#d95f02" stroke-width="2.5" marker-end="url(#arrow)"/>
+  </g>
+
+  <g font-family="Atkinson Hyperlegible, Source Sans Pro, Arial, sans-serif" font-size="17">
+    <rect x="100" y="113" width="22" height="16" fill="#c9d8df"/>
+    <text x="130" y="127" fill="#17324d">Binomial</text>
+    <line x1="100" y1="151" x2="124" y2="151" stroke="#0f6b78" stroke-width="4"/>
+    <text x="130" y="157" fill="#17324d">Normal</text>
+    <rect x="100" y="172" width="22" height="16" fill="#d95f02" fill-opacity="0.35"/>
+    <text x="130" y="186" fill="#17324d">cauda aproximada</text>
+  </g>
+</svg>
