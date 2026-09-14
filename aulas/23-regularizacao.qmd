@@ -22,9 +22,6 @@ Viés–variância, penalizações, geometria, validação e estabilidade.
 Derivações, implementação Ridge, seleção por validação e resultados executados.
 
 [Abrir notebook](../exemplos/23-regularizacao/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/23-regularizacao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

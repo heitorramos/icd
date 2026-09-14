@@ -22,9 +22,6 @@ Modelo gaussiano, equivalência MLE–OLS, variância e diagnóstico.
 Derivação completa, resultados executados e interpretação da normalidade.
 
 [Abrir notebook](../exemplos/19-verossimilhanca-regressao/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/19-verossimilhanca-regressao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

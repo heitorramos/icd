@@ -22,9 +22,6 @@ Compressão, PCA, regressão logística, KNN e pipelines aplicadas.
 Compressão do gato, PCA, regressão logística, KNN, validação e diagnóstico executados.
 
 [Abrir notebook](../exemplos/26-pca-svm/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/26-pca-svm/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

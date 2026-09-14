@@ -22,9 +22,6 @@ Vizinhanças, escala, escolha de $k$, métricas e fluxo completo de ML.
 Análise executada e guia autocontido para reproduzir a pipeline.
 
 [Abrir notebook](../exemplos/25-knn-pratica-ml/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/25-knn-pratica-ml/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}

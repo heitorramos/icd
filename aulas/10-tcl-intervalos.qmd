@@ -23,9 +23,6 @@ TCL, erro padrão, intervalos, cobertura e margem de erro.
 Simulações com pedidos do e-commerce Olist.
 
 [Abrir notebook](../exemplos/10-tcl-inferencia/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/10-tcl-inferencia/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 

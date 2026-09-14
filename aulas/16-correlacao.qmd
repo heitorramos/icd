@@ -23,9 +23,6 @@ Covariância, Pearson, Spearman, incerteza e limites da correlação.
 Análise reproduzível com derivações, resultados, interpretações e exercícios.
 
 [Abrir notebook](../exemplos/16-correlacao/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/16-correlacao/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 

@@ -23,9 +23,6 @@ Distribuição empírica, réplicas bootstrap, erro padrão, intervalos e valida
 Análise de preços do Airbnb NYC 2019 com bootstrap.
 
 [Abrir notebook](../exemplos/12-bootstrap/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/12-bootstrap/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 

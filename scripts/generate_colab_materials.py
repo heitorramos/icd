@@ -119,22 +119,9 @@ def write_colab_notebook(source: Path) -> None:
         stream.write("\n")
 
 
-def add_button(class_page: Path, source: Path) -> None:
+def remove_button(class_page: Path) -> None:
     text = class_page.read_text(encoding="utf-8")
     text = BUTTON_BLOCK.sub("\n", text)
-    match = NOTEBOOK_LINK.search(text)
-    if not match:
-        raise RuntimeError(f"Notebook link not found in {class_page}")
-    line_end = text.find("\n", match.end())
-    if line_end == -1:
-        line_end = len(text)
-    block = (
-        "\n<!-- colab-link:start -->\n"
-        f"[Abrir no Google Colab]({colab_url(source.parent)})"
-        "{.btn .btn-outline-primary target=\"_blank\"}\n"
-        "<!-- colab-link:end -->"
-    )
-    text = text[:line_end] + block + text[line_end:]
     class_page.write_text(text, encoding="utf-8")
 
 
@@ -150,8 +137,8 @@ def main() -> None:
     sources = sorted({source for _, source in page_sources})
     for source in sources:
         write_colab_notebook(source)
-    for page, source in page_sources:
-        add_button(page, source)
+    for page, _source in page_sources:
+        remove_button(page)
 
     print(f"Generated {len(sources)} Colab notebooks for {len(pages)} class pages.")
 

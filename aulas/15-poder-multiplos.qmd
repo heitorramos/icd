@@ -23,9 +23,6 @@ Poder, bootstrap sob hipóteses alternativas e controle de múltiplos testes.
 Análise reproduzível do experimento Cookie Cats, com simulações e exercícios.
 
 [Abrir notebook](../exemplos/15-poder-multiplos/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/15-poder-multiplos/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 

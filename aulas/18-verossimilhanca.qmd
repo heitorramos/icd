@@ -22,9 +22,6 @@ Construção intuitiva e formal da verossimilhança, log-verossimilhança e esco
 Derivações, código executado, interpretações e exercícios de revisão.
 
 [Abrir notebook](../exemplos/18-verossimilhanca/notebook.qmd){.btn .btn-outline-primary}
-<!-- colab-link:start -->
-[Abrir no Google Colab](https://colab.research.google.com/github/heitorramos/icd/blob/main/exemplos/18-verossimilhanca/notebook-colab.ipynb){.btn .btn-outline-primary target="_blank"}
-<!-- colab-link:end -->
 :::
 :::
 ::: {.g-col-12 .g-col-md-4}
