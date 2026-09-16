@@ -312,7 +312,7 @@ Permutar apenas casos completos não corrige esse problema.
 
 ## A hipótese nula pode ser mais forte do que parece
 
-O teste aleatorizado clássico é exato para a **nula aguda de Fisher**:
+O teste aleatorizado clássico é exato para a **nula estrita de Fisher**:
 
 $$
 H_0:Y_i(1)=Y_i(0)\quad\forall i
@@ -324,16 +324,16 @@ $Y_i(1)$ e $Y_i(0)$ são os resultados potenciais da unidade $i$ sob tratamento 
 
 ## Qual hipótese é mais forte? {.quiz-question}
 
-Qual afirmação descreve a nula aguda de Fisher?
+Qual afirmação descreve a nula estrita de Fisher?
 
 - [O efeito médio é zero, embora efeitos individuais possam existir]{data-explanation="Essa é uma hipótese nula sobre o efeito médio."}
-- [$Y_i(1)=Y_i(0)$ para toda unidade $i$]{.correct data-explanation="A nula aguda afirma ausência de efeito para cada unidade, permitindo imputar todos os resultados potenciais."}
+- [$Y_i(1)=Y_i(0)$ para toda unidade $i$]{.correct data-explanation="A nula estrita afirma ausência de efeito para cada unidade, permitindo imputar todos os resultados potenciais."}
 - [As médias observadas dos grupos são exatamente iguais]{data-explanation="Igualdade amostral não define a hipótese causal sobre resultados potenciais."}
-- [As distribuições têm apenas a mesma variância]{data-explanation="A nula aguda é uma afirmação sobre resultados potenciais individuais, não apenas dispersão."}
+- [As distribuições têm apenas a mesma variância]{data-explanation="A nula estrita é uma afirmação sobre resultados potenciais individuais, não apenas dispersão."}
 
-## Nula aguda versus nula média
+## Nula estrita versus nula média
 
-- **Nula aguda:** permite imputar todos os resultados potenciais e reproduzir exatamente a atribuição.
+- **Nula estrita:** permite imputar todos os resultados potenciais e reproduzir exatamente a atribuição.
 - **Nula média:** efeitos positivos e negativos podem se cancelar.
 
 Um teste exato para a primeira não é automaticamente exato para a segunda.

@@ -429,7 +429,7 @@ um número adequado de clusters independentes.
 
 # 14. Qual hipótese nula está sendo testada?
 
-A nula aguda de Fisher afirma ausência de efeito para toda unidade:
+A nula estrita de Fisher afirma ausência de efeito para toda unidade:
 
 $$
 H_0^F:Y_i(1)=Y_i(0)\quad\text{para todo }i.
@@ -447,7 +447,7 @@ H_0^m:\frac1n\sum_{i=1}^{n}[Y_i(1)-Y_i(0)]=0.
 $$
 
 Ela permite efeitos individuais diferentes, positivos e negativos, que se
-cancelam. Rejeitar a nula aguda não é logicamente igual a demonstrar que o efeito
+cancelam. Rejeitar a nula estrita não é logicamente igual a demonstrar que o efeito
 médio seja diferente de zero. Para hipóteses médias, estatísticas studentizadas
 e aproximações assintóticas costumam ser mais adequadas.
 
@@ -531,7 +531,7 @@ Antes de interpretar causalmente:
 3. Estime a diferença de conversão em cada dia e teste uma interação.
 4. Simule um experimento em clusters e mostre por que permutar pessoas é errado.
 5. Crie um cenário em que média e mediana levem a conclusões diferentes.
-6. Explique a diferença entre a nula aguda de Fisher e efeito médio zero.
+6. Explique a diferença entre a nula estrita de Fisher e efeito médio zero.
 
 # Fonte e limites
 
@@ -574,7 +574,7 @@ Permutação quebra a associação para representar $H_0$. Bootstrap reamostra u
 | atribuição feita dentro de estratos | totais de tratamento dentro de cada estrato | 11 |
 | observações pareadas | vínculo e troca interna de cada par | 12 |
 | tratamento sorteado para clusters | unidades do mesmo cluster juntas | 13 |
-| interesse em efeito médio, não nula aguda | escala da estatística e hipótese correta | 14–15 |
+| interesse em efeito médio, não nula estrita | escala da estatística e hipótese correta | 14–15 |
 | muitos subgrupos ou desfechos | família de testes e regra de busca | 16 |
 | monitoramento durante a coleta | regra de parada planejada | 17 |
 
@@ -587,7 +587,7 @@ ocorrido.
 1. O que permanece fixo e o que varia em uma permutação simples de dois grupos?
 2. Quando a alternativa deve ser bilateral?
 3. Como permutar quando a atribuição ocorreu separadamente dentro de cada estrato?
-4. Qual é a diferença entre a nula aguda de Fisher e uma nula de efeito médio zero?
+4. Qual é a diferença entre a nula estrita de Fisher e uma nula de efeito médio zero?
 5. Por que média e mediana podem produzir valores-p diferentes na mesma base?
 6. Qual é o erro de permutar indivíduos quando o tratamento foi sorteado por escola?
 7. Em um estudo pareado, qual objeto recebe a troca aleatória?
@@ -600,7 +600,7 @@ ocorrido.
 1. Resultados e tamanhos dos grupos permanecem fixos; os rótulos variam e a estatística é recalculada.
 2. Quando diferenças nas duas direções contradizem $H_0$ e são relevantes para a pergunta definida antes dos dados.
 3. Os rótulos devem ser permutados somente dentro de cada estrato, reproduzindo o mecanismo de atribuição.
-4. A nula aguda exige $Y_i(1)=Y_i(0)$ para toda unidade; efeito médio zero permite efeitos individuais que se cancelam.
+4. A nula estrita exige $Y_i(1)=Y_i(0)$ para toda unidade; efeito médio zero permite efeitos individuais que se cancelam.
 5. Porque as estatísticas descrevem aspectos diferentes da distribuição e possuem distribuições nulas próprias.
 6. O procedimento finge que indivíduos foram randomizados independentemente, aumenta artificialmente o número de unidades aleatórias e tende a subestimar a incerteza.
 7. A orientação tratamento–controle dentro de cada par; equivalentemente, sorteamos o sinal da diferença de cada par.
