@@ -1,7 +1,10 @@
-"""Gera figuras das Aulas 14 e 14 com a base Marketing A/B Testing."""
+"""Gera figuras das Aulas 13 e 14 com a base Marketing A/B Testing."""
 
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -186,5 +189,71 @@ plt.title("Efeitos pequenos exigem amostras grandes")
 plt.legend()
 finish("poder-tamanho.png")
 
+# 14. O mesmo A/B visto pelo bootstrap usual, bootstrap sob H0 e permutação.
+comparison_rng = np.random.default_rng(1313)
+R_compare = 10_000
+n_control = int((df["test group"] == "psa").sum())
+n_treatment = int((df["test group"] == "ad").sum())
+x_control = int(df.loc[df["test group"] == "psa", "converted"].sum())
+x_treatment = int(df.loc[df["test group"] == "ad", "converted"].sum())
+p_control = x_control / n_control
+p_treatment = x_treatment / n_treatment
+p_pool = (x_control + x_treatment) / (n_control + n_treatment)
+
+boot_effect = (
+    comparison_rng.binomial(n_treatment, p_treatment, R_compare) / n_treatment
+    - comparison_rng.binomial(n_control, p_control, R_compare) / n_control
+)
+boot_null = (
+    comparison_rng.binomial(n_treatment, p_pool, R_compare) / n_treatment
+    - comparison_rng.binomial(n_control, p_pool, R_compare) / n_control
+)
+perm_treatment = comparison_rng.hypergeometric(
+    x_control + x_treatment,
+    n_control + n_treatment - x_control - x_treatment,
+    n_treatment,
+    size=R_compare,
+)
+perm_null = (
+    perm_treatment / n_treatment
+    - (x_control + x_treatment - perm_treatment) / n_control
+)
+
+ci_boot = np.quantile(boot_effect, [0.025, 0.975])
+p_boot_h0 = (1 + np.sum(np.abs(boot_null) >= abs(observed))) / (R_compare + 1)
+p_perm_compare = (1 + np.sum(np.abs(perm_null) >= abs(observed))) / (R_compare + 1)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.8), sharex=True, sharey=True)
+panels = [
+    (boot_effect, BLUE, "Bootstrap usual\nincerteza do efeito"),
+    (boot_null, LIGHT, "Bootstrap sob H$_0$\ntaxa comum"),
+    (perm_null, PURPLE, "Permutação sob H$_0$\nrótulos trocados"),
+]
+for ax, (values, color, title) in zip(axes, panels):
+    ax.hist(values * 100, bins=48, color=color, edgecolor="white")
+    ax.axvline(observed * 100, color=ORANGE, lw=3, label="efeito observado")
+    ax.axvline(0, color=INK, lw=1.5, ls="--")
+    ax.set_title(title)
+axes[0].axvspan(ci_boot[0] * 100, ci_boot[1] * 100, color=BLUE, alpha=0.14)
+axes[0].text(
+    0.04,
+    0.92,
+    f"IC 95%: [{ci_boot[0]*100:.2f}; {ci_boot[1]*100:.2f}] p.p.",
+    transform=axes[0].transAxes,
+    ha="left",
+    va="top",
+    color=INK,
+    fontweight="bold",
+)
+axes[0].set_ylabel("Réplicas")
+axes[1].set_xlabel("Diferença anúncio − PSA (p.p.)")
+axes[2].legend(loc="upper right", fontsize=10)
+fig.suptitle("O bootstrap usual estima o efeito; os outros dois métodos constroem H$_0$")
+finish("bootstrap-permutacao-ab.png")
+
 print(summary)
 print(f"diferença={observed:.6f}; p bilateral={(extreme.sum()+1)/(B+1):.6f}")
+print(
+    f"IC bootstrap=[{ci_boot[0]:.6f}, {ci_boot[1]:.6f}]; "
+    f"p bootstrap H0={p_boot_h0:.6f}; p permutação={p_perm_compare:.6f}"
+)

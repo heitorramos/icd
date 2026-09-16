@@ -13,7 +13,8 @@ execute:
 
 Este notebook transforma a pergunta operacional da Aula 11 em um teste completo.
 Você irá formular hipóteses, construir a distribuição nula, comparar três formas
-de calcular o valor-p e estudar erros tipo I, poder e importância prática.
+de calcular o valor-p e estudar erros tipo I, poder e importância prática. Ao
+final, organizará essas ideias em um teste A/B didático no contexto da Olist.
 
 ## Como estudar este capítulo
 
@@ -22,6 +23,11 @@ Um teste de hipóteses é um procedimento para medir compatibilidade entre dados
 Depois construímos o comportamento da estatística **se a hipótese nula fosse verdadeira**. O valor observado é comparado com essa distribuição de referência. O valor-p corresponde à proporção de resultados nulos tão ou mais extremos que o observado, na direção definida pela alternativa.
 
 O capítulo apresenta cálculo exato, aproximação Normal e simulação para a mesma pergunta. Compare os métodos e observe que todos dependem do mesmo modelo nulo. Ao final, separe claramente evidência estatística, tamanho do efeito e importância prática: rejeitar $H_0$ não informa, por si só, se a diferença é grande ou útil.
+
+A seção final transforma o problema operacional em um experimento A/B. Como a
+base Olist não registra uma intervenção randomizada, os grupos e resultados do
+A/B são explicitamente simulados; a base real fornece apenas o contexto e uma
+ordem de grandeza plausível para a taxa de atraso.
 
 # 1. A base e a pergunta
 
@@ -284,7 +290,161 @@ Calcule também a diferença $\widehat p-0{,}08$ e traduza-a para atrasos extras
 por mil pedidos. Uma decisão operacional deve considerar o tamanho do efeito,
 custos e um intervalo de confiança, não apenas o valor-p.
 
-# 12. Exercícios
+# 12. Testes A/B como experimentos aleatorizados
+
+Um teste A/B compara duas versões de uma experiência. A versão A costuma ser o
+controle; a versão B introduz uma mudança. A atribuição aleatória procura tornar
+os grupos comparáveis antes da intervenção, de modo que uma diferença posterior
+possa ser atribuída à mudança, dentro das limitações do desenho.
+
+Um bom teste A/B precisa definir **antes da coleta**:
+
+- a unidade que será randomizada;
+- as versões de controle e tratamento;
+- a métrica primária;
+- o menor efeito relevante;
+- o tamanho da amostra ou a regra de parada;
+- a direção e o nível do teste;
+- exclusões e métricas de proteção.
+
+## Exemplo: um alerta preventivo na operação da Olist
+
+Suponha que a operação queira testar um alerta capaz de identificar cedo
+pedidos com risco de atraso e priorizar seu encaminhamento. Entre pedidos
+elegíveis, a atribuição seria aleatória:
+
+- **A — controle:** processo logístico atualmente usado;
+- **B — tratamento:** processo com o novo alerta preventivo.
+
+A base Olist original é observacional e não contém essa intervenção. Para
+aprender o fluxo de um A/B sem trocar o contexto da aula, usaremos um
+**experimento didático simulado**, com taxas calibradas pela base real:
+
+```{python}
+ab_olist = pd.DataFrame({
+    "grupo": ["A — processo atual", "B — alerta preventivo"],
+    "pedidos": [5000, 5000],
+    "atrasados": [415, 345],
+})
+ab_olist["taxa_atraso"] = ab_olist["atrasados"] / ab_olist["pedidos"]
+ab_olist
+```
+
+::: {.callout-note title="Interpretação"}
+A randomização é uma característica do experimento proposto, não da base Olist
+histórica. Essa distinção impede apresentar como causal uma comparação que não
+foi realmente observada no conjunto de dados original.
+:::
+
+## Da pergunta operacional às hipóteses
+
+A métrica primária é a proporção de pedidos entregues depois da data prevista.
+A pergunta é: **o alerta reduz a taxa de atraso?** Definimos
+
+$$
+\Delta=p_B-p_A,
+$$
+
+em que $p_A$ e $p_B$ são as probabilidades populacionais de atraso nos dois
+processos. Como a direção foi definida antes dos dados, o teste unilateral é
+
+$$
+H_0:\Delta=0
+\qquad\text{contra}\qquad
+H_A:\Delta<0.
+$$
+
+## Estimativa e teste para duas proporções
+
+```{python}
+n_a, n_b = ab_olist["pedidos"].to_numpy()
+x_a, x_b = ab_olist["atrasados"].to_numpy()
+p_a, p_b = ab_olist["taxa_atraso"].to_numpy()
+
+p_combinada = (x_a + x_b) / (n_a + n_b)
+erro_nulo = np.sqrt(
+    p_combinada * (1 - p_combinada) * (1 / n_a + 1 / n_b)
+)
+efeito = p_b - p_a
+z_ab = efeito / erro_nulo
+p_ab = norm.cdf(z_ab)
+
+pd.Series({
+    "taxa no processo atual": p_a,
+    "taxa com alerta": p_b,
+    "diferença B - A": efeito,
+    "estatística z": z_ab,
+    "valor-p unilateral": p_ab,
+})
+```
+
+O erro padrão usa a proporção combinada porque, sob $H_0$, as duas amostras são
+tratadas como observações de uma mesma taxa:
+
+$$
+\widehat p_{pool}=\frac{x_A+x_B}{n_A+n_B},
+\qquad
+EP_0=\sqrt{\widehat p_{pool}(1-\widehat p_{pool})
+\left(\frac1{n_A}+\frac1{n_B}\right)}.
+$$
+
+Aqui, $x_g$ é o número de pedidos atrasados e $n_g$ é o número de pedidos no
+grupo $g$. A estatística é $Z=(\widehat p_B-\widehat p_A)/EP_0$.
+
+Substituindo os números do experimento:
+
+$$
+\widehat p_{pool}=\frac{415+345}{5000+5000}=0{,}076,
+$$
+
+$$
+EP_0=\sqrt{0{,}076(1-0{,}076)
+\left(\frac1{5000}+\frac1{5000}\right)}\approx0{,}00530,
+$$
+
+$$
+z_{obs}=\frac{0{,}069-0{,}083}{0{,}00530}\approx-2{,}64.
+$$
+
+Como a hipótese alternativa é $H_A:\Delta<0$, resultados mais extremos estão
+na cauda esquerda da Normal padrão. Assim,
+
+$$
+\text{valor-p}=P(Z\leq z_{obs}\mid H_0)
+=\Phi(-2{,}64)\approx0{,}0041,
+$$
+
+em que $\Phi$ é a função de distribuição acumulada da Normal padrão. Em outras
+palavras: se o alerta não tivesse efeito, observar uma redução igual ou maior
+que 1,4 ponto percentual ocorreria em aproximadamente 0,41% de experimentos
+como este.
+
+![](../../slides/assets/aula11-testes-hipoteses/ab-olist-atrasos.png){fig-alt="Taxas simuladas de atraso de 8,3 por cento no processo atual e 6,9 por cento com um alerta preventivo." width="78%" fig-align="center"}
+
+::: {.callout-note title="Interpretação"}
+A taxa simulada caiu de 8,3% para 6,9%: redução absoluta de 1,4 ponto percentual,
+com $z\approx-2{,}64$ e valor-p unilateral próximo de 0,0041. Isso fornece
+evidência contra $H_0$ no nível de 5%, mas não decide sozinho se a magnitude
+compensa o custo do alerta. Em uma escala de 10 mil pedidos, o efeito corresponde
+a aproximadamente 140 atrasos evitados.
+:::
+
+## O fluxo completo do A/B
+
+1. formular a mudança e o mecanismo causal esperado;
+2. escolher unidade de randomização e população-alvo;
+3. definir métrica primária e menor efeito relevante;
+4. planejar tamanho amostral e regra de parada;
+5. randomizar e auditar a alocação;
+6. estimar o efeito com sua incerteza;
+7. testar a hipótese previamente definida;
+8. avaliar significância estatística, relevância prática e efeitos adversos.
+
+A lógica será ampliada nas aulas seguintes: bootstrap para quantificar incerteza,
+permutação para construir $H_0$ a partir da randomização e simulação para estudar
+poder e múltiplas métricas.
+
+# 13. Exercícios
 
 1. Repita o teste com amostras de 300, 1.200 e 5.000 pedidos.
 2. Transforme o teste em bilateral e explique a mudança no valor-p.
@@ -292,6 +452,10 @@ custos e um intervalo de confiança, não apenas o valor-p.
 4. Encontre o menor $n$ que atinge 80% de poder quando $p=0{,}10$.
 5. Discuta se os pedidos podem ser tratados como independentes quando um mesmo
    cliente realiza várias compras.
+6. Refaça o A/B do alerta com uma alternativa bilateral e compare o valor-p com
+   o teste unilateral planejado.
+7. Proponha uma métrica de proteção para verificar se a priorização reduz
+   atrasos sem prejudicar pedidos que não receberam o alerta.
 
 # Fonte e limitações
 
@@ -299,6 +463,10 @@ Base `olistbr/brazilian-ecommerce`, Kaggle. Os dados são históricos e
 anonimizados; o limite de 8% é uma referência didática, não uma meta declarada
 pela empresa. O notebook não deve ser interpretado como auditoria operacional
 da Olist.
+
+O exemplo A/B do alerta é uma simulação pedagógica construída no contexto da
+Olist. Ele não deve ser descrito como um experimento realizado pela empresa nem
+como uma variável presente na base original.
 
 # Guia teórico consolidado
 
@@ -330,6 +498,21 @@ Reduzir $\alpha$ diminui falsos positivos, mas pode reduzir poder. Poder cresce 
 
 Testes unilaterais só são defensáveis quando a direção foi escolhida antes de observar os dados e efeitos na direção oposta não levariam à mesma ação. Fazer muitos testes aumenta a chance de falsos positivos e exige definir uma família e uma estratégia de correção.
 
+## Testes A/B conectam desenho e inferência
+
+Em um teste A/B, a inferência não começa no valor-p. Ela começa na atribuição
+aleatória das unidades a duas versões. A hipótese nula representa ausência de
+efeito da mudança sobre a métrica previamente escolhida. O estimando deve ser
+escrito com direção explícita, como $\Delta=p_B-p_A$, porque seu sinal determina
+qual versão é favorecida.
+
+Randomização sustenta a interpretação causal apenas quando a unidade de análise
+é compatível com a unidade randomizada, não há interferência relevante entre
+unidades, perdas ou falhas de instrumentação não destroem a comparação e a regra
+de parada não é alterada depois de observar os resultados. O relatório deve
+combinar estimativa do efeito, intervalo de confiança, valor-p, relevância
+prática e métricas de proteção.
+
 ## Como reduzir falsos positivos quando há muitos testes
 
 Se realizamos vários testes, cresce a probabilidade de encontrar ao menos um resultado significativo apenas por flutuação amostral. Com 20 testes independentes, todos sob hipóteses nulas verdadeiras e cada um com $\alpha=0{,}05$, essa probabilidade é
@@ -353,9 +536,11 @@ Essas medidas não são sinônimas. A correção atua na regra estatística da f
 
 1. O que um valor-p de 0,02 afirma — e o que ele não afirma?
 2. Por que aumentar $n$ eleva o poder quando $p_0$, $p_1$ e $\alpha$ permanecem fixos?
+3. Quais elementos precisam ser definidos antes de iniciar um teste A/B?
 
 <details><summary>Respostas comentadas</summary>
 
 1. Sob $H_0$, resultados tão ou mais extremos ocorreriam com probabilidade 2%. Isso não significa que $P(H_0\mid\text{dados})=0{,}02$ nem mede relevância prática.
 2. O erro padrão diminui, as distribuições sob $H_0$ e $H_1$ ficam mais estreitas e sua sobreposição diminui.
+3. No mínimo: unidade de randomização, versões A e B, população-alvo, métrica primária, efeito relevante, tamanho amostral ou regra de parada, hipótese, nível do teste e critérios de exclusão.
 </details>

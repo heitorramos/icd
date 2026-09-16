@@ -19,7 +19,7 @@ Construção do teste de permutação em uma campanha A/B real.
 ::: {.recurso-card}
 ### Notebook
 
-Análise reprodutível, simulação da distribuição nula e exercícios.
+Análise reprodutível, comparação entre bootstrap e permutação, e exercícios.
 
 [Abrir notebook](../exemplos/13-permutacao/notebook.qmd){.btn .btn-outline-primary}
 :::
@@ -42,6 +42,7 @@ Campanha A/B com anúncio, PSA, conversão e exposição registrada.
 - formular hipóteses nula e alternativa;
 - construir uma distribuição nula por permutação;
 - calcular valores-p unilateral e bilateral;
+- resolver o mesmo A/B por bootstrap e por permutação;
 - distinguir significância estatística e importância prática;
 - reconhecer as condições de validade do teste.
 
@@ -49,7 +50,9 @@ Campanha A/B com anúncio, PSA, conversão e exposição registrada.
 
 A base Marketing A/B Testing compara a conversão de 588.101 usuários expostos
 a um anúncio comercial ou a um PSA. A aula pergunta se a diferença observada de
-conversão pode ser explicada apenas pela atribuição aleatória dos grupos.
+conversão pode ser explicada apenas pela atribuição aleatória dos grupos. O
+mesmo efeito é analisado por bootstrap e permutação para separar estimação de
+incerteza e construção da distribuição nula.
 
 ## Bibliografia da aula
 

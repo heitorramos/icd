@@ -182,6 +182,172 @@ print({"unilateral": p_greater, "bilateral": p_two})
 Defina a direção antes de olhar os resultados. Não selecione unilateral apenas
 porque o efeito observado ficou na direção desejada.
 
+# Interlúdio — o mesmo A/B com bootstrap e permutação
+
+A permutação já forneceu uma distribuição nula e um valor-p para a campanha.
+Agora resolveremos o mesmo problema com bootstrap. A comparação exige separar
+duas tarefas diferentes:
+
+1. o **bootstrap usual** aproxima a incerteza ao redor do efeito observado;
+2. o **bootstrap sob $H_0$** precisa impor uma taxa comum aos dois grupos para
+   produzir um valor-p.
+
+## Bootstrap usual: distribuição do efeito e intervalo
+
+O estimando continua sendo
+
+$$
+\Delta=p_{ad}-p_{PSA},
+$$
+
+e sua estimativa observada é
+
+$$
+\widehat\Delta=0{,}02555-0{,}01785=0{,}00769,
+$$
+
+ou aproximadamente 0,77 ponto percentual. No bootstrap usual, reamostramos
+usuários com reposição separadamente dentro de cada grupo. Como `converted` é
+binária, sortear o número de conversões por uma Binomial é um atalho exatamente
+equivalente a reamostrar zeros e uns com reposição.
+
+```{python}
+comparison_rng = np.random.default_rng(1313)
+R_compare = 10_000
+
+n_psa = int((df["test group"] == "psa").sum())
+n_ad = int((df["test group"] == "ad").sum())
+x_psa = int(df.loc[df["test group"] == "psa", "converted"].sum())
+x_ad = int(df.loc[df["test group"] == "ad", "converted"].sum())
+p_psa = x_psa / n_psa
+p_ad = x_ad / n_ad
+
+boot_effect = (
+    comparison_rng.binomial(n_ad, p_ad, R_compare) / n_ad
+    - comparison_rng.binomial(n_psa, p_psa, R_compare) / n_psa
+)
+ci_boot = np.quantile(boot_effect, [0.025, 0.975])
+
+print(f"Efeito observado: {100*observed:.3f} p.p.")
+print(f"IC bootstrap 95%: [{100*ci_boot[0]:.3f}; {100*ci_boot[1]:.3f}] p.p.")
+```
+
+::: {.callout-note title="Interpretação"}
+A distribuição bootstrap usual fica centrada perto de $\widehat\Delta$. O
+intervalo de 95% não contém zero, indicando que a diferença é incompatível com
+efeitos muito próximos de zero sob esse procedimento. Isso quantifica a
+incerteza do efeito, mas ainda não é uma simulação construída sob $H_0$.
+:::
+
+## Bootstrap sob $H_0$: uma taxa comum
+
+Para calcular um valor-p, precisamos gerar réplicas em um mundo no qual anúncio
+e PSA tenham a mesma taxa de conversão. Estimamos essa taxa comum por
+
+$$
+\widehat p_{pool}=\frac{x_{ad}+x_{PSA}}{n_{ad}+n_{PSA}}
+=\frac{14.423+420}{564.577+23.524}=0{,}02524.
+$$
+
+Em cada réplica, geramos os dois números de conversões usando essa mesma taxa:
+
+$$
+X_{ad}^{*(0)}\sim\operatorname{Bin}(n_{ad},\widehat p_{pool}),
+\qquad
+X_{PSA}^{*(0)}\sim\operatorname{Bin}(n_{PSA},\widehat p_{pool}).
+$$
+
+```{python}
+p_pool = (x_ad + x_psa) / (n_ad + n_psa)
+boot_null = (
+    comparison_rng.binomial(n_ad, p_pool, R_compare) / n_ad
+    - comparison_rng.binomial(n_psa, p_pool, R_compare) / n_psa
+)
+extreme_boot = np.abs(boot_null) >= abs(observed)
+p_boot_h0 = (1 + extreme_boot.sum()) / (R_compare + 1)
+
+print(f"Taxa combinada sob H0: {p_pool:.4%}")
+print("Réplicas tão extremas:", int(extreme_boot.sum()))
+print(f"Valor-p bootstrap bilateral: {p_boot_h0:.6f}")
+```
+
+O valor-p bilateral estimado é
+
+$$
+\widehat p_{boot,H_0}
+=\frac{1+\#\{|\Delta_b^{*(0)}|\geq|\widehat\Delta|\}}{R+1}.
+$$
+
+Aqui, $\Delta_b^{*(0)}$ é a diferença da réplica bootstrap $b$ gerada sob a
+taxa comum, e $R=10.000$. Nenhuma réplica alcançou a diferença observada; a
+correção de Monte Carlo produz $1/10.001\approx0{,}0001$. Esse número representa
+o limite de resolução da simulação, não um valor-p exatamente igual a 0,0001.
+
+## Comparação com a permutação
+
+Para tornar a comparação justa, repetimos a permutação com 10.000 réplicas e a
+mesma regra bilateral. Como a resposta é binária, o sorteio hipergeométrico
+redistribui entre os grupos o total fixo de conversões e reproduz a permutação
+dos rótulos com muito menos memória.
+
+```{python}
+perm_rng = np.random.default_rng(1313)
+total_conversions = x_ad + x_psa
+total_users = n_ad + n_psa
+perm_ad = perm_rng.hypergeometric(
+    total_conversions,
+    total_users - total_conversions,
+    n_ad,
+    size=R_compare,
+)
+perm_null_compare = (
+    perm_ad / n_ad
+    - (total_conversions - perm_ad) / n_psa
+)
+extreme_perm = np.abs(perm_null_compare) >= abs(observed)
+p_perm_compare = (1 + extreme_perm.sum()) / (R_compare + 1)
+
+comparison = pd.DataFrame({
+    "procedimento": ["Bootstrap usual", "Bootstrap sob H0", "Permutação sob H0"],
+    "centro aproximado (p.p.)": [
+        100 * boot_effect.mean(),
+        100 * boot_null.mean(),
+        100 * perm_null_compare.mean(),
+    ],
+    "resultado": [
+        f"IC 95% [{100*ci_boot[0]:.2f}; {100*ci_boot[1]:.2f}] p.p.",
+        f"p = {p_boot_h0:.4f}",
+        f"p = {p_perm_compare:.4f}",
+    ],
+})
+comparison
+```
+
+```{python}
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), sharex=True, sharey=True)
+panels = [
+    (boot_effect, "#0f6b78", "Bootstrap usual"),
+    (boot_null, "#cbd5da", "Bootstrap sob H0"),
+    (perm_null_compare, "#6a4c93", "Permutação sob H0"),
+]
+for ax, (values, color, title) in zip(axes, panels):
+    ax.hist(100 * values, bins=48, color=color, edgecolor="white")
+    ax.axvline(100 * observed, color="#d95f02", linewidth=3)
+    ax.axvline(0, color="#17324d", linestyle="--")
+    ax.set_title(title)
+axes[0].set_ylabel("Réplicas")
+axes[1].set_xlabel("Diferença anúncio − PSA (p.p.)")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Bootstrap sob $H_0$ e permutação ficaram centrados em zero e não produziram
+réplicas tão extremas quanto o efeito observado. Os valores-p coincidem na
+resolução de 10.000 simulações, mas os mecanismos são diferentes: o bootstrap
+gera novas respostas a partir de uma taxa comum estimada; a permutação mantém as
+respostas observadas fixas e redistribui seus rótulos conforme o desenho.
+:::
+
 # Parte II — Aula 14: permutação além do caso básico
 
 A Aula 13 tratou do cenário mais simples: dois grupos, unidades independentes e
@@ -565,6 +731,14 @@ Os termos $+1$ no numerador e no denominador incluem conceitualmente a configura
 ## Permutação não é bootstrap
 
 Permutação quebra a associação para representar $H_0$. Bootstrap reamostra unidades para aproximar a incerteza sob uma distribuição empírica. Eles podem usar código parecido, mas respondem perguntas diferentes.
+
+No A/B desta aula, o bootstrap usual reamostra separadamente dentro de anúncio e
+PSA e, por isso, preserva a diferença observada em seu centro. Para produzir um
+valor-p bootstrap, impusemos $H_0$ fazendo ambos os grupos nascerem da taxa
+combinada $\widehat p_{pool}$. A permutação impõe a mesma ausência de associação
+mantendo todas as respostas fixas e trocando apenas os rótulos. A proximidade
+dos resultados é uma consequência esperada neste exemplo grande e simples, não
+uma afirmação de que os dois procedimentos sejam sempre intercambiáveis.
 
 ## Mapa de decisão para a Aula 14
 

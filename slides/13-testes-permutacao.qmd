@@ -388,6 +388,85 @@ axes[1].bar(["Uplift"], [100*relative])
 
 As duas medidas são corretas; isoladamente, podem induzir leituras diferentes.
 
+## O mesmo A/B com bootstrap {.smaller}
+
+O efeito observado é
+
+$$
+\widehat\Delta=\widehat p_{ad}-\widehat p_{PSA}
+=0{,}02555-0{,}01785=0{,}00769.
+$$
+
+No bootstrap usual, reamostramos usuários **dentro de cada grupo** e recalculamos $\widehat\Delta^*$. Para respostas binárias, o atalho equivalente é
+
+$$
+X_{ad}^*\sim\operatorname{Bin}(n_{ad},\widehat p_{ad}),
+\qquad
+X_{PSA}^*\sim\operatorname{Bin}(n_{PSA},\widehat p_{PSA}).
+$$
+
+Com 10.000 réplicas, o intervalo percentil de 95% é **[0,59; 0,94] p.p.**. O bootstrap usual estima a incerteza ao redor do efeito observado; ele não impõe $H_0$.
+
+<details class="code-fold"><summary>Código do bootstrap usual</summary>
+
+```python
+boot_effect = (
+    rng.binomial(n_ad, p_ad, 10_000) / n_ad
+    - rng.binomial(n_psa, p_psa, 10_000) / n_psa
+)
+ci_boot = np.quantile(boot_effect, [0.025, 0.975])
+```
+</details>
+
+## Para obter o valor-p, imponha $H_0$ {.smaller}
+
+Sob $H_0:p_{ad}=p_{PSA}$, usamos a taxa combinada
+
+$$
+\widehat p_{pool}=\frac{14.423+420}{564.577+23.524}
+=0{,}02524.
+$$
+
+Geramos os dois grupos com essa mesma taxa e contamos réplicas tão extremas quanto $\widehat\Delta$:
+
+$$
+\widehat p_{boot,H_0}
+=\frac{1+\#\{|\Delta_b^{*(0)}|\geq|\widehat\Delta|\}}{10.000+1}
+=\frac{1+0}{10.001}\approx0{,}0001.
+$$
+
+Nenhuma réplica foi tão extrema. $0{,}0001$ é o limite de resolução da simulação, **não** evidência de que o valor-p verdadeiro seja exatamente esse número.
+
+<details class="code-fold"><summary>Código do bootstrap sob H0</summary>
+
+```python
+p_pool = (x_ad + x_psa) / (n_ad + n_psa)
+boot_null = (
+    rng.binomial(n_ad, p_pool, 10_000) / n_ad
+    - rng.binomial(n_psa, p_pool, 10_000) / n_psa
+)
+p_boot = (1 + np.sum(np.abs(boot_null) >= abs(observed))) / 10_001
+```
+</details>
+
+## O mesmo A/B, três distribuições
+
+![](assets/aula13-permutacao/bootstrap-permutacao-ab.png){height=335 fig-alt="Comparação entre a distribuição bootstrap usual centrada no efeito observado, a distribuição bootstrap sob a hipótese nula e a distribuição de permutação sob a hipótese nula."}
+
+O bootstrap usual produz o IC **[0,59; 0,94] p.p.**; bootstrap sob $H_0$ e permutação produzem $\widehat p\approx0{,}0001$ com 10.000 réplicas.
+
+<details class="code-fold"><summary>Código da comparação</summary>
+
+```python
+axes[0].hist(100 * boot_effect, bins=48)
+axes[1].hist(100 * boot_null, bins=48)
+axes[2].hist(100 * perm_null, bins=48)
+for ax in axes:
+    ax.axvline(100 * observed, color="darkorange")
+    ax.axvline(0, color="navy", linestyle="--")
+```
+</details>
+
 ## Teste de permutação e teste clássico
 
 Para diferença de proporções, o teste de permutação e o teste-z tendem a concordar em amostras grandes.
@@ -406,6 +485,8 @@ A vantagem da permutação é tornar explícito:
 | embaralha rótulos | reamostra observações |
 | simula ausência de associação | aproxima repetição da amostragem |
 | distribuição centrada em $H_0$ | distribuição centrada na estimativa |
+
+Para usar bootstrap em um teste, precisamos **modificar a reamostragem para impor $H_0$**. A permutação faz isso naturalmente ao quebrar a associação entre rótulo e resposta.
 
 ## A conexão com a randomização
 

@@ -37,26 +37,28 @@ Não queremos apenas uma diferença observada. Queremos saber quão precisa ela 
 - estimar erro padrão, intervalo de confiança e p-valor;
 - reconhecer quando o bootstrap é — e não é — válido.
 
-## Airbnb NYC 2019
+## Airbnb NYC 2019 {.smaller}
 
-- 48.895 anúncios disponíveis em Nova York em 2019;
-- preços, localização, tipo de acomodação e atividade dos anúncios;
-- dados públicos disponibilizados no Kaggle sob licença CC0;
-- unidade de observação: **um anúncio**, não uma reserva nem um hóspede.
+::: {.columns}
+::: {.column width="42%"}
+- 48.895 anúncios em Nova York em 2019;
+- unidade de observação: **um anúncio**;
+- dados públicos do Kaggle sob licença CC0;
+- preço anunciado: não observamos se a estadia ocorreu.
 
-Fonte: Kaggle, `dgomonov/new-york-city-airbnb-open-data`.
+Fonte: `dgomonov/new-york-city-airbnb-open-data`.
+:::
 
-## As colunas que usaremos
-
+::: {.column width="58%"}
 | Coluna | Significado |
 |---|---|
-| `neighbourhood_group` | distrito da cidade |
-| `room_type` | acomodação inteira, quarto privado ou compartilhado |
-| `price` | preço anunciado por noite, em dólares |
+| `neighbourhood_group` | distrito |
+| `room_type` | tipo de acomodação |
+| `price` | preço anunciado por noite |
 | `host_id` | identificador do anfitrião |
 | `availability_365` | dias disponíveis no ano |
-
-O preço é anunciado: não observamos se a estadia realmente ocorreu.
+:::
+:::
 
 ## Dois distritos dominam a base
 
@@ -79,22 +81,13 @@ finish("anuncios-distrito.png")
 
 </details>
 
-## Uma limpeza mínima e explícita
-
-- 11 anúncios têm preço igual a zero;
-- o preço máximo chega a US$ 10.000 por noite;
-- para visualização e análise, removemos preços zero e o 1% superior;
-- permanecem 48.410 anúncios, 99% da base original.
-
-::: {.statement}
-Limpar a cauda muda a população-alvo: agora estudamos anúncios entre US$ 1 e US$ 799.
-:::
-
 ## A média é puxada pela cauda
 
 ![](assets/aula12-bootstrap/distribuicao-precos.png){fig-alt="Dois histogramas dos preços dos anúncios Airbnb, em escala original e logarítmica, mostrando forte assimetria à direita."}
 
 Na base original, a mediana é US$ 106 e a média é US$ 153.
+
+Para as análises seguintes, removemos 11 preços iguais a zero e o 1% superior. Permanecem 48.410 anúncios entre US$ 1 e US$ 799; essa limpeza muda explicitamente a população-alvo.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -161,18 +154,9 @@ finish("composicao-tipo.png")
 
 </details>
 
-## Nossa comparação será mais justa
+## A amostra observada {.smaller}
 
-Vamos restringir a pergunta a:
-
-- acomodações inteiras;
-- Manhattan e Brooklyn;
-- preços entre US$ 1 e US$ 799;
-- uma amostra didática de 600 anúncios por distrito.
-
-Isso evita atribuir ao distrito uma diferença que vem apenas do tipo de quarto.
-
-## A amostra observada
+Para tornar a comparação mais justa, usamos acomodações inteiras de Manhattan e Brooklyn, preços entre US$ 1 e US$ 799 e uma amostra didática de 600 anúncios por distrito.
 
 | Distrito | $n$ | Média | Mediana |
 |---|---:|---:|---:|
@@ -297,15 +281,9 @@ finish("densidade-mediana-precisao.png")
 
 </details>
 
-## Uma estimativa não mostra sua estabilidade
+## A amostra vira uma população provisória {.smaller}
 
-Se repetíssemos a coleta, obteríamos exatamente US$ 40 outra vez?
-
-::: {.statement}
-Precisamos imaginar muitas amostras semelhantes — mas só observamos uma.
-:::
-
-## A amostra vira uma população provisória
+Uma estimativa não mostra sua estabilidade: se repetíssemos a coleta, obteríamos exatamente US$ 40 outra vez? Precisamos imaginar muitas amostras semelhantes, mas só observamos uma.
 
 $F$ representa a distribuição populacional desconhecida, cuja CDF é $F(x)=P(X\leq x)$. O bootstrap a substitui pela CDF empírica:
 
@@ -405,33 +383,6 @@ finish("reamostragem-reposicao.png")
 
 </details>
 
-## Uma réplica produz outra estimativa
-
-![](assets/aula12-bootstrap/uma-replica.png){fig-alt="Medianas observadas e medianas de uma réplica bootstrap em Brooklyn e Manhattan."}
-
-Repetir esse processo revela quais diferenças são plausíveis.
-
-<details class="code-fold">
-<summary>Código do gráfico</summary>
-
-```python
-one_m = rng.choice(manhattan, len(manhattan), replace=True)
-one_b = rng.choice(brooklyn, len(brooklyn), replace=True)
-observed = [np.median(brooklyn), np.median(manhattan)]
-replica = [np.median(one_b), np.median(one_m)]
-xpos = np.arange(2)
-plt.figure(figsize=(8.8, 4.8))
-plt.plot(xpos, observed, "o-", color=BLUE, lw=3, ms=10, label="amostra observada")
-plt.plot(xpos, replica, "o--", color=ORANGE, lw=3, ms=10, label="uma réplica bootstrap")
-plt.xticks(xpos, ["Brooklyn", "Manhattan"])
-plt.ylabel("Mediana do preço (US$)")
-plt.title("Cada réplica produz uma nova diferença")
-plt.legend()
-finish("uma-replica.png")
-```
-
-</details>
-
 ## O algoritmo em cinco passos {.smaller}
 
 1. Escolha a estatística $T$ e calcule $\widehat\theta=T(X_1,\ldots,X_n)$.
@@ -493,14 +444,7 @@ for _ in range(5000):
 
 O raciocínio estatístico é mais importante que o laço.
 
-## O tamanho da réplica continua sendo n
-
-- $n$ é o tamanho de cada amostra bootstrap;
-- $R$ é o número de réplicas;
-- aumentar $R$ reduz erro de simulação;
-- aumentar $n$ reduz incerteza estatística.
-
-Esses dois papéis não devem ser confundidos.
+$n$ é o tamanho de cada amostra bootstrap e $R$ é o número de réplicas. Aumentar $R$ reduz o erro de simulação; aumentar $n$ reduz a incerteza estatística.
 
 ## A incerteza ganha forma
 
@@ -555,7 +499,10 @@ onde $\overline{\theta^*}=R^{-1}\sum_b\widehat\theta_b^*$ é a média das répli
 O bootstrap pode diagnosticar viés do estimador; não detecta nem corrige viés de seleção que a amostra não revela.
 :::
 
-## O intervalo percentil é direto
+## O intervalo percentil é direto {.smaller}
+
+::: {.columns}
+::: {.column width="48%"}
 
 Um intervalo bootstrap percentil de nível $1-\alpha$ é:
 
@@ -569,12 +516,14 @@ $$
 Ele usa os quantis da própria distribuição bootstrap.
 
 $q_\gamma(\widehat\theta^*)$ é o quantil de ordem $\gamma$ das réplicas e $\alpha$ é a probabilidade total deixada fora do intervalo; para 95%, $\alpha=0{,}05$.
+:::
 
-## Os 95% centrais vão de 30 a 51
-
+::: {.column width="52%"}
 ![](assets/aula12-bootstrap/intervalo-percentil.png){fig-alt="Densidade bootstrap da diferença de medianas com o intervalo percentil de 95 por cento destacado entre 30 e 51 dólares."}
 
-O intervalo permanece totalmente acima de zero.
+Os 95% centrais vão de **US$ 30 a US$ 51** e permanecem acima de zero.
+:::
+:::
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -887,15 +836,6 @@ $$IC_{BCa}=[q_{0{,}073}^*,q_{0{,}993}^*]=[18{,}4,27{,}9].$$
 ::: {.callout-tip title="Interpretação"}
 Como $z_0>0$, $\widehat\theta$ está acima do centro das réplicas. Por isso, os dois níveis dos quantis se deslocam para cima: de 2,5% e 97,5% para 7,3% e 99,3%.
 :::
-
-## Resumo das técnicas de intervalo
-
-| Método | Ideia | Atenção |
-|---|---|---|
-| Percentil | usa quantis de $\widehat\theta^*$ | simples, mas sensível a viés |
-| Básico | reflete os quantis em torno de $\widehat\theta$ | corrige deslocamento de forma simples |
-| Normal | $\widehat\theta\pm z\,SE_{boot}$ | supõe simetria aproximada |
-| BCa | corrige viés e aceleração | mais sofisticado e geralmente preferível |
 
 ## Métodos podem discordar
 

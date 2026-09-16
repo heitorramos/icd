@@ -32,7 +32,8 @@ Exemplo da aula: taxa de pedidos entregues depois da data prevista.
 - p-valor e nível de significância;
 - erros tipo I e II;
 - poder, tamanho amostral e efeito;
-- teste exato, aproximação e simulação.
+- teste exato, aproximação e simulação;
+- testes A/B como experimentos aleatorizados.
 
 ## O problema da aula
 
@@ -670,6 +671,167 @@ O efeito tem magnitude e consequência relevantes?
 
 Sempre reporte estimativa e intervalo, não apenas p-valor.
 
+## Um teste A/B é um experimento
+
+::: {.columns .concept-cards}
+::: {.column width="32%"}
+### A — controle
+
+Experiência atualmente usada. Ela fornece a referência para a comparação.
+:::
+
+::: {.column width="32%"}
+### B — tratamento
+
+Uma única mudança planejada em relação ao controle.
+:::
+
+::: {.column width="32%"}
+### Atribuição aleatória
+
+Distribui unidades entre A e B antes de observar a resposta.
+:::
+:::
+
+O efeito é causal quando a randomização e o acompanhamento são preservados.
+
+## Exemplo A/B no contexto da Olist
+
+Imagine que a operação desenvolveu um **alerta preventivo de risco de atraso** para pedidos elegíveis.
+
+::: {.columns .concept-cards}
+::: {.column width="48%"}
+### Versão A — processo atual
+
+O pedido segue o fluxo logístico normalmente usado.
+:::
+
+::: {.column width="48%"}
+### Versão B — novo alerta
+
+Um alerta antecipado permite priorizar pedidos com maior risco operacional.
+:::
+:::
+
+Pedidos seriam atribuídos aleatoriamente aos dois processos. A base Olist original é observacional: os números a seguir formam um **experimento didático simulado**, calibrado por suas taxas de atraso.
+
+## Da pergunta às hipóteses
+
+**Pergunta:** o alerta reduz a probabilidade de um pedido chegar depois da data prevista?
+
+$$
+\Delta=p_B-p_A,
+\qquad
+H_0:\Delta=0,
+\qquad
+H_A:\Delta<0.
+$$
+
+$p_A$ e $p_B$ são as probabilidades de atraso nos dois processos. A alternativa foi definida antes dos dados: valores negativos favorecem o alerta.
+
+## O que aconteceu no experimento didático?
+
+![](assets/aula11-testes-hipoteses/ab-olist-atrasos.png){fig-alt="Taxas simuladas de atraso de 8,3 por cento no processo atual e 6,9 por cento com um alerta preventivo." width="74%" fig-align="center"}
+
+Em 5.000 pedidos por grupo, atrasaram 415 em A e 345 em B:
+
+$$
+\widehat\Delta=6{,}9\%-8{,}3\%=-1{,}4\text{ p.p.}
+$$
+
+O efeito observado corresponde a **140 atrasos a menos por 10 mil pedidos**. Ainda precisamos avaliar se uma diferença desse tamanho seria rara caso o alerta não tivesse efeito.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+grupos = ["Processo atual", "Alerta preventivo"]
+taxas = np.array([415/5000, 345/5000]) * 100
+plt.bar(grupos, taxas, color=[ORANGE, BLUE])
+plt.ylabel("Pedidos atrasados (%)")
+plt.title("Exemplo A/B didático no contexto da Olist")
+```
+</details>
+
+## Calculando o valor-p: modelo sob $H_0$
+
+Sob $H_0:p_A=p_B$, estimamos uma única taxa combinada:
+
+::: {.columns .concept-cards .ab-calculation-cards}
+::: {.column width="48%"}
+### 1. Taxa sob $H_0$
+
+$$
+\widehat p_{pool}
+=\frac{415+345}{5000+5000}
+=0{,}076
+$$
+
+Se não há efeito, A e B compartilham a mesma probabilidade de atraso.
+:::
+
+::: {.column width="48%"}
+### 2. Erro padrão
+
+$$
+\begin{aligned}
+EP_0&=\sqrt{0{,}076(1-0{,}076)
+\left(\frac{2}{5000}\right)} \\
+EP_0&\approx0{,}00530
+\end{aligned}
+$$
+
+Ele mede a variação esperada de $\widehat p_B-\widehat p_A$ quando $H_0$ é verdadeira.
+:::
+:::
+
+## Calculando o valor-p: cauda esquerda
+
+::: {.columns .concept-cards .ab-calculation-cards}
+::: {.column width="48%"}
+### 3. Estatística observada
+
+$$
+z=\frac{0{,}069-0{,}083}{0{,}00530}
+\approx-2{,}64
+$$
+
+A diferença observada está 2,64 erros padrão abaixo do valor previsto por $H_0$.
+:::
+
+::: {.column width="48%"}
+### 4. Probabilidade sob $H_0$
+
+$$
+\begin{aligned}
+p&=P(Z\leq-2{,}64)=\Phi(-2{,}64) \\
+p&\approx0{,}0041
+\end{aligned}
+$$
+
+Como $H_A:p_B-p_A<0$, resultados mais extremos ficam na cauda esquerda.
+:::
+:::
+
+Se $H_0$ fosse verdadeira, uma redução igual ou maior que a observada ocorreria em cerca de **0,41%** de experimentos como este.
+
+<details class="code-fold"><summary>Código do cálculo</summary>
+
+```python
+from scipy.stats import norm
+
+p_pool = (415 + 345) / (5000 + 5000)
+se_0 = np.sqrt(p_pool * (1 - p_pool) * (1/5000 + 1/5000))
+z = ((345/5000) - (415/5000)) / se_0
+p_value = norm.cdf(z)  # cauda esquerda
+```
+</details>
+
+## Interpretando o resultado do A/B
+
+O valor-p aproximado é $0{,}0041$, menor que $\alpha=0{,}05$. Portanto, rejeitamos $H_0$ e encontramos evidência de que o alerta reduz a taxa de atraso.
+
+Isso não encerra a decisão: também precisamos avaliar se **140 atrasos evitados por 10 mil pedidos** compensam o custo do alerta e se nenhuma métrica de proteção piorou.
+
 ## Muitos testes aumentam falsos positivos
 
 Se fazemos 20 testes independentes com $\alpha=5\%$:
@@ -730,6 +892,8 @@ Verifique:
 5. Calcule p-valor ou simule sob $H_0$.
 6. Conclua no contexto e reporte efeito e intervalo.
 
+Em um A/B, acrescente antes da coleta: unidade de randomização, versão de controle, mudança aplicada, métrica primária, duração e regra de parada.
+
 ## Atividade: tome uma decisão
 
 Em 800 pedidos, 76 atrasaram. Teste $H_0:p=0{,}08$ contra $H_1:p>0{,}08$.
@@ -747,6 +911,7 @@ Em 800 pedidos, 76 atrasaram. Teste $H_0:p=0{,}08$ contra $H_1:p>0{,}08$.
 3. $\alpha$ controla o erro tipo I.
 4. Poder mede a chance de detectar um efeito real.
 5. Significância não substitui tamanho do efeito e contexto.
+6. Um teste A/B combina randomização, uma métrica definida previamente e inferência sobre o efeito da mudança.
 
 ## Fechamento
 
