@@ -1,6 +1,7 @@
 """Gera as figuras da Aula 12 com a base Airbnb NYC 2019."""
 
 from pathlib import Path
+from statistics import NormalDist
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,14 +44,14 @@ brooklyn = sample.loc[sample["neighbourhood_group"].eq("Brooklyn"), "price"].to_
 theta_hat = np.median(manhattan) - np.median(brooklyn)
 
 
-def bootstrap_difference(a, b, B=5000, seed=1105):
+def bootstrap_difference(a, b, n_rep=5000, seed=1105):
     local_rng = np.random.default_rng(seed)
-    index_a = local_rng.integers(0, len(a), size=(B, len(a)))
-    index_b = local_rng.integers(0, len(b), size=(B, len(b)))
+    index_a = local_rng.integers(0, len(a), size=(n_rep, len(a)))
+    index_b = local_rng.integers(0, len(b), size=(n_rep, len(b)))
     return np.median(a[index_a], axis=1) - np.median(b[index_b], axis=1)
 
 
-boot = bootstrap_difference(manhattan, brooklyn, B=3000)
+boot = bootstrap_difference(manhattan, brooklyn, n_rep=3000)
 ci = np.quantile(boot, [.025, .975])
 
 # 1. Número de anúncios por distrito.
@@ -109,6 +110,64 @@ plt.title("A mediana compara o centro sem obedecer à cauda")
 plt.legend()
 finish("ecdf-amostra.png")
 
+# 5b. Densidade na mediana e precisão da mediana amostral.
+def normal_pdf(x, mean, sd):
+    return np.exp(-0.5 * ((x - mean) / sd) ** 2) / (sd * np.sqrt(2 * np.pi))
+
+
+x_grid = np.linspace(-4, 4, 800)
+pdf_concentrada = normal_pdf(x_grid, 0, 1)
+pdf_bimodal = (
+    0.5 * normal_pdf(x_grid, -1.6, 0.8)
+    + 0.5 * normal_pdf(x_grid, 1.6, 0.8)
+)
+
+median_rng = np.random.default_rng(1205)
+n_rep_median = 5000
+n_median = 51
+sample_concentrada = median_rng.normal(0, 1, size=(n_rep_median, n_median))
+componentes = median_rng.integers(0, 2, size=(n_rep_median, n_median))
+medias_bimodais = np.where(componentes == 0, -1.6, 1.6)
+sample_bimodal = median_rng.normal(medias_bimodais, 0.8)
+medianas_concentrada = np.median(sample_concentrada, axis=1)
+medianas_bimodal = np.median(sample_bimodal, axis=1)
+
+fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.8), sharex=True)
+axes[0].plot(x_grid, pdf_concentrada, color=BLUE, lw=3,
+             label=r"alta densidade em $m$")
+axes[0].plot(x_grid, pdf_bimodal, color=ORANGE, lw=3,
+             label=r"baixa densidade em $m$")
+axes[0].axvline(0, color=INK, ls="--", lw=2, label="mediana comum: 0")
+axes[0].set_title("Distribuições populacionais")
+axes[0].set_xlabel("Valor")
+axes[0].set_ylabel("Densidade")
+axes[0].legend(fontsize=10)
+
+def kde_on_grid(values, grid):
+    bandwidth = 1.06 * values.std(ddof=1) * len(values) ** (-1 / 5)
+    z = (grid[:, None] - values[None, :]) / bandwidth
+    return np.exp(-0.5 * z**2).mean(axis=1) / (bandwidth * np.sqrt(2 * np.pi))
+
+
+kde_concentrada = kde_on_grid(medianas_concentrada, x_grid)
+kde_bimodal = kde_on_grid(medianas_bimodal, x_grid)
+axes[1].fill_between(x_grid, kde_bimodal, color=ORANGE, alpha=0.30)
+axes[1].plot(x_grid, kde_bimodal, color=ORANGE, lw=3,
+             label="baixa densidade em m")
+axes[1].fill_between(x_grid, kde_concentrada, color=BLUE, alpha=0.38)
+axes[1].plot(x_grid, kde_concentrada, color=BLUE, lw=3,
+             label="alta densidade em m")
+axes[1].axvline(0, color=INK, ls="--", lw=2)
+axes[1].set_title(f"Medianas de {n_rep_median:,} amostras, n = {n_median}".replace(",", "."))
+axes[1].set_xlabel("Mediana amostral")
+axes[1].set_ylabel("Densidade")
+axes[1].legend(fontsize=10)
+for ax in axes:
+    ax.set_xlim(-4, 4)
+fig.suptitle("Pouca densidade perto da mediana aumenta sua variabilidade",
+             fontweight="bold")
+finish("densidade-mediana-precisao.png")
+
 # 6. Uma reamostragem mostra repetições e ausências.
 toy = np.array([65, 80, 90, 110, 145, 190, 240, 320])
 toy_boot = np.random.default_rng(7).choice(toy, len(toy), replace=True)
@@ -163,14 +222,14 @@ plt.ylabel("Densidade")
 plt.title("O intervalo percentil preserva os 95% centrais")
 finish("intervalo-percentil.png")
 
-# 10. Estabilidade conforme B aumenta.
+# 10. Estabilidade conforme R aumenta.
 checkpoints = np.arange(100, 3001, 100)
 lower = np.array([np.quantile(boot[:b], .025) for b in checkpoints])
 upper = np.array([np.quantile(boot[:b], .975) for b in checkpoints])
 plt.figure(figsize=(9.4, 5.2))
 plt.plot(checkpoints, lower, color=ORANGE, lw=2, label="limite inferior")
 plt.plot(checkpoints, upper, color=BLUE, lw=2, label="limite superior")
-plt.xlabel("Número de réplicas B")
+plt.xlabel("Número de réplicas R")
 plt.ylabel("Limite do IC (US$)")
 plt.title("Mais réplicas reduzem o ruído de Monte Carlo")
 plt.legend()
@@ -181,19 +240,19 @@ mean_hat = manhattan.mean() - brooklyn.mean()
 se_tcl = np.sqrt(manhattan.var(ddof=1) / len(manhattan)
                  + brooklyn.var(ddof=1) / len(brooklyn))
 ci_tcl = np.array([mean_hat - 1.96 * se_tcl, mean_hat + 1.96 * se_tcl])
-B_max = 5000
+n_rep_max = 5000
 mean_boot = (
-    rng.choice(manhattan, size=(B_max, len(manhattan)), replace=True).mean(axis=1)
-    - rng.choice(brooklyn, size=(B_max, len(brooklyn)), replace=True).mean(axis=1)
+    rng.choice(manhattan, size=(n_rep_max, len(manhattan)), replace=True).mean(axis=1)
+    - rng.choice(brooklyn, size=(n_rep_max, len(brooklyn)), replace=True).mean(axis=1)
 )
 checkpoints_mean = np.array([25, 50, 100, 200, 400, 800, 1200, 2000, 3000, 5000])
-ci_boot_B = np.array([
-    np.quantile(mean_boot[:B], [.025, .975]) for B in checkpoints_mean
+ci_boot_by_rep = np.array([
+    np.quantile(mean_boot[:n_rep], [.025, .975]) for n_rep in checkpoints_mean
 ])
 plt.figure(figsize=(9.5, 5.3))
-plt.plot(checkpoints_mean, ci_boot_B[:, 0], "o-", color=ORANGE,
+plt.plot(checkpoints_mean, ci_boot_by_rep[:, 0], "o-", color=ORANGE,
          lw=2.5, label="Bootstrap: limite inferior")
-plt.plot(checkpoints_mean, ci_boot_B[:, 1], "o-", color=BLUE,
+plt.plot(checkpoints_mean, ci_boot_by_rep[:, 1], "o-", color=BLUE,
          lw=2.5, label="Bootstrap: limite superior")
 plt.axhline(ci_tcl[0], color=ORANGE, ls="--", lw=2,
             label="TCL: limite inferior")
@@ -202,7 +261,7 @@ plt.axhline(ci_tcl[1], color=BLUE, ls="--", lw=2,
 plt.xscale("log")
 plt.xticks(checkpoints_mean, checkpoints_mean)
 plt.gca().get_xaxis().set_major_formatter(plt.ScalarFormatter())
-plt.xlabel("Número acumulado de réplicas B")
+plt.xlabel("Número acumulado de réplicas R")
 plt.ylabel("Limite do IC 95% da diferença de médias (US$)")
 plt.legend(ncol=2, fontsize=10)
 finish("estabilidade-media-bootstrap-tcl.png")
@@ -215,7 +274,7 @@ for n in sizes:
     for repeat in range(6):
         m = rng.choice(manhattan, n, replace=False)
         b = rng.choice(brooklyn, n, replace=False)
-        values = bootstrap_difference(m, b, B=250, seed=1000 + repeat + n)
+        values = bootstrap_difference(m, b, n_rep=250, seed=1000 + repeat + n)
         q = np.quantile(values, [.025, .975])
         widths_n.append(q[1] - q[0])
     widths.append(widths_n)
@@ -229,20 +288,74 @@ finish("tamanho-largura.png")
 
 # 12. Comparação entre métodos de intervalo.
 se_boot = boot.std(ddof=1)
+
+# BCa: correção de viés pelas réplicas e aceleração pelo jackknife
+normal = NormalDist()
+prop_below = np.clip(np.mean(boot < theta_hat), 1 / (2 * len(boot)), 1 - 1 / (2 * len(boot)))
+z0 = normal.inv_cdf(prop_below)
+jack_m = np.array([
+    np.median(np.delete(manhattan, i)) - np.median(brooklyn)
+    for i in range(len(manhattan))
+])
+jack_b = np.array([
+    np.median(manhattan) - np.median(np.delete(brooklyn, i))
+    for i in range(len(brooklyn))
+])
+jack = np.concatenate([jack_m, jack_b])
+jack_center = jack.mean()
+jack_diff = jack_center - jack
+jack_scale = np.sum(jack_diff**2)
+# Com muitos empates na mediana, o jackknife pode ser degenerado.
+# Nesse caso usamos a = 0 e o intervalo mantém apenas a correção de viés.
+acceleration = 0.0 if jack_scale == 0 else np.sum(jack_diff**3) / (6 * jack_scale**1.5)
+z_alpha = np.array([normal.inv_cdf(.025), normal.inv_cdf(.975)])
+adjusted_alpha = np.array([
+    normal.cdf(z0 + (z0 + z) / (1 - acceleration * (z0 + z)))
+    for z in z_alpha
+])
+ci_bca = np.quantile(boot, adjusted_alpha)
+
 intervals = {
     "Percentil": ci,
     "Básico": np.array([2 * theta_hat - ci[1], 2 * theta_hat - ci[0]]),
     "Normal": np.array([theta_hat - 1.96 * se_boot, theta_hat + 1.96 * se_boot]),
+    "BCa (a = 0)": ci_bca,
 }
 plt.figure(figsize=(9, 4.7))
 for y, (name, limits) in enumerate(intervals.items()):
     plt.plot(limits, [y, y], color=BLUE, lw=5)
     plt.scatter(theta_hat, y, color=ORANGE, s=90, zorder=3)
-plt.yticks(range(3), intervals.keys())
+plt.yticks(range(len(intervals)), intervals.keys())
 plt.axvline(0, color=INK, ls="--")
 plt.xlabel("Diferença de medianas (US$)")
 plt.title("Métodos diferentes podem produzir limites diferentes")
 finish("metodos-intervalo.png")
+
+# 12b. Distribuição bootstrap sob H0 para o teste da diferença de medianas.
+manhattan_h0 = manhattan - np.median(manhattan)
+brooklyn_h0 = brooklyn - np.median(brooklyn)
+boot_h0 = bootstrap_difference(manhattan_h0, brooklyn_h0, n_rep=10000, seed=1212)
+extreme_h0 = np.abs(boot_h0) >= np.abs(theta_hat)
+p_boot = (1 + extreme_h0.sum()) / (len(boot_h0) + 1)
+
+plt.figure(figsize=(9.4, 5.2))
+sns.histplot(boot_h0, bins=np.arange(-20.5, 25.6, 1), stat="density",
+             color=BLUE, alpha=.78)
+plt.axvline(-abs(theta_hat), color=ORANGE, ls="--", lw=3)
+plt.axvline(abs(theta_hat), color=ORANGE, ls="--", lw=3,
+            label=r"limiares $\pm|T_{obs}|=\pm40$")
+plt.xlim(-45, 45)
+plt.xlabel("Diferença de medianas sob H0 (US$)")
+plt.ylabel("Densidade")
+plt.title("A diferença observada fica longe da distribuição nula")
+plt.legend(loc="upper left")
+annotation = (
+    f"excedências: {extreme_h0.sum()} em {len(boot_h0):,}\n"
+    f"p-valor bootstrap ≈ {p_boot:.4f}"
+).replace(",", ".")
+plt.text(0, plt.ylim()[1] * .82, annotation,
+         ha="center", va="top", color=INK, fontweight="bold")
+finish("pvalor-bootstrap-h0.png")
 
 # 13. Cobertura em um experimento controlado.
 population_median = np.median(focus.loc[focus["neighbourhood_group"].eq("Manhattan"), "price"])
@@ -251,7 +364,7 @@ cover = []
 for i in range(20):
     m = rng.choice(focus.loc[focus["neighbourhood_group"].eq("Manhattan"), "price"], 250, replace=False)
     b = rng.choice(focus.loc[focus["neighbourhood_group"].eq("Brooklyn"), "price"], 250, replace=False)
-    values = bootstrap_difference(m, b, B=300, seed=3000 + i)
+    values = bootstrap_difference(m, b, n_rep=300, seed=3000 + i)
     lo, hi = np.quantile(values, [.025, .975])
     cover.append((lo, hi, lo <= population_median <= hi))
 plt.figure(figsize=(9, 6.3))
@@ -271,7 +384,7 @@ axes[0].set_xlim(.5, 6.5)
 axes[0].set_xlabel("Anúncios do mesmo anfitrião na amostra")
 axes[0].set_ylabel("Anfitriões")
 axes[0].set_title("Há agrupamento por anfitrião")
-naive = bootstrap_difference(manhattan, brooklyn, B=1000, seed=9)
+naive = bootstrap_difference(manhattan, brooklyn, n_rep=1000, seed=9)
 cluster_estimates = []
 for _ in range(100):
     pieces = []

@@ -33,8 +33,8 @@ Não queremos apenas uma diferença observada. Queremos saber quão precisa ela 
 - conhecer e descrever a base Airbnb NYC 2019;
 - entender por que a mediana é útil neste problema;
 - construir réplicas bootstrap;
-- estimar erro padrão e intervalo de confiança;
 - formalizar o método;
+- estimar erro padrão, intervalo de confiança e p-valor;
 - reconhecer quando o bootstrap é — e não é — válido.
 
 ## Airbnb NYC 2019
@@ -209,17 +209,93 @@ finish("ecdf-amostra.png")
 
 </details>
 
-## Por que não usar o intervalo clássico?
+## Por que o intervalo para medianas é mais difícil? {.smaller}
 
-Para a média, o TCL fornece uma aproximação conhecida.
+Para médias, o TCL fornece um erro padrão conhecido. Para medianas de duas amostras independentes, uma aproximação assintótica é
 
-Para a diferença de medianas:
+$$
+\widehat{SE}(\widetilde X_1-\widetilde X_2)
+\approx
+\sqrt{
+\frac{1}{4n_1\widehat f_1(\widetilde X_1)^2}
++
+\frac{1}{4n_2\widehat f_2(\widetilde X_2)^2}
+}.
+$$
 
-- a distribuição amostral pode ser irregular;
-- o erro padrão depende da densidade perto da mediana;
-- uma fórmula fechada exige hipóteses adicionais.
+$\widetilde X_g$ é a mediana amostral do grupo $g$; $n_g$ é seu tamanho; e $\widehat f_g(\widetilde X_g)$ estima a densidade dos dados perto da mediana.
 
-O bootstrap oferece uma aproximação computacional.
+::: {.callout-warning title="O que a fórmula exige"}
+As amostras devem ser independentes; cada distribuição deve ser contínua, ter mediana única e densidade positiva e regular nessa região. Além disso, precisamos escolher como estimar $f_g$, inclusive a largura de banda.
+:::
+
+## A densidade na mediana controla a precisão
+
+![](assets/aula12-bootstrap/densidade-mediana-precisao.png){fig-alt="À esquerda, duas distribuições com mediana zero, uma concentrada e outra bimodal com pouca densidade no centro. À direita, as medianas de amostras da distribuição concentrada ficam próximas de zero, enquanto as medianas da distribuição bimodal variam muito mais."}
+
+As duas populações têm mediana zero. Com pouca massa perto do centro, pequenas mudanças na amostra fazem a mediana saltar entre valores distantes.
+
+::: {.statement}
+O bootstrap evita estimar explicitamente essas densidades, mas ainda exige uma amostra representativa e uma reamostragem compatível com a coleta.
+:::
+
+<details class="code-fold">
+<summary>Código do gráfico</summary>
+
+```python
+def normal_pdf(x, mean, sd):
+    return np.exp(-0.5 * ((x - mean) / sd) ** 2) / (sd * np.sqrt(2 * np.pi))
+
+x_grid = np.linspace(-4, 4, 800)
+pdf_concentrada = normal_pdf(x_grid, 0, 1)
+pdf_bimodal = (0.5 * normal_pdf(x_grid, -1.6, 0.8)
+               + 0.5 * normal_pdf(x_grid, 1.6, 0.8))
+
+median_rng = np.random.default_rng(1205)
+n_rep_median, n_median = 5000, 51
+sample_concentrada = median_rng.normal(0, 1, (n_rep_median, n_median))
+componentes = median_rng.integers(0, 2, (n_rep_median, n_median))
+medias_bimodais = np.where(componentes == 0, -1.6, 1.6)
+sample_bimodal = median_rng.normal(medias_bimodais, 0.8)
+medianas_concentrada = np.median(sample_concentrada, axis=1)
+medianas_bimodal = np.median(sample_bimodal, axis=1)
+
+fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.8), sharex=True)
+axes[0].plot(x_grid, pdf_concentrada, color=BLUE, lw=3,
+             label=r"alta densidade em $m$")
+axes[0].plot(x_grid, pdf_bimodal, color=ORANGE, lw=3,
+             label=r"baixa densidade em $m$")
+axes[0].axvline(0, color=INK, ls="--", lw=2, label="mediana comum: 0")
+axes[0].set_title("Distribuições populacionais")
+axes[0].set_xlabel("Valor")
+axes[0].set_ylabel("Densidade")
+
+def kde_on_grid(values, grid):
+    bandwidth = 1.06 * values.std(ddof=1) * len(values) ** (-1 / 5)
+    z = (grid[:, None] - values[None, :]) / bandwidth
+    return np.exp(-0.5 * z**2).mean(axis=1) / (bandwidth * np.sqrt(2*np.pi))
+
+kde_concentrada = kde_on_grid(medianas_concentrada, x_grid)
+kde_bimodal = kde_on_grid(medianas_bimodal, x_grid)
+axes[1].fill_between(x_grid, kde_bimodal, color=ORANGE, alpha=0.30)
+axes[1].plot(x_grid, kde_bimodal, color=ORANGE, lw=3,
+             label="baixa densidade em m")
+axes[1].fill_between(x_grid, kde_concentrada, color=BLUE, alpha=0.38)
+axes[1].plot(x_grid, kde_concentrada, color=BLUE, lw=3,
+             label="alta densidade em m")
+axes[1].axvline(0, color=INK, ls="--", lw=2)
+axes[1].set_title("Medianas de 5.000 amostras, n = 51")
+axes[1].set_xlabel("Mediana amostral")
+axes[1].set_ylabel("Densidade")
+for ax in axes:
+    ax.set_xlim(-4, 4)
+    ax.legend()
+fig.suptitle("Pouca densidade perto da mediana aumenta sua variabilidade",
+             fontweight="bold")
+finish("densidade-mediana-precisao.png")
+```
+
+</details>
 
 ## Uma estimativa não mostra sua estabilidade
 
@@ -231,13 +307,13 @@ Precisamos imaginar muitas amostras semelhantes — mas só observamos uma.
 
 ## A amostra vira uma população provisória
 
-O bootstrap substitui a distribuição desconhecida $F$ pela distribuição empírica:
+$F$ representa a distribuição populacional desconhecida, cuja CDF é $F(x)=P(X\leq x)$. O bootstrap a substitui pela CDF empírica:
 
 $$
 \widehat F_n(x)=\frac{1}{n}\sum_{i=1}^{n}\mathbb{1}(X_i\leq x)
 $$
 
-$X_i$ é a $i$-ésima observação, $x$ é um ponto da escala e $\mathbb 1(\cdot)$ vale 1 quando a condição é verdadeira e 0 caso contrário. Assim, $\widehat F_n(x)$ é a proporção observada de valores menores ou iguais a $x$; cada observação recebe massa $1/n$.
+$X_i$ é a $i$-ésima observação, $x$ é um ponto da escala e $\mathbb 1(\cdot)$ vale 1 quando a condição é verdadeira e 0 caso contrário. Assim, $\widehat F_n(x)$ é a proporção observada de valores menores ou iguais a $x$; ela é a **CDF empírica** e atribui massa $1/n$ a cada observação.
 
 ## Reposição é indispensável
 
@@ -257,14 +333,56 @@ Por que o bootstrap comum reamostra $n$ observações com reposição?
 
 - [Para que toda réplica contenha exatamente os mesmos valores uma vez]{data-explanation="Isso ocorreria sem reposição e produziria apenas uma reordenação da amostra."}
 - [Para permitir repetições e ausências, fazendo a estatística variar entre réplicas]{.correct data-explanation="Essa variabilidade aproxima a incerteza amostral usando a distribuição empírica."}
-- [Para aumentar artificialmente o tamanho da amostra]{data-explanation="Cada réplica continua tendo tamanho n; B controla o número de réplicas, não o tamanho amostral."}
+- [Para aumentar artificialmente o tamanho da amostra]{data-explanation="Cada réplica continua tendo tamanho n; R controla o número de réplicas, não o tamanho amostral."}
 - [Para corrigir automaticamente viés de seleção]{data-explanation="O bootstrap herda a representatividade e as limitações da amostra observada."}
 
-## Uma reamostragem parece imperfeita
+## A origem dos 63,2% no bootstrap {.smaller}
 
+::: {.columns}
+::: {.column width="42%"}
 ![](assets/aula12-bootstrap/reamostragem-reposicao.png){fig-alt="Pontos representando uma amostra de preços e uma reamostragem bootstrap com valores repetidos e ausentes."}
 
-Em média, uma réplica contém cerca de 63,2% das observações distintas.
+Repetições e ausências surgem porque o sorteio ocorre com reposição.
+:::
+
+::: {.column width="58%"}
+Para uma observação específica, a probabilidade de não aparecer em nenhum dos $n$ sorteios é
+
+$$
+P(\text{ausente})=\left(1-\frac{1}{n}\right)^n.
+$$
+
+Se $D_n$ é o número de observações distintas, escrevemos $D_n=\sum_{i=1}^n I_i$, onde $I_i=1$ quando a observação $i$ aparece. Logo,
+
+$$
+\begin{aligned}
+\mathbb{E}(D_n)
+&=\sum_{i=1}^n\mathbb{E}(I_i) \\
+&=n\left[1-\left(1-\frac{1}{n}\right)^n\right].
+\end{aligned}
+$$
+
+Portanto,
+
+$$
+\frac{\mathbb{E}(D_n)}{n}\longrightarrow 1-e^{-1}\approx 0{,}632.
+$$
+:::
+:::
+
+::: {.callout-note title="Exemplo com n = 8"}
+Uma réplica possível é $(A,C,C,D,F,F,F,H)$: aparecem 5 das 8 observações originais. Considerando todas as réplicas possíveis,
+
+$$
+\begin{aligned}
+\mathbb{E}(D_8)
+&=8\left[1-\left(\frac{7}{8}\right)^8\right] \\
+&\approx 5{,}25.
+\end{aligned}
+$$
+
+Assim, $\mathbb{E}(D_8)\approx5{,}25$ significa que muitas réplicas de tamanho 8 terão, em média, 5,25 observações distintas, ou 65,6%. Os 63,2% são a aproximação para $n$ grande.
+:::
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -314,17 +432,23 @@ finish("uma-replica.png")
 
 </details>
 
-## O algoritmo em cinco passos
+## O algoritmo em cinco passos {.smaller}
 
-1. Calcule $\widehat\theta=s(X_1,\ldots,X_n)$.
+1. Escolha a estatística $T$ e calcule $\widehat\theta=T(X_1,\ldots,X_n)$.
 2. Sorteie $X_1^*,\ldots,X_n^*$ de $\widehat F_n$, com reposição.
-3. Calcule $\widehat\theta^*=s(X_1^*,\ldots,X_n^*)$.
-4. Repita os passos 2–3 por $B$ vezes.
+3. Calcule $\widehat\theta_b^*=T(X_1^*,\ldots,X_n^*)$.
+4. Repita os passos 2–3 por $R$ vezes.
 5. Use a distribuição das $\widehat\theta_b^*$ para quantificar a incerteza.
+
+$T$ é a regra de cálculo mantida fixa, como média, mediana ou diferença de medianas. O índice $b$ identifica uma réplica bootstrap e $R$ é o número total de réplicas. Reservamos $B(\widehat\theta)$ para denotar o viés, como nas aulas anteriores.
+
+::: {.callout-note title="Exemplo da aula"}
+Aqui, $T(\text{dados})=\operatorname{mediana}(\text{Manhattan})-\operatorname{mediana}(\text{Brooklyn})$. Em cada réplica, reamostramos os anúncios dentro de cada distrito e aplicamos novamente a mesma regra $T$.
+:::
 
 ## O bootstrap em notação formal
 
-Se $X_1,\ldots,X_n\overset{iid}{\sim}F$ e $\widehat\theta=T(\widehat F_n)$, então:
+Escrevendo $T$ como funcional de uma distribuição, se $X_1,\ldots,X_n\overset{iid}{\sim}F$ e $\widehat\theta=T(\widehat F_n)$, então:
 
 $$
 X_1^*,\ldots,X_n^*\mid X_1,\ldots,X_n
@@ -339,7 +463,7 @@ $$
 
 O método aproxima a lei de $\widehat\theta-\theta$ pela lei condicional de $\widehat\theta^*-\widehat\theta$.
 
-$F$ é a distribuição populacional desconhecida; $\widehat F_n$ é sua versão empírica; $T$ é o funcional que define o parâmetro; $\theta=T(F)$, $\widehat\theta=T(\widehat F_n)$ e $\widehat\theta^*$ é a estimativa em uma amostra bootstrap. O asterisco sempre identifica o mundo reamostrado.
+$F$ é a distribuição populacional desconhecida; $\widehat F_n$ é sua versão empírica; e $\widehat F_n^*$ é a distribuição empírica da réplica. A notação i.i.d. significa independentes e identicamente distribuídas. O funcional $T$ é a mesma regra do slide anterior: $\theta=T(F)$, $\widehat\theta=T(\widehat F_n)$ e $\widehat\theta^*=T(\widehat F_n^*)$.
 
 ## O alvo é uma distribuição condicional
 
@@ -351,7 +475,9 @@ $$
 \mathcal L\!\left(\sqrt n(\widehat\theta-\theta)\right).
 $$
 
-Para qualquer variável aleatória genérica $Z$, $\mathcal L(Z)$ denota sua distribuição de probabilidade. Na fórmula, aplicamos esse operador aos erros padronizados do estimador bootstrap e do estimador original. A barra $\mid X_1,\ldots,X_n$ indica que condicionamos nos dados observados; $\Rightarrow$ indica convergência em distribuição. A convergência não é automática para toda estatística ou processo de dados.
+Para qualquer variável aleatória genérica $Z$, $\mathcal L(Z)$ denota sua distribuição de probabilidade. Na fórmula, aplicamos esse operador aos erros padronizados do estimador bootstrap e do estimador original. A barra $\mid X_1,\ldots,X_n$ indica que condicionamos nos dados observados; $\Rightarrow$ indica convergência em distribuição.
+
+Essa aproximação é assintótica: descreve o que ocorre à medida que $n$ cresce. Em amostras finitas, sua qualidade depende da estatística, da distribuição e do esquema de reamostragem.
 
 ## O código mínimo é curto
 
@@ -360,9 +486,9 @@ rng = np.random.default_rng(1105)
 replicas = []
 
 for _ in range(5000):
-    m = rng.choice(manhattan, len(manhattan), replace=True)
-    b = rng.choice(brooklyn, len(brooklyn), replace=True)
-    replicas.append(np.median(m) - np.median(b))
+    boot_m = rng.choice(manhattan, len(manhattan), replace=True)
+    boot_b = rng.choice(brooklyn, len(brooklyn), replace=True)
+    replicas.append(np.median(boot_m) - np.median(boot_b))
 ```
 
 O raciocínio estatístico é mais importante que o laço.
@@ -370,8 +496,8 @@ O raciocínio estatístico é mais importante que o laço.
 ## O tamanho da réplica continua sendo n
 
 - $n$ é o tamanho de cada amostra bootstrap;
-- $B$ é o número de réplicas;
-- aumentar $B$ reduz erro de simulação;
+- $R$ é o número de réplicas;
+- aumentar $R$ reduz erro de simulação;
 - aumentar $n$ reduz incerteza estatística.
 
 Esses dois papéis não devem ser confundidos.
@@ -400,30 +526,30 @@ finish("distribuicao-bootstrap.png")
 
 ## O erro padrão vem das réplicas
 
-Se $\widehat\theta_1^*,\ldots,\widehat\theta_B^*$ são as réplicas:
+Se $\widehat\theta_1^*,\ldots,\widehat\theta_R^*$ são as réplicas:
 
 $$
 \widehat{\operatorname{SE}}_{boot}(\widehat\theta)
-=\sqrt{\frac{1}{B-1}\sum_{b=1}^{B}
+=\sqrt{\frac{1}{R-1}\sum_{b=1}^{R}
 (\widehat\theta_b^*-\overline{\theta^*})^2}.
 $$
 
 Aqui, o erro padrão bootstrap é aproximadamente US$ 5,5.
 
-$B$ é o número de réplicas, $\widehat\theta_b^*$ é a estimativa da réplica $b$ e $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas.
+$R$ é o número de réplicas, $\widehat\theta_b^*$ é a estimativa da réplica $b$ e $\overline{\theta^*}=R^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas.
 
 ## O bootstrap também pode estimar viés
 
 O viés de um estimador é
 
-$$\operatorname{Bias}(\widehat\theta)=E(\widehat\theta)-\theta.$$
+$$B_F(\widehat\theta)=\mathbb{E}_F(\widehat\theta)-\theta.$$
 
-Como $\theta$ e a esperança populacional são desconhecidos, o bootstrap aproxima:
+$\mathbb{E}_F$ é a esperança em amostras repetidas da população $F$. Como $\theta$ e essa esperança são desconhecidos, o bootstrap aproxima:
 
-$$\widehat{\operatorname{Bias}}_{boot}
+$$\widehat B_{boot}(\widehat\theta)
 =\overline{\theta^*}-\widehat\theta,$$
 
-onde $\overline{\theta^*}=B^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas. Valor próximo de zero sugere pouco deslocamento **capturável pela amostra**.
+onde $\overline{\theta^*}=R^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas. Valor próximo de zero sugere pouco deslocamento **capturável pela amostra**.
 
 ::: {.statement}
 O bootstrap pode diagnosticar viés do estimador; não detecta nem corrige viés de seleção que a amostra não revela.
@@ -494,7 +620,7 @@ upper = np.array([np.quantile(boot[:b], .975) for b in checkpoints])
 plt.figure(figsize=(9.4, 5.2))
 plt.plot(checkpoints, lower, color=ORANGE, lw=2, label="limite inferior")
 plt.plot(checkpoints, upper, color=BLUE, lw=2, label="limite superior")
-plt.xlabel("Número de réplicas B")
+plt.xlabel("Número de réplicas R")
 plt.ylabel("Limite do IC (US$)")
 plt.title("Mais réplicas reduzem o ruído de Monte Carlo")
 plt.legend()
@@ -507,7 +633,7 @@ finish("estabilidade-b.png")
 
 ![](assets/aula12-bootstrap/estabilidade-media-bootstrap-tcl.png){fig-alt="Limites inferior e superior do intervalo bootstrap para a diferença de médias conforme cresce o número de réplicas, estabilizando próximos aos limites horizontais obtidos pelo Teorema Central do Limite." width="100%"}
 
-Com a amostra fixa, aumentar $B$ reduz a oscilação de Monte Carlo. A proximidade com o TCL ocorre porque a diferença de médias tem distribuição aproximadamente Normal — não porque $B$ obrigue os métodos a coincidir.
+Com a amostra fixa, aumentar $R$ reduz a oscilação de Monte Carlo. A proximidade com o TCL ocorre porque a diferença de médias tem distribuição aproximadamente Normal — não porque $R$ obrigue os métodos a coincidir.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -521,19 +647,19 @@ se_tcl = np.sqrt(
 ci_tcl = np.array([mean_hat - 1.96*se_tcl,
                    mean_hat + 1.96*se_tcl])
 
-B_max = 5000
+n_rep_max = 5000
 mean_boot = (
-    rng.choice(manhattan, (B_max, len(manhattan)), replace=True).mean(axis=1)
-    - rng.choice(brooklyn, (B_max, len(brooklyn)), replace=True).mean(axis=1)
+    rng.choice(manhattan, (n_rep_max, len(manhattan)), replace=True).mean(axis=1)
+    - rng.choice(brooklyn, (n_rep_max, len(brooklyn)), replace=True).mean(axis=1)
 )
 checkpoints = np.array([25, 50, 100, 200, 400, 800,
                         1200, 2000, 3000, 5000])
-ci_boot_B = np.array([
-    np.quantile(mean_boot[:B], [.025, .975]) for B in checkpoints
+ci_boot_by_rep = np.array([
+    np.quantile(mean_boot[:n_rep], [.025, .975]) for n_rep in checkpoints
 ])
 
-plt.plot(checkpoints, ci_boot_B[:, 0], "o-", label="Bootstrap: inferior")
-plt.plot(checkpoints, ci_boot_B[:, 1], "o-", label="Bootstrap: superior")
+plt.plot(checkpoints, ci_boot_by_rep[:, 0], "o-", label="Bootstrap: inferior")
+plt.plot(checkpoints, ci_boot_by_rep[:, 1], "o-", label="Bootstrap: superior")
 plt.axhline(ci_tcl[0], ls="--", label="TCL: inferior")
 plt.axhline(ci_tcl[1], ls="--", label="TCL: superior")
 plt.xscale("log"); plt.legend()
@@ -546,7 +672,7 @@ finish("estabilidade-media-bootstrap-tcl.png")
 
 ![](assets/aula12-bootstrap/tamanho-largura.png){fig-alt="Boxplots da largura do intervalo bootstrap para diferentes tamanhos de amostra por distrito."}
 
-Depois de estabilizar $B$, ampliar a amostra é o que realmente estreita o intervalo.
+Depois de estabilizar $R$, ampliar a amostra é o que realmente estreita o intervalo.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -559,7 +685,7 @@ for n in sizes:
     for repeat in range(6):
         m = rng.choice(manhattan, n, replace=False)
         b = rng.choice(brooklyn, n, replace=False)
-        values = bootstrap_difference(m, b, B=250, seed=1000 + repeat + n)
+        values = bootstrap_difference(m, b, n_rep=250, seed=1000 + repeat + n)
         q = np.quantile(values, [.025, .975])
         widths_n.append(q[1] - q[0])
     widths.append(widths_n)
@@ -574,7 +700,195 @@ finish("tamanho-largura.png")
 
 </details>
 
-## Percentil não é o único intervalo
+## Correção pontual do viés bootstrap {.smaller}
+
+::: {.columns}
+::: {.column width="49%"}
+::: {.callout-note title="1. Detecte o deslocamento"}
+Compare a média das réplicas com a estimativa original:
+
+$$
+\widehat B_{boot}(\widehat\theta)
+=\overline{\theta^*}-\widehat\theta.
+$$
+
+Se $\widehat B_{boot}>0$, as réplicas ficam, em média, acima de $\widehat\theta$. Se $\widehat B_{boot}<0$, ficam abaixo.
+:::
+:::
+
+::: {.column width="49%"}
+::: {.callout-tip title="2. Corrija na direção oposta"}
+Uma correção pontual usual é
+
+$$
+\widehat\theta_{corr}
+=\widehat\theta-\widehat B_{boot}(\widehat\theta)
+=2\widehat\theta-\overline{\theta^*}.
+$$
+
+No exemplo: $\widehat\theta=40$, $\overline{\theta^*}=39{,}74$ e $\widehat B_{boot}=-0{,}26$. Assim, $\widehat\theta_{corr}=40{,}26$ dólares.
+:::
+:::
+:::
+
+::: {.callout-warning title="A correção não é automática"}
+Compare o viés estimado com o erro padrão e verifique sua estabilidade. A correção pode aumentar o MSE quando o viés é pequeno ou estimado com muito ruído. Ela também não corrige viés de seleção ou de mensuração ausente da amostra.
+:::
+
+## Exercício: diagnóstico e correção do viés {.quiz-question .smaller}
+
+Foram geradas $R=2.000$ réplicas para uma estimativa $\widehat\theta=50$. A média das réplicas foi $\overline{\theta^*}=52$ e o erro padrão bootstrap foi $\widehat{SE}_{boot}=1$.
+
+Qual é o diagnóstico e qual é a estimativa corrigida?
+
+- [$\widehat B_{boot}=-2$ e $\widehat\theta_{corr}=52$]{data-explanation="O viés estimado usa média das réplicas menos estimativa original: 52 − 50 = 2."}
+- [$\widehat B_{boot}=2$ e $\widehat\theta_{corr}=48$]{.correct data-explanation="As réplicas ficam 2 unidades acima da estimativa. A correção desloca no sentido oposto: 50 − 2 = 48. Como o deslocamento equivale a dois erros padrão, merece investigação."}
+- [$\widehat B_{boot}=2$ e $\widehat\theta_{corr}=52$]{data-explanation="A correção subtrai, em vez de somar, o viés estimado."}
+- [$\widehat B_{boot}=1$ e $\widehat\theta_{corr}=49$]{data-explanation="O erro padrão mede dispersão entre réplicas; ele não substitui o deslocamento usado para estimar o viés."}
+
+## A correção pontual não garante a cobertura {.smaller .correction-motivation}
+
+Corrigir $\widehat\theta$ trata o deslocamento da **estimativa pontual**. Um intervalo também precisa posicionar corretamente suas duas caudas. O intervalo percentil funciona bem quando as réplicas representam a posição e a forma da distribuição amostral. Duas diferenças podem prejudicar sua cobertura.
+
+::: {.columns}
+::: {.column width="49%"}
+::: {.callout-warning title="Deslocamento"}
+O centro das réplicas pode não coincidir com a estimativa observada:
+
+$$\mathbb E_*(\widehat\theta^*)-\widehat\theta\neq0.$$
+
+Nesse caso, os quantis bootstrap carregam esse deslocamento. A correção deve considerar onde $\widehat\theta$ aparece dentro da distribuição das réplicas.
+:::
+:::
+
+::: {.column width="49%"}
+::: {.callout-note title="Variabilidade não constante"}
+A sensibilidade do estimador pode mudar conforme os dados mudam. Uma cauda pode se alongar mais do que a outra, de modo que um único erro-padrão não descreve igualmente as duas direções.
+
+O *jackknife* ajuda a detectar essa mudança de variabilidade.
+:::
+:::
+:::
+
+::: {.callout-tip title="Consequência para os intervalos"}
+Quando deslocamento e mudança de variabilidade são pequenos, os métodos tendem a concordar. Quando são relevantes, usar os quantis sem ajuste ou impor simetria pode produzir cobertura diferente do nível nominal.
+:::
+
+## Quatro formas de construir o intervalo {.smaller .method-overview}
+
+Partimos de $\widehat\theta$ e das réplicas $\widehat\theta_1^*,\ldots,\widehat\theta_R^*$. Aqui, $q_\gamma^*$ é o quantil de ordem $\gamma$ dessas réplicas.
+
+| Método | Informação usada | Cálculo dos limites | O que o método faz |
+|---|---|---|---|
+| **Percentil** | quantis de $\widehat\theta_b^*$ | $[q_{\alpha/2}^*,q_{1-\alpha/2}^*]$ | toma os 95% centrais das réplicas; acompanha a assimetria, mas conserva o deslocamento |
+| **Básico** | quantis do erro $\widehat\theta_b^*-\widehat\theta$ | $[2\widehat\theta-q_{1-\alpha/2}^*,2\widehat\theta-q_{\alpha/2}^*]$ | reflete as distâncias das caudas em torno de $\widehat\theta$ |
+| **Normal** | $\widehat{SE}_{boot}$, o desvio-padrão das réplicas | $\widehat\theta\pm z_{1-\alpha/2}\widehat{SE}_{boot}$ | constrói uma faixa simétrica; funciona melhor com pouco viés e forma aproximadamente Normal |
+| **BCa** (*bias-corrected and accelerated*, corrigido por viés e aceleração) | posição de $\widehat\theta$ e estimativas *jackknife* | $[q_{\alpha_1^{BCa}}^*,q_{\alpha_2^{BCa}}^*]$ | troca 2,5% e 97,5% por níveis ajustados para viés e mudança de variabilidade |
+
+## Como o intervalo básico corrige o deslocamento {.smaller}
+
+O bootstrap aproxima o erro amostral pelo erro observado nas réplicas:
+
+$$\widehat\theta-\theta\ \approx\ \widehat\theta^*-\widehat\theta.$$
+
+Se $q_{\alpha/2}^*$ e $q_{1-\alpha/2}^*$ são quantis de $\widehat\theta^*$, então os quantis do erro bootstrap são $q_\gamma^*-\widehat\theta$. Ao isolar $\theta$:
+
+$$
+IC_{bas}
+=\left[\widehat\theta-(q_{1-\alpha/2}^*-\widehat\theta),\
+\widehat\theta-(q_{\alpha/2}^*-\widehat\theta)\right]
+=\left[2\widehat\theta-q_{1-\alpha/2}^*,\
+2\widehat\theta-q_{\alpha/2}^*\right].
+$$
+
+::: {.callout-note title="A reflexão das distâncias"}
+Se $\widehat\theta=10$ e os quantis bootstrap são $[8,13]$, os erros nas caudas são $-2$ e $+3$. O intervalo básico reflete essas distâncias:
+
+$$IC_{bas}=[10-3,\ 10-(-2)]=[7,12].$$
+
+A cauda que avançava 3 unidades acima de $\widehat\theta$ passa a avançar 3 unidades abaixo, e a distância de 2 unidades abaixo passa para cima.
+:::
+
+## O BCa ajusta os níveis dos quantis {.smaller .bca-detail}
+
+::: {.columns}
+::: {.column width="49%"}
+**1. Correção de viés**
+
+$$p_0=\frac{\#\{\widehat\theta_b^*<\widehat\theta\}}{R},
+\qquad z_0=\Phi^{-1}(p_0).$$
+
+Se $p_0=0{,}5$, então $z_0=0$. Outro valor indica que $\widehat\theta$ está deslocado dentro da distribuição bootstrap.
+
+**2. Aceleração**
+
+Removemos uma observação por vez e calculamos $\widehat\theta_{(-i)}$:
+
+$$a=\frac{\sum_i(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^3}
+{6[\sum_i(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^2]^{3/2}}$$
+
+$\widehat\theta_{(-i)}$ é a estimativa sem a observação $i$; $\overline\theta_{(-\cdot)}=n^{-1}\sum_{i=1}^n\widehat\theta_{(-i)}$ é a média das $n$ estimativas *jackknife*. O valor de $a$ mede mudanças na variabilidade e permite ajustes diferentes nas duas caudas.
+:::
+
+::: {.column width="49%"}
+**3. Novos níveis dos quantis**
+
+Para $\alpha_1=\alpha/2$ e $\alpha_2=1-\alpha/2$:
+
+$$\alpha_j^{BCa}=\Phi\!\left[z_0+\frac{z_0+z_{\alpha_j}}{1-a(z_0+z_{\alpha_j})}\right].$$
+
+Depois selecionamos os quantis nesses novos níveis:
+
+$$IC_{BCa}=[q_{\alpha_1^{BCa}}^*,q_{\alpha_2^{BCa}}^*].$$
+
+$\Phi$ é a CDF Normal padrão e $z_\gamma=\Phi^{-1}(\gamma)$.
+
+::: {.callout-important title="Nesta aula"}
+Obtivemos $z_0=-0{,}159$ e $a=0$ por causa dos empates nas medianas. Os níveis 2,5% e 97,5% tornam-se 1,13% e 94,96%, produzindo aproximadamente $[28,50]$ dólares.
+:::
+:::
+:::
+
+## Exercício: um BCa simplificado {.smaller}
+
+Em um bootstrap com $R=1.000$ réplicas, 600 estimativas ficaram abaixo de $\widehat\theta$. Considere aceleração $a=0$ e um intervalo de 95%.
+
+1. Calcule $p_0$ e $z_0=\Phi^{-1}(p_0)$.
+2. Calcule os níveis ajustados:
+
+   $$\alpha_j^{BCa}=\Phi(z_0+z_0+z_{\alpha_j}),
+   \qquad \alpha_1=0{,}025,\quad \alpha_2=0{,}975.$$
+
+3. Sabendo que $q_{0{,}073}^*=18{,}4$ e $q_{0{,}993}^*=27{,}9$, encontre o intervalo BCa.
+
+::: {.callout-note title="Valores para a conta"}
+$\Phi^{-1}(0{,}60)\approx0{,}253$, $z_{0{,}025}\approx-1{,}96$, $z_{0{,}975}\approx1{,}96$, $\Phi(-1{,}454)\approx0{,}073$ e $\Phi(2{,}466)\approx0{,}993$.
+:::
+
+## Solução: os percentis se deslocam {.smaller}
+
+**1. Posição da estimativa observada**
+
+$$p_0=\frac{600}{1.000}=0{,}60,
+\qquad z_0=\Phi^{-1}(0{,}60)\approx0{,}253.$$
+
+**2. Níveis ajustados**, usando $a=0$:
+
+$$\alpha_1^{BCa}=\Phi(2\times0{,}253-1{,}96)
+=\Phi(-1{,}454)\approx0{,}073,$$
+
+$$\alpha_2^{BCa}=\Phi(2\times0{,}253+1{,}96)
+=\Phi(2{,}466)\approx0{,}993.$$
+
+**3. Intervalo**
+
+$$IC_{BCa}=[q_{0{,}073}^*,q_{0{,}993}^*]=[18{,}4,27{,}9].$$
+
+::: {.callout-tip title="Interpretação"}
+Como $z_0>0$, $\widehat\theta$ está acima do centro das réplicas. Por isso, os dois níveis dos quantis se deslocam para cima: de 2,5% e 97,5% para 7,3% e 99,3%.
+:::
+
+## Resumo das técnicas de intervalo
 
 | Método | Ideia | Atenção |
 |---|---|---|
@@ -585,29 +899,118 @@ finish("tamanho-largura.png")
 
 ## Métodos podem discordar
 
-![](assets/aula12-bootstrap/metodos-intervalo.png){fig-alt="Comparação dos intervalos percentil, básico e Normal para a diferença de medianas."}
+![](assets/aula12-bootstrap/metodos-intervalo.png){height=300 fig-alt="Comparação dos intervalos percentil, básico, Normal e BCa para a diferença de medianas."}
 
-Discordância relevante é um sinal para investigar assimetria, viés e tamanho amostral.
+Discordância relevante é um sinal para investigar assimetria, viés e tamanho amostral. Nesta amostra, os empates tornam o *jackknife* da mediana degenerado; usamos $a=0$, e o BCa conserva apenas a correção de viés.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
 
 ```python
+from statistics import NormalDist
+
 se_boot = boot.std(ddof=1)
+
+# BCa: z0 vem das réplicas e a vem do jackknife
+normal = NormalDist()
+prop_below = np.clip(
+    np.mean(boot < theta_hat),
+    1 / (2 * len(boot)),
+    1 - 1 / (2 * len(boot)),
+)
+z0 = normal.inv_cdf(prop_below)
+
+jack_m = np.array([
+    np.median(np.delete(manhattan, i)) - np.median(brooklyn)
+    for i in range(len(manhattan))
+])
+jack_b = np.array([
+    np.median(manhattan) - np.median(np.delete(brooklyn, i))
+    for i in range(len(brooklyn))
+])
+jack = np.concatenate([jack_m, jack_b])
+jack_center = jack.mean()
+jack_diff = jack_center - jack
+jack_scale = np.sum(jack_diff**2)
+a = 0.0 if jack_scale == 0 else (
+    np.sum(jack_diff**3) / (6 * jack_scale**1.5)
+)
+
+z_alpha = [normal.inv_cdf(.025), normal.inv_cdf(.975)]
+alpha_bca = [
+    normal.cdf(z0 + (z0 + z) / (1 - a * (z0 + z)))
+    for z in z_alpha
+]
+ci_bca = np.quantile(boot, alpha_bca)
+
 intervals = {
     "Percentil": ci,
     "Básico": np.array([2 * theta_hat - ci[1], 2 * theta_hat - ci[0]]),
     "Normal": np.array([theta_hat - 1.96 * se_boot, theta_hat + 1.96 * se_boot]),
+    "BCa (a = 0)": ci_bca,
 }
 plt.figure(figsize=(9, 4.7))
 for y, (name, limits) in enumerate(intervals.items()):
     plt.plot(limits, [y, y], color=BLUE, lw=5)
     plt.scatter(theta_hat, y, color=ORANGE, s=90, zorder=3)
-plt.yticks(range(3), intervals.keys())
+plt.yticks(range(len(intervals)), intervals.keys())
 plt.axvline(0, color=INK, ls="--")
 plt.xlabel("Diferença de medianas (US$)")
 plt.title("Métodos diferentes podem produzir limites diferentes")
 finish("metodos-intervalo.png")
+```
+
+</details>
+
+## Recentrar os dados impõe a hipótese nula {.smaller}
+
+Queremos testar a diferença entre as medianas populacionais de Manhattan e Brooklyn:
+
+$$
+H_0:\Delta=m_M-m_B=0
+\qquad\text{contra}\qquad
+H_A:\Delta\neq0.
+$$
+
+O bootstrap usual reamostra os dados observados e reproduz uma diferença próxima de $\widehat\Delta=40$. Para simular sob $H_0$, recentralizamos cada grupo:
+
+$$X_{gi}^{(0)}=X_{gi}-\widetilde X_g,
+\qquad g\in\{M,B\}.$$
+
+$m_M$ e $m_B$ são as medianas populacionais; $\widetilde X_g$ é a mediana amostral do grupo $g$. Após a recentralização, ambos os grupos têm mediana zero. Reamostramos separadamente os valores $X_{gi}^{(0)}$ e recalculamos a diferença de medianas.
+
+::: {.statement}
+O bootstrap aproxima naturalmente a distribuição sob a alternativa observada. O teste exige modificar os dados para impor $H_0$.
+:::
+
+## O p-valor vem da distribuição bootstrap sob H0 {.smaller}
+
+![](assets/aula12-bootstrap/pvalor-bootstrap-h0.png){height=300 fig-alt="Histograma da distribuição bootstrap da diferença de medianas após recentralização sob a hipótese nula, com os limiares mais ou menos 40 dólares muito distantes da distribuição simulada."}
+
+Com $R=10.000$ réplicas, nenhuma diferença nula atingiu $|T_{obs}|=40$. Usando a correção de Monte Carlo,
+
+$$
+\widehat p_{boot}
+=\frac{1+\sum_{b=1}^{R}\mathbb 1\{|T_b^{*(0)}|\geq|T_{obs}|\}}{R+1}
+=\frac{1}{10.001}\approx0{,}0001.
+$$
+
+$T_{obs}$ é a diferença observada; $T_b^{*(0)}$ é a diferença na réplica $b$ gerada sob $H_0$; e $R$ é o total de réplicas. O resultado fornece forte evidência contra a igualdade das medianas, sob as hipóteses de amostragem e independência adotadas.
+
+<details class="code-fold">
+<summary>Código do gráfico e do p-valor</summary>
+
+```python
+manhattan_h0 = manhattan - np.median(manhattan)
+brooklyn_h0 = brooklyn - np.median(brooklyn)
+test_rng = np.random.default_rng(1212)
+n_rep_test = 10_000
+idx_m = test_rng.integers(0, len(manhattan_h0), (n_rep_test, len(manhattan_h0)))
+idx_b = test_rng.integers(0, len(brooklyn_h0), (n_rep_test, len(brooklyn_h0)))
+boot_h0 = (np.median(manhattan_h0[idx_m], axis=1)
+           - np.median(brooklyn_h0[idx_b], axis=1))
+extreme_h0 = np.abs(boot_h0) >= np.abs(theta_hat)
+p_boot = (1 + extreme_h0.sum()) / (len(boot_h0) + 1)
 ```
 
 </details>
@@ -621,6 +1024,8 @@ P_F\{\theta\in CI(X_1,\ldots,X_n)\}\approx 1-\alpha.
 $$
 
 Não basta que o histograma bootstrap pareça suave ou convincente.
+
+$P_F$ é a probabilidade sob amostras repetidas de $F$; $CI(X_1,\ldots,X_n)$ é o intervalo calculado com a amostra; e $1-\alpha$ é a cobertura nominal.
 
 ## Podemos testar a cobertura didaticamente
 
@@ -638,7 +1043,7 @@ cover = []
 for i in range(20):
     m = rng.choice(focus.loc[focus["neighbourhood_group"].eq("Manhattan"), "price"], 250, replace=False)
     b = rng.choice(focus.loc[focus["neighbourhood_group"].eq("Brooklyn"), "price"], 250, replace=False)
-    values = bootstrap_difference(m, b, B=300, seed=3000 + i)
+    values = bootstrap_difference(m, b, n_rep=300, seed=3000 + i)
     lo, hi = np.quantile(values, [.025, .975])
     cover.append((lo, hi, lo <= population_median <= hi))
 plt.figure(figsize=(9, 6.3))
@@ -701,7 +1106,7 @@ axes[0].set_xlim(.5, 6.5)
 axes[0].set_xlabel("Anúncios do mesmo anfitrião na amostra")
 axes[0].set_ylabel("Anfitriões")
 axes[0].set_title("Há agrupamento por anfitrião")
-naive = bootstrap_difference(manhattan, brooklyn, B=1000, seed=9)
+naive = bootstrap_difference(manhattan, brooklyn, n_rep=1000, seed=9)
 cluster_estimates = []
 for _ in range(100):
     pieces = []
@@ -733,7 +1138,7 @@ Vários anúncios pertencem ao mesmo anfitrião e podem ser dependentes. Qual es
 
 - [Reamostrar anúncios individualmente e ignorar o anfitrião]{data-explanation="Isso trata unidades dependentes como independentes e pode subestimar a incerteza."}
 - [Reamostrar anfitriões e carregar seus anúncios em cada réplica]{.correct data-explanation="O bootstrap por conglomerados preserva a dependência interna e imita melhor a coleta."}
-- [Aumentar apenas o número de réplicas $B$]{data-explanation="Mais réplicas reduzem erro de Monte Carlo, mas não corrigem a unidade de reamostragem."}
+- [Aumentar apenas o número de réplicas $R$]{data-explanation="Mais réplicas reduzem erro de Monte Carlo, mas não corrigem a unidade de reamostragem."}
 - [Remover anfitriões com mais de um anúncio]{data-explanation="Excluir unidades muda a população-alvo e não é uma correção geral para dependência."}
 
 ## Casos que exigem outra estratégia
@@ -754,7 +1159,7 @@ Vários anúncios pertencem ao mesmo anfitrião e podem ser dependentes. Qual es
 3. A amostra representa essa população?
 4. A estatística é regular neste problema?
 5. O esquema bootstrap imita a coleta original?
-6. Os resultados são estáveis em $B$ e em análises de sensibilidade?
+6. Os resultados são estáveis em $R$ e em análises de sensibilidade?
 
 ## A conclusão substantiva
 
@@ -763,7 +1168,8 @@ Na amostra didática, a acomodação inteira mediana foi:
 - US$ 180 em Manhattan;
 - US$ 140 no Brooklyn;
 - diferença estimada de US$ 40;
-- IC bootstrap percentil de 95%: **US$ 30 a US$ 51**.
+- IC bootstrap percentil de 95%: **US$ 30 a US$ 51**;
+- teste bootstrap recentralizado: **$\widehat p\approx0{,}0001$**.
 
 O resultado descreve anúncios de 2019 após os filtros — não preços atuais nem reservas efetivas.
 
@@ -783,4 +1189,5 @@ Com a mesma amostra:
 2. construa um intervalo bootstrap percentil;
 3. compare-o ao intervalo da diferença de medianas;
 4. repita reamostrando anfitriões;
-5. explique qual resultado responde melhor a uma pergunta sobre o anúncio típico.
+5. teste $H_0:\Delta=0$ por bootstrap recentralizado;
+6. explique qual resultado responde melhor a uma pergunta sobre o anúncio típico.
