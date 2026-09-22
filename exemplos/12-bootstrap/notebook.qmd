@@ -1,5 +1,5 @@
 ---
-title: "Airbnb NYC 2019: uma introdução ao bootstrap"
+title: "Bootstrap: Airbnb NYC e um teste A/B"
 format:
   html:
     toc: true
@@ -12,7 +12,7 @@ execute:
 
 ## Objetivos e roteiro de estudo
 
-O bootstrap aproxima a distribuição amostral usando a própria amostra como uma população empírica. Este capítulo explica por que reamostramos **com reposição**, como cada réplica é construída, o que a distribuição das réplicas representa e como ela pode ser usada para estimar erro padrão, viés e intervalos de confiança.
+O bootstrap aproxima a distribuição amostral usando a própria amostra como uma população empírica. Este capítulo explica por que reamostramos **com reposição**, como cada réplica é construída e como a distribuição das réplicas pode estimar erro padrão, viés, intervalos de confiança e valores-p. A análise de preços do Airbnb introduz o método; o teste A/B didático da Olist mostra como construir uma distribuição bootstrap sob $H_0$.
 
 O raciocínio deve ser acompanhado em três níveis. A amostra original produz a estimativa observada. Cada reamostra produz uma réplica bootstrap. O conjunto de muitas réplicas aproxima a variabilidade que teríamos ao repetir a coleta sob condições semelhantes. Não confunda a quantidade de réplicas com o tamanho da amostra: aumentar $R$ reduz o ruído da simulação, mas não cria novas observações independentes.
 
@@ -961,6 +961,148 @@ Nenhuma das 10.000 réplicas nulas atingiu uma diferença absoluta de US$ 40. Co
 Um intervalo percentil que não contém zero costuma apontar na mesma direção de um teste bilateral, mas a equivalência não é automática quando intervalo e teste usam construções diferentes. O p-valor acima vem explicitamente de uma distribuição recentralizada sob $H_0$.
 :::
 
+## Exemplo A/B da Olist
+
+Retomamos o experimento didático da Aula 11. Um alerta preventivo de risco de
+atraso seria comparado ao processo atual. A atribuição e os resultados abaixo
+são simulados; a base histórica da Olist fornece o contexto, mas não contém esse
+experimento randomizado.
+
+| Grupo | Processo | Pedidos | Atrasos | Taxa observada |
+|---|---|---:|---:|---:|
+| A | processo atual | 5.000 | 415 | 8,3% |
+| B | alerta preventivo | 5.000 | 345 | 6,9% |
+
+Definimos
+
+$$
+\Delta=p_B-p_A,
+\qquad
+H_0:\Delta=0,
+\qquad
+H_A:\Delta<0.
+$$
+
+$p_A$ e $p_B$ são as probabilidades populacionais de atraso nos dois processos.
+Valores negativos de $\Delta$ favorecem o alerta. A diferença observada é
+
+$$
+\widehat\Delta=0{,}069-0{,}083=-0{,}014,
+$$
+
+ou uma redução de 1,4 ponto percentual.
+
+### Bootstrap usual: intervalo para o efeito
+
+Construímos uma linha por pedido: 1 indica atraso e 0 indica entrega no prazo.
+Depois reamostramos essas linhas com reposição dentro de cada grupo. Esse código
+não usa o atalho Binomial: ele executa literalmente o sorteio das observações.
+
+```{python}
+ab_rng = np.random.default_rng(2026)
+R_ab = 50_000
+n_a = n_b = 5_000
+x_a, x_b = 415, 345
+p_a, p_b = x_a / n_a, x_b / n_b
+delta_ab = p_b - p_a
+
+resultados_a = np.r_[np.ones(x_a, dtype=np.int8), np.zeros(n_a - x_a, dtype=np.int8)]
+resultados_b = np.r_[np.ones(x_b, dtype=np.int8), np.zeros(n_b - x_b, dtype=np.int8)]
+
+boot_effect_ab = np.empty(R_ab)
+for r in range(R_ab):
+    amostra_a = ab_rng.choice(resultados_a, size=n_a, replace=True)
+    amostra_b = ab_rng.choice(resultados_b, size=n_b, replace=True)
+    boot_effect_ab[r] = amostra_b.mean() - amostra_a.mean()
+ci_ab = np.quantile(boot_effect_ab, [0.025, 0.975])
+
+pd.Series({
+    "efeito observado (p.p.)": 100 * delta_ab,
+    "limite inferior 95% (p.p.)": 100 * ci_ab[0],
+    "limite superior 95% (p.p.)": 100 * ci_ab[1],
+})
+```
+
+O intervalo percentil de 95% é $[-2{,}42;-0{,}38]$ pontos percentuais. Ele não
+contém zero e descreve a incerteza ao redor da redução observada. Essa
+distribuição bootstrap fica centrada perto de $\widehat\Delta$, portanto ela
+representa o efeito ajustado aos dados, não o mundo nulo.
+
+### Bootstrap sob H0: valor-p
+
+Sob $H_0$, os dois processos têm a mesma taxa de atraso. Estimamos essa taxa
+combinando os grupos:
+
+$$
+\widehat p_{pool}
+=\frac{x_A+x_B}{n_A+n_B}
+=\frac{415+345}{5.000+5.000}
+=0{,}076.
+$$
+
+Juntamos os 10.000 resultados observados em uma única amostra empírica: 760
+atrasos e 9.240 entregas no prazo. Em cada réplica, sorteamos com reposição dois
+novos grupos de 5.000 pedidos dessa mesma amostra. Como A e B passam a nascer da
+mesma distribuição empírica, a igualdade das médias é verdadeira no mundo nulo.
+
+```{python}
+p_pool_ab = (x_a + x_b) / (n_a + n_b)
+resultados_pool = np.r_[resultados_a, resultados_b]
+boot_null_ab = np.empty(R_ab)
+for r in range(R_ab):
+    amostra_a_0 = ab_rng.choice(resultados_pool, size=n_a, replace=True)
+    amostra_b_0 = ab_rng.choice(resultados_pool, size=n_b, replace=True)
+    boot_null_ab[r] = amostra_b_0.mean() - amostra_a_0.mean()
+extreme_ab = boot_null_ab <= delta_ab
+p_boot_ab = (1 + extreme_ab.sum()) / (R_ab + 1)
+
+pd.Series({
+    "taxa combinada sob H0": p_pool_ab,
+    "réplicas": R_ab,
+    "réplicas tão extremas": int(extreme_ab.sum()),
+    "p-valor bootstrap unilateral": p_boot_ab,
+})
+```
+
+O valor-p usa a cauda esquerda porque $H_A:\Delta<0$:
+
+$$
+\widehat p_{boot}
+=\frac{1+\sum_{b=1}^{R}\mathbb 1\{\Delta_b^{*(0)}\leq\widehat\Delta\}}{R+1}
+=\frac{1+217}{50.001}
+\approx0{,}0044.
+$$
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.5), sharey=True)
+
+axes[0].hist(100 * boot_effect_ab, bins=55, color="#0f6b78", edgecolor="white")
+axes[0].axvline(100 * delta_ab, color="#d95f02", linewidth=3)
+axes[0].axvline(0, color="#17324d", linestyle="--")
+axes[0].set_title("Bootstrap usual")
+axes[0].set_xlabel("Diferença B − A (p.p.)")
+axes[0].set_ylabel("Réplicas")
+
+axes[1].hist(100 * boot_null_ab, bins=55, color="#cbd5da", edgecolor="white")
+axes[1].hist(
+    100 * boot_null_ab[extreme_ab], bins=20,
+    color="#d95f02", edgecolor="white"
+)
+axes[1].axvline(100 * delta_ab, color="#d95f02", linewidth=3)
+axes[1].axvline(0, color="#17324d", linestyle="--")
+axes[1].set_title("Bootstrap sob H0")
+axes[1].set_xlabel("Diferença B − A (p.p.)")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Se o alerta não tivesse efeito, diferenças iguais ou menores que $-1{,}4$ ponto
+percentual surgiriam em aproximadamente 0,44% das reamostragens nulas. O teste
+$z$ da Aula 11 produziu $p\approx0{,}0041$. A proximidade mostra que os dois
+métodos contam a mesma história neste exemplo grande; a pequena diferença vem
+do erro de Monte Carlo do bootstrap.
+:::
+
 ## O que torna a aproximação válida
 
 Para um intervalo de nível nominal $1-\alpha$, a cobertura frequentista é
@@ -989,10 +1131,12 @@ O método de intervalo não corrige uma unidade de reamostragem inadequada. Perc
 1. Por que uma réplica bootstrap de tamanho $n$ é sorteada com reposição?
 2. Se anúncios do mesmo anfitrião são dependentes, qual deve ser a unidade de reamostragem?
 3. Por que o bootstrap usual precisa ser recentralizado para calcular o p-valor de $H_0:\Delta=0$?
+4. No A/B binário, por que usamos a taxa combinada ao gerar réplicas sob $H_0$?
 
 <details><summary>Respostas comentadas</summary>
 
 1. Com reposição, algumas observações se repetem e outras ficam ausentes, fazendo a estatística variar. Sem reposição, teríamos apenas uma reordenação da amostra.
 2. O anfitrião deve ser reamostrado como conglomerado, carregando seus anúncios. Aumentar $R$ não corrige dependência ignorada.
 3. O bootstrap usual fica centrado perto da diferença observada e aproxima a distribuição sob a alternativa ajustada aos dados. A recentralização força os grupos a satisfazerem $H_0$, permitindo medir quão extremo é $T_{obs}$ nessa distribuição nula.
+4. Sob $H_0$, os grupos compartilham a mesma probabilidade de atraso. A taxa combinada estima essa probabilidade usando todos os resultados e permite gerar dois grupos binários comparáveis sem preservar a diferença observada.
 </details>

@@ -35,6 +35,7 @@ Não queremos apenas uma diferença observada. Queremos saber quão precisa ela 
 - construir réplicas bootstrap;
 - formalizar o método;
 - estimar erro padrão, intervalo de confiança e p-valor;
+- retomar o teste A/B da Aula 11 com bootstrap;
 - reconhecer quando o bootstrap é — e não é — válido.
 
 ## Airbnb NYC 2019 {.smaller}
@@ -213,7 +214,7 @@ $\widetilde X_g$ é a mediana amostral do grupo $g$; $n_g$ é seu tamanho; e $\w
 As amostras devem ser independentes; cada distribuição deve ser contínua, ter mediana única e densidade positiva e regular nessa região. Além disso, precisamos escolher como estimar $f_g$, inclusive a largura de banda.
 :::
 
-## A densidade na mediana controla a precisão
+## A densidade na mediana controla a precisão {.smaller}
 
 ![](assets/aula12-bootstrap/densidade-mediana-precisao.png){fig-alt="À esquerda, duas distribuições com mediana zero, uma concentrada e outra bimodal com pouca densidade no centro. À direita, as medianas de amostras da distribuição concentrada ficam próximas de zero, enquanto as medianas da distribuição bimodal variam muito mais."}
 
@@ -348,7 +349,9 @@ $$
 :::
 :::
 
-::: {.callout-note title="Exemplo com n = 8"}
+## Exemplo: quantas observações distintas aparecem? {.smaller}
+
+::: {.callout-note title="Uma réplica com n = 8"}
 Uma réplica possível é $(A,C,C,D,F,F,F,H)$: aparecem 5 das 8 observações originais. Considerando todas as réplicas possíveis,
 
 $$
@@ -397,7 +400,7 @@ $T$ é a regra de cálculo mantida fixa, como média, mediana ou diferença de m
 Aqui, $T(\text{dados})=\operatorname{mediana}(\text{Manhattan})-\operatorname{mediana}(\text{Brooklyn})$. Em cada réplica, reamostramos os anúncios dentro de cada distrito e aplicamos novamente a mesma regra $T$.
 :::
 
-## O bootstrap em notação formal
+## O bootstrap em notação formal {.smaller}
 
 Escrevendo $T$ como funcional de uma distribuição, se $X_1,\ldots,X_n\overset{iid}{\sim}F$ e $\widehat\theta=T(\widehat F_n)$, então:
 
@@ -482,7 +485,7 @@ Aqui, o erro padrão bootstrap é aproximadamente US$ 5,5.
 
 $R$ é o número de réplicas, $\widehat\theta_b^*$ é a estimativa da réplica $b$ e $\overline{\theta^*}=R^{-1}\sum_b\widehat\theta_b^*$ é a média das réplicas.
 
-## O bootstrap também pode estimar viés
+## O bootstrap também pode estimar viés {.smaller}
 
 O viés de um estimador é
 
@@ -758,90 +761,13 @@ $$IC_{bas}=[10-3,\ 10-(-2)]=[7,12].$$
 A cauda que avançava 3 unidades acima de $\widehat\theta$ passa a avançar 3 unidades abaixo, e a distância de 2 unidades abaixo passa para cima.
 :::
 
-## O BCa ajusta os níveis dos quantis {.smaller .bca-detail}
-
-::: {.columns}
-::: {.column width="49%"}
-**1. Correção de viés**
-
-$$p_0=\frac{\#\{\widehat\theta_b^*<\widehat\theta\}}{R},
-\qquad z_0=\Phi^{-1}(p_0).$$
-
-Se $p_0=0{,}5$, então $z_0=0$. Outro valor indica que $\widehat\theta$ está deslocado dentro da distribuição bootstrap.
-
-**2. Aceleração**
-
-Removemos uma observação por vez e calculamos $\widehat\theta_{(-i)}$:
-
-$$a=\frac{\sum_i(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^3}
-{6[\sum_i(\overline\theta_{(-\cdot)}-\widehat\theta_{(-i)})^2]^{3/2}}$$
-
-$\widehat\theta_{(-i)}$ é a estimativa sem a observação $i$; $\overline\theta_{(-\cdot)}=n^{-1}\sum_{i=1}^n\widehat\theta_{(-i)}$ é a média das $n$ estimativas *jackknife*. O valor de $a$ mede mudanças na variabilidade e permite ajustes diferentes nas duas caudas.
-:::
-
-::: {.column width="49%"}
-**3. Novos níveis dos quantis**
-
-Para $\alpha_1=\alpha/2$ e $\alpha_2=1-\alpha/2$:
-
-$$\alpha_j^{BCa}=\Phi\!\left[z_0+\frac{z_0+z_{\alpha_j}}{1-a(z_0+z_{\alpha_j})}\right].$$
-
-Depois selecionamos os quantis nesses novos níveis:
-
-$$IC_{BCa}=[q_{\alpha_1^{BCa}}^*,q_{\alpha_2^{BCa}}^*].$$
-
-$\Phi$ é a CDF Normal padrão e $z_\gamma=\Phi^{-1}(\gamma)$.
-
-::: {.callout-important title="Nesta aula"}
-Obtivemos $z_0=-0{,}159$ e $a=0$ por causa dos empates nas medianas. Os níveis 2,5% e 97,5% tornam-se 1,13% e 94,96%, produzindo aproximadamente $[28,50]$ dólares.
-:::
-:::
-:::
-
-## Exercício: um BCa simplificado {.smaller}
-
-Em um bootstrap com $R=1.000$ réplicas, 600 estimativas ficaram abaixo de $\widehat\theta$. Considere aceleração $a=0$ e um intervalo de 95%.
-
-1. Calcule $p_0$ e $z_0=\Phi^{-1}(p_0)$.
-2. Calcule os níveis ajustados:
-
-   $$\alpha_j^{BCa}=\Phi(z_0+z_0+z_{\alpha_j}),
-   \qquad \alpha_1=0{,}025,\quad \alpha_2=0{,}975.$$
-
-3. Sabendo que $q_{0{,}073}^*=18{,}4$ e $q_{0{,}993}^*=27{,}9$, encontre o intervalo BCa.
-
-::: {.callout-note title="Valores para a conta"}
-$\Phi^{-1}(0{,}60)\approx0{,}253$, $z_{0{,}025}\approx-1{,}96$, $z_{0{,}975}\approx1{,}96$, $\Phi(-1{,}454)\approx0{,}073$ e $\Phi(2{,}466)\approx0{,}993$.
-:::
-
-## Solução: os percentis se deslocam {.smaller}
-
-**1. Posição da estimativa observada**
-
-$$p_0=\frac{600}{1.000}=0{,}60,
-\qquad z_0=\Phi^{-1}(0{,}60)\approx0{,}253.$$
-
-**2. Níveis ajustados**, usando $a=0$:
-
-$$\alpha_1^{BCa}=\Phi(2\times0{,}253-1{,}96)
-=\Phi(-1{,}454)\approx0{,}073,$$
-
-$$\alpha_2^{BCa}=\Phi(2\times0{,}253+1{,}96)
-=\Phi(2{,}466)\approx0{,}993.$$
-
-**3. Intervalo**
-
-$$IC_{BCa}=[q_{0{,}073}^*,q_{0{,}993}^*]=[18{,}4,27{,}9].$$
-
-::: {.callout-tip title="Interpretação"}
-Como $z_0>0$, $\widehat\theta$ está acima do centro das réplicas. Por isso, os dois níveis dos quantis se deslocam para cima: de 2,5% e 97,5% para 7,3% e 99,3%.
-:::
-
 ## Métodos podem discordar
 
 ![](assets/aula12-bootstrap/metodos-intervalo.png){height=300 fig-alt="Comparação dos intervalos percentil, básico, Normal e BCa para a diferença de medianas."}
 
 Discordância relevante é um sinal para investigar assimetria, viés e tamanho amostral. Nesta amostra, os empates tornam o *jackknife* da mediana degenerado; usamos $a=0$, e o BCa conserva apenas a correção de viés.
+
+O cálculo detalhado do BCa e um exercício resolvido permanecem no material de estudo como leitura complementar.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -955,7 +881,119 @@ p_boot = (1 + extreme_h0.sum()) / (len(boot_h0) + 1)
 
 </details>
 
-## Validade é uma propriedade repetida
+## O A/B da Aula 11
+
+No exemplo didático da Olist, 5.000 pedidos foram atribuídos a cada processo:
+
+| Grupo | Processo | Atrasos | Taxa |
+|---|---|---:|---:|
+| A | processo atual | 415 | 8,3% |
+| B | alerta preventivo | 345 | 6,9% |
+
+$$
+\widehat\Delta=\widehat p_B-\widehat p_A=-0{,}014.
+$$
+
+Testamos $H_0:\Delta=0$ contra $H_A:\Delta<0$. Valores negativos favorecem o alerta.
+
+::: {.callout-note title="Natureza do exemplo"}
+A base histórica da Olist é observacional. Os grupos A e B são uma simulação didática de um experimento randomizado no mesmo contexto.
+:::
+
+## Bootstrap usual para o efeito do alerta {.smaller}
+
+Primeiro representamos **cada pedido** por 1 (atraso) ou 0 (no prazo). Em cada réplica, sorteamos 5.000 pedidos **com reposição** dentro de A e dentro de B:
+
+$$
+\mathbf y_A=(\underbrace{1,\ldots,1}_{415},\underbrace{0,\ldots,0}_{4.585}),
+\qquad
+\mathbf y_B=(\underbrace{1,\ldots,1}_{345},\underbrace{0,\ldots,0}_{4.655}).
+$$
+
+Calculamos $\Delta^*=\overline y_B^*-\overline y_A^*$ em cada réplica. Assim, o código executa literalmente o algoritmo bootstrap estudado na aula.
+
+Com $R=50.000$ réplicas, o intervalo percentil de 95% é
+
+$$
+IC_{95\%}(\Delta)=[-0{,}0242,-0{,}0038]
+=[-2{,}42,-0{,}38]\text{ p.p.}
+$$
+
+O intervalo não contém zero. O bootstrap usual reproduz a diferença observada e descreve sua incerteza.
+
+<details class="code-fold"><summary>Código do intervalo</summary>
+
+```python
+rng = np.random.default_rng(2026)
+resultados_a = np.r_[np.ones(415), np.zeros(4585)]
+resultados_b = np.r_[np.ones(345), np.zeros(4655)]
+boot_effect = np.empty(50_000)
+for r in range(50_000):
+    a_star = rng.choice(resultados_a, 5000, replace=True)
+    b_star = rng.choice(resultados_b, 5000, replace=True)
+    boot_effect[r] = b_star.mean() - a_star.mean()
+ci_ab = np.quantile(boot_effect, [0.025, 0.975])
+```
+</details>
+
+## Bootstrap sob $H_0$: reamostre a amostra combinada {.smaller}
+
+Para construir o mundo nulo, os dois grupos precisam compartilhar a mesma taxa:
+
+$$
+\widehat p_{pool}=\frac{415+345}{5000+5000}=0{,}076.
+$$
+
+Juntamos os 10.000 resultados observados — 760 uns e 9.240 zeros. Em cada réplica, retiramos **com reposição** dois novos grupos de 5.000 pedidos dessa amostra combinada. Como ambos vêm da mesma distribuição empírica, $H_0$ é verdadeira no mundo simulado.
+
+::: {.statement}
+A diferença essencial é a origem do sorteio: no bootstrap usual, cada grupo usa seus próprios dados; sob $H_0$, os dois grupos usam a mesma amostra combinada.
+:::
+
+## Valor-p por reamostragem sob $H_0$ {.smaller}
+
+Contamos quantas diferenças reamostradas são menores ou iguais ao efeito observado, $-0{,}014$:
+
+$$
+\widehat p_{boot}
+=\frac{1+\sum_{b=1}^{R}\mathbb 1\{\Delta_b^{*(0)}\leq-0{,}014\}}{R+1}
+=\frac{1+217}{50.001}\approx0{,}0044.
+$$
+
+Essa construção preserva os valores realmente observados (0 e 1) e torna explícita a reamostragem dos dados, sem recorrer diretamente à distribuição Binomial.
+
+<details class="code-fold"><summary>Código do teste bootstrap</summary>
+
+```python
+resultados_pool = np.r_[resultados_a, resultados_b]
+boot_null = np.empty(50_000)
+for r in range(50_000):
+    a0 = rng.choice(resultados_pool, 5000, replace=True)
+    b0 = rng.choice(resultados_pool, 5000, replace=True)
+    boot_null[r] = b0.mean() - a0.mean()
+p_boot_ab = (1 + np.sum(boot_null <= -0.014)) / 50_001
+```
+</details>
+
+## Duas distribuições, duas perguntas
+
+![](assets/aula12-bootstrap/ab-olist-bootstrap.png){height=355 fig-alt="À esquerda, distribuição bootstrap usual da diferença de atrasos centrada em menos 1,4 ponto percentual e intervalo de 95 por cento. À direita, distribuição bootstrap sob a hipótese nula centrada em zero, com a cauda além do efeito observado destacada."}
+
+O bootstrap usual fornece o intervalo do efeito. O bootstrap sob $H_0$ fornece $p\approx0{,}0044$, muito próximo de $0{,}0041$ obtido pelo teste $z$ na Aula 11. Aqui, ambos os resultados vêm da reamostragem direta das linhas 0/1; a pequena diferença vem do erro de Monte Carlo.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+axes[0].hist(100 * boot_effect, bins=55)
+axes[1].hist(100 * boot_null, bins=55)
+axes[1].hist(100 * boot_null[boot_null <= -0.014], bins=20)
+for ax in axes:
+    ax.axvline(-1.4, color="darkorange")
+    ax.axvline(0, color="navy", linestyle="--")
+```
+</details>
+
+## Validade significa cobertura em repetições {.smaller}
 
 Um intervalo é válido quando sua cobertura real se aproxima do nível nominal:
 
@@ -963,15 +1001,9 @@ $$
 P_F\{\theta\in CI(X_1,\ldots,X_n)\}\approx 1-\alpha.
 $$
 
-Não basta que o histograma bootstrap pareça suave ou convincente.
+![](assets/aula12-bootstrap/cobertura-bootstrap.png){height=285 fig-alt="Vinte intervalos bootstrap obtidos de amostras repetidas, comparados à diferença de medianas na população didática."}
 
-$P_F$ é a probabilidade sob amostras repetidas de $F$; $CI(X_1,\ldots,X_n)$ é o intervalo calculado com a amostra; e $1-\alpha$ é a cobertura nominal.
-
-## Podemos testar a cobertura didaticamente
-
-![](assets/aula12-bootstrap/cobertura-bootstrap.png){fig-alt="Vinte intervalos bootstrap obtidos de amostras repetidas, comparados à diferença de medianas na população didática."}
-
-Na prática, a população verdadeira não está disponível para essa verificação.
+$P_F$ representa amostras repetidas de $F$ e $1-\alpha$ é a cobertura nominal. Na prática, a população verdadeira não está disponível para essa verificação.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -998,42 +1030,39 @@ finish("cobertura-bootstrap.png")
 
 </details>
 
-## Quando o bootstrap costuma funcionar
+## Condições e limites do bootstrap {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="48%"}
+### Costuma funcionar quando
 
 - a amostra representa a população-alvo;
-- as observações são independentes e identicamente distribuídas, ou o esquema respeita a dependência;
-- a estatística varia de forma regular quando $F$ muda um pouco;
-- há dados suficientes perto da característica estimada;
-- o mecanismo de coleta não é ignorado.
+- o esquema respeita a dependência;
+- a estatística varia regularmente;
+- há dados perto da característica estimada;
+- a reamostragem imita a coleta.
+:::
 
-## O bootstrap não cria informação
+::: {.column width="48%"}
+### Não cria informação
 
 - amostra enviesada continua enviesada;
-- eventos nunca observados recebem probabilidade zero;
-- amostras pequenas não representam bem caudas raras;
-- outliers podem dominar muitas réplicas;
-- parâmetros na fronteira e estatísticas não regulares podem quebrar a aproximação.
+- eventos ausentes permanecem ausentes;
+- poucos dados não representam caudas raras;
+- outliers podem dominar réplicas;
+- estatísticas irregulares podem falhar.
+:::
+:::
 
 ::: {.statement}
 Muitas réplicas não compensam poucos dados ruins.
 :::
 
-## Independência precisa ser examinada
+## Dependência e unidade de reamostragem
 
-Anúncios do mesmo anfitrião podem compartilhar:
+![](assets/aula12-bootstrap/dependencia-host.png){height=330 fig-alt="Distribuição do número de anúncios por anfitrião e comparação entre bootstrap por anúncio e por anfitrião."}
 
-- estratégia de preço;
-- localização e padrão de imóvel;
-- regras de disponibilidade;
-- decisões de gestão.
-
-Reamostrar anúncios como se fossem independentes pode subestimar a incerteza.
-
-## A unidade de reamostragem importa
-
-![](assets/aula12-bootstrap/dependencia-host.png){fig-alt="Distribuição do número de anúncios por anfitrião e comparação entre bootstrap por anúncio e por anfitrião."}
-
-Quando a dependência ocorre por anfitrião, reamostramos **anfitriões inteiros**.
+Anúncios do mesmo anfitrião podem compartilhar preço, localização e decisões de gestão. Reamostrar anúncios como independentes pode subestimar a incerteza. Quando a dependência ocorre por anfitrião, reamostramos **anfitriões inteiros**.
 
 <details class="code-fold">
 <summary>Código do gráfico</summary>
@@ -1101,9 +1130,11 @@ Vários anúncios pertencem ao mesmo anfitrião e podem ser dependentes. Qual es
 5. O esquema bootstrap imita a coleta original?
 6. Os resultados são estáveis em $R$ e em análises de sensibilidade?
 
-## A conclusão substantiva
+## Duas conclusões substantivas {.smaller}
 
-Na amostra didática, a acomodação inteira mediana foi:
+::: {.columns .concept-cards}
+::: {.column width="48%"}
+### Airbnb
 
 - US$ 180 em Manhattan;
 - US$ 140 no Brooklyn;
@@ -1112,8 +1143,19 @@ Na amostra didática, a acomodação inteira mediana foi:
 - teste bootstrap recentralizado: **$\widehat p\approx0{,}0001$**.
 
 O resultado descreve anúncios de 2019 após os filtros — não preços atuais nem reservas efetivas.
+:::
 
-## O que o bootstrap realmente oferece
+::: {.column width="48%"}
+### A/B da Olist
+
+- redução observada de 1,4 p.p.;
+- IC bootstrap de 95%: **−2,42 a −0,38 p.p.**;
+- teste bootstrap unilateral: **$\widehat p\approx0{,}0044$**;
+- resultado próximo do teste $z$ da Aula 11.
+
+O experimento é uma simulação didática no contexto da base Olist.
+:::
+:::
 
 ::: {.statement}
 O bootstrap transforma uma amostra em um laboratório para estudar a estabilidade de uma estatística.
@@ -1123,11 +1165,12 @@ Ele é poderoso quando o laboratório preserva a estrutura que gerou os dados �
 
 ## Pratique
 
-Com a mesma amostra:
+Com os dois exemplos:
 
 1. estime a diferença entre os percentis 75 dos dois distritos;
 2. construa um intervalo bootstrap percentil;
 3. compare-o ao intervalo da diferença de medianas;
 4. repita reamostrando anfitriões;
 5. teste $H_0:\Delta=0$ por bootstrap recentralizado;
-6. explique qual resultado responde melhor a uma pergunta sobre o anúncio típico.
+6. refaça o A/B com 10.000 e 50.000 réplicas e compare o erro de Monte Carlo;
+7. transforme o teste A/B em bilateral e interprete a mudança no valor-p.
