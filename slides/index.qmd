@@ -19,8 +19,8 @@ Os slides são escritos em Quarto Reveal.js.
 - [Aula 11: Testes de hipóteses](11-testes-hipoteses.html)
 - [Aula 12: Bootstrap](12-bootstrap.html)
 - [Aula 13: Testes de permutação](13-testes-permutacao.html)
-- [Aula 14: Permutação avançada](14-permutacao-avancada.html)
-- [Aula 15: Poder e múltiplos testes](15-poder-multiplos.html)
+- Aula 14: Permutação avançada — *em revisão*
+- Aula 15: Poder e múltiplos testes — *em revisão*
 - Aula 16: Correlação — *em revisão*
 - Aula 17: Regressão linear simples — *em revisão*
 - Aula 18: Máxima verossimilhança — *em revisão*

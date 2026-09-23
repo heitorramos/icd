@@ -191,7 +191,7 @@ Modelo nulo, troca de rótulos, distribuição nula e valores-p.
 
 Estatísticas robustas, estratos, pares, clusters e validade.
 
-[Abrir a aula](14-permutacao-avancada.qmd){.btn .btn-primary}
+**Material em revisão**
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}
@@ -202,7 +202,7 @@ Estatísticas robustas, estratos, pares, clusters e validade.
 
 Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 
-[Abrir a aula](15-poder-multiplos.qmd){.btn .btn-primary}
+**Material em revisão**
 :::
 :::
 :::

@@ -28,8 +28,8 @@ Eventuais alterações serão comunicadas pelo
 | — | **17/09/2026** | **Sem aula** | — |
 | 12 | **22/09/2026** | Bootstrap **(remota)** | [Acessar](aulas/12-bootstrap.qmd) |
 | 13 | **24/09/2026** | Testes de permutação **(remota)** | [Acessar](aulas/13-testes-permutacao.qmd) |
-| 14 | **29/09/2026** | Permutação: extensões e validade | [Acessar](aulas/14-permutacao-avancada.qmd) |
-| 15 | **01/10/2026** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
+| 14 | **29/09/2026** | Permutação: extensões e validade | Em revisão |
+| 15 | **01/10/2026** | Poder e múltiplos testes | Em revisão |
 | **Prova 1** | **06/10/2026** | **Prova 1** | — |
 | **Módulo 3** |  | **Modelagem e Aprendizado de Máquina** |  |
 | 16 | **08/10/2026** | Correlação | Em revisão |
