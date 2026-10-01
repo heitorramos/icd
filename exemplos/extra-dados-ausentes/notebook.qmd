@@ -128,7 +128,7 @@ Nesta simulação MAR, a ausência depende de uma variável independente de $Y$,
 
 ## 5. Casos completos mudam a amostra
 
-A análise de casos completos usa $\mathcal I_{cc}=\{i:R_{i1}=\cdots=R_{ip}=1\}$. Sob MCAR ela costuma preservar ausência de viés, mas perde precisão. Fora desse caso, a validade depende do estimando e do mecanismo.
+A análise de casos completos usa $\mathcal I_{cc}=\{i:R_{i1}=\cdots=R_{ip}=1\}$. Sob MCAR ela costuma preservar ausência de viés, mas perde precisão. Fora desse caso, a validade depende do parâmetro de interesse e do mecanismo.
 
 ```{python}
 complete = df[numeric].notna().all(axis=1)

@@ -187,11 +187,11 @@ Modelo nulo, troca de rótulos, distribuição nula e valores-p.
 ::: {.aula-card}
 ### Aula 14
 
-## Permutação além do caso básico
+## Permutação e desenho experimental
 
-Estatísticas robustas, estratos, pares, clusters e validade.
+Estatísticas robustas, estratos, pares, clusters e ameaças à validade.
 
-**Material em revisão**
+[Abrir a aula](14-permutacao-avancada.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}

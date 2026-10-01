@@ -28,7 +28,7 @@ Eventuais alterações serão comunicadas pelo
 | — | **17/09/2026** | **Sem aula** | — |
 | 12 | **22/09/2026** | Bootstrap **(remota)** | [Acessar](aulas/12-bootstrap.qmd) |
 | 13 | **24/09/2026** | Testes de permutação **(remota)** | [Acessar](aulas/13-testes-permutacao.qmd) |
-| 14 | **29/09/2026** | Permutação: extensões e validade | Em revisão |
+| 14 | **29/09/2026** | Permutação e desenho experimental | [Acessar](aulas/14-permutacao-avancada.qmd) |
 | 15 | **01/10/2026** | Poder e múltiplos testes | Em revisão |
 | **Prova 1** | **06/10/2026** | **Prova 1** | — |
 | **Módulo 3** |  | **Modelagem e Aprendizado de Máquina** |  |
@@ -43,7 +43,7 @@ Eventuais alterações serão comunicadas pelo
 | 23 | **05/11/2026** | Regularização | Em revisão |
 | 24 | **10/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
 | 25 | **12/11/2026** | KNN e prática completa de machine learning | Em revisão |
-| 26 | **17/11/2026** | PCA aplicado à classificação | Em revisão |
+| 26 | **17/11/2026** | PCA e SVM aplicados | Em revisão |
 | **Prova 2** | **19/11/2026** | **Prova 2** | — |
 | **TP** | **24/11/2026** | Apresentações do projeto final | [Orientações](projeto.qmd) |
 | **TP** | **26/11/2026** | Apresentações do projeto final | [Orientações](projeto.qmd) |

@@ -121,7 +121,7 @@ $$
 
 O anúncio está associado a **+0,77 ponto percentual** de conversão.
 
-## Antes do teste: qual é o estimando?
+## Antes do teste: qual é o parâmetro de interesse?
 
 Queremos a diferença entre as probabilidades de conversão que surgiriam se a população fosse exposta a:
 
@@ -129,7 +129,7 @@ $$
 \Delta=p_{ad}-p_{psa}
 $$
 
-$p_{ad}=P(Y=1\mid ad)$ e $p_{psa}=P(Y=1\mid psa)$ são as probabilidades populacionais de conversão sob cada condição; $\Delta$ é o contraste causal ou associativo de interesse, conforme o desenho permita. O estimando vem antes do algoritmo.
+$p_{ad}=P(Y=1\mid ad)$ e $p_{psa}=P(Y=1\mid psa)$ são as probabilidades populacionais de conversão sob cada condição; $\Delta$ é o contraste causal ou associativo de interesse, conforme o desenho permita. O parâmetro de interesse vem antes do algoritmo.
 
 ## A hipótese nula
 

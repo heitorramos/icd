@@ -59,6 +59,7 @@ website:
             - aulas/11-testes-hipoteses.qmd
             - aulas/12-bootstrap.qmd
             - aulas/13-testes-permutacao.qmd
+            - aulas/14-permutacao-avancada.qmd
         - section: "Módulo 3 · Modelagem e Aprendizado de Máquina"
           contents: []
 

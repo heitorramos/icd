@@ -1,5 +1,5 @@
 ---
-title: "Testes de permutação avançados"
+title: "Permutação e desenho experimental"
 subtitle: "Aula 14 — Módulo 2: Inferência Estatística"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 institute: '<div class="title-brand-lockup"><img class="brand-horizontal" src="assets/brand/dcc-ufmg-horizontal-color.png" alt="Departamento de Ciência da Computação — UFMG"></div>'
@@ -10,7 +10,7 @@ format:
     scrollable: true
     chalkboard: true
     preview-links: auto
-    footer: '<span class="lecture-footer-label">ICD: Aula 14 — Testes de permutação avançados</span><a class="lecture-footer-button" href="../aulas/14-permutacao-avancada.html">voltar para a Aula</a>'
+    footer: '<span class="lecture-footer-label">ICD: Aula 14 — Permutação e desenho experimental</span><a class="lecture-footer-button" href="../aulas/14-permutacao-avancada.html">voltar para a Aula</a>'
 execute:
   enabled: false
   echo: false
@@ -35,10 +35,8 @@ Agora vamos tensionar essa conclusão.
 ## Hoje
 
 - escolher estatísticas para diferentes perguntas;
-- lidar com distribuições assimétricas;
-- usar permutação estratificada, pareada e por clusters;
-- distinguir análise confirmatória e exploratória;
-- discutir múltiplos testes, poder e validade.
+- reproduzir o sorteio em estratos, pares e clusters;
+- reconhecer situações em que a permutação simples falha.
 
 ## A intensidade de exposição é assimétrica
 
@@ -107,57 +105,59 @@ t_b = statistic(y[labels == "ad"], y[labels == "psa"])
 
 Não se permuta a estatística pronta; permutam-se os rótulos e refaz-se todo o cálculo.
 
-## Mesma exposição, distribuições semelhantes
+## Por que `total ads` é pós-tratamento
 
-![](assets/aula13-permutacao/ecdf-exposicoes.png){fig-alt="Curvas acumuladas do total de exposições para anúncio e PSA quase sobrepostas."}
+`test group` é fixado no sorteio. `total ads` acumula-se **durante** a campanha.
 
-<details class="code-fold"><summary>Código do gráfico</summary>
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### O tratamento pode mudar a exposição
 
-```python
-plot_df = df[df["total ads"] <= df["total ads"].quantile(.99)]
-sns.ecdfplot(data=plot_df, x="total ads", hue="grupo")
-plt.title("As distribuições de exposição são semelhantes")
-```
-</details>
+Anúncio e PSA podem produzir diferentes níveis de interesse e permanência:
 
-## Cuidado: exposição pode ser pós-tratamento
+$$T\longrightarrow \text{total ads}\longrightarrow Y$$
+:::
 
-`total ads` é medido depois da atribuição.
+::: {.column width="50%"}
+### A conversão pode mudar a exposição
 
-Se converter encerra ou altera a exposição, controlar por essa variável pode:
+Se converter encerra ou altera a campanha, a resposta afeta exposições posteriores:
 
-- bloquear parte do efeito;
-- criar viés de seleção;
-- transformar uma checagem descritiva em ajuste causal inválido.
+$$T\longrightarrow Y\longrightarrow \text{total ads}$$
+:::
+:::
 
-## Pré-tratamento versus pós-tratamento
+::: {.statement}
+Controlar por `total ads` pode remover parte do efeito total ou selecionar usuários diferentes nos dois grupos.
+:::
 
-**Pré-tratamento:** existe antes do sorteio; pode formar blocos e melhorar precisão.
+## Pré e pós-tratamento na campanha
 
-**Pós-tratamento:** pode ter sido causada pelo tratamento; exige interpretação cuidadosa.
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Antes da atribuição
 
-Dia e hora de maior exposição também podem ser pós-tratamento.
+Exemplos seriam dia de entrada, dispositivo ou histórico do usuário. Podem formar blocos **se fizerem parte do sorteio**.
+:::
 
-## Por que estratificar?
+::: {.column width="50%"}
+### Durante a campanha
 
-Se o experimento sorteou usuários separadamente por dia, comparar dentro de cada dia:
+`total ads`, `most ads day` e `most ads hour` são construídos a partir da exposição observada. Servem para descrição, mas exigem cautela causal.
+:::
+:::
+
+::: {.statement}
+`most ads day` não é o dia da randomização. Estratificar por ele é uma análise exploratória, não a reprodução exata do desenho.
+:::
+
+## Quando a estratificação é válida
+
+Se o experimento sorteou usuários separadamente por uma variável pré-tratamento, como o dia de entrada, comparar dentro de cada estrato:
 
 - respeita o desenho;
 - evita misturar composições distintas;
 - pode reduzir variabilidade.
-
-## Os dias têm composição parecida
-
-![](assets/aula13-permutacao/balanceamento-dia.png){fig-alt="Barras mostrando composição percentual por dia semelhante nos grupos anúncio e PSA."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-composition = pd.crosstab(df["most ads day"], df["test group"], normalize="columns")
-(100 * composition).plot.bar(color=[BLUE, ORANGE])
-plt.title("Os dias têm composição parecida nos dois grupos")
-```
-</details>
 
 ## Permutação estratificada
 
@@ -170,17 +170,19 @@ def permute_within(frame, strata, group, rng):
 
 Cada rótulo troca de lugar apenas com unidades do mesmo estrato.
 
-## A estatística estratificada
+## Estratos: compare dentro, combine depois
 
-Calcule a diferença dentro de cada estrato e combine com pesos pré-definidos:
+Calcule a diferença em cada estrato e combine as comparações:
 
 $$
-T=\sum_{s=1}^S w_s(\widehat p_{ad,s}-\widehat p_{psa,s})
+T=\sum_{s=1}^S w_s\widehat\Delta_s
 $$
 
-Pesos pelo tamanho do estrato respondem ao efeito médio na população observada.
+::: {.callout-note title="Exemplo"}
+Se a diferença for $+0{,}5$ p.p. na segunda e $+0{,}9$ p.p. na terça, com estratos do mesmo tamanho, a combinação é $(0{,}5+0{,}9)/2=+0{,}7$ p.p.
+:::
 
-$s=1,\ldots,S$ indexa os estratos; $\widehat p_{g,s}$ é a proporção no grupo $g$ dentro do estrato $s$; $w_s\geq0$ é um peso fixado antes da permutação, com $\sum_sw_s=1$. Os rótulos são permutados apenas dentro de cada $s$.
+$\widehat\Delta_s$ é a diferença no estrato $s$; $w_s$ é seu peso e os pesos somam 1.
 
 ## Quando a permutação deve ser estratificada? {.quiz-question}
 
@@ -191,104 +193,15 @@ O tratamento foi sorteado separadamente dentro de cada dia. Como os rótulos dev
 - [Somente entre usuários que converteram]{data-explanation="Condicionar na resposta quebra a lógica da atribuição aleatória."}
 - [Não é possível usar permutação com estratos]{data-explanation="É possível, desde que as trocas sejam restritas aos estratos adequados."}
 
-## A diferença aparece em todos os dias
-
-![](assets/aula13-permutacao/conversao-dia.png){fig-alt="Linhas de conversão por dia para anúncio e PSA, com anúncio acima do PSA."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-by_day = df.groupby(["most ads day", "grupo"])["converted"].mean().mul(100).unstack()
-by_day.plot(marker="o", color=[ORANGE, BLUE])
-plt.title("A diferença aparece em todos os dias")
-```
-</details>
-
-## Subgrupos são tentadores
-
-Depois de ver o efeito médio, é natural perguntar:
-
-- funciona melhor em algum dia?
-- em alguma hora?
-- para usuários muito expostos?
-
-Cada pergunta adicional aumenta a chance de descobrir um padrão apenas por acaso.
-
-## Efeitos por hora oscilam
-
-![](assets/aula13-permutacao/diferenca-hora.png){fig-alt="Barras da diferença de conversão por hora, com variação entre estratos."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-hour = df.groupby(["most ads hour", "grupo"])["converted"].mean().mul(100).unstack()
-hour["diferença"] = hour["Tratamento (anúncio)"] - hour["Controle (PSA)"]
-plt.bar(hour.index, hour["diferença"])
-```
-</details>
-
-## Heterogeneidade ou ruído?
-
-Uma diferença entre subgrupos não prova que os efeitos diferem.
-
-O teste relevante é uma **interação**:
-
-$$
-T_{int}=\widehat\Delta_{hora\ 1}-\widehat\Delta_{hora\ 2}
-$$
-
-Não basta testar um grupo significativo e outro não significativo.
-
-$\widehat\Delta_h$ é o efeito estimado no subgrupo $h$; $T_{int}$ compara diretamente dois efeitos. Testar a interação corresponde a testar $H_0:\Delta_{hora\ 1}=\Delta_{hora\ 2}$.
-
-## Múltiplos testes inflam falsos positivos
-
-Com 20 hipóteses verdadeiramente nulas e $\alpha=0{,}05$:
-
-$$
-P(\text{ao menos um falso positivo})=1-0{,}95^{20}\approx64\%
-$$
-
-Exploração precisa ser rotulada como exploração.
-
-## Duas famílias de correção
-
-- **FWER:** controla a chance de qualquer falso positivo; Bonferroni é simples e conservador.
-- **FDR:** controla a proporção esperada de descobertas falsas; útil em exploração com muitas hipóteses.
-
-Idealmente, defina uma métrica primária.
-
-## Teste máximo por permutação
-
-Para testar vários subgrupos preservando dependência:
-
-1. calcule todas as estatísticas em cada permutação;
-2. guarde o maior valor absoluto;
-3. compare cada estatística observada com essa distribuição de máximos.
-
-É uma correção simultânea alinhada ao desenho.
-
 ## Dados pareados exigem trocas pareadas
 
 Se cada usuário vê A e B em momentos distintos, não embaralhe observações livremente.
 
 Sob $H_0$, troque A/B **dentro de cada usuário** ou inverta aleatoriamente o sinal da diferença individual.
 
-## Teste de sinais aleatórios
-
-Para diferenças pareadas $d_i$:
-
-$$
-T=\frac{1}{n}\sum_i d_i
-$$
-
-Sob uma nula simétrica, sorteie $s_i\in\{-1,+1\}$ e calcule:
-
-$$
-T_b=\frac{1}{n}\sum_i s_i d_i
-$$
-
-$d_i=Y_{iA}-Y_{iB}$ é a diferença do par $i$; $s_i$ é um sinal independente com probabilidades iguais de $-1$ e $+1$ sob a nula; $T_b$ é a média após a $b$-ésima inversão aleatória.
+::: {.callout-note title="Exemplo"}
+Cada aluno resolve uma tarefa com e sem dica. As duas notas do mesmo aluno formam um par. A troca permitida apenas decide qual nota recebe o rótulo “com dica”.
+:::
 
 ## Clusters mudam a unidade do acaso
 
@@ -296,31 +209,97 @@ Se escolas, cidades ou contas foram sorteadas, pessoas dentro do mesmo cluster n
 
 Permute o tratamento entre **clusters** e calcule a estatística com todos os indivíduos associados.
 
+::: {.callout-note title="Exemplo"}
+Em oito escolas, quatro recebem um novo método de ensino. O sorteio ocorreu entre as oito escolas; todos os alunos de uma escola devem mudar de rótulo juntos.
+:::
+
 ## Interferência quebra a independência
 
-Se usuários tratados influenciam usuários-controle:
+O resultado de uma unidade passa a depender também do tratamento recebido por outras unidades.
 
-- o resultado de uma unidade depende do tratamento de outra;
-- a hipótese de “nenhum efeito individual” fica mais complexa;
-- a permutação individual pode produzir um mundo impossível.
+::: {.callout-note title="Exemplo"}
+Em uma rede social, um usuário tratado recebe um recurso de convite e chama um amigo do grupo controle. O comportamento do amigo foi afetado pelo tratamento de outra pessoa.
+:::
+
+Uma permutação individual que ignora a rede pode representar um experimento que nunca ocorreu.
 
 ## Attrition pode destruir a randomização
 
-Se a resposta só é observada para quem permaneceu no estudo, e a permanência depende do tratamento, os grupos analisados deixam de ser comparáveis.
+::: {.columns .concept-cards}
+::: {.column width="33.3%"}
+### Perdas
 
-Permutar apenas casos completos não corrige esse problema.
+Tratamento: $30/100=30\%$
 
-## A hipótese nula pode ser mais forte do que parece
+Controle: $5/100=5\%$
+:::
 
-O teste aleatorizado clássico é exato para a **nula estrita de Fisher**:
+::: {.column width="33.3%"}
+### Casos completos
 
-$$
-H_0:Y_i(1)=Y_i(0)\quad\forall i
-$$
+Se saem mais alunos com baixo desempenho no tratamento, a média dos restantes sobe por seleção.
+:::
 
-Nenhuma unidade é afetada. Isso é mais forte que afirmar apenas efeito médio zero.
+::: {.column width="33.3%"}
+### Prática recomendada
 
-$Y_i(1)$ e $Y_i(0)$ são os resultados potenciais da unidade $i$ sob tratamento e controle. O quantificador $\forall i$ exige igualdade para cada unidade, não apenas em média.
+Reporte as perdas por grupo e teste cenários plausíveis para os resultados ausentes.
+:::
+:::
+
+::: {.statement}
+Permutar apenas quem permaneceu não recupera a comparabilidade inicial.
+:::
+
+## Duas hipóteses nulas {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Nula estrita de Fisher
+
+$$H_0^F:Y_i(1)=Y_i(0)\quad\forall i$$
+
+Nenhuma unidade é afetada. O teste de randomização é exato em amostras finitas.
+:::
+
+::: {.column width="50%"}
+### Nula de efeito médio
+
+$$H_0^\mu:\frac1n\sum_i[Y_i(1)-Y_i(0)]=0$$
+
+Efeitos positivos e negativos podem existir e se cancelar.
+:::
+:::
+
+::: {.statement}
+A nula estrita implica efeito médio zero, mas o contrário não é necessariamente verdadeiro.
+:::
+
+## Permutação nas duas hipóteses {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Sob a nula estrita
+
+Mantenha os resultados fixos e refaça as atribuições permitidas pelo sorteio. O valor-p é **exato**.
+:::
+
+::: {.column width="50%"}
+### Sob a nula média
+
+Use uma diferença **studentizada** e recalcule tudo após cada permutação:
+
+$$T=\frac{\bar Y_1-\bar Y_0}{\sqrt{s_1^2/n_1+s_0^2/n_0}}$$
+
+A validade costuma ser **assintótica**.
+:::
+:::
+
+$s_g^2$ e $n_g$ são a variância amostral e o tamanho do grupo $g$.
+
+::: {.statement}
+Permutar apenas a diferença de médias não é automaticamente exato sob a nula média.
+:::
 
 ## Qual hipótese é mais forte? {.quiz-question}
 
@@ -331,101 +310,6 @@ Qual afirmação descreve a nula estrita de Fisher?
 - [As médias observadas dos grupos são exatamente iguais]{data-explanation="Igualdade amostral não define a hipótese causal sobre resultados potenciais."}
 - [As distribuições têm apenas a mesma variância]{data-explanation="A nula estrita é uma afirmação sobre resultados potenciais individuais, não apenas dispersão."}
 
-## Nula estrita versus nula média
-
-- **Nula estrita:** permite imputar todos os resultados potenciais e reproduzir exatamente a atribuição.
-- **Nula média:** efeitos positivos e negativos podem se cancelar.
-
-Um teste exato para a primeira não é automaticamente exato para a segunda.
-
-## Permutação sob igualdade de distribuições
-
-No caso de duas amostras independentes, permutar livremente costuma testar:
-
-$$
-H_0:F_{ad}=F_{psa}
-$$
-
-Isso é mais forte que igualdade apenas de médias, especialmente se variâncias diferem.
-
-$F_{ad}$ e $F_{psa}$ são as funções de distribuição completas dos resultados nos dois grupos. A igualdade exige mesma localização, dispersão, caudas e demais características.
-
-## Studentizar ajuda
-
-Uma estatística studentizada escala a diferença por sua incerteza:
-
-$$
-T=\frac{\bar X_{ad}-\bar X_{psa}}
-{\sqrt{s^2_{ad}/n_{ad}+s^2_{psa}/n_{psa}}}
-$$
-
-Ela costuma ser mais estável quando tamanhos e variâncias diferem.
-
-$\bar X_g$, $s_g^2$ e $n_g$ são, respectivamente, média, variância amostral e tamanho do grupo $g$. O denominador estima o erro padrão da diferença.
-
-## O forte desbalanceamento importa aqui
-
-O grupo PSA tem apenas 23.524 usuários contra 564.577 no anúncio.
-
-Para uma diferença de proporções, a variância é dominada pelo grupo menor:
-
-$$
-SE(\widehat\Delta)\approx\sqrt{\frac{p_A(1-p_A)}{n_A}+\frac{p_B(1-p_B)}{n_B}}
-$$
-
-## Poder é chance de detectar um efeito real
-
-Poder depende de:
-
-- efeito verdadeiro;
-- variabilidade da métrica;
-- tamanhos dos grupos;
-- nível $\alpha$;
-- teste unilateral ou bilateral.
-
-## Efeitos pequenos exigem muitos usuários
-
-![](assets/aula13-permutacao/poder-tamanho.png){fig-alt="Curvas aproximadas de poder para três diferenças de conversão e tamanhos amostrais crescentes."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-se0 = np.sqrt(2 * base * (1-base) / sizes)
-power = 1 - norm.cdf(1.96-effect/se0) + norm.cdf(-1.96-effect/se0)
-plt.plot(sizes, power, marker="o")
-```
-</details>
-
-## Planeje antes de observar
-
-Um plano A/B deve fixar:
-
-- métrica primária;
-- menor efeito relevante;
-- $\alpha$ e poder desejado;
-- tamanho da amostra ou horizonte;
-- regra de parada;
-- análises de subgrupo previstas.
-
-## Espiar repetidamente aumenta o erro
-
-Parar assim que $p<0{,}05$ não preserva o nível de 5%.
-
-Alternativas:
-
-- tamanho fixo;
-- testes sequenciais apropriados;
-- funções de gasto de alfa;
-- métodos sempre válidos.
-
-## Intervalos complementam o teste
-
-O teste responde se os dados contradizem uma nula.
-
-O intervalo responde quais efeitos permanecem plausíveis.
-
-Para decisão, pergunte se o intervalo exclui efeitos pequenos demais para justificar o custo.
-
 ## Randomização permite causalidade — com condições
 
 Precisamos de:
@@ -434,7 +318,7 @@ Precisamos de:
 - adesão e mensuração comparáveis;
 - ausência de interferência relevante;
 - análise coerente com a unidade sorteada;
-- estimando definido para a população do experimento.
+- parâmetro de interesse definido para a população do experimento.
 
 ## Validade externa é outra pergunta
 
@@ -450,7 +334,7 @@ Mesmo um experimento interno impecável pode não generalizar para:
 
 1. documente o desenho;
 2. descreva a base e perdas;
-3. defina estimando e estatística;
+3. defina o parâmetro de interesse e a estatística;
 4. reproduza a randomização nas permutações;
 5. reporte efeito, incerteza e valor-p;
 6. faça análises de sensibilidade.
@@ -469,15 +353,15 @@ Os dados mostram aumento claro de conversão, mas a recomendação ainda depende
 
 - a estatística deve representar a pergunta;
 - a permutação deve espelhar blocos, pares e clusters;
-- subgrupos exigem testes de interação e controle de multiplicidade;
-- poder e regras de parada pertencem ao desenho;
+- variáveis pós-tratamento não devem virar blocos do sorteio;
+- interferência e perdas podem quebrar a comparação;
 - validade causal nunca vem apenas de um valor-p pequeno.
 
 ## Checklist final
 
 Antes de confiar em um teste de permutação, pergunte:
 
-> O que foi sorteado? O que pode ser trocado? Qual efeito estamos estimando? Quantas perguntas fizemos? A decisão mudaria com um efeito pequeno?
+> O que foi sorteado? O que pode ser trocado? Qual efeito estamos estimando? A decisão mudaria com um efeito pequeno?
 
 ## Encerramento
 

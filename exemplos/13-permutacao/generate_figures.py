@@ -89,7 +89,7 @@ sns.histplot(null_diff * 100, bins=45, color=LIGHT, edgecolor="white")
 plt.axvline(observed * 100, color=ORANGE, lw=3, label=f"observada = {observed*100:.2f} p.p.")
 plt.xlabel("Diferença: anúncio − PSA (p.p.)")
 plt.ylabel("Permutações")
-plt.title("Sob H₀, diferenças grandes quase não aparecem")
+plt.title(r"Sob $H_0$, diferenças grandes quase não aparecem")
 plt.legend()
 finish("distribuicao-nula.png")
 
@@ -97,7 +97,7 @@ finish("distribuicao-nula.png")
 toy = pd.DataFrame({"resultado": [1, 0, 0, 1, 0, 0, 0, 0, 1, 0], "grupo": ["A"]*5+["B"]*5})
 toy["grupo_permutado"] = rng.permutation(toy["grupo"])
 fig, axes = plt.subplots(2, 1, figsize=(10, 4.8))
-for ax, col, title in zip(axes, ["grupo", "grupo_permutado"], ["Rótulos observados", "Uma permutação sob H₀"]):
+for ax, col, title in zip(axes, ["grupo", "grupo_permutado"], ["Rótulos observados", r"Uma permutação sob $H_0$"]):
     colors = toy[col].map({"A": ORANGE, "B": BLUE})
     ax.scatter(range(len(toy)), toy["resultado"], c=colors, s=180)
     ax.set_yticks([0, 1], ["não", "sim"])

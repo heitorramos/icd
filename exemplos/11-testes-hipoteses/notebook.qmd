@@ -472,7 +472,7 @@ como uma variável presente na base original.
 
 ## A lógica de um teste
 
-Um teste começa antes dos cálculos: defina estimando, hipótese nula $H_0$, alternativa $H_A$, estatística e direção. A distribuição nula descreve valores que a estatística poderia assumir se $H_0$ fosse verdadeira. O valor-p é a probabilidade, calculada sob $H_0$, de obter resultado tão ou mais extremo que o observado.
+Um teste começa antes dos cálculos: defina o parâmetro de interesse, a hipótese nula $H_0$, a alternativa $H_A$, a estatística e a direção. A distribuição nula descreve valores que a estatística poderia assumir se $H_0$ fosse verdadeira. O valor-p é a probabilidade, calculada sob $H_0$, de obter resultado tão ou mais extremo que o observado.
 
 O valor-p não é $P(H_0\mid\text{dados})$, não mede o tamanho do efeito e não é a probabilidade de o resultado ter ocorrido por acaso.
 
@@ -502,7 +502,7 @@ Testes unilaterais só são defensáveis quando a direção foi escolhida antes 
 
 Em um teste A/B, a inferência não começa no valor-p. Ela começa na atribuição
 aleatória das unidades a duas versões. A hipótese nula representa ausência de
-efeito da mudança sobre a métrica previamente escolhida. O estimando deve ser
+efeito da mudança sobre a métrica previamente escolhida. O parâmetro de interesse deve ser
 escrito com direção explícita, como $\Delta=p_B-p_A$, porque seu sinal determina
 qual versão é favorecida.
 

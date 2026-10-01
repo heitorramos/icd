@@ -90,12 +90,12 @@ dependência e bootstrap por agrupamentos.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
-### Aula 13
+### Aulas 13 e 14
 
 [Testes de permutação em um experimento A/B](13-permutacao/notebook.qmd)
 
-Campanha real do Kaggle, descrição da base, permutação básica, validade e
-exercícios.
+Campanha real do Kaggle, descrição da base, permutação básica, estatísticas
+robustas, estratos, validade e exercícios.
 :::
 
 ::: {.g-col-12 .g-col-md-6}

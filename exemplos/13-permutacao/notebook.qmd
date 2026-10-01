@@ -194,7 +194,7 @@ duas tarefas diferentes:
 
 ## Bootstrap usual: distribuição do efeito e intervalo
 
-O estimando continua sendo
+O parâmetro de interesse continua sendo
 
 $$
 \Delta=p_{ad}-p_{PSA},
@@ -348,7 +348,7 @@ gera novas respostas a partir de uma taxa comum estimada; a permutação mantém
 respostas observadas fixas e redistribui seus rótulos conforme o desenho.
 :::
 
-# Parte II — Aula 14: permutação além do caso básico
+# Parte II — Aula 14: permutação e desenho experimental
 
 A Aula 13 tratou do cenário mais simples: dois grupos, unidades independentes e
 rótulos livremente permutáveis. Esse caso é a porta de entrada, não uma receita
@@ -363,8 +363,7 @@ Nesta segunda parte, cada extensão nasce de uma alteração em uma dessas
 escolhas. A estatística pode mudar porque média, mediana e média aparada descrevem
 aspectos diferentes. O conjunto de permutações pode diminuir porque o desenho
 possui estratos, pares ou clusters. A interpretação também pode mudar conforme
-testamos ausência de qualquer efeito individual, efeito médio zero ou igualdade
-de distribuições.
+testamos ausência de qualquer efeito individual ou efeito médio zero.
 
 ::: {.callout-note title="Regra de leitura"}
 Um teste de permutação não é definido apenas pela linha de código que embaralha
@@ -471,11 +470,52 @@ sentido genérico; ele pergunta se a estatística escolhida seria extrema sob as
 trocas autorizadas por $H_0$.
 
 
-# 11. Permutação estratificada
+# 11. Variáveis pós-tratamento e permutação estratificada
 
-Suponha que a atribuição tenha sido realizada separadamente em cada dia. Uma
-unidade observada na segunda-feira poderia ter recebido `ad` ou `psa` dentro da
-segunda-feira, mas não poderia trocar de lugar com uma unidade de domingo. A
+## Por que `total ads` é pós-tratamento?
+
+Na campanha, `test group` registra o conteúdo atribuído pelo sorteio e
+`converted` registra a resposta. Já `total ads` é acumulado durante a campanha,
+depois da atribuição. Portanto, o tratamento pode modificar essa variável. Um
+anúncio mais atraente pode manter o usuário ativo por mais tempo e aumentar o
+número de exposições:
+
+$$
+T\longrightarrow M\longrightarrow Y,
+$$
+
+em que $T$ é o conteúdo atribuído, $M$ representa `total ads` e $Y$ indica
+conversão. Nesse mecanismo, $M$ mede parte do caminho pelo qual o tratamento
+atua. Condicionar em $M$ pode bloquear parte do efeito total de $T$ sobre $Y$.
+
+A ordem também pode operar no outro sentido durante a observação. Se a conversão
+encerra ou altera as exposições posteriores, temos
+
+$$
+T\longrightarrow Y\longrightarrow M.
+$$
+
+Além disso, características não registradas, como interesse prévio, podem
+aumentar simultaneamente exposição e conversão. Comparar somente usuários com o
+mesmo `total ads` pode então selecionar perfis diferentes nos grupos `ad` e
+`psa`, desfazendo a comparabilidade criada pela randomização.
+
+As colunas `most ads day` e `most ads hour` também são construídas a partir da
+exposição ocorrida durante a campanha. Elas não representam necessariamente o
+dia ou a hora em que o usuário entrou no experimento.
+
+::: {.callout-note title="Interpretação"}
+Essas variáveis continuam úteis para descrever a experiência observada. O
+problema surge quando são tratadas como covariáveis prévias ou blocos do sorteio
+para sustentar uma interpretação causal.
+:::
+
+## Permutação estratificada em um desenho válido
+
+Suponha, agora de forma hipotética, que a atribuição tenha sido realizada
+separadamente pelo **dia de entrada**, conhecido antes do tratamento. Uma
+unidade que entrou na segunda-feira poderia ter recebido `ad` ou `psa` dentro
+desse estrato, mas não poderia trocar de lugar com uma unidade de domingo. A
 permutação livre inventaria atribuições que o experimento nunca poderia gerar.
 
 Chamando os estratos de $s=1,\ldots,S$, uma estatística combinada pode ser
@@ -506,9 +546,10 @@ Para cada réplica:
 4. combine as diferenças usando os mesmos pesos;
 5. compare a estatística observada com a distribuição obtida.
 
-O código abaixo implementa exatamente esse procedimento. Ele só é adequado se o
-dia for realmente um estrato pré-tratamento compatível com o mecanismo de
-atribuição.
+O código abaixo usa `most ads day` apenas para tornar a mecânica computacional
+concreta. Como essa coluna é pós-tratamento, o resultado deve ser lido como uma
+análise exploratória. Em um experimento real, ela deve ser substituída pelo
+estrato pré-tratamento efetivamente utilizado na atribuição.
 
 ```{python}
 def stratified_stat(frame, label_col="permuted"):
@@ -539,7 +580,9 @@ print(f"p-valor aproximado: {(1 + np.sum(np.abs(null_strat) >= abs(observed_stra
 ```
 
 ::: {.callout-note title="Interpretação"}
-Restringir as trocas ao mesmo dia preserva diferenças sistemáticas entre estratos. A comparação só é válida se, dentro de cada dia, os rótulos forem trocáveis segundo o desenho do experimento.
+Restringir as trocas ao mesmo estrato preserva diferenças sistemáticas entre
+blocos. A interpretação causal só é válida quando esses blocos foram definidos
+antes do tratamento e as trocas reproduzem o sorteio real.
 :::
 
 
@@ -575,6 +618,12 @@ em que $m$ é o número de pares e $S_{i,b}$ é o sinal sorteado para o par $i$ 
 réplica $b$. Permutar todas as observações livremente destruiria o pareamento que
 controla diferenças entre as unidades.
 
+::: {.callout-note title="Conexão com a permutação"}
+Esse procedimento não introduz um teste separado. Trocar os rótulos A/B dentro
+do par transforma $D_i$ em $-D_i$; manter a ordem conserva $D_i$. Sortear um
+sinal é apenas uma maneira compacta de programar as duas trocas permitidas.
+:::
+
 ::: {.callout-note title="Exemplo"}
 Se três diferenças forem $D=(2,-1,4)$, uma réplica possível usa sinais
 $S=(-1,+1,-1)$ e produz $(-2-1-4)/3=-7/3$. Não reorganizamos os seis resultados
@@ -592,6 +641,45 @@ Permutar alunos produz artificialmente muito mais unidades aleatórias do que o
 desenho realmente possui. Isso costuma estreitar a distribuição nula e gerar
 valores-p excessivamente pequenos. Ter milhares de indivíduos não substitui ter
 um número adequado de clusters independentes.
+
+::: {.callout-note title="Exemplo"}
+Oito escolas participam do estudo e quatro recebem um novo método de ensino.
+Há oito unidades sorteadas, não centenas de alunos independentes. Em cada
+permutação, o rótulo muda para a escola inteira.
+:::
+
+## Interferência entre unidades
+
+A permutação usual pressupõe que o resultado de uma unidade não muda quando o
+tratamento de outra unidade muda. Essa condição falha quando há interação entre
+participantes.
+
+::: {.callout-note title="Exemplo"}
+Em uma rede social, um usuário tratado recebe um recurso de convite e chama um
+amigo do grupo controle. O comportamento do amigo dependeu do tratamento de
+outra pessoa. Trocar rótulos individualmente, ignorando a rede, pode representar
+um experimento impossível.
+:::
+
+## Perdas de acompanhamento
+
+Se permanecer no estudo depende do tratamento e do resultado, comparar apenas
+os casos observados pode desfazer a comparabilidade criada pela randomização.
+
+::: {.callout-note title="Exemplo"}
+Começamos com 100 alunos por grupo. Se 30 alunos com baixo desempenho abandonam
+apenas o grupo tratado, a média dos 70 restantes pode aumentar por seleção, mesmo
+sem melhora individual. Permutar apenas os casos completos não recupera os dados
+ausentes nem corrige esse mecanismo.
+:::
+
+::: {.callout-note title="Prática recomendada"}
+Reporte a taxa, o momento e os motivos das perdas separadamente por grupo. Preserve
+o grupo originalmente sorteado e faça uma análise de sensibilidade: recalcule a
+conclusão sob cenários plausíveis para os resultados ausentes, incluindo um
+cenário desfavorável ao tratamento. A estabilidade da conclusão entre os cenários
+é mais informativa do que uma única análise por casos completos.
+:::
 
 # 14. Qual hipótese nula está sendo testada?
 
@@ -613,73 +701,41 @@ H_0^m:\frac1n\sum_{i=1}^{n}[Y_i(1)-Y_i(0)]=0.
 $$
 
 Ela permite efeitos individuais diferentes, positivos e negativos, que se
-cancelam. Rejeitar a nula estrita não é logicamente igual a demonstrar que o efeito
-médio seja diferente de zero. Para hipóteses médias, estatísticas studentizadas
-e aproximações assintóticas costumam ser mais adequadas.
+cancelam. Rejeitar a nula estrita não é logicamente igual a demonstrar que o
+efeito médio seja diferente de zero.
 
-# 15. Studentização
+## Permutação sob a nula estrita
 
-Quando os grupos possuem tamanhos ou variâncias diferentes, a diferença bruta
-de médias pode não ter a mesma escala entre permutações. Uma alternativa é
-dividir o efeito por seu erro padrão estimado:
+Sob $H_0^F$, cada resultado seria o mesmo em tratamento e controle. Podemos,
+portanto, manter os resultados observados fixos e reconstruir exatamente todas
+as atribuições permitidas pelo sorteio. Essa é a base do teste de randomização
+exato de Fisher.
+
+## Permutação sob a nula média
+
+Sob $H_0^m$, os efeitos individuais podem existir e se cancelar. Como não
+observamos simultaneamente $Y_i(1)$ e $Y_i(0)$, não conseguimos reconstruir
+exatamente todos os resultados potenciais. Ainda podemos usar uma permutação
+adaptada, geralmente com a estatística studentizada
 
 $$
-T=\frac{\bar X_{ad}-\bar X_{psa}}
-{\sqrt{s_{ad}^2/n_{ad}+s_{psa}^2/n_{psa}}}.
+T=\frac{\bar Y_1-\bar Y_0}
+{\sqrt{s_1^2/n_1+s_0^2/n_0}},
 $$
 
-Aqui, $\bar X_g$, $s_g^2$ e $n_g$ são, respectivamente, a média, a variância
-amostral e o tamanho do grupo $g$. O numerador mede o efeito observado; o
-denominador o coloca na escala de sua incerteza. Em cada permutação, numerador e
-denominador precisam ser recalculados.
-
-# 16. Subgrupos e multiplicidade
-
-Depois de observar um efeito médio, é tentador testar cada dia, horário, região
-ou perfil de usuário. Se realizarmos muitos testes sob hipóteses nulas verdadeiras,
-a chance de encontrar ao menos um resultado aparentemente significativo cresce.
-
-Para uma família de $K$ testes independentes conduzidos com nível $\alpha$, a
-probabilidade de ao menos um falso positivo é
-
-$$1-(1-\alpha)^K.$$
-
-Com $K=20$ e $\alpha=0{,}05$, esse valor é aproximadamente $64\%$. A Aula 15
-desenvolve Bonferroni, Holm e FDR. Aqui, a lição é definir previamente a família
-de hipóteses e distinguir análise confirmatória de exploração.
-
-Um teste máximo por permutação pode guardar, em cada réplica, a maior estatística
-entre todos os subgrupos. A referência deixa de ser a distribuição de um teste
-isolado e passa a representar a maior surpresa que a busca completa poderia
-produzir sob $H_0$.
-
-# 17. Regra de parada e monitoramento
-
-Calcular o valor-p repetidamente e encerrar o experimento assim que ele cruza
-$0{,}05$ aumenta a taxa de falso positivo. Cada nova inspeção cria outra chance
-de parar em uma flutuação favorável. As alternativas são definir previamente o
-tamanho da amostra ou usar métodos sequenciais planejados para esse monitoramento.
-
-
-# 18. Poder por simulação
-
-```{python}
-def power_for_effect(p0=.018, effect=.008, n_each=5000, reps=3000):
-    control = rng.binomial(n_each, p0, size=reps) / n_each
-    treatment = rng.binomial(n_each, p0+effect, size=reps) / n_each
-    se0 = np.sqrt(2*p0*(1-p0)/n_each)
-    return np.mean(np.abs(treatment-control) > 1.96*se0)
-
-for n in [1000, 2500, 5000, 10000, 25000]:
-    print(n, power_for_effect(n_each=n))
-```
+em que $s_g^2$ é a variância amostral e $n_g$ é o tamanho do grupo $g$. Em cada
+permutação, o numerador e o denominador devem ser recalculados. Sob condições
+regulares e com amostras suficientemente grandes, esse procedimento fornece um
+teste assintoticamente válido para o efeito médio.
 
 ::: {.callout-note title="Interpretação"}
-O poder cresce com o tamanho dos grupos porque o mesmo efeito se torna maior em relação ao erro amostral. A curva vale para a taxa e o efeito especificados; outra alternativa exige novo planejamento.
+A mesma palavra “permutação” esconde garantias diferentes. Para a nula estrita,
+o teste é diretamente exato pelo desenho. Para a nula média, a permutação simples
+da diferença de médias não basta em geral; a studentização fornece a adaptação
+necessária e a justificativa costuma ser assintótica.
 :::
 
-
-# 19. Checklist de validade
+# 15. Checklist de validade
 
 Antes de interpretar causalmente:
 
@@ -687,14 +743,13 @@ Antes de interpretar causalmente:
 2. verifique duplicatas, perdas e desvio da alocação planejada;
 3. preserve blocos, pares ou clusters na permutação;
 4. não ajuste ingenuamente por variáveis pós-tratamento;
-5. defina métrica primária, cauda e regra de parada;
-6. controle multiplicidade em subgrupos.
+5. defina previamente a métrica primária e a cauda do teste.
 
-# 20. Exercícios
+# 16. Exercícios
 
 1. Refaça o teste usando risco relativo em vez de diferença absoluta.
 2. Compare o resultado com um teste-z de duas proporções.
-3. Estime a diferença de conversão em cada dia e teste uma interação.
+3. Escreva as trocas permitidas em um estudo pareado com quatro participantes.
 4. Simule um experimento em clusters e mostre por que permutar pessoas é errado.
 5. Crie um cenário em que média e mediana levem a conclusões diferentes.
 6. Explique a diferença entre a nula estrita de Fisher e efeito médio zero.
@@ -748,9 +803,8 @@ uma afirmação de que os dois procedimentos sejam sempre intercambiáveis.
 | atribuição feita dentro de estratos | totais de tratamento dentro de cada estrato | 11 |
 | observações pareadas | vínculo e troca interna de cada par | 12 |
 | tratamento sorteado para clusters | unidades do mesmo cluster juntas | 13 |
-| interesse em efeito médio, não nula estrita | escala da estatística e hipótese correta | 14–15 |
-| muitos subgrupos ou desfechos | família de testes e regra de busca | 16 |
-| monitoramento durante a coleta | regra de parada planejada | 17 |
+| interferência ou perdas após o sorteio | mecanismo de influência e observação | 13 |
+| interesse em efeito médio, não nula estrita | hipótese correta | 14 |
 
 Esse mapa não substitui o desenho do estudo. Ele serve para localizar a extensão
 adequada e verificar se o código imita as atribuições que realmente poderiam ter
@@ -765,9 +819,7 @@ ocorrido.
 5. Por que média e mediana podem produzir valores-p diferentes na mesma base?
 6. Qual é o erro de permutar indivíduos quando o tratamento foi sorteado por escola?
 7. Em um estudo pareado, qual objeto recebe a troca aleatória?
-8. O que a studentização acrescenta à diferença bruta de médias?
-9. Por que escolher a porcentagem de aparagem depois de ver os valores-p é problemático?
-10. Como inspeções repetidas do resultado alteram a taxa de falso positivo?
+8. Por que escolher a porcentagem de aparagem depois de ver os valores-p é problemático?
 
 <details><summary>Respostas comentadas</summary>
 
@@ -778,7 +830,5 @@ ocorrido.
 5. Porque as estatísticas descrevem aspectos diferentes da distribuição e possuem distribuições nulas próprias.
 6. O procedimento finge que indivíduos foram randomizados independentemente, aumenta artificialmente o número de unidades aleatórias e tende a subestimar a incerteza.
 7. A orientação tratamento–controle dentro de cada par; equivalentemente, sorteamos o sinal da diferença de cada par.
-8. Ela divide o efeito por uma estimativa de sua incerteza, produzindo uma escala mais comparável quando tamanhos ou variâncias diferem.
-9. Porque transforma uma escolha metodológica em busca pelo resultado mais favorável e aumenta o erro do procedimento completo.
-10. Cada inspeção cria uma nova oportunidade de parar em uma flutuação extrema; sem método sequencial, o nível nominal deixa de representar o erro total.
+8. Porque transforma uma escolha metodológica em busca pelo resultado mais favorável, em vez de preservar uma estatística definida pela pergunta científica.
 </details>

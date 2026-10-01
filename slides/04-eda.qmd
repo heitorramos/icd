@@ -143,21 +143,31 @@ Uma visualização é útil quando muda a próxima pergunta que fazemos aos dado
 
 ## Cinco lentes para investigar uma base
 
-::: {.icd-grid}
+::: {.icd-grid .five-lenses-grid}
 ::: {.icd-card}
-**Estrutura** · como os registros se organizam?
+**Estrutura**
+
+Como os registros se organizam?
 :::
 ::: {.icd-card}
-**Granularidade** · o que representa uma linha?
+**Granularidade**
+
+O que representa uma linha?
 :::
 ::: {.icd-card}
-**Escopo** · quem e o que ficaram de fora?
+**Escopo**
+
+Quem e o que ficaram de fora?
 :::
 ::: {.icd-card}
-**Temporalidade** · quando cada variável foi registrada?
+**Temporalidade**
+
+Quando cada variável foi registrada?
 :::
 ::: {.icd-card}
-**Corretude** · os valores respeitam as regras do domínio?
+**Corretude**
+
+Os valores respeitam as regras do domínio?
 :::
 :::
 
