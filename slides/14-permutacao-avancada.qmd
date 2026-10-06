@@ -251,64 +251,134 @@ Reporte as perdas por grupo e teste cenários plausíveis para os resultados aus
 Permutar apenas quem permaneceu não recupera a comparabilidade inicial.
 :::
 
+## A permutação mantém os resultados fixos {.smaller}
+
+O algoritmo troca os grupos, mas não altera os valores observados.
+
+| pessoa | dados observados | após permutar os rótulos |
+|:---|:---|:---|
+| Ana | tratamento, resultado 10 | controle, resultado **10** |
+| Bruno | controle, resultado 4 | tratamento, resultado **4** |
+
+::: {.statement}
+Quando essa nova tabela representa um experimento que realmente poderia ter ocorrido?
+:::
+
+Somente quando mudar o tratamento não mudaria o resultado de nenhuma pessoa. Essa é a razão para introduzir a nula estrita de Fisher.
+
 ## Duas hipóteses nulas {.smaller}
 
 ::: {.columns .concept-cards}
 ::: {.column width="50%"}
 ### Nula estrita de Fisher
 
-$$H_0^F:Y_i(1)=Y_i(0)\quad\forall i$$
+$$H_0^F:Y_i(1)=Y_i(0)\quad\text{para todo }i$$
 
-Nenhuma unidade é afetada. O teste de randomização é exato em amostras finitas.
+Cada unidade teria o mesmo resultado sob tratamento e controle. Portanto, podemos trocar seu grupo e manter o valor observado.
 :::
 
 ::: {.column width="50%"}
 ### Nula de efeito médio
 
-$$H_0^\mu:\frac1n\sum_i[Y_i(1)-Y_i(0)]=0$$
+$$H_0^\mu:\frac1n\sum_i\tau_i=0,
+\qquad \tau_i=Y_i(1)-Y_i(0)$$
 
-Efeitos positivos e negativos podem existir e se cancelar.
+Os efeitos individuais podem existir. Por exemplo, $+4$ para Ana e $-4$ para Bruno produzem efeito médio zero.
 :::
 :::
 
-::: {.statement}
-A nula estrita implica efeito médio zero, mas o contrário não é necessariamente verdadeiro.
-:::
+$Y_i(1)$ e $Y_i(0)$ são os resultados potenciais da unidade $i$ sob tratamento e controle. A nula estrita implica efeito médio zero, mas o contrário não é verdadeiro.
 
-## Permutação nas duas hipóteses {.smaller}
+## A garantia depende da hipótese {.smaller}
 
 ::: {.columns .concept-cards}
 ::: {.column width="50%"}
 ### Sob a nula estrita
 
-Mantenha os resultados fixos e refaça as atribuições permitidas pelo sorteio. O valor-p é **exato**.
+Se Ana mudar de grupo, seu resultado continuará 10. Manter os resultados fixos em todas as atribuições é coerente.
+
+**Conclusão:** o teste de randomização é exato.
 :::
 
 ::: {.column width="50%"}
 ### Sob a nula média
 
-Use uma diferença **studentizada** e recalcule tudo após cada permutação:
+Ana pode melhorar e Bruno piorar. Ao trocar seus grupos, os resultados poderiam mudar, mas não observamos esses valores alternativos.
 
-$$T=\frac{\bar Y_1-\bar Y_0}{\sqrt{s_1^2/n_1+s_0^2/n_0}}$$
-
-A validade costuma ser **assintótica**.
+**Conclusão:** a permutação simples não é automaticamente exata.
 :::
 :::
 
-$s_g^2$ e $n_g$ são a variância amostral e o tamanho do grupo $g$.
+Para testar efeito médio zero, uma opção é permutar uma estatística studentizada:
+
+$$T=\frac{\bar Y_1-\bar Y_0}{\sqrt{s_1^2/n_1+s_0^2/n_0}}.$$
+
+$\bar Y_g$, $s_g^2$ e $n_g$ são a média, a variância amostral e o tamanho do grupo $g$. A validade costuma ser assintótica.
+
+## Quando usar cada hipótese? {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Nula estrita de Fisher
+
+Use quando a pergunta for:
+
+> **O tratamento deixou todas as unidades inalteradas?**
+
+É adequada para um teste de randomização exato, especialmente quando conhecemos o mecanismo de sorteio e queremos detectar qualquer efeito individual.
+
+Rejeitá-la indica que **alguma unidade foi afetada**. Isso não garante que o efeito médio seja diferente de zero.
+:::
+
+::: {.column width="50%"}
+### Nula de efeito médio
+
+Use quando a pergunta for:
+
+> **O tratamento altera o resultado em média?**
+
+É a pergunta usual em experimentos A/B e decisões de política ou produto, nos quais efeitos individuais podem ser diferentes.
+
+Use uma análise apropriada ao efeito médio, como a estatística studentizada, e reporte também o intervalo de confiança.
+:::
+:::
 
 ::: {.statement}
-Permutar apenas a diferença de médias não é automaticamente exato sob a nula média.
+A hipótese deve seguir a pergunta científica. A exatidão do teste não compensa testar uma hipótese diferente daquela que interessa.
 :::
 
-## Qual hipótese é mais forte? {.quiz-question}
+## Exemplo: efeitos que se cancelam {.smaller}
 
-Qual afirmação descreve a nula estrita de Fisher?
+| unidade | controle $Y_i(0)$ | tratamento $Y_i(1)$ | efeito $\tau_i$ |
+|:---|---:|---:|---:|
+| Ana | 6 | 10 | $+4$ |
+| Bruno | 10 | 6 | $-4$ |
 
-- [O efeito médio é zero, embora efeitos individuais possam existir]{data-explanation="Essa é uma hipótese nula sobre o efeito médio."}
-- [$Y_i(1)=Y_i(0)$ para toda unidade $i$]{.correct data-explanation="A nula estrita afirma ausência de efeito para cada unidade, permitindo imputar todos os resultados potenciais."}
-- [As médias observadas dos grupos são exatamente iguais]{data-explanation="Igualdade amostral não define a hipótese causal sobre resultados potenciais."}
-- [As distribuições têm apenas a mesma variância]{data-explanation="A nula estrita é uma afirmação sobre resultados potenciais individuais, não apenas dispersão."}
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Nula estrita de Fisher
+
+Exige $\tau_i=0$ para **cada** unidade.
+
+$$+4\neq0\qquad\text{e}\qquad-4\neq0$$
+
+**Conclusão:** a nula estrita é falsa. O tratamento afeta Ana e Bruno.
+:::
+
+::: {.column width="50%"}
+### Nula de efeito médio
+
+Exige que a média dos efeitos seja zero.
+
+$$\bar\tau=\frac{(+4)+(-4)}{2}=0$$
+
+**Conclusão:** a nula de efeito médio é verdadeira. Não há ganho médio.
+:::
+:::
+
+::: {.statement}
+O mesmo conjunto de efeitos contradiz a nula estrita e satisfaz a nula média. Elas não são duas maneiras equivalentes de formular a mesma pergunta.
+:::
 
 ## Randomização permite causalidade — com condições
 
