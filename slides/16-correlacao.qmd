@@ -510,39 +510,99 @@ Mas tabagismo altera drasticamente tanto o nível das despesas quanto a associa�
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-df.groupby("smoker").apply(
+df.groupby("smoker")[["bmi", "charges"]].apply(
     lambda g: g["bmi"].corr(g["charges"]),
-    include_groups=False
 )
 ```
 </details>
 
-## Marginal e condicional não são sinônimos
+## Marginal, condicional e parcial {.smaller}
 
-- **Correlação marginal:** calculada sem separar outras variáveis.
-- **Correlação condicional:** calculada dentro de estratos definidos por uma terceira variável.
-- **Correlação parcial:** associação linear restante após retirar componentes lineares explicados por covariáveis.
+::: {.columns .concept-cards}
+::: {.column width="33.3%"}
+### Marginal
 
-Condicionar pode esclarecer uma mistura, mas escolher condicionantes exige conhecimento causal: controlar uma variável inadequada também pode introduzir viés.
+Todos os estudantes juntos:
 
-## O paradoxo de Simpson é o caso extremo
+$$r_{\text{horas, nota}}=-0{,}14$$
 
-No paradoxo de Simpson:
+Resume a nuvem sem considerar a disciplina.
+:::
 
-- cada estrato apresenta uma associação em uma direção;
-- os dados agregados apresentam associação oposta;
-- uma variável de agrupamento altera a composição dos dados.
+::: {.column width="33.3%"}
+### Condicional
 
-Não é uma contradição algébrica. São perguntas diferentes: comparação global versus comparação dentro de grupos comparáveis.
+Dentro de cada disciplina:
+
+$$r_{\text{intro}}=0{,}40,\qquad r_{\text{avançada}}=0{,}38$$
+
+Compara estudantes em estratos distintos.
+:::
+
+::: {.column width="33.3%"}
+### Parcial
+
+Após retirar linearmente as diferenças entre disciplinas:
+
+$$r_{\text{parcial}}=0{,}39$$
+
+Correlaciona os resíduos de `horas` e `nota`.
+:::
+:::
+
+Condicionar ou ajustar pode esclarecer uma mistura. A escolha da variável de controle exige conhecimento causal, pois um controle inadequado também pode introduzir viés.
+
+## Uma primeira leitura dos dados
+
+![](assets/aula16-correlacao/simpson-agregado.png){.wide-chart fig-alt="Dados simulados de horas de estudo e nota agregados, com correlação negativa."}
+
+Sem distinguir as disciplinas, quem estuda mais parece obter notas menores: $r=-0{,}14$.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+sim_rng = np.random.default_rng(1616)
+x_intro = np.clip(sim_rng.normal(4.0, 2.3, 400), 0, 14)
+y_intro = 74 + .8*(x_intro-4.0) + sim_rng.normal(0, 5, 400)
+x_advanced = np.clip(sim_rng.normal(8.0, 2.3, 400), 0, 14)
+y_advanced = 66 + .8*(x_advanced-8.0) + sim_rng.normal(0, 5, 400)
+
+simpson = pd.DataFrame({
+    "horas": np.r_[x_intro, x_advanced],
+    "nota": np.r_[y_intro, y_advanced],
+    "disciplina": ["Introdutória"]*400 + ["Avançada"]*400,
+})
+sns.regplot(simpson, x="horas", y="nota")
+simpson.horas.corr(simpson.nota)
+```
+</details>
+
+## Condicionando pela disciplina
+
+![](assets/aula16-correlacao/simpson-condicionado.png){.wide-chart fig-alt="Todos os dados simulados no mesmo gráfico, coloridos por disciplina e com uma reta positiva para cada grupo."}
+
+- disciplina introdutória: $r=0{,}40$;
+- disciplina avançada: $r=0{,}38$.
+
+A ampla sobreposição esconde os grupos no gráfico agregado. A disciplina avançada combina mais horas de estudo com uma avaliação mais difícil. Essa composição inverte a associação: esse é o **paradoxo de Simpson**.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+simpson.groupby("disciplina")[["horas", "nota"]].apply(
+    lambda group: group["horas"].corr(group["nota"]),
+)
+```
+</details>
 
 ## Uma correlação não identifica um efeito
 
 Mesmo com $r\neq0$, várias explicações permanecem:
 
 $$
-X\rightarrow Y,qquad
-Y\rightarrow X,qquad
-Z\rightarrow X\text{ e }Z\rightarrow Y,qquad
+X\rightarrow Y,\qquad
+Y\rightarrow X,\qquad
+Z\rightarrow X\text{ e }Z\rightarrow Y,\qquad
 \text{seleção ou acaso}.
 $$
 

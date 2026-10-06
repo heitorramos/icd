@@ -133,8 +133,8 @@ plt.title("A matriz resume relações lineares par a par")
 finish("matriz-correlacao.png")
 
 # 7. Pearson e Spearman na relação idade-despesas.
-rp = pearsonr(df.age, df.charges).statistic
-rs = spearmanr(df.age, df.charges).statistic
+rp = float(pearsonr(df.age, df.charges)[0])
+rs = float(spearmanr(df.age, df.charges)[0])
 fig, axes = plt.subplots(1, 2, figsize=(11.5, 5.0))
 sns.regplot(df, x="age", y="charges", scatter_kws={"alpha": .25, "s": 20}, line_kws={"color": ORANGE}, ax=axes[0])
 axes[0].set_title(f"Valores: Pearson = {rp:.2f}")
@@ -182,7 +182,59 @@ for ax, (smoker, group), color in zip(axes, df.groupby("smoker"), [BLUE, ORANGE]
 fig.suptitle("A associação IMC-despesas depende do estrato", fontweight="bold")
 finish("correlacao-condicional.png")
 
-# 11. Restrição de amplitude.
+# 11. Paradoxo de Simpson em um exemplo didático simulado.
+sim_rng = np.random.default_rng(1616)
+n_simpson = 400
+x_intro = np.clip(sim_rng.normal(4.0, 2.3, n_simpson), 0, 14)
+y_intro = 74 + .8*(x_intro-4.0) + sim_rng.normal(0, 5, n_simpson)
+x_advanced = np.clip(sim_rng.normal(8.0, 2.3, n_simpson), 0, 14)
+y_advanced = 66 + .8*(x_advanced-8.0) + sim_rng.normal(0, 5, n_simpson)
+simpson = pd.DataFrame({
+    "horas": np.r_[x_intro, x_advanced],
+    "nota": np.r_[y_intro, y_advanced],
+    "disciplina": (["Introdutória"]*n_simpson + ["Avançada"]*n_simpson),
+})
+r_simpson_global = simpson.horas.corr(simpson.nota)
+r_simpson_group = simpson.groupby("disciplina")[["horas", "nota"]].apply(
+    lambda group: group.horas.corr(group.nota),
+)
+
+plt.figure(figsize=(9.6, 5.4))
+sns.regplot(
+    simpson, x="horas", y="nota",
+    scatter_kws={"alpha": .32, "s": 28, "color": BLUE},
+    line_kws={"color": RED, "lw": 3},
+)
+plt.xlim(-.5, 14.5)
+plt.ylim(48, 92)
+plt.xlabel("Horas de estudo por semana")
+plt.ylabel("Nota")
+plt.title(f"Sem separar as disciplinas: r = {r_simpson_global:.2f}")
+plt.figtext(.99, .01, "Exemplo didático simulado", ha="right", fontsize=10, color="#5c6b77")
+finish("simpson-agregado.png")
+
+fig, ax = plt.subplots(figsize=(9.6, 5.4))
+simpson_order = [("Introdutória", BLUE), ("Avançada", ORANGE)]
+for course, color in simpson_order:
+    group = simpson[simpson.disciplina.eq(course)]
+    ax.scatter(
+        group.horas, group.nota, alpha=.38, s=27, color=color,
+        label=f"{course}: r = {r_simpson_group[course]:.2f}",
+    )
+    sns.regplot(
+        group, x="horas", y="nota", ax=ax,
+        scatter=False,
+        line_kws={"color": color, "lw": 3},
+    )
+ax.set(xlim=(-.5, 14.5), ylim=(48, 92),
+       xlabel="Horas de estudo por semana", ylabel="Nota")
+ax.set_title("Ao condicionar pela disciplina, aparecem duas associações positivas")
+ax.legend(title="Disciplina", loc="lower right", frameon=True)
+fig.text(.99, .01, "Exemplo didático simulado", ha="right", fontsize=10,
+         color="#5c6b77")
+finish("simpson-condicionado.png")
+
+# 12. Restrição de amplitude.
 all_r = df.age.corr(df.charges)
 restricted = df[df.age.between(35, 45)]
 res_r = restricted.age.corr(restricted.charges)
@@ -195,7 +247,7 @@ for ax in axes: ax.set(xlabel="Idade", ylabel="Despesas (US$)")
 fig.suptitle("Restringir a faixa observada altera a correlação", fontweight="bold")
 finish("restricao-amplitude.png")
 
-# 12. Incerteza por bootstrap para r(idade, despesas).
+# 13. Incerteza por bootstrap para r(idade, despesas).
 B = 4000
 boot = np.empty(B)
 values = df[["age", "charges"]].to_numpy()
@@ -213,7 +265,7 @@ plt.title("Correlação amostral também tem incerteza")
 plt.legend()
 finish("bootstrap-correlacao.png")
 
-# 13. Quiz visual: associe cada nuvem à correlação de Pearson.
+# 14. Quiz visual: associe cada nuvem à correlação de Pearson.
 targets = [("A", 0.00), ("B", 0.90), ("C", -0.55), ("D", 0.25)]
 fig, axes = plt.subplots(1, 4, figsize=(12, 3.2), sharex=True, sharey=True)
 for ax, (label, rho) in zip(axes, targets):
@@ -230,11 +282,11 @@ for ax, (label, rho) in zip(axes, targets):
 fig.suptitle("Qual correlação de Pearson corresponde a cada nuvem?", fontweight="bold")
 finish("quiz-correlacoes.png")
 
-# 14. Quiz visual: relação monotônica, mas não linear.
+# 15. Quiz visual: relação monotônica, mas não linear.
 qx = np.linspace(1, 100, 220)
 qy = np.log(qx) + rng.normal(0, .045, len(qx))
-quiz_rp = pearsonr(qx, qy).statistic
-quiz_rs = spearmanr(qx, qy).statistic
+quiz_rp = float(pearsonr(qx, qy)[0])
+quiz_rs = float(spearmanr(qx, qy)[0])
 plt.figure(figsize=(9.2, 4.6))
 plt.scatter(qx, qy, color=PURPLE, alpha=.62, s=26)
 plt.xlabel("X")

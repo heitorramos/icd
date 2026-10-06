@@ -447,6 +447,97 @@ O paradoxo de Simpson ocorre quando associações dentro dos estratos têm uma
 direção, mas a associação agregada tem direção oposta. Ele é uma forma extrema
 de mistura por composição dos grupos.
 
+Considere um exemplo didático simulado com duas disciplinas. Na disciplina
+introdutória, os estudantes tendem a estudar menos e a prova é mais simples. Na
+disciplina avançada, eles tendem a estudar mais e a prova é mais difícil. Dentro
+de cada disciplina, mais horas de estudo acompanham notas maiores.
+
+```{python}
+sim_rng = np.random.default_rng(1616)
+n_simpson = 400
+
+x_intro = np.clip(sim_rng.normal(4.0, 2.3, n_simpson), 0, 14)
+y_intro = 74 + .8*(x_intro-4.0) + sim_rng.normal(0, 5, n_simpson)
+x_advanced = np.clip(sim_rng.normal(8.0, 2.3, n_simpson), 0, 14)
+y_advanced = 66 + .8*(x_advanced-8.0) + sim_rng.normal(0, 5, n_simpson)
+
+simpson = pd.DataFrame({
+    "horas": np.r_[x_intro, x_advanced],
+    "nota": np.r_[y_intro, y_advanced],
+    "disciplina": ["Introdutória"]*n_simpson + ["Avançada"]*n_simpson,
+})
+
+print(f"Correlação agregada: {simpson.horas.corr(simpson.nota):.2f}")
+print(
+    simpson.groupby("disciplina")[["horas", "nota"]].apply(
+        lambda group: group.horas.corr(group.nota),
+    ).round(2)
+)
+```
+
+### Antes de condicionar
+
+![](../../slides/assets/aula16-correlacao/simpson-agregado.png){fig-alt="Dados simulados de horas de estudo e nota agregados, com correlação negativa."}
+
+::: {.callout-note title="Interpretação"}
+Ao misturar as disciplinas, a correlação vale aproximadamente $-0{,}14$. Essa
+comparação combina o efeito da composição dos grupos com a associação existente
+dentro de cada disciplina.
+:::
+
+### Depois de condicionar pela disciplina
+
+![](../../slides/assets/aula16-correlacao/simpson-condicionado.png){fig-alt="Todos os dados simulados no mesmo gráfico, coloridos por disciplina e com uma reta positiva para cada grupo."}
+
+::: {.callout-note title="Interpretação"}
+As correlações condicionais valem aproximadamente $0{,}40$ na disciplina
+introdutória e $0{,}38$ na avançada. A relação positiva dentro dos dois grupos
+se torna negativa quando eles são agregados. Não há contradição: a correlação
+marginal e as correlações condicionais respondem a comparações diferentes.
+:::
+
+### Marginal, condicional e parcial no mesmo exemplo
+
+A **correlação marginal** usa todos os estudantes sem considerar a disciplina:
+$r=-0{,}14$. As **correlações condicionais** são calculadas separadamente dentro
+dos estratos: $0{,}40$ na introdutória e $0{,}38$ na avançada.
+
+A **correlação parcial** segue outra lógica. Primeiro retiramos de `horas` e de
+`nota` as diferenças lineares explicadas pela disciplina. Depois calculamos a
+correlação entre os dois conjuntos de resíduos. Aqui, $D_i=1$ identifica a
+disciplina avançada e $D_i=0$ identifica a introdutória:
+
+$$
+\begin{aligned}
+e_{Xi} &= X_i-(\widehat a_X+\widehat b_XD_i),\\
+e_{Yi} &= Y_i-(\widehat a_Y+\widehat b_YD_i),\\
+r_{XY\cdot D} &= \operatorname{cor}(e_X,e_Y).
+\end{aligned}
+$$
+
+```{python}
+disciplina_avancada = simpson.disciplina.eq("Avançada").astype(int).to_numpy()
+matriz_ajuste = np.column_stack([
+    np.ones(len(simpson)),
+    disciplina_avancada,
+])
+
+beta_horas = np.linalg.lstsq(matriz_ajuste, simpson.horas, rcond=None)[0]
+beta_nota = np.linalg.lstsq(matriz_ajuste, simpson.nota, rcond=None)[0]
+
+residuo_horas = simpson.horas - matriz_ajuste @ beta_horas
+residuo_nota = simpson.nota - matriz_ajuste @ beta_nota
+r_parcial = residuo_horas.corr(residuo_nota)
+print(f"Correlação parcial controlando disciplina: {r_parcial:.2f}")
+```
+
+::: {.callout-note title="Interpretação"}
+A correlação parcial vale aproximadamente $0{,}39$, próxima das duas
+correlações condicionais. Isso ocorre porque o ajuste remove a diferença média
+entre as disciplinas antes de medir a associação linear restante. O ajuste não
+transforma automaticamente a associação em efeito causal.
+:::
+
 Condicionar não é um procedimento mecânico. Uma variável $Z$ pode ser:
 
 - confundidora, por influenciar $X$ e $Y$;
