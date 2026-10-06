@@ -30,9 +30,9 @@ Eventuais alterações serão comunicadas pelo
 | — | **24/09/2026** | **Aula cancelada** | — |
 | 13 | **29/09/2026** | Testes de permutação | [Acessar](aulas/13-testes-permutacao.qmd) |
 | 14 | **01/10/2026** | Permutação e desenho experimental | [Acessar](aulas/14-permutacao-avancada.qmd) |
-| 15 | **06/10/2026** | Poder e múltiplos testes | Em revisão |
+| 15 | **06/10/2026** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
 | **Módulo 3** |  | **Modelagem e Aprendizado de Máquina** |  |
-| 16 | **08/10/2026** | Correlação | Em revisão |
+| 16 | **08/10/2026** | Correlação | [Acessar](aulas/16-correlacao.qmd) |
 | **Prova 1** | **13/10/2026** | **Prova 1** | — |
 | 17 | **15/10/2026** | Regressão linear simples | Em revisão |
 | — | **20/10/2026** | **Sem aula** | — |
