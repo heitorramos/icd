@@ -202,7 +202,7 @@ Estatísticas robustas, estratos, pares, clusters e ameaças à validade.
 
 Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 
-**Material em revisão**
+[Abrir a aula](15-poder-multiplos.qmd){.btn .btn-primary}
 :::
 :::
 :::

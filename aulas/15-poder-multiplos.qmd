@@ -10,7 +10,7 @@ subtitle: "Detectar efeitos sem fabricar descobertas"
 ::: {.recurso-card}
 ### Slides
 
-Poder, bootstrap sob hipóteses alternativas e controle de múltiplos testes.
+Permutação estratificada, múltiplos testes e poder por simulação.
 
 [Abrir slides](../slides/15-poder-multiplos.qmd){.btn .btn-outline-primary}
 :::
@@ -20,7 +20,7 @@ Poder, bootstrap sob hipóteses alternativas e controle de múltiplos testes.
 ::: {.recurso-card}
 ### Material de apoio
 
-Análise reproduzível do experimento Cookie Cats, com simulações e exercícios.
+Guia de estudo reproduzível, com exemplo estratificado completo, simulações e exercícios.
 
 [Abrir notebook](../exemplos/15-poder-multiplos/notebook.qmd){.btn .btn-outline-primary}
 :::
@@ -39,24 +39,25 @@ Experimento Cookie Cats com duas posições de barreira e métricas de retençã
 
 ## Objetivos
 
-- construir $H_0$ por permutação e bootstrap recentralizado;
-- compreender por que o bootstrap usual representa naturalmente $H_A$;
-- definir e estimar poder para alternativas específicas;
-- relacionar efeito, amostra, nível de significância e poder;
-- quantificar a inflação de falsos positivos;
-- escolher entre controle de FWER e FDR.
+- executar e interpretar um teste de permutação estratificado;
+- compreender por que múltiplos testes aumentam falsos positivos;
+- distinguir controle de FWER e FDR;
+- comparar Bonferroni, Holm e Benjamini–Hochberg;
+- estimar poder usando permutação sob $H_0$ e bootstrap sob $H_A$.
 
 ## Estudo de caso
 
-O experimento Cookie Cats compara duas posições para uma barreira no jogo. A
-retenção em 7 dias é a métrica primária; retenção em 1 dia e rodadas permitem
-discutir famílias de hipóteses e multiplicidade.
+O experimento Cookie Cats compara duas posições para uma barreira no jogo. Uma
+extensão didática por plataforma apresenta a permutação estratificada. A
+retenção em 7 dias é a métrica primária; as demais medidas introduzem o problema
+dos múltiplos testes. O poder é estimado comparando a distribuição nula por
+permutação com uma distribuição alternativa por bootstrap.
 
 ## Bibliografia da aula
 
 ### Bibliografia principal
 
-- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, seções sobre erros tipo I e II, tamanho amostral e poder.
+- Renato Assunção, *Fundamentos Estatísticos para Ciência da Computação*, seções sobre testes de randomização, erros tipo I e II, tamanho amostral e poder.
 - James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo de testes múltiplos: famílias de hipóteses, FWER, FDR e procedimentos de correção.
 - Çetinkaya-Rundel e Hardin, *Introduction to Modern Statistics*, capítulos de testes de hipóteses: nível de significância, poder e consequências de decisões repetidas.
 

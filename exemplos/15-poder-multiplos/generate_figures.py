@@ -1,12 +1,13 @@
 """Gera figuras da Aula 15 com a base Cookie Cats."""
 
+from itertools import combinations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from scipy.stats import norm
+from scipy.stats import gaussian_kde, norm
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/cookie-cats/cookie_cats.csv"
@@ -30,6 +31,60 @@ df = pd.read_csv(DATA if DATA.exists() else DATA_URL)
 labels = {"gate_30": "Porta no nível 30", "gate_40": "Porta no nível 40"}
 df["grupo"] = df["version"].map(labels)
 order = [labels["gate_30"], labels["gate_40"]]
+
+# Exemplo didático: randomização estratificada por plataforma.
+# Em cada estrato, as cinco primeiras observações pertencem ao gate 30.
+strata = {
+    "Android": np.array([1, 1, 1, 1, 0, 1, 0, 0, 0, 0]),
+    "iOS": np.array([1, 1, 1, 0, 0, 1, 0, 0, 0, 0]),
+}
+observed_stratified = np.mean([
+    values[:5].mean() - values[5:].mean()
+    for values in strata.values()
+])
+
+stratified_null = []
+assignments = list(combinations(range(10), 5))
+for first in assignments:
+    mask_first = np.zeros(10, dtype=bool)
+    mask_first[list(first)] = True
+    delta_first = (
+        strata["Android"][mask_first].mean()
+        - strata["Android"][~mask_first].mean()
+    )
+    for second in assignments:
+        mask_second = np.zeros(10, dtype=bool)
+        mask_second[list(second)] = True
+        delta_second = (
+            strata["iOS"][mask_second].mean()
+            - strata["iOS"][~mask_second].mean()
+        )
+        stratified_null.append((delta_first + delta_second) / 2)
+
+stratified_null = np.asarray(stratified_null)
+stratified_p = np.mean(
+    np.abs(stratified_null) >= abs(observed_stratified) - 1e-12
+)
+values, frequencies = np.unique(np.round(stratified_null, 10), return_counts=True)
+
+plt.figure(figsize=(9.6, 5.3))
+tail = np.abs(values) >= abs(observed_stratified) - 1e-12
+plt.bar(
+    values,
+    100 * frequencies / frequencies.sum(),
+    width=0.16,
+    color=np.where(tail, ORANGE, LIGHT),
+    edgecolor="white",
+)
+plt.axvline(observed_stratified, color=INK, lw=3,
+            label=f"observada = {observed_stratified:.2f}")
+plt.xlabel("Diferença estratificada de retenção")
+plt.ylabel("Permutações (%)")
+plt.title("Embaralhar dentro dos estratos constrói o mundo nulo")
+plt.text(-0.86, 20, f"valor-p bilateral = {stratified_p:.3f}",
+         color=INK, fontweight="bold")
+plt.legend(loc="upper right")
+finish("permutacao-estratificada.png")
 
 # 1. Tamanho dos grupos.
 counts = df["grupo"].value_counts().reindex(order)
@@ -95,6 +150,189 @@ plt.xlabel("Diferença bootstrap (p.p.)")
 plt.ylabel("Réplicas")
 plt.title("Bootstrap preserva naturalmente o efeito observado")
 finish("bootstrap-ha.png")
+
+# Distribuições conjuntas usadas para estimar poder.
+critical = np.quantile(np.abs(perm), .95)
+estimated_power = np.mean(np.abs(boot_alt) >= critical)
+grid = np.linspace(-1.25, 1.75, 700)
+null_density = gaussian_kde(100 * perm)(grid)
+alt_density = gaussian_kde(100 * boot_alt)(grid)
+
+plt.figure(figsize=(10.2, 5.5))
+plt.plot(grid, null_density, color=BLUE, lw=3, label=r"$H_0$: permutação")
+plt.plot(grid, alt_density, color=ORANGE, lw=3, label=r"$H_A$: bootstrap")
+rejection = np.abs(grid) >= 100 * critical
+plt.fill_between(
+    grid, 0, alt_density,
+    where=rejection,
+    color=ORANGE,
+    alpha=.32,
+    label=f"poder estimado = {estimated_power:.1%}",
+)
+plt.axvline(-100 * critical, color=INK, ls="--", lw=2)
+plt.axvline(100 * critical, color=INK, ls="--", lw=2,
+            label=f"limites críticos = ±{100 * critical:.2f} p.p.")
+plt.axvline(100 * obs, color=PURPLE, lw=3,
+            label=f"efeito sob HA = {100 * obs:.2f} p.p.")
+plt.xlabel("Diferença de retenção em 7 dias (p.p.)")
+plt.ylabel("Densidade")
+plt.title("Poder é a área da alternativa que ultrapassa o limite crítico")
+plt.legend(frameon=True, loc="upper left")
+finish("poder-permutacao-bootstrap.png")
+
+# Comparação visual dos fatores que modificam o poder.
+scenario_rng = np.random.default_rng(1515)
+scenario_reps = 20000
+pooled_rate = (y30.sum() + y40.sum()) / (n30 + n40)
+
+
+def binomial_differences(n_a, n_b, p_a, p_b):
+    """Simula diferenças de proporções em experimentos independentes."""
+    return (
+        scenario_rng.binomial(n_a, p_a, size=scenario_reps) / n_a
+        - scenario_rng.binomial(n_b, p_b, size=scenario_reps) / n_b
+    )
+
+
+# Referência: distribuições já construídas por permutação e bootstrap.
+reference_null = perm
+reference_alt = boot_alt
+reference_critical = critical
+
+# Cenário 2: 50% mais jogadores em cada grupo, mantendo as taxas observadas.
+large_n30 = round(1.5 * n30)
+large_n40 = round(1.5 * n40)
+large_null = binomial_differences(
+    large_n30, large_n40, pooled_rate, pooled_rate
+)
+large_alt = binomial_differences(
+    large_n30, large_n40, y30.mean(), y40.mean()
+)
+large_critical = np.quantile(np.abs(large_null), .95)
+
+# Cenário 3: efeito de 1,00 p.p., mantendo tamanho e variabilidade.
+larger_effect = .010
+effect_null = binomial_differences(n30, n40, pooled_rate, pooled_rate)
+effect_alt = binomial_differences(
+    n30, n40, y40.mean() + larger_effect, y40.mean()
+)
+effect_critical = np.quantile(np.abs(effect_null), .95)
+
+# Cenário 4: alfa de 1%, mantendo amostra e efeito de referência.
+strict_critical = np.quantile(np.abs(reference_null), .99)
+
+power_scenarios = [
+    (
+        reference_null,
+        reference_alt,
+        reference_critical,
+        obs,
+        "Referência\n$\\alpha=5\\%$",
+    ),
+    (
+        large_null,
+        large_alt,
+        large_critical,
+        obs,
+        "50% mais jogadores\nmesmo efeito",
+    ),
+    (
+        effect_null,
+        effect_alt,
+        effect_critical,
+        larger_effect,
+        "Efeito maior\n$\\Delta=1{,}00$ p.p.",
+    ),
+    (
+        reference_null,
+        reference_alt,
+        strict_critical,
+        obs,
+        "Teste mais rigoroso\n$\\alpha=1\\%$",
+    ),
+]
+
+power_grid = np.linspace(-1.4, 2.0, 700)
+fig, axes = plt.subplots(
+    2, 2, figsize=(11.5, 7.2), sharex=True, sharey=True
+)
+
+for index, (ax, scenario) in enumerate(zip(axes.flat, power_scenarios)):
+    null_values, alt_values, cutoff, effect, title = scenario
+    null_curve = gaussian_kde(100 * null_values)(power_grid)
+    alt_curve = gaussian_kde(100 * alt_values)(power_grid)
+    reject = np.abs(power_grid) >= 100 * cutoff
+    scenario_power = np.mean(np.abs(alt_values) >= cutoff)
+
+    ax.plot(
+        power_grid,
+        null_curve,
+        color=BLUE,
+        lw=2.5,
+        label=r"$H_0$",
+    )
+    ax.plot(
+        power_grid,
+        alt_curve,
+        color=ORANGE,
+        lw=2.5,
+        label=r"$H_A$",
+    )
+    ax.fill_between(
+        power_grid,
+        0,
+        alt_curve,
+        where=reject,
+        color=ORANGE,
+        alpha=.30,
+        label="área do poder",
+    )
+    ax.axvline(
+        -100 * cutoff,
+        color=INK,
+        ls="--",
+        lw=1.6,
+        label="limites críticos",
+    )
+    ax.axvline(100 * cutoff, color=INK, ls="--", lw=1.6)
+    ax.axvline(
+        100 * effect,
+        color=PURPLE,
+        lw=2.2,
+        label="efeito sob $H_A$",
+    )
+    ax.set_title(title, fontsize=15)
+    ax.text(
+        .97,
+        .92,
+        f"poder = {scenario_power:.1%}",
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        color=INK,
+        fontweight="bold",
+        fontsize=12,
+    )
+    if index % 2 == 0:
+        ax.set_ylabel("Densidade")
+
+handles, legend_labels = axes.flat[0].get_legend_handles_labels()
+fig.supxlabel("Diferença de retenção em 7 dias (p.p.)", y=.075)
+fig.legend(
+    handles,
+    legend_labels,
+    loc="lower center",
+    ncol=5,
+    frameon=False,
+    bbox_to_anchor=(.5, .005),
+)
+fig.tight_layout(rect=(0, .13, 1, 1), h_pad=2.1, w_pad=1.2)
+fig.savefig(
+    OUT / "poder-quatro-cenarios.png",
+    bbox_inches="tight",
+    facecolor="white",
+)
+plt.close(fig)
 
 # 6. Bootstrap recentralizado sob H0.
 pooled = (y30.sum()+y40.sum())/(n30+n40)
@@ -210,3 +448,4 @@ finish("winners-curse.png")
 
 print(df.groupby("version").agg(n=("userid","size"),r1=("retention_1","mean"),r7=("retention_7","mean"),rounds=("sum_gamerounds","mean")))
 print(f"obs={obs:.6f}; perm_p={(np.sum(np.abs(perm)>=abs(obs))+1)/(B+1):.6f}; boot_ci={np.quantile(boot_alt,[.025,.975])}")
+print(f"stratified_p={stratified_p:.6f}; critical={critical:.6f}; power={estimated_power:.6f}")

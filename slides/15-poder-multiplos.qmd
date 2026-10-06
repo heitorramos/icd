@@ -16,68 +16,82 @@ execute:
   echo: false
 ---
 
-## Uma decisão com três métricas
+## Uma decisão com três desafios
 
 ::: {.statement}
 Mover uma barreira do nível 30 para o nível 40 melhora a experiência dos jogadores?
 :::
 
-Podemos medir retenção em 1 dia, retenção em 7 dias e número de rodadas. Qual resultado deve decidir?
+::: {.icd-grid}
+::: {.icd-card}
+**Estratos**
 
-## Hoje
+Como respeitar grupos definidos antes do experimento?
+:::
 
-- descrever o experimento Cookie Cats;
-- construir $H_0$ por permutação e por bootstrap recentralizado;
-- construir naturalmente $H_A$ por bootstrap;
-- estimar poder sob alternativas específicas;
-- compreender a inflação de falsos positivos;
-- comparar Bonferroni e Benjamini–Hochberg.
+::: {.icd-card}
+**Múltiplas métricas**
+
+Como evitar descobertas ocasionais?
+:::
+
+::: {.icd-card}
+**Poder**
+
+Qual a chance de detectar um efeito relevante?
+:::
+:::
+
+## Roteiro da aula
+
+1. construir um teste de permutação estratificado completo;
+2. entender por que vários testes exigem uma regra conjunta;
+3. comparar Bonferroni, Holm e Benjamini–Hochberg;
+4. estimar poder com permutação sob $H_0$ e bootstrap sob $H_A$.
+
+::: {.statement}
+Uma única história conecta desenho experimental, decisão e planejamento.
+:::
 
 ## A base Cookie Cats
 
 - 90.189 jogadores que instalaram um jogo móvel;
 - atribuição aleatória entre `gate_30` e `gate_40`;
-- mede rodadas nos primeiros 14 dias;
-- mede retorno após 1 e 7 dias;
+- número de rodadas nos primeiros 14 dias;
+- retenção após 1 e 7 dias;
 - versão no Kaggle sob licença Apache 2.0.
 
 Fonte: Kaggle, `matinmahmoudi/rounds-and-retention`.
 
-## A unidade e as colunas
+## Intervenção e resultados
 
-| Coluna | Significado |
-|---|---|
-| `userid` | jogador único |
-| `version` | posição da primeira porta: 30 ou 40 |
-| `sum_gamerounds` | rodadas nos primeiros 14 dias |
-| `retention_1` | retornou após 1 dia |
-| `retention_7` | retornou após 7 dias |
+::: {.icd-grid}
+::: {.icd-card}
+**Controle**
 
-## Qual é a intervenção?
+Primeira barreira no nível 30.
+:::
 
-No jogo, uma porta interrompe o avanço até o jogador esperar ou realizar uma compra.
+::: {.icd-card}
+**Tratamento**
 
-- **Controle:** primeira porta no nível 30.
-- **Tratamento:** mover a porta para o nível 40.
-- **Pergunta:** adiar a interrupção aumenta engajamento e retenção?
+Primeira barreira no nível 40.
+:::
 
-## Os grupos têm tamanhos semelhantes
+::: {.icd-card}
+**Resultados**
 
-![](assets/aula15-poder-multiplos/tamanho-grupos.png){fig-alt="Barras com 44.700 jogadores no gate 30 e 45.489 no gate 40."}
+Retenção em 1 dia, retenção em 7 dias e rodadas.
+:::
+:::
 
-<details class="code-fold"><summary>Código do gráfico</summary>
+A barreira interrompe o avanço até o jogador esperar ou realizar uma compra.
 
-```python
-counts = df["grupo"].value_counts().reindex(order)
-counts.plot.bar(color=[ORANGE, BLUE])
-plt.ylabel("Jogadores")
-plt.title("Os grupos têm tamanhos muito semelhantes")
-```
-</details>
-
-## Três métricas, três histórias possíveis
+## Retenção observada
 
 ![](assets/aula15-poder-multiplos/retencao-observada.png){fig-alt="Barras de retenção em 1 e 7 dias mostrando taxas ligeiramente maiores para a porta no nível 30."}
+
+Os grupos têm 44.700 e 45.489 jogadores. As diferenças são pequenas, mas consistentes nas duas medidas de retenção.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -85,327 +99,205 @@ plt.title("Os grupos têm tamanhos muito semelhantes")
 ret = df.groupby("grupo")[["retention_1", "retention_7"]].mean().mul(100)
 ret.T.plot.bar(color=[ORANGE, BLUE])
 plt.ylabel("Retenção (%)")
-plt.title("A porta no nível 30 retém um pouco mais")
 ```
+
 </details>
 
-## A análise descritiva já orienta escolhas
-
-| Métrica | Porta 30 | Porta 40 | Diferença 30 − 40 |
-|---|---:|---:|---:|
-| Retenção em 1 dia | 44,82% | 44,23% | +0,59 p.p. |
-| Retenção em 7 dias | 19,02% | 18,20% | +0,82 p.p. |
-| Média de rodadas | 52,46 | 51,30 | +1,16 |
-
-Diferenças pequenas podem ser importantes — ou apenas ruído.
-
-## Rodadas não seguem uma distribuição simples
-
-![](assets/aula15-poder-multiplos/rodadas-distribuicao.png){fig-alt="Histograma e boxplots mostrando forte assimetria à direita no número de rodadas."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-sns.histplot(df.loc[df.sum_gamerounds <= 500, "sum_gamerounds"], bins=50)
-sns.boxplot(data=df[df.sum_gamerounds <= df.sum_gamerounds.quantile(.999)],
-            x="grupo", y="sum_gamerounds", showfliers=False)
-```
-</details>
-
-## Defina uma métrica primária
+## Métrica primária e efeito
 
 Usaremos **retenção em 7 dias** como métrica primária.
-
-Motivos:
-
-- representa engajamento mais duradouro;
-- é binária e interpretável;
-- evita deixar a escolha depender do menor valor-p;
-- torna as demais métricas secundárias.
-
-## O efeito de interesse
 
 $$
 \Delta=p_{30}-p_{40}
 $$
 
-Estimativa observada:
-
 $$
 \widehat\Delta=0{,}1902-0{,}1820=0{,}0082
 $$
 
-A porta no nível 30 teve **0,82 p.p.** a mais de retenção em 7 dias.
+A porta no nível 30 apresentou retenção **0,82 ponto percentual** maior.
 
-## Duas hipóteses, dois mundos
+## Por que usar estratos?
 
-$$
-H_0:\Delta=0
-\qquad\text{e}\qquad
-H_A:\Delta\neq0
-$$
+Suponha que a equipe tenha randomizado separadamente jogadores de **Android** e **iOS**.
 
-- O mundo nulo descreve o que observaríamos sem efeito.
-- O mundo alternativo exige escolher um efeito real específico ou estimá-lo.
+::: {.icd-grid}
+::: {.icd-card}
+**Motivo do desenho**
 
-## Permutação é natural sob $H_0$
-
-Se a posição da porta não altera retenção, os rótulos `gate_30` e `gate_40` são trocáveis.
-
-Embaralhar os rótulos:
-
-- preserva todos os resultados;
-- preserva os tamanhos dos grupos;
-- remove a associação grupo–retenção.
-
-## O mundo nulo por permutação
-
-![](assets/aula15-poder-multiplos/permutacao-h0.png){fig-alt="Distribuição de diferenças por permutação centrada em zero, com a diferença observada na cauda."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-pooled = np.r_[y30, y40]
-labels_perm = rng.permutation(labels)
-t_perm = pooled[labels_perm == "gate_30"].mean() \
-       - pooled[labels_perm == "gate_40"].mean()
-```
-</details>
-
-## Bootstrap é natural sob $H_A$
-
-Reamostrar separadamente dentro de cada grupo preserva:
-
-- a taxa observada no `gate_30`;
-- a taxa observada no `gate_40`;
-- a diferença observada entre elas.
-
-Por isso, o bootstrap usual fica centrado em $\widehat\Delta$, não em zero.
-
-## O mundo alternativo por bootstrap
-
-![](assets/aula15-poder-multiplos/bootstrap-ha.png){fig-alt="Distribuição bootstrap da diferença de retenção centrada no efeito observado e afastada de zero."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-p30_b = rng.choice(y30, size=len(y30), replace=True).mean()
-p40_b = rng.choice(y40, size=len(y40), replace=True).mean()
-delta_b = p30_b - p40_b
-```
-</details>
-
-## O bootstrap quantifica efeitos plausíveis
-
-O intervalo percentil de 95% para $\Delta$ é aproximadamente:
-
-$$
-[0{,}31;1{,}33]\text{ p.p.}
-$$
-
-Ele responde melhor a:
-
-> Quais tamanhos de efeito são compatíveis com a amostra?
-
-## Bootstrap também pode construir $H_0$
-
-::: {.statement}
-Bootstrap não pertence exclusivamente a $H_A$.
+As plataformas podem ter taxas de retenção diferentes.
 :::
 
-Para simular $H_0$, precisamos **impor a igualdade** antes de reamostrar. Uma forma é recentralizar os dois grupos para uma média comum.
+::: {.icd-card}
+**Regra da análise**
 
-## Recentrar remove o efeito observado
+Se a atribuição ocorreu dentro da plataforma, a permutação também deve ocorrer dentro dela.
+:::
+:::
 
-Para uma variável contínua:
+## Estratos devem existir antes do tratamento
+
+::: {.icd-grid}
+::: {.icd-card}
+**Estrato válido**
+
+Plataforma, região ou faixa de atividade medida antes da intervenção.
+:::
+
+::: {.icd-card}
+**Estrato inadequado**
+
+Rodadas ou retenção observadas depois que a versão foi atribuída.
+:::
+:::
+
+Usar uma variável pós-tratamento pode retirar parte do efeito ou criar uma comparação enviesada.
+
+## Exemplo didático estratificado
+
+Em cada plataforma, cinco jogadores receberam cada versão. O valor 1 indica retenção em 7 dias.
+
+| Plataforma | Porta 30 | Porta 40 |
+|---|---|---|
+| Android | 1, 1, 1, 1, 0 | 1, 0, 0, 0, 0 |
+| iOS | 1, 1, 1, 0, 0 | 1, 0, 0, 0, 0 |
+
+O exemplo é pequeno para permitir acompanhar cada etapa do teste.
+
+## Diferenças dentro dos estratos
+
+::: {.icd-grid}
+::: {.icd-card}
+**Android**
+
+$$\widehat\Delta_A=0{,}80-0{,}20=0{,}60$$
+:::
+
+::: {.icd-card}
+**iOS**
+
+$$\widehat\Delta_I=0{,}60-0{,}20=0{,}40$$
+:::
+:::
+
+As duas plataformas favorecem a porta no nível 30, mas com magnitudes diferentes.
+
+## Estatística estratificada
+
+Com $n_s$ observações no estrato $s$ e $n=\sum_s n_s$:
 
 $$
-Y^{0}_{ij}=Y_{ij}-\bar Y_j+\bar Y_{pool}
+T=\sum_s w_s\widehat\Delta_s,
+\qquad w_s=\frac{n_s}{n}.
 $$
 
-Cada grupo perde sua própria média e recebe a média combinada. Assim, a diferença entre as médias recentralizadas é zero.
+Neste exemplo, os estratos têm o mesmo tamanho:
 
-## Código da recentralização
+$$
+T_{obs}=0{,}5(0{,}60)+0{,}5(0{,}40)=0{,}50.
+$$
+
+$T$ é a diferença média entre as versões, ajustada pela composição dos estratos.
+
+## A hipótese nula respeita o desenho
+
+$$
+H_0:\text{a posição da barreira não altera a retenção}.
+$$
+
+Sob $H_0$, os rótulos são trocáveis **dentro de cada plataforma**.
+
+- os resultados 0 e 1 permanecem fixos;
+- cinco jogadores continuam em cada versão;
+- Android não troca rótulos com iOS;
+- recalculamos $T$ após cada troca.
+
+## Uma permutação possível
+
+| Plataforma | Porta 30 após troca | Porta 40 após troca | $\widehat\Delta_s^{(b)}$ |
+|---|---|---|---:|
+| Android | 1, 1, 1, 0, 0 | 1, 1, 0, 0, 0 | 0,20 |
+| iOS | 1, 1, 0, 0, 0 | 1, 1, 0, 0, 0 | 0,00 |
+
+$$
+T^{(b)}=0{,}5(0{,}20)+0{,}5(0)=0{,}10.
+$$
+
+Esta permutação produziu uma diferença menor que $T_{obs}=0{,}50$.
+
+## Algoritmo da permutação estratificada
+
+1. calcule $T_{obs}$ com os rótulos originais;
+2. embaralhe os rótulos separadamente em cada estrato;
+3. calcule $T^{(b)}$ com os dados permutados;
+4. repita $B$ vezes;
+5. conte valores pelo menos tão extremos quanto $T_{obs}$.
+
+$$
+\widehat p=\frac{1+\sum_{b=1}^{B}I(|T^{(b)}|\geq|T_{obs}|)}{B+1}.
+$$
+
+$I(\cdot)$ vale 1 quando a condição é verdadeira e 0 caso contrário.
+
+## Distribuição sob $H_0$
+
+![](assets/aula15-poder-multiplos/permutacao-estratificada.png){fig-alt="Distribuição exata da estatística após permutações dentro de Android e iOS, com as caudas extremas destacadas."}
+
+Existem $\binom{10}{5}^2=63.504$ atribuições possíveis. Cerca de 7,7% são tão extremas quanto a observada.
+
+<details class="code-fold"><summary>Código do teste</summary>
 
 ```python
-pooled_mean = np.r_[y30, y40].mean()
+null = []
+for _ in range(B):
+    deltas = []
+    for platform, group in data.groupby("platform"):
+        labels_b = rng.permutation(group["version"])
+        deltas.append(statistic(group["retention"], labels_b))
+    null.append(np.average(deltas, weights=stratum_sizes))
 
-y30_null = y30 - y30.mean() + pooled_mean
-y40_null = y40 - y40.mean() + pooled_mean
-
-t_null = rng.choice(y30_null, len(y30), replace=True).mean() \
-       - rng.choice(y40_null, len(y40), replace=True).mean()
+p_value = (1 + np.sum(np.abs(null) >= abs(t_obs))) / (B + 1)
 ```
 
-Para Bernoulli, simulamos de uma proporção combinada comum.
-
-## Bootstrap recentralizado sob $H_0$
-
-![](assets/aula15-poder-multiplos/bootstrap-h0-recentrado.png){fig-alt="Distribuição bootstrap recentralizada em zero com a diferença observada na cauda."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-pooled = (y30.sum() + y40.sum()) / (len(y30) + len(y40))
-p30_null = rng.binomial(len(y30), pooled) / len(y30)
-p40_null = rng.binomial(len(y40), pooled) / len(y40)
-t_null = p30_null - p40_null
-```
 </details>
 
-## Qual distribuição o bootstrap representa? {.quiz-question}
+## Interpretação do exemplo
 
-Associe corretamente o uso do bootstrap à hipótese representada.
-
-- [Bootstrap usual separado por grupo representa naturalmente efeitos próximos ao observado]{.correct data-explanation="Ele preserva a diferença entre os grupos e é natural para estudar HA e intervalos."}
-- [Bootstrap usual separado por grupo sempre representa H0]{data-explanation="Sem recentralização, ele mantém o efeito observado em vez de impor ausência de efeito."}
-- [Bootstrap recentralizado preserva necessariamente o efeito observado]{data-explanation="A recentralização remove o efeito para construir uma distribuição sob H0."}
-- [Permutação e bootstrap respondem sempre à mesma pergunta]{data-explanation="Permutação quebra a associação sob H0; bootstrap aproxima incerteza sob uma distribuição empírica escolhida."}
-
-## A hipótese determina a simulação
-
-![](assets/aula15-poder-multiplos/tres-distribuicoes.png){.wide-chart fig-alt="Três histogramas comparando permutação sob H0, bootstrap recentralizado sob H0 e bootstrap usual sob HA."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-for values, title in [(perm, "Permutação: H0"),
-                      (boot_null, "Bootstrap recentrado: H0"),
-                      (boot_alt, "Bootstrap usual: HA")]:
-    sns.histplot(values)
-```
-</details>
-
-## Qual método usar?
-
-| Objetivo | Construção mais natural |
-|---|---|
-| testar ausência de associação com rótulos trocáveis | permutação |
-| testar $H_0$ sem permutabilidade, impondo um parâmetro | bootstrap recentralizado |
-| estimar incerteza do efeito observado | bootstrap usual |
-| simular poder para um efeito planejado | bootstrap/Monte Carlo sob alternativa definida |
-
-## Poder começa com uma alternativa específica
-
-Não existe “o poder do teste” sem dizer qual efeito é verdadeiro.
+O efeito observado foi grande, mas a amostra tinha apenas 20 jogadores.
 
 $$
-\text{Poder}(\Delta^*)=P(\text{rejeitar }H_0\mid\Delta=\Delta^*)
+p\approx0{,}077
 $$
 
-Cada $\Delta^*$ produz um poder diferente.
+No nível de 5%, não rejeitamos $H_0$. Isso não prova ausência de efeito. O experimento fornece evidência insuficiente para uma decisão tão rigorosa.
 
-## Como simular poder com bootstrap
+::: {.statement}
+Estratificar preserva o desenho. Não substitui uma amostra adequada.
+:::
 
-1. escolha taxas sob uma alternativa relevante;
-2. gere duas amostras com o tamanho planejado;
-3. aplique o teste completo;
-4. registre se $H_0$ foi rejeitada;
-5. repita e calcule a proporção de rejeições.
+## Onde os rótulos devem ser trocados? {.quiz-question}
 
-## Poder cresce com efeito e amostra
+O experimento atribuiu versões separadamente em Android e iOS. Qual procedimento representa corretamente $H_0$?
 
-![](assets/aula15-poder-multiplos/poder-efeito-amostra.png){fig-alt="Curvas de poder para três efeitos e diferentes números de jogadores por grupo."}
+- [Embaralhar os rótulos dentro de cada plataforma]{.correct data-explanation="A permutação deve reproduzir a forma como o experimento atribuiu os tratamentos."}
+- [Embaralhar Android e iOS juntamente]{data-explanation="Isso permite atribuições que o desenho original não realizou."}
+- [Embaralhar a retenção e manter os rótulos]{data-explanation="O teste mantém os resultados fixos e troca os rótulos permitidos pelo desenho."}
 
-<details class="code-fold"><summary>Código do gráfico</summary>
+## De uma métrica para várias
 
-```python
-for effect in effects:
-    control = rng.binomial(n, p0, size=R) / n
-    treatment = rng.binomial(n, p0 + effect, size=R) / n
-    power = np.mean(test_rejects(treatment - control))
-```
-</details>
+Cookie Cats oferece três perguntas naturais:
 
-## Três maneiras de aumentar poder
+1. a versão altera a retenção em 1 dia?
+2. a versão altera a retenção em 7 dias?
+3. a versão altera o número de rodadas?
 
-- aumentar a amostra;
-- reduzir a variabilidade com blocos ou covariáveis pré-tratamento;
-- aceitar um $\alpha$ maior.
+Cada teste cria uma nova oportunidade de encontrar um resultado pequeno por acaso.
 
-Aumentar o efeito não é uma opção estatística: ele pertence ao fenômeno e à intervenção.
+## Falsos positivos se acumulam
 
-## Alfa e poder estão em tensão
+![](assets/aula15-poder-multiplos/fwer-testes.png){fig-alt="Probabilidade de pelo menos um falso positivo conforme cresce o número de testes independentes."}
 
-![](assets/aula15-poder-multiplos/alfa-poder.png){fig-alt="Curva mostrando aumento do poder conforme aumenta o nível de significância."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-zcrit = norm.ppf(1 - alphas/2)
-power = 1 - norm.cdf(zcrit-effect/se) + norm.cdf(-zcrit-effect/se)
-plt.plot(100*alphas, power)
-```
-</details>
-
-## Um efeito detectável não é necessariamente útil
-
-Com muitos jogadores, podemos detectar diferenças minúsculas.
-
-Planejamento exige definir o **menor efeito de interesse**:
-
-$$
-\Delta_{min}=\text{menor mudança que alteraria a decisão}
-$$
-
-O tamanho amostral deve ser planejado em torno dele.
-
-## Agora temos mais de uma métrica
-
-Cookie Cats oferece pelo menos três testes naturais:
-
-1. retenção em 1 dia;
-2. retenção em 7 dias;
-3. rodadas em 14 dias.
-
-Adicionar horas, segmentos ou cortes cria rapidamente dezenas de hipóteses.
-
-## Cem testes fabricam surpresas
-
-![](assets/aula15-poder-multiplos/cem-pvalores.png){fig-alt="Cem valores-p sob hipóteses nulas, com alguns abaixo de 0,05 apenas por acaso."}
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-p_values = rng.uniform(size=100)
-plt.scatter(range(100), p_values, c=np.where(p_values < .05, ORANGE, LIGHT))
-plt.axhline(.05, color=INK, ls="--")
-```
-</details>
-
-## A contabilidade das decisões
-
-Em uma família com $m$ hipóteses:
-
-| símbolo | significado |
-|---|---|
-| $R$ | número total de rejeições — as “descobertas” |
-| $V$ | rejeições erradas — falsos positivos |
-| $R-V$ | rejeições corretas — descobertas verdadeiras |
-
-$V$ não é observado: não sabemos diretamente quais rejeições são falsas. Os procedimentos controlam propriedades de $V$ **ao longo de repetições do estudo**.
-
-## FWER: nenhum falso positivo na família
-
-**FWER** (*family-wise error rate*) é:
-
-$$
-\operatorname{FWER}=P(V\geq1).
-$$
-
-Ela responde: **“qual é a chance de cometer pelo menos um falso positivo nesta família?”**
-
-Se $m$ testes independentes usam nível $\alpha$, todos sob $H_0$:
-
-$$
-\operatorname{FWER}=1-(1-\alpha)^m.
-$$
-
-Com $m=100$ e $\alpha=0{,}05$, a FWER chega a aproximadamente **99,4%**.
-
-## A inflação cresce depressa
-
-![](assets/aula15-poder-multiplos/fwer-testes.png){fig-alt="Curva crescente da probabilidade de ao menos um falso positivo conforme aumenta o número de testes."}
+Com testes independentes no nível 5%, a chance de pelo menos um falso positivo é $1-(1-0{,}05)^m$: 14,3% com 3 testes e 40,1% com 10.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -414,210 +306,338 @@ m = np.arange(1, 101)
 fwer = 1 - (1 - .05)**m
 plt.plot(m, fwer)
 ```
+
 </details>
 
-## Bonferroni controla a família
+## Duas metas de controle
 
-Bonferroni divide o “orçamento de erro” $\alpha$ entre os $m$ testes:
+::: {.icd-grid}
+::: {.icd-card}
+**FWER**
+
+*Family-wise error rate* (**taxa de erro familiar**)
+
+Chance de cometer **ao menos um** falso positivo na família.
+
+Adequada quando uma conclusão falsa tem custo alto.
+:::
+
+::: {.icd-card}
+**FDR**
+
+*False discovery rate* (**taxa de falsas descobertas**)
+
+Fração falsa esperada entre as descobertas anunciadas.
+
+Adequada quando buscamos muitas descobertas.
+:::
+:::
+
+As duas metas respondem a perguntas diferentes.
+
+## Bonferroni divide o orçamento de erro
+
+Considere os valores-p ordenados
+
+$$
+0{,}003,\ 0{,}011,\ 0{,}018,\ 0{,}041,\ 0{,}200.
+$$
+
+::: {.icd-grid}
+::: {.icd-card}
+**Cálculo do limiar**
 
 $$
 \alpha^*=\frac{\alpha}{m}
+=\frac{0{,}05}{5}=0{,}01
 $$
+:::
 
-Rejeite $H_i$ quando $p_i\leq\alpha/m$. Equivalentemente:
+::: {.icd-card}
+**Comparação**
 
-$$
-p_i^{adj}=\min(mp_i,1).
-$$
+$0{,}003\leq0{,}01$, mas os outros valores-p são maiores que $0{,}01$.
 
-Exemplo: com $m=10$ e $\alpha=0{,}05$, cada teste precisa de $p_i\leq0{,}005$.
+Rejeite apenas $H_{(1)}$.
+:::
+:::
 
-## Por que Bonferroni funciona?
+Bonferroni controla FWER, mas aplica o mesmo limiar rígido a todos os testes.
 
-Se $A_i$ é o evento “o teste $i$ produz um falso positivo”, então:
+## Holm é um Bonferroni sequencial
 
-$$
-P\left(\bigcup_{i=1}^{m}A_i\right)
-\leq\sum_{i=1}^{m}P(A_i)
-\leq m\frac{\alpha}{m}=\alpha.
-$$
+Holm compara $p_{(i)}$ com $\alpha/(m-i+1)$ e para no primeiro fracasso.
 
-É a desigualdade da união: o controle vale mesmo sem independência entre os testes.
+| $i$ | $p_{(i)}$ | limiar | decisão |
+|---:|---:|---:|:---|
+| 1 | 0,003 | $0{,}05/5=0{,}0100$ | rejeita e continua |
+| 2 | 0,011 | $0{,}05/4=0{,}0125$ | rejeita e continua |
+| 3 | 0,018 | $0{,}05/3=0{,}0167$ | não rejeita e para |
 
-O preço dessa proteção é poder menor, especialmente quando $m$ é grande ou os testes são muito correlacionados.
+Logo, Holm rejeita $H_{(1)}$ e $H_{(2)}$. As demais hipóteses não são rejeitadas.
 
-## Holm controla FWER com mais poder
+## Benjamini–Hochberg controla FDR
 
-Holm é um procedimento **step-down**:
+BH compara cada $p_{(i)}$ com $(i/m)q$. Aqui, $m=5$ e $q=0{,}05$.
 
-1. ordene $p_{(1)}\leq\cdots\leq p_{(m)}$;
-2. compare $p_{(1)}$ com $\alpha/m$;
-3. se passar, compare $p_{(2)}$ com $\alpha/(m-1)$;
-4. continue com $p_{(i)}\leq\alpha/(m-i+1)$;
-5. ao primeiro fracasso, pare e não rejeite as hipóteses restantes.
-
-Ele controla FWER sob dependência arbitrária e nunca rejeita menos hipóteses que Bonferroni.
-
-## Exemplo: Bonferroni e Holm
-
-Para $m=5$, $\alpha=0{,}05$ e valores-p ordenados:
-
-| $i$ | $p_{(i)}$ | Bonferroni | limiar de Holm | decisão de Holm |
-|---:|---:|---:|---:|---|
-| 1 | 0,003 | 0,010 | 0,0100 | rejeita |
-| 2 | 0,011 | 0,010 | 0,0125 | rejeita |
-| 3 | 0,018 | 0,010 | 0,0167 | para |
-| 4 | 0,041 | 0,010 | — | não rejeita |
-| 5 | 0,200 | 0,010 | — | não rejeita |
-
-Bonferroni rejeita apenas a primeira; Holm rejeita as duas primeiras sem abandonar o controle de FWER.
-
-## FDR responde a outra pergunta
-
-**FDR** (*false discovery rate*) é a proporção esperada de falsos entre os resultados declarados significativos:
-
-$$
-\operatorname{FDR}=E\left[\frac{V}{\max(R,1)}\right].
-$$
-
-Ela responde: **“entre as descobertas que eu anunciar, qual fração falsa aceito em média?”**
-
-Controlar FDR em 5% não significa que cada resultado tenha 5% de chance de ser falso, nem garante exatamente 5% de falsos em uma realização.
-
-É apropriado quando buscamos várias descobertas e aceitamos algumas falsas em troca de maior poder.
-
-## O procedimento de Benjamini–Hochberg
-
-Para controlar FDR no nível $q$:
-
-1. ordene $p_{(1)}\leq\cdots\leq p_{(m)}$;
-2. calcule os limiares $(i/m)q$;
-3. encontre o **maior** $k$ tal que $p_{(k)}\leq(k/m)q$;
-4. rejeite $H_{(1)},\ldots,H_{(k)}$.
-
-Não pare no primeiro valor-p que falha: BH procura o maior índice que satisfaz a desigualdade.
-
-O controle clássico vale sob independência e certas formas de dependência positiva. Dependências arbitrárias exigem métodos mais conservadores, como Benjamini–Yekutieli.
-
-## O mesmo exemplo com BH
-
-Com $q=0{,}05$:
-
-| $i$ | $p_{(i)}$ | $(i/5)q$ | satisfaz? |
-|---:|---:|---:|---|
+| $i$ | $p_{(i)}$ | $(i/5)0{,}05$ | satisfaz? |
+|---:|---:|---:|:---:|
 | 1 | 0,003 | 0,010 | sim |
 | 2 | 0,011 | 0,020 | sim |
-| 3 | 0,018 | 0,030 | **sim — maior $k$** |
+| 3 | 0,018 | 0,030 | **sim** |
 | 4 | 0,041 | 0,040 | não |
 | 5 | 0,200 | 0,050 | não |
 
-BH rejeita as três primeiras hipóteses. Ele faz mais descobertas porque controla FDR, não a probabilidade de qualquer erro.
+O maior índice aprovado é $k=3$. Portanto, BH rejeita $H_{(1)},H_{(2)}$ e $H_{(3)}$.
 
-## Qual erro cada método controla? {.quiz-question .quiz-multiple}
+$i$ é a posição, $p_{(i)}$ é o valor-p ordenado, $m$ é o número de testes, $q$ é a FDR-alvo e $k$ é a última posição aprovada.
 
-Selecione as associações corretas.
+## Um exemplo, três decisões
 
-- [Bonferroni controla FWER dividindo $\alpha$ pelo número de testes]{.correct data-explanation="Cada hipótese é comparada a α/m, garantindo controle da chance de qualquer falso positivo."}
-- [Holm controla FWER com um procedimento sequencial]{.correct data-explanation="Holm ordena os valores-p e usa limiares progressivos, sendo geralmente menos conservador que Bonferroni."}
-- [Benjamini–Hochberg controla FDR]{.correct data-explanation="BH controla a proporção esperada de falsos positivos entre as descobertas, sob suas condições."}
-- [Todos os três métodos controlam exatamente a mesma quantidade]{data-explanation="Bonferroni e Holm miram FWER; BH mira FDR."}
+Para $m=5$ e $\alpha=q=0{,}05$:
 
-## Bonferroni, Holm e BH têm metas distintas
+| valor-p | Bonferroni | Holm | BH |
+|---:|:---:|:---:|:---:|
+| 0,003 | rejeita | rejeita | rejeita |
+| 0,011 | não | rejeita | rejeita |
+| 0,018 | não | não | rejeita |
+| 0,041 | não | não | não |
+| 0,200 | não | não | não |
 
-![](assets/aula15-poder-multiplos/bonferroni-bh.png){fig-alt="Valores-p ordenados comparados aos limiares de Bonferroni e Benjamini-Hochberg."}
+Bonferroni rejeita uma hipótese, Holm rejeita duas e BH rejeita três. A diferença vem da meta de controle.
 
-| método | controla | perfil |
-|---|---|---|
-| Bonferroni | FWER | simples e conservador |
-| Holm | FWER | prefere-se a Bonferroni quando aplicável |
-| BH | FDR | mais poder para muitas descobertas |
+## Escolha do procedimento
 
-<details class="code-fold"><summary>Código do gráfico</summary>
+::: {.icd-grid}
+::: {.icd-card}
+**Poucas decisões confirmatórias**
 
-```python
-p = np.sort(p_values)
-bh = .05 * np.arange(1, len(p)+1) / len(p)
-plt.scatter(np.arange(1, len(p)+1), p)
-plt.plot(np.arange(1, len(p)+1), bh, label="BH")
-plt.axhline(.05/len(p), label="Bonferroni")
-```
-</details>
+Use Holm. Bonferroni pode servir como regra simples.
+:::
 
-## Qual família devemos corrigir?
+::: {.icd-card}
+**Muitas hipóteses exploratórias**
 
-A família deve ser definida pela pergunta científica, não pelo arquivo de código.
+Use BH quando aceitar algumas descobertas falsas for razoável.
+:::
 
-- métricas usadas para uma única decisão pertencem à mesma família;
-- análises confirmatórias e exploratórias podem formar famílias distintas;
-- dividir artificialmente testes para evitar correção é p-hacking.
+::: {.icd-card}
+**Uma decisão principal**
 
-## Métrica primária reduz multiplicidade
+Defina uma métrica primária antes de observar os resultados.
+:::
+:::
 
-Um plano claro para Cookie Cats poderia definir:
+## Uma métrica primária reduz multiplicidade
+
+Um plano para Cookie Cats poderia definir:
 
 - **primária:** retenção em 7 dias;
 - **secundária:** retenção em 1 dia;
-- **exploratória:** rodadas e subgrupos;
-- regra de decisão baseada na primária e métricas de proteção.
+- **exploratória:** rodadas e análises de subgrupos.
 
-Não corrigimos uma hipótese que foi realmente definida como única antes do estudo.
+Não corrigimos uma hipótese realmente definida como única antes do estudo. As análises adicionais devem ser identificadas como secundárias ou exploratórias.
 
-## Selecionar significativos exagera efeitos
+## A pergunta sobre poder
 
-![](assets/aula15-poder-multiplos/winners-curse.png){fig-alt="Distribuições mostrando que efeitos selecionados por significância são maiores que o efeito verdadeiro."}
+::: {.statement}
+Se a diferença verdadeira for relevante, qual é a chance de o teste rejeitar $H_0$?
+:::
 
-<details class="code-fold"><summary>Código do gráfico</summary>
+$$
+\operatorname{Poder}(\Delta^*)
+=P(\text{rejeitar }H_0\mid\Delta=\Delta^*).
+$$
+
+O poder sempre se refere a uma alternativa específica $\Delta^*$.
+
+## Uma alternativa para Cookie Cats
+
+Usaremos como cenário didático o efeito observado:
+
+$$
+\Delta^*=0{,}82\text{ p.p.}
+$$
+
+Isso não afirma que o efeito verdadeiro seja exatamente 0,82 p.p. O valor apenas define o mundo alternativo usado na simulação.
+
+Os tamanhos dos grupos continuam 44.700 e 45.489 jogadores.
+
+## $H_0$ por permutação
+
+Sob ausência de efeito, embaralhamos `gate_30` e `gate_40` e recalculamos $\widehat\Delta$.
+
+A distribuição de $|\widehat\Delta|$ fornece o limite crítico bilateral de 5%:
+
+$$
+c=Q_{0{,}95}(|\widehat\Delta^{perm}|)\approx0{,}51\text{ p.p.}
+$$
+
+Rejeitamos $H_0$ quando $|\widehat\Delta|\geq c$.
+
+## $H_A$ por bootstrap
+
+Reamostramos jogadores **separadamente em cada versão**.
+
+Esse bootstrap preserva as taxas observadas e produz uma distribuição centrada perto de
+
+$$
+\Delta^*=0{,}82\text{ p.p.}
+$$
+
+Cada réplica representa um novo experimento possível quando essa alternativa é verdadeira.
+
+## Simulação do poder
+
+1. construa a distribuição nula por permutação;
+2. obtenha o limite crítico $c$;
+3. gere réplicas bootstrap sob $H_A$;
+4. aplique a mesma regra $|\widehat\Delta^{(b)}|\geq c$;
+5. calcule a fração de rejeições.
+
+$$
+\widehat{\operatorname{Poder}}
+=\frac{1}{B}\sum_{b=1}^{B}
+I(|\widehat\Delta^{(b)}_{HA}|\geq c).
+$$
+
+## Distribuições nula e alternativa
+
+![](assets/aula15-poder-multiplos/poder-permutacao-bootstrap.png){.wide-chart fig-alt="Distribuições da diferença sob a hipótese nula por permutação e sob a alternativa por bootstrap, com limites críticos e área de poder."}
+
+A área laranja além dos limites críticos representa experimentos que rejeitariam $H_0$. Neste cenário, o poder estimado é aproximadamente 88%.
+
+<details class="code-fold"><summary>Código da simulação</summary>
 
 ```python
-estimates = rng.normal(true_effect, se, 5000)
-selected = estimates[estimates > 1.96*se]
-sns.histplot(estimates)
-sns.histplot(selected)
+critical = np.quantile(np.abs(null_perm), .95)
+
+boot_alt = np.array([
+    rng.choice(y30, len(y30), replace=True).mean()
+    - rng.choice(y40, len(y40), replace=True).mean()
+    for _ in range(B)
+])
+
+power = np.mean(np.abs(boot_alt) >= critical)
 ```
+
 </details>
 
-## Correção protege erro, não corrige desenho
+## Leitura do gráfico
 
-Bonferroni ou BH não resolvem:
+::: {.icd-grid}
+::: {.icd-card}
+**Curva azul**
 
-- escolha de hipóteses depois dos dados;
-- parada opcional;
-- exclusões seletivas;
-- métricas pós-tratamento;
-- falta de randomização;
-- publicação apenas de resultados favoráveis.
+Variação esperada sem efeito, construída por permutação.
+:::
 
-## Um plano antes do experimento
+::: {.icd-card}
+**Curva laranja**
 
-Registre:
+Variação sob o efeito escolhido, construída por bootstrap.
+:::
 
-- métrica primária e família de testes;
-- $\alpha$ ou $q$;
-- menor efeito relevante;
-- poder desejado e tamanho amostral;
-- teste, cauda e regra de parada;
-- exclusões, transformações e subgrupos.
+::: {.icd-card}
+**Área sombreada**
 
-## A decisão sobre Cookie Cats
+Probabilidade de a alternativa ultrapassar o limite do teste.
+:::
+:::
 
-Os dados favorecem manter a porta no nível 30 para retenção em 7 dias:
+A linha roxa marca o efeito de 0,82 p.p. usado para definir $H_A$.
 
-- efeito estimado: +0,82 p.p.;
-- valor-p por permutação: cerca de 0,0023;
-- IC bootstrap 95%: aproximadamente +0,31 a +1,33 p.p.
+## O que modifica o poder?
 
-A decisão final ainda exige avaliar custo, receita e relevância prática.
+![](assets/aula15-poder-multiplos/poder-quatro-cenarios.png){.wide-chart fig-alt="Quatro painéis na mesma escala com as distribuições nula e alternativa: cenário de referência, 50% mais jogadores, efeito maior e teste mais rigoroso. As áreas sombreadas mostram o poder."}
 
-## O que aprendemos
+Na mesma escala, aumentar a amostra ou o efeito eleva o poder de cerca de 88% para aproximadamente 97%. Reduzir $\alpha$ de 5% para 1% afasta os limites críticos e reduz o poder para cerca de 70%.
 
-- permutação constrói $H_0$ diretamente quando há trocabilidade;
-- bootstrap também constrói $H_0$ se recentralizarmos os dados;
-- bootstrap usual é mais natural para $H_A$ e incerteza do efeito;
-- poder depende de uma alternativa específica;
-- múltiplos testes exigem definir família e objetivo do controle.
+<details class="code-fold"><summary>Código da figura</summary>
+
+```python
+def simulate_difference(n_a, n_b, p_a, p_b, reps=20_000):
+    return (
+        rng.binomial(n_a, p_a, reps) / n_a
+        - rng.binomial(n_b, p_b, reps) / n_b
+    )
+
+pooled = (y30.sum() + y40.sum()) / (n30 + n40)
+
+large_null = simulate_difference(
+    round(1.5*n30), round(1.5*n40), pooled, pooled
+)
+large_alt = simulate_difference(
+    round(1.5*n30), round(1.5*n40), y30.mean(), y40.mean()
+)
+
+effect_alt = simulate_difference(
+    n30, n40, y40.mean() + .010, y40.mean()
+)
+
+scenarios = [
+    (null_perm, boot_alt, critical, observed, "Referência"),
+    (large_null, large_alt,
+     np.quantile(np.abs(large_null), .95), observed,
+     "50% mais jogadores"),
+    (null_perm, effect_alt, critical, .010, "Efeito maior"),
+    (null_perm, boot_alt,
+     np.quantile(np.abs(null_perm), .99), observed,
+     "Teste mais rigoroso"),
+]
+
+fig, axes = plt.subplots(2, 2, sharex=True, sharey=True)
+for ax, (null, alt, cutoff, effect, title) in zip(
+    axes.flat, scenarios
+):
+    grid = np.linspace(-1.4, 2.0, 700)
+    density_h0 = gaussian_kde(100 * null)(grid)
+    density_ha = gaussian_kde(100 * alt)(grid)
+    rejection = np.abs(grid) >= 100 * cutoff
+    power = np.mean(np.abs(alt) >= cutoff)
+
+    ax.plot(grid, density_h0, label="$H_0$")
+    ax.plot(grid, density_ha, label="$H_A$")
+    ax.fill_between(
+        grid, 0, density_ha, where=rejection, alpha=.30
+    )
+    ax.axvline(-100 * cutoff, linestyle="--")
+    ax.axvline(100 * cutoff, linestyle="--")
+    ax.axvline(100 * effect, color="#6a4c93")
+    ax.set_title(f"{title}\npoder = {power:.1%}")
+
+plt.show()
+```
+
+</details>
+
+## Decisão sobre Cookie Cats
+
+![](assets/aula15-poder-multiplos/poder-permutacao-bootstrap.png){.wide-chart fig-alt="Distribuições da diferença de retenção sob a hipótese nula e sob a alternativa, com limites críticos, efeito observado e área correspondente ao poder."}
+
+| Efeito estimado | Valor-p | IC bootstrap de 95% | Poder |
+|---:|---:|---:|---:|
+| +0,82 p.p. | 0,002 | +0,31 a +1,33 p.p. | aproximadamente 88% |
+
+Os dados favorecem a porta no nível 30 para retenção em 7 dias. A decisão de produto ainda depende da relevância prática, da receita e dos custos da mudança.
+
+## O que significa poder de 88%? {.quiz-question}
+
+No cenário simulado com efeito de 0,82 p.p., qual interpretação está correta?
+
+- [Cerca de 88% dos experimentos repetidos rejeitariam $H_0$]{.correct data-explanation="Poder é a probabilidade de rejeitar H0 quando a alternativa especificada é verdadeira."}
+- [Há 88% de probabilidade de $H_A$ ser verdadeira]{data-explanation="O poder não fornece uma probabilidade posterior para a hipótese."}
+- [88% dos jogadores são afetados pela mudança]{data-explanation="O valor se refere à repetição do procedimento de teste, não à fração de jogadores afetados."}
+
+## O fio da aula
+
+1. a permutação deve reproduzir o desenho de atribuição, inclusive os estratos;
+2. vários testes criam várias oportunidades de falso positivo;
+3. FWER e FDR representam metas diferentes;
+4. o poder compara uma regra construída sob $H_0$ com resultados simulados sob $H_A$.
 
 ## Encerramento
 
 ::: {.statement}
-Uma boa análise não busca apenas rejeitar $H_0$: ela planeja quais efeitos consegue detectar e quantas oportunidades teve de se enganar.
+Um teste bem planejado respeita o desenho, declara quantas perguntas fará e verifica quais efeitos consegue detectar.
 :::

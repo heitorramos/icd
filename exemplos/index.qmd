@@ -101,7 +101,10 @@ robustas, estratos, validade e exercícios.
 ::: {.g-col-12 .g-col-md-6}
 ### Aula 15
 
-**Material em revisão**
+[Permutação estratificada, múltiplos testes e poder](15-poder-multiplos/notebook.qmd)
+
+Guia de estudo com o experimento Cookie Cats, correções para múltiplos testes
+e construção do poder com permutação sob $H_0$ e bootstrap sob $H_A$.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
