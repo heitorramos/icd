@@ -150,7 +150,7 @@ múltiplos testes.
 
 ::: {.path-step}
 **Módulo 3 · Aulas 16–26**<br>
-Correlação, regressão e aprendizado de máquina. Aula 16 disponível; aulas 17–26 em revisão.
+Correlação, regressão e aprendizado de máquina. Aulas 16–17 disponíveis; aulas 18–26 em revisão.
 :::
 :::
 

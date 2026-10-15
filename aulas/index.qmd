@@ -213,7 +213,7 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aula 16 disponível. Aulas 17–26 em revisão.
+Aulas 16–17 disponíveis. Aulas 18–26 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
@@ -236,7 +236,7 @@ Covariância, Pearson, Spearman, condicionamento, incerteza e causalidade.
 
 Média condicional, mínimos quadrados, interpretação, diagnóstico e incerteza.
 
-**Material em revisão**
+[Abrir a aula](17-regressao-linear.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}

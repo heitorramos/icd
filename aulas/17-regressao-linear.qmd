@@ -10,6 +10,8 @@ subtitle: "Média condicional, mínimos quadrados e diagnóstico"
 ::: {.recurso-card}
 ### Slides
 
+Média condicional, ajuste por mínimos quadrados, interpretação dos coeficientes, $R^2$, resíduos e incerteza.
+
 [Abrir slides](../slides/17-regressao-linear.qmd){.btn .btn-outline-primary}
 :::
 :::
@@ -17,6 +19,8 @@ subtitle: "Média condicional, mínimos quadrados e diagnóstico"
 ::: {.g-col-12 .g-col-md-4}
 ::: {.recurso-card}
 ### Material de apoio
+
+Guia de estudo reproduzível, com derivações passo a passo, códigos executados, resultados, interpretações e exercícios.
 
 [Abrir notebook](../exemplos/17-regressao-linear/notebook.qmd){.btn .btn-outline-primary}
 :::

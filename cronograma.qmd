@@ -34,7 +34,7 @@ Eventuais alterações serão comunicadas pelo
 | **Módulo 3** |  | **Modelagem e Aprendizado de Máquina** |  |
 | 16 | **08/10/2026** | Correlação | [Acessar](aulas/16-correlacao.qmd) |
 | **Prova 1** | **13/10/2026** | **Prova 1** | — |
-| 17 | **15/10/2026** | Regressão linear simples | Em revisão |
+| 17 | **15/10/2026** | Regressão linear simples | [Acessar](aulas/17-regressao-linear.qmd) |
 | — | **20/10/2026** | **Sem aula** | — |
 | 18 | **22/10/2026** | Máxima verossimilhança | Em revisão |
 | 19 | **27/10/2026** | Verossimilhança na regressão | Em revisão |

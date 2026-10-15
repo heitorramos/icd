@@ -66,6 +66,7 @@ website:
         - section: "Módulo 3 · Modelagem e Aprendizado de Máquina"
           contents:
             - aulas/16-correlacao.qmd
+            - aulas/17-regressao-linear.qmd
 
 format:
   html:
