@@ -644,6 +644,127 @@ Considere regressão linear simples ajustada por OLS com intercepto.
 - [Normalidade é necessária para calcular $\widehat\beta_0$ e $\widehat\beta_1$]{data-explanation="OLS pode ser calculado sem normalidade; a condição aparece em formas específicas de inferência."}
 - [A inclinação é causal sempre que seu valor-p é pequeno]{data-explanation="Significância estatística não substitui identificação causal."}
 
+## Fechamento: tabagismo, IMC e quatro retas
+
+A reta global mistura grupos. Vamos ajustar **despesas em função da idade** em quatro subgrupos definidos por características observadas:
+
+- fumantes com IMC < 30 e fumantes com IMC ≥ 30;
+- não fumantes com IMC < 30 e não fumantes com IMC ≥ 30.
+
+**Pergunta:** o IMC ajuda a explicar as diferentes nuvens de despesas dentro de cada grupo de tabagismo?
+
+O IMC não mede diretamente autocuidado. Não vamos chamar esses grupos de pessoas que “se cuidam mais” ou “se cuidam menos”.
+
+## Como definimos os grupos?
+
+Cruzamos tabagismo com duas faixas de IMC, em kg/m²:
+
+| Grupo | IMC < 30 | IMC ≥ 30 |
+|---|---:|---:|
+| Fumantes | 129 pessoas | 145 pessoas |
+| Não fumantes | 502 pessoas | 562 pessoas |
+
+Cada pessoa pertence a um único grupo. A despesa **não participa da classificação**.
+
+<details class="code-fold"><summary>Código do recorte</summary>
+
+```python
+dados["faixa_imc"] = np.where(dados.bmi < 30, "IMC < 30", "IMC ≥ 30")
+grupos = dados.groupby(["smoker", "faixa_imc"])
+```
+</details>
+
+O corte em 30 é fixo neste exercício; não foi otimizado para obter o maior R².
+
+## Fumantes: duas faixas de IMC
+
+![](assets/aula17-regressao-linear/retas-fumantes.png){.wide-chart fig-alt="Retas dos fumantes por IMC. Abaixo de 30: R² 0,482 e RMSE 3.633 dólares. A partir de 30: R² 0,445 e RMSE 4.477 dólares. O segundo grupo tem despesas mais altas."}
+
+O recorte por IMC distingue bem os dois patamares de despesas. As inclinações são próximas, mas há dispersão e pontos afastados das retas.
+
+## Não fumantes: duas faixas de IMC
+
+![](assets/aula17-regressao-linear/retas-nao-fumantes.png){.wide-chart fig-alt="Retas dos não fumantes por IMC. Abaixo de 30: R² 0,382 e RMSE 4.585 dólares. A partir de 30: R² 0,399 e RMSE 4.730 dólares. Os dois grupos mantêm pontos nos patamares baixo e alto."}
+
+As retas são muito semelhantes. **O IMC não separa as duas nuvens dos não fumantes**: ainda há despesas altas e baixas em ambas as faixas.
+
+## Comparando os quatro ajustes {.smaller}
+
+Cada reta tem a forma $\widehat y=b_0+b_1\times\text{idade}$, com despesas em dólares.
+
+| Grupo / IMC | $n$ | $b_0$ | $b_1$ (US\$/ano) | $R^2$ | RMSE (US\$) |
+|---|---:|---:|---:|---:|---:|
+| Fumantes / < 30 | 129 | 11.503,36 | 260,64 | 0,482 | 3.633,16 |
+| Fumantes / ≥ 30 | 145 | 30.558,13 | 281,15 | 0,445 | 4.477,15 |
+| Não fumantes / < 30 | 502 | −2.118,37 | 265,95 | 0,382 | 4.584,75 |
+| Não fumantes / ≥ 30 | 562 | −2.029,05 | 267,39 | 0,399 | 4.729,81 |
+
+$R^2$ usa a **média do próprio subgrupo** como referência. O RMSE mede o erro quadrático em dólares. Todas as métricas são calculadas nos dados do ajuste.
+
+## Normalidade dos resíduos: fumantes
+
+![](assets/aula17-regressao-linear/qq-fumantes.png){.wide-chart fig-alt="QQ-plots dos fumantes nas duas faixas de IMC, com desvios importantes da diagonal, sobretudo na cauda direita."}
+
+Comparamos quantis dos resíduos padronizados aos da Normal. Nas duas faixas de IMC, os desvios da diagonal e a cauda direita indicam que o ajuste deixa resíduos não normais.
+
+## Normalidade dos resíduos: não fumantes
+
+![](assets/aula17-regressao-linear/qq-nao-fumantes.png){.wide-chart fig-alt="QQ-plots dos não fumantes nas duas faixas de IMC, com forte curvatura e assimetria à direita."}
+
+As duas faixas mantêm uma mistura de patamares de despesas. A assimetria dos resíduos persiste: **separar por IMC não resolve essa heterogeneidade**.
+
+## Anderson–Darling: diagnóstico complementar {.smaller}
+
+$H_0$: os valores seguem uma distribuição Normal, com média e variância estimadas. Quanto maior $A^2$, maior a discrepância, com atenção às caudas.
+
+| Grupo / IMC | $A^2$ | Valor-p aproximado | Leitura nominal a 5% |
+|---|---:|---:|---|
+| Fumantes / < 30 | 10,996 | < 0,001 | Rejeita normalidade |
+| Fumantes / ≥ 30 | 10,697 | < 0,001 | Rejeita normalidade |
+| Não fumantes / < 30 | 104,361 | < 0,001 | Rejeita normalidade |
+| Não fumantes / ≥ 30 | 109,327 | < 0,001 | Rejeita normalidade |
+
+<details class="code-fold"><summary>Código do teste em cada grupo</summary>
+
+```python
+from statsmodels.stats.diagnostic import normal_ad
+
+residuos = grupo.charges - (b0 + b1 * grupo.age)
+estatistica, valor_p = normal_ad(residuos)
+```
+</details>
+
+Leitura **exploratória**: os resíduos resultam de retas estimadas e não são uma amostra independente. Os valores-p usuais não corrigem esse efeito.
+
+## Como interpretar esse diagnóstico?
+
+- QQ-plots e teste indicam desvios da Normal nos quatro grupos.
+- O tamanho amostral afeta a sensibilidade do teste: examine também a forma e a magnitude dos desvios nos gráficos.
+- Normalidade não é necessária para calcular OLS; ela importa para certas inferências paramétricas exatas.
+- Esse diagnóstico não verifica independência, variância constante ou causalidade.
+
+Os quatro testes são exploratórios, sem ajuste para múltiplas comparações. Não interpretamos valores-p arredondados a zero como probabilidades exatamente nulas.
+
+## O que aprendemos com as quatro retas?
+
+- Entre fumantes, o IMC distingue patamares de despesas bastante diferentes.
+- Entre não fumantes, os coeficientes são próximos: inclinações de aproximadamente 266 e 267 dólares por ano.
+- O recorte por IMC não reproduz quatro nuvens bem separadas; ainda há estrutura nos resíduos.
+
+A classificação usa tabagismo e IMC, disponíveis sem conhecer a despesa. Mesmo assim, as métricas são de **ajuste na amostra**: avaliar previsão exige dados separados.
+
+O material de apoio contém o recorte, os ajustes, as métricas e os diagnósticos.
+
+## E a hipótese de autocuidado?
+
+O IMC ajuda a descrever parte da heterogeneidade, mas **não identifica quem se cuida mais ou menos**.
+
+- Precisaríamos medir hábitos, atividade física, prevenção e adesão a tratamentos, além de condições de saúde e acesso ao atendimento.
+- Despesas baixas podem refletir pouco acesso ou cuidado adiado; despesas altas podem incluir prevenção e tratamentos necessários.
+- Tabagismo, IMC e despesas são observados, não atribuídos aleatoriamente.
+
+As retas descrevem associações. A hipótese de autocuidado permanece aberta e exige dados e desenho de estudo adequados.
+
 ## Bibliografia da aula
 
 - James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/), capítulo 3.

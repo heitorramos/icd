@@ -350,6 +350,182 @@ as pessoas mais velhas tenham despesas maiores nem que a reta produza uma
 previsão individual exata.
 :::
 
+## Quatro ajustes por tabagismo e IMC
+
+Vamos investigar se o IMC ajuda a distinguir os patamares de despesas dentro de cada grupo de tabagismo. Cruzamos `smoker` com duas faixas de `bmi`: IMC < 30 e IMC ≥ 30, em kg/m². Cada pessoa pertence a um único subgrupo.
+
+**A despesa não é usada para definir os grupos.** O corte em 30 é fixo neste exercício; não foi escolhido pela maximização do R². Essa divisão substitui os cortes visuais da versão anterior. Não pressupomos que cada faixa corresponda exatamente a uma nuvem alta ou baixa.
+
+A hipótese de autocuidado continua sendo apenas uma hipótese: IMC não mede diretamente hábitos, prevenção ou adesão a tratamentos. Não classificamos as pessoas como quem se cuida mais ou menos.
+
+### Ajustes e métricas reproduzíveis
+
+O código verifica ausências nas colunas utilizadas, define os quatro grupos e ajusta despesas em função da idade por mínimos quadrados com intercepto. O RMSE usa o denominador n; o R² usa a média da resposta do próprio subgrupo como referência.
+
+```{python}
+"""Quatro ajustes por tabagismo e faixa de IMC, sem selecionar pela resposta."""
+
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+
+
+def ajustar_grupos(df):
+    dados = df.copy()
+    if dados[["age", "charges", "bmi", "smoker"]].isna().any().any():
+        raise ValueError("Verifique os valores ausentes antes de definir os grupos.")
+    dados["faixa_imc"] = np.where(dados.bmi < 30, "IMC < 30", "IMC ≥ 30")
+    resultados = []
+    for smoker, nome in [("yes", "Fumantes"), ("no", "Não fumantes")]:
+        for faixa_imc in ["IMC < 30", "IMC ≥ 30"]:
+            grupo = dados[dados.smoker.eq(smoker) & dados.faixa_imc.eq(faixa_imc)]
+            x, y = grupo.age.to_numpy(), grupo.charges.to_numpy()
+            b1 = np.sum((x-x.mean())*(y-y.mean())) / np.sum((x-x.mean())**2)
+            b0 = y.mean() - b1*x.mean()
+            residuos = y - (b0 + b1*x)
+            resultados.append({"grupo": nome, "faixa_imc": faixa_imc, "n": len(grupo),
+                               "b0": b0, "b1": b1,
+                               "R2": 1 - np.sum(residuos**2)/np.sum((y-y.mean())**2),
+                               "RMSE": np.sqrt(np.mean(residuos**2))})
+    return dados, pd.DataFrame(resultados)
+
+
+def desenhar_grupos(dados, resultados):
+    sns.set_theme(style="whitegrid", context="notebook", font_scale=1.2)
+    linhas = len(resultados) // 2
+    fig, axes = plt.subplots(linhas, 2, figsize=(12, 4 * linhas), sharex=True, sharey=True,
+                             layout="constrained")
+    for ax, (_, row), cor in zip(axes.flat, resultados.iterrows(),
+                                 ["#d95f02", "#a33d50", "#0f6b78", "#6a4c93"]):
+        smoker = "yes" if row.grupo == "Fumantes" else "no"
+        grupo = dados[dados.smoker.eq(smoker) & dados.faixa_imc.eq(row.faixa_imc)]
+        ax.scatter(grupo.age, grupo.charges, s=17, alpha=.45, color=cor)
+        xx = np.array([grupo.age.min(), grupo.age.max()])
+        ax.plot(xx, row.b0 + row.b1*xx, color="#172b3a", lw=2.5)
+        texto = f"n = {row.n} | R² = {row.R2:.3f} | RMSE = {row.RMSE:,.0f} US$"
+        texto = texto.replace(",", "X").replace(".", ",").replace("X", ".")
+        ax.set_title(f"{row.grupo} · {row.faixa_imc}\n{texto}", fontsize=12)
+        ax.set(xlabel="Idade (anos)", ylabel="Despesas (US$)",
+               xlim=(16, 66), ylim=(0, 68000))
+        ax.tick_params(labelleft=True, labelbottom=True)
+    fig.suptitle("Tabagismo e IMC: quatro ajustes nos próprios dados", fontweight="bold")
+    return fig
+
+dados_imc, resultados_imc = ajustar_grupos(df)
+resultados_imc.round(3)
+```
+
+| Grupo | Faixa de IMC | n | Intercepto | Inclinação | R² | RMSE (dólares) |
+|---|---|---:|---:|---:|---:|---:|
+| Fumantes | < 30 | 129 | 11.503,356 | 260,640 | 0,482 | 3.633,164 |
+| Fumantes | ≥ 30 | 145 | 30.558,127 | 281,153 | 0,445 | 4.477,149 |
+| Não fumantes | < 30 | 502 | −2.118,374 | 265,947 | 0,382 | 4.584,746 |
+| Não fumantes | ≥ 30 | 562 | −2.029,051 | 267,393 | 0,399 | 4.729,811 |
+
+A tabela registra os resultados para consulta mesmo sem executar o notebook.
+
+```{python}
+fig = desenhar_grupos(dados_imc, resultados_imc)
+plt.show()
+```
+
+![](../../slides/assets/aula17-regressao-linear/quatro-retas.png){fig-alt="Quatro ajustes por tabagismo e IMC: patamares diferentes entre fumantes e retas semelhantes entre não fumantes."}
+
+### Discussão da análise
+
+Entre fumantes, o recorte por IMC separa bem dois patamares: o grupo com IMC ≥ 30 tem despesas ajustadas maiores ao longo das idades observadas. As inclinações são relativamente próximas, aproximadamente 261 e 281 dólares por ano, mas há pontos afastados das retas nos dois grupos.
+
+Entre não fumantes, as retas são muito semelhantes: inclinações de aproximadamente 266 e 267 dólares por ano e interceptos próximos. Ambas as faixas de IMC contêm pessoas nos patamares baixo e alto de despesas. **O corte em IMC não separa as duas nuvens dos não fumantes.** A estrutura restante pede outros preditores e uma investigação dos resíduos.
+
+R² varia de 0,382 a 0,482 e o RMSE de aproximadamente 3.633 a 4.730 dólares. A média e a variabilidade total são específicas de cada subgrupo; por isso, R² e RMSE respondem a perguntas diferentes. O intercepto corresponde à idade zero, fora da faixa observada, e não deve receber interpretação clínica.
+
+A classificação por tabagismo e IMC pode ser feita sem conhecer a despesa da pessoa. Isso evita selecionar grupos pela resposta, mas não transforma as métricas de treinamento em estimativas de generalização: seria necessário separar dados de avaliação antes do ajuste. Os resultados não demonstram efeito causal de tabagismo ou IMC, nem medem autocuidado.
+
+### Normalidade dos resíduos dos quatro ajustes
+
+O QQ-plot compara os quantis dos resíduos padronizados aos quantis de uma Normal padrão, com a diagonal como referência. Padronizar remove média e escala, não assimetria ou caudas pesadas.
+
+Usamos [`normal_ad`, do statsmodels](https://www.statsmodels.org/v0.13.5/generated/statsmodels.stats.diagnostic.normal_ad.html) para o teste de Anderson–Darling com média e variância estimadas. Ele devolve a estatística A² e um valor-p aproximado.
+
+```{python}
+"""QQ-plots e Anderson-Darling exploratório dos quatro ajustes."""
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+from statsmodels.stats.diagnostic import normal_ad
+
+
+
+
+def diagnosticar_normalidade(dados, resultados):
+    linhas_figura = len(resultados) // 2
+    fig, axes = plt.subplots(linhas_figura, 2, figsize=(11, 3.75 * linhas_figura), layout="constrained")
+    linhas = []
+    for ax, (_, row) in zip(axes.flat, resultados.iterrows()):
+        smoker = "yes" if row.grupo == "Fumantes" else "no"
+        grupo = dados[dados.smoker.eq(smoker) & dados.faixa_imc.eq(row.faixa_imc)]
+        residuos = grupo.charges.to_numpy() - (row.b0 + row.b1*grupo.age.to_numpy())
+        z = (residuos - residuos.mean()) / residuos.std(ddof=1)
+        teoricos, observados = stats.probplot(z, dist="norm", fit=False)
+        ax.scatter(teoricos, observados, s=20, alpha=.65, color="#0f6b78")
+        limites = [min(teoricos), max(teoricos)]
+        ax.plot(limites, limites, color="#d95f02", lw=2)
+        ax.set(title=f"{row.grupo} · {row.faixa_imc} (n={row.n})",
+               xlabel="Quantis teóricos da Normal", ylabel="Resíduos padronizados")
+        ax.grid(alpha=.25)
+        estatistica, p = normal_ad(residuos)
+        linhas.append({"grupo": row.grupo, "faixa_imc": row.faixa_imc, "n": row.n,
+                       "A2": float(estatistica), "valor_p": float(p)})
+    return fig, pd.DataFrame(linhas)
+
+fig_normalidade, testes_normalidade = diagnosticar_normalidade(
+    dados_imc, resultados_imc
+)
+plt.show()
+```
+
+![](../../slides/assets/aula17-regressao-linear/qq-quatro-retas.png){fig-alt="QQ-plots dos resíduos dos quatro grupos definidos por tabagismo e faixa de IMC, todos com desvios da Normal."}
+
+```{python}
+testes_normalidade.assign(
+    valor_p_exibido=testes_normalidade.valor_p.map(
+        lambda p: "< 0,001" if p < 0.001 else f"{p:.3f}"
+    ),
+    leitura_5_porcento=np.where(
+        testes_normalidade.valor_p < 0.05, "Rejeita", "Não rejeita"
+    )
+)[["grupo", "faixa_imc", "n", "A2", "valor_p_exibido", "leitura_5_porcento"]]
+```
+
+| Grupo | Faixa de IMC | A² | Valor-p aproximado |
+|---|---|---:|---:|
+| Fumantes | < 30 | 10,996 | < 0,001 |
+| Fumantes | ≥ 30 | 10,697 | < 0,001 |
+| Não fumantes | < 30 | 104,361 | < 0,001 |
+| Não fumantes | ≥ 30 | 109,327 | < 0,001 |
+
+**Discussão.** Os quatro QQ-plots exibem desvios importantes, sobretudo na cauda direita. Nos não fumantes, a mistura de patamares de despesas permanece mesmo após separar por IMC. O teste rejeita nominalmente normalidade nos quatro grupos a 5%. Isso difere do recorte anterior por despesas: estamos analisando outros grupos e outros resíduos.
+
+Os valores-p muito pequenos são apresentados como < 0,001. A aproximação numérica pode retornar zero para estatísticas muito grandes; esse zero não significa probabilidade matematicamente nula. O tamanho da amostra influencia a sensibilidade do teste, portanto a leitura gráfica deve acompanhar a tabela.
+
+**Limites.** Os resíduos são calculados a partir de retas estimadas: têm restrições, como soma zero, e não são observações independentes com variância necessariamente igual. O teste usual não corrige esses efeitos. Seus valores-p são referências exploratórias; não prometemos nível de 5% exato para esse procedimento aplicado aos resíduos. Não aplicamos correção pelos quatro testes. Diferentemente da versão anterior, a resposta não é usada para selecionar os grupos.
+
+Normalidade não é necessária para calcular OLS. O diagnóstico não verifica independência, homoscedasticidade, causalidade nem a hipótese de autocuidado. Para investigar autocuidado, seriam necessários dados sobre hábitos, prevenção, adesão, condições de saúde e acesso ao atendimento.
+
+### Para explorar
+
+1. Experimente cortes de IMC em 28 e 32. Compare tamanho dos grupos, coeficientes, R² e RMSE; não escolha o corte apenas pelo melhor ajuste.
+2. Sobreponha as retas das duas faixas de IMC dentro de cada grupo de tabagismo. Em qual grupo elas se distinguem?
+3. Compare quatro retas com apenas duas, uma por tabagismo, usando dados separados para avaliação.
+4. Por que agrupar por IMC não equivale a medir autocuidado?
+5. O que os QQ-plots revelam que R² e RMSE não mostram?
+
 ## O que fica para as próximas aulas
 
 - **Máxima verossimilhança:** formulará uma distribuição para $Y\mid X$ e mostrará quando mínimos quadrados emerge desse modelo probabilístico.
