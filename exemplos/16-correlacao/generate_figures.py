@@ -102,13 +102,19 @@ finish("quadrantes-covariancia-v2.png")
 cov_usd = np.cov(df.age, df.charges, ddof=1)[0, 1]
 cov_k = np.cov(df.age, df.charges/1000, ddof=1)[0, 1]
 r = df.age.corr(df.charges)
-fig, axes = plt.subplots(1, 2, figsize=(11.2, 4.7), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(12, 5.4))
 for ax, yy, label, cov in [(axes[0], df.charges, "US$", cov_usd), (axes[1], df.charges/1000, "milhares de US$", cov_k)]:
-    ax.scatter(df.age, yy if label == "US$" else yy*1000, color=BLUE, alpha=.22, s=22)
-    ax.set_xlabel("Idade")
-    ax.set_title(f"cov = {cov:,.1f}\nr = {r:.3f}".replace(",", "X").replace(".", ",").replace("X", "."))
-axes[0].set_ylabel("Despesas médicas (US$)")
-fig.suptitle("Trocar a unidade altera a covariância, mas não a correlação", fontweight="bold")
+    ax.scatter(df.age, yy, color=BLUE, alpha=.22, s=22)
+    ax.set_xlabel("Idade (anos)")
+    ax.set_ylabel(f"Despesas médicas ({label})")
+    factor = 1 if label == "US$" else 1000
+    ax.set_ylim(-2000/factor, 68000/factor)
+    ticks = np.arange(0, 60001, 20000)/factor
+    ax.set_yticks(ticks, [f"{v:,.0f}".replace(",", ".") for v in ticks])
+    cov_text = f"{cov:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    r_text = f"{r:.3f}".replace(".", ",")
+    ax.set_title(f"cov = {cov_text} anos × {label}\nr = {r_text}", fontsize=15)
+fig.suptitle("Mesmos dados: 20.000 US$ = 20 milhares de US$", fontweight="bold", fontsize=18, parse_math=False)
 finish("escala-cov-cor.png")
 
 # 5. Dados padronizados e interpretação geométrica.

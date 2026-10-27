@@ -215,9 +215,9 @@ Precisamos retirar a escala.
 
 ## A covariância depende da unidade
 
-![](assets/aula16-correlacao/escala-cov-cor.png){fig-alt="Mesma relação em duas unidades, com covariâncias diferentes e correlações iguais."}
+![](assets/aula16-correlacao/escala-cov-cor.png){fig-alt="Idade em anos nos dois painéis. À esquerda, despesas em US$, com marcas em 0, 20.000, 40.000 e 60.000. À direita, despesas em milhares de US$, com marcas em 0, 20, 40 e 60. A covariância é dividida por mil; a correlação permanece igual."}
 
-A associação observada não mudou; apenas a unidade de $Y$ mudou.
+À esquerda, despesas em **US\$**; à direita, em **milhares de US\$**. Dividir $Y$ por 1.000 divide a covariância por 1.000, mas mantém a correlação e o padrão da nuvem.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
@@ -516,10 +516,23 @@ df.groupby("smoker")[["bmi", "charges"]].apply(
 ```
 </details>
 
-## Marginal, condicional e parcial {.smaller}
+## Novo exemplo: horas de estudo e notas
+
+Na base de seguros, separar os grupos revelou associações diferentes. Será que misturar grupos pode até **inverter o sinal** da correlação?
+
+Vamos investigar com **dados simulados de 800 estudantes**, divididos igualmente entre uma disciplina introdutória e uma avançada.
+
+- **Cada linha:** um estudante em uma das disciplinas.
+- **Horas:** tempo de estudo, em horas.
+- **Nota:** pontuação na avaliação.
+- **Disciplina:** introdutória ou avançada.
+
+O exemplo é didático: não representa uma pesquisa real nem permite concluir que estudar mais causa determinada nota.
+
+## Marginal e condicional {.smaller}
 
 ::: {.columns .concept-cards}
-::: {.column width="33.3%"}
+::: {.column width="50%"}
 ### Marginal
 
 Todos os estudantes juntos:
@@ -529,30 +542,22 @@ $$r_{\text{horas, nota}}=-0{,}14$$
 Resume a nuvem sem considerar a disciplina.
 :::
 
-::: {.column width="33.3%"}
+::: {.column width="50%"}
 ### Condicional
 
 Dentro de cada disciplina:
 
 $$r_{\text{intro}}=0{,}40,\qquad r_{\text{avançada}}=0{,}38$$
 
-Compara estudantes em estratos distintos.
-:::
-
-::: {.column width="33.3%"}
-### Parcial
-
-Após retirar linearmente as diferenças entre disciplinas:
-
-$$r_{\text{parcial}}=0{,}39$$
-
-Correlaciona os resíduos de `horas` e `nota`.
+Resume a relação entre horas e nota dentro de cada disciplina.
 :::
 :::
 
-Condicionar ou ajustar pode esclarecer uma mistura. A escolha da variável de controle exige conhecimento causal, pois um controle inadequado também pode introduzir viés.
+Separar por disciplina pode revelar uma relação que fica escondida nos dados agregados. Essa comparação, por si só, não demonstra que estudar mais causa notas maiores.
 
 ## Uma primeira leitura dos dados
+
+Primeiro, reunimos os 800 estudantes sem distinguir a disciplina. Cada ponto representa um estudante.
 
 ![](assets/aula16-correlacao/simpson-agregado.png){.wide-chart fig-alt="Dados simulados de horas de estudo e nota agregados, com correlação negativa."}
 
