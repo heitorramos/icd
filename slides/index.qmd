@@ -23,7 +23,7 @@ Os slides são escritos em Quarto Reveal.js.
 - [Aula 15: Poder e múltiplos testes](15-poder-multiplos.html)
 - [Aula 16: Correlação](16-correlacao.html)
 - [Aula 17: Regressão linear simples](17-regressao-linear.html)
-- Aula 18: Máxima verossimilhança — *em revisão*
+- [Aula 18: Máxima verossimilhança](18-verossimilhanca.html)
 - Aula 19: Verossimilhança na regressão — *em revisão*
 - Aula 20: Gradiente descendente — *em revisão*
 - Aula 21: Regressão linear múltipla — *em revisão*

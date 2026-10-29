@@ -152,8 +152,47 @@ A segunda derivada negativa mostra que a função é estritamente côncava quand
 
 ```{python}
 second = -S/p_hat**2-(n-S)/(1-p_hat)**2
-second
+observed_information = -second
+standard_error = 1/np.sqrt(observed_information)
+
+pd.Series({
+    "segunda_derivada": second,
+    "informacao_observada": observed_information,
+    "erro_padrao": standard_error,
+})
 ```
+
+### Da curvatura para a precisão
+
+A **informação observada** é a curvatura negativa da log-verossimilhança calculada no estimador:
+
+$$
+J(\widehat p)
+=-\ell''(\widehat p)
+=\frac{S}{\widehat p^2}+\frac{n-S}{(1-\widehat p)^2}.
+$$
+
+Como $S=n\widehat p$ e $n-S=n(1-\widehat p)$, obtemos
+
+$$
+J(\widehat p)=\frac{n}{\widehat p(1-\widehat p)}.
+$$
+
+No exemplo da base,
+
+$$
+J(\widehat p)\approx8216{,}30,
+\qquad
+\operatorname{EP}(\widehat p)
+\approx\frac{1}{\sqrt{J(\widehat p)}}
+\approx0{,}0110.
+$$
+
+::: {.callout-note title="Interpretação"}
+A estimativa é $\widehat p\approx0{,}2048$, ou **20,48% de fumantes na amostra**. O erro-padrão aproximado de $0{,}0110$ corresponde a **1,10 ponto percentual**. A aproximação normal de 95% é $0{,}2048\pm1{,}96(0{,}0110)$, aproximadamente de **18,32% a 22,64%**.
+
+O valor $8216{,}30$ depende da escala escolhida para o parâmetro e é pouco intuitivo isoladamente. Seu inverso quadrático traduz a curvatura para a escala de incerteza: quanto mais estreito e acentuado o pico, maior a informação e menor o erro-padrão.
+:::
 
 ## Curvatura e tamanho amostral
 
@@ -189,13 +228,89 @@ $\Theta$ é o espaço paramétrico e $f$ é a massa ou densidade postulada pelo 
 Se $X_i\overset{iid}{\sim}N(\mu,\sigma^2)$ com $\sigma^2$ conhecido,
 
 $$
-\ell(\mu)=C-\frac{1}{2\sigma^2}\sum_i(x_i-\mu)^2.
+f(x_i;\mu)
+=\frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right].
 $$
 
-Maximizar $\ell$ equivale a minimizar a soma de quadrados, cuja solução é $\widehat\mu=\bar x$.
+Aqui, $x_i$ é o valor observado da unidade $i$; $\mu$ é um valor candidato para a média populacional; e $\sigma^2$ é conhecido e mantido fixo.
+
+Como as observações são independentes, a densidade conjunta pode ser fatorada como o produto das densidades individuais. Substituindo a expressão Normal dentro desse produto,
+
+$$
+\begin{aligned}
+L(\mu;x)
+&=\prod_{i=1}^n f(x_i;\mu)\\
+&=\prod_{i=1}^n\left\{
+\frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right]
+\right\}\\
+&=\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^n
+\prod_{i=1}^n
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right]\\
+&=(2\pi\sigma^2)^{-n/2}
+\exp\left[-\frac{1}{2\sigma^2}
+\sum_{i=1}^n(x_i-\mu)^2\right].
+\end{aligned}
+$$
+
+Duas propriedades produzem a última linha:
+
+1. a constante $1/\sqrt{2\pi\sigma^2}$ aparece uma vez para cada uma das $n$ observações e, portanto, seu produto é $(2\pi\sigma^2)^{-n/2}$;
+2. o produto de exponenciais é a exponencial da soma dos expoentes, pois $\prod_i e^{a_i}=e^{\sum_i a_i}$.
+
+Sem independência, não poderíamos substituir automaticamente a densidade conjunta por esse produto.
+
+Tomando o log,
+
+$$
+\ell(\mu)
+=-\frac n2\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}\sum_{i=1}^n(x_i-\mu)^2.
+$$
+
+O termo $-\frac n2\log(2\pi\sigma^2)$ não depende de $\mu$. O fator $-1/(2\sigma^2)$ é negativo e também não depende de $\mu$. Portanto, aumentar $\ell(\mu)$ equivale a diminuir
+
+$$
+Q(\mu)=\sum_{i=1}^n(x_i-\mu)^2.
+$$
+
+É importante manter $\mu$ dentro do critério: ele representa um valor candidato para a média populacional. Apenas depois da otimização escrevemos sua estimativa $\widehat\mu$. Não estamos supondo previamente que $\widehat\mu=\bar x$.
+
+### Derivação do estimador
+
+Derivando a log-verossimilhança,
+
+$$
+\begin{aligned}
+U(\mu)
+=\frac{d\ell(\mu)}{d\mu}
+&=-\frac{1}{2\sigma^2}
+\sum_{i=1}^n 2(x_i-\mu)(-1)\\
+&=\frac{1}{\sigma^2}\sum_{i=1}^n(x_i-\mu).
+\end{aligned}
+$$
+
+O fator $-1$ na primeira linha vem da derivada de $x_i-\mu$ em relação a $\mu$. Igualando o escore a zero,
+
+$$
+\begin{aligned}
+\frac{1}{\sigma^2}\sum_{i=1}^n(x_i-\widehat\mu)&=0\\
+\sum_{i=1}^n x_i-n\widehat\mu&=0\\
+\widehat\mu&=\frac1n\sum_{i=1}^n x_i=\bar x.
+\end{aligned}
+$$
+
+Por fim,
+
+$$
+\ell''(\mu)=-\frac{n}{\sigma^2}<0,
+$$
+
+logo a log-verossimilhança é estritamente côncava em $\mu$ e $\widehat\mu=\bar x$ é seu único máximo.
 
 ::: {.callout-note title="Interpretação"}
-A distribuição escolhida determina a forma da perda. A Normal produz perda quadrática; essa conexão será aplicada à regressão na Aula 19.
+A perda quadrática não foi introduzida arbitrariamente: ela surge da hipótese de que as observações são independentes, normais, com média $\mu$ e variância conhecida. Sob esse modelo, máxima verossimilhança e minimização da soma dos quadrados escolhem exatamente o mesmo valor, $\bar x$. Essa conexão será aplicada à regressão na Aula 19.
 :::
 
 ## Limitações e validade

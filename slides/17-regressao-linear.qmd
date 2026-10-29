@@ -701,6 +701,31 @@ Cada reta tem a forma $\widehat y=b_0+b_1\times\text{idade}$, com despesas em d�
 
 $R^2$ usa a **média do próprio subgrupo** como referência. O RMSE mede o erro quadrático em dólares. Todas as métricas são calculadas nos dados do ajuste.
 
+## O que os quatro modelos deixaram para trás
+
+![](assets/aula17-regressao-linear/residuos-quatro-modelos.png){.wide-chart fig-alt="Quatro gráficos de resíduos contra valores ajustados, um para cada combinação de tabagismo e faixa de IMC. A mesma escala vertical permite comparar a dispersão entre os modelos."}
+
+- A linha tracejada marca resíduo zero; a linha amarela liga as médias dos resíduos em faixas de valores ajustados.
+- OLS centraliza os resíduos, mas **não garante ausência de padrão**. Nos não fumantes permanecem duas bandas e forte assimetria; nos fumantes há observações muito afastadas das retas.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+ajustados = b0 + b1 * grupo.age
+residuos = grupo.charges - ajustados
+ax.scatter(ajustados, residuos, alpha=.48)
+ax.axhline(0, color="#172b3a", linestyle="--")
+
+# A linha amarela resume a média dos resíduos em oito faixas.
+faixas = pd.qcut(ajustados, q=8, duplicates="drop")
+media_por_faixa = pd.DataFrame({
+    "ajustado": ajustados,
+    "residuo": residuos,
+}).groupby(faixas, observed=True).mean()
+ax.plot(media_por_faixa.ajustado, media_por_faixa.residuo)
+```
+</details>
+
 ## Normalidade dos resíduos: fumantes
 
 ![](assets/aula17-regressao-linear/qq-fumantes.png){.wide-chart fig-alt="QQ-plots dos fumantes nas duas faixas de IMC, com desvios importantes da diagonal, sobretudo na cauda direita."}

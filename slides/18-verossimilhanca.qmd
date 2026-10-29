@@ -303,13 +303,26 @@ for n in [20, 100, 500]:
 
 ## Curvatura representa informação local
 
-Perto de $\widehat p$, uma log-verossimilhança mais curva penaliza rapidamente parâmetros vizinhos.
+Para Bernoulli, a informação observada é
 
-Uma medida observada é
+$$
+J(\widehat p)=-\ell''(\widehat p)
+=\frac{S}{\widehat p^2}+\frac{n-S}{(1-\widehat p)^2}
+=\frac{n}{\widehat p(1-\widehat p)}.
+$$
 
-$$J(\widehat p)=-\ell''(\widehat p).$$
+Na base, $n=1338$, $S=274$ e $\widehat p=0{,}2048$:
 
-Maior informação implica menor erro-padrão aproximado.
+$$
+J(\widehat p)\approx8216{,}30,
+\qquad
+\operatorname{EP}(\widehat p)\approx\frac{1}{\sqrt{J(\widehat p)}}
+=0{,}0110.
+$$
+
+::: {.callout-note title="Interpretação"}
+A proporção estimada é **20,48%**, com erro-padrão de aproximadamente **1,10 ponto percentual**. Uma curva mais acentuada perto do máximo produz maior $J$ e menor incerteza local.
+:::
 
 ## Estimação não valida automaticamente o modelo
 
@@ -353,21 +366,86 @@ mas a densidade $f(x;\theta)$ pode ser positiva.
 
 Comparamos densidades dos dados observados sob parâmetros candidatos; probabilidades pertencem a intervalos.
 
-## Outro exemplo: média de uma Normal
+## Da Normal à verossimilhança {.smaller}
 
 Se
 
 $$X_i\overset{iid}{\sim}N(\mu,\sigma^2)$$
 
-e $\sigma^2$ é conhecido, maximizar a verossimilhança em $\mu$ equivale a minimizar
+e $\sigma^2$ é conhecido, a densidade de uma observação é
 
-$$\sum_i(x_i-\mu)^2.$$
+$$
+f(x_i;\mu)=\frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right].
+$$
 
-## A média reaparece
+Aqui, $x_i$ é o valor observado; $\mu$ varia entre os valores candidatos; $\sigma^2$ é mantido fixo.
+
+## Pela independência, multiplicamos densidades {.smaller}
+
+Independência implica que a densidade conjunta é o produto das densidades individuais:
+
+$$
+\begin{aligned}
+L(\mu;x)
+&=\prod_{i=1}^n f(x_i;\mu)\\
+&=\prod_{i=1}^n\left\{
+\frac{1}{\sqrt{2\pi\sigma^2}}
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right]
+\right\}\\
+&=\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^n
+\prod_{i=1}^n
+\exp\left[-\frac{(x_i-\mu)^2}{2\sigma^2}\right]\\
+&=(2\pi\sigma^2)^{-n/2}
+\exp\left[-\frac{1}{2\sigma^2}\sum_{i=1}^n(x_i-\mu)^2\right].
+\end{aligned}
+$$
+
+A última passagem usa $\prod_i e^{a_i}=e^{\sum_i a_i}$.
+
+## Maximizar a Normal é minimizar quadrados {.smaller}
+
+Aplicando o log,
+
+$$
+\ell(\mu)
+=-\frac n2\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}\sum_{i=1}^n(x_i-\mu)^2.
+$$
+
+O primeiro termo é constante em $\mu$. Como $-1/(2\sigma^2)<0$,
+
+$$
+\arg\max_\mu\ell(\mu)
+=\arg\min_\mu\sum_{i=1}^n(x_i-\mu)^2.
+$$
+
+O parâmetro ainda é o valor candidato $\mu$; somente após a otimização obtemos $\widehat\mu$.
+
+## Derivando o estimador da média
+
+O escore para $\mu$ é
+
+$$
+U(\mu)=\frac{d\ell(\mu)}{d\mu}
+=\frac{1}{\sigma^2}\sum_{i=1}^n(x_i-\mu).
+$$
+
+Igualando a zero,
+
+$$
+\sum_{i=1}^n x_i-n\widehat\mu=0
+\quad\Longrightarrow\quad
+\widehat\mu=\frac1n\sum_{i=1}^n x_i=\bar x.
+$$
+
+Como $\ell''(\mu)=-n/\sigma^2<0$, esse ponto é o único máximo.
+
+## A curva confirma a derivação
 
 ![](assets/aula18-verossimilhanca/normal-media.png){.wide-chart fig-alt="Log-verossimilhança normal em função da média candidata."}
 
-O máximo ocorre em $\widehat\mu=\bar x$.
+O máximo gráfico ocorre em $\widehat\mu=\bar x$.
 
 Essa é a ponte para a regressão: substituiremos a média constante por uma média que depende de $x$.
 

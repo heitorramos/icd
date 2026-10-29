@@ -67,6 +67,7 @@ website:
           contents:
             - aulas/16-correlacao.qmd
             - aulas/17-regressao-linear.qmd
+            - aulas/18-verossimilhanca.qmd
 
 format:
   html:

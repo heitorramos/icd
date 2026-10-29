@@ -445,6 +445,88 @@ R² varia de 0,382 a 0,482 e o RMSE de aproximadamente 3.633 a 4.730 dólares. A
 
 A classificação por tabagismo e IMC pode ser feita sem conhecer a despesa da pessoa. Isso evita selecionar grupos pela resposta, mas não transforma as métricas de treinamento em estimativas de generalização: seria necessário separar dados de avaliação antes do ajuste. Os resultados não demonstram efeito causal de tabagismo ou IMC, nem medem autocuidado.
 
+### Resíduos versus valores ajustados
+
+Para cada pessoa $i$, o **valor ajustado** pelo modelo de seu grupo é
+
+$$
+\widehat y_i=b_0+b_1x_i,
+$$
+
+em que $x_i$ é a idade, $b_0$ é o intercepto estimado e $b_1$ é a inclinação estimada. O **resíduo** é
+
+$$
+e_i=y_i-\widehat y_i,
+$$
+
+isto é, a despesa observada $y_i$ menos a despesa ajustada. Um gráfico de $e_i$ contra $\widehat y_i$ permite procurar curvatura, mudança de dispersão, grupos não explicados e observações muito afastadas da reta.
+
+```{python}
+"""Resíduos versus valores ajustados dos quatro modelos."""
+
+
+def diagnosticar_residuos(dados, resultados):
+    paineis = []
+    for _, row in resultados.iterrows():
+        smoker = "yes" if row.grupo == "Fumantes" else "no"
+        grupo = dados[
+            dados.smoker.eq(smoker) & dados.faixa_imc.eq(row.faixa_imc)
+        ]
+        ajustados = row.b0 + row.b1 * grupo.age.to_numpy()
+        residuos = grupo.charges.to_numpy() - ajustados
+        paineis.append((row, ajustados, residuos))
+
+    # A mesma escala vertical torna a dispersão comparável entre painéis.
+    limite = 1.04 * max(np.abs(residuos).max() for _, _, residuos in paineis)
+    fig, axes = plt.subplots(
+        2, 2, figsize=(12, 7.7), sharey=True, layout="constrained"
+    )
+    cores = ["#d95f02", "#a33d50", "#0f6b78", "#6a4c93"]
+
+    for ax, (row, ajustados, residuos), cor in zip(axes.flat, paineis, cores):
+        ax.scatter(ajustados, residuos, s=24, alpha=.48, color=cor)
+        ax.axhline(0, color="#172b3a", lw=1.6, ls="--")
+
+        # A linha amarela resume a média dos resíduos em oito faixas.
+        resumo = pd.DataFrame({"ajustado": ajustados, "residuo": residuos})
+        resumo["faixa"] = pd.qcut(
+            resumo.ajustado, q=min(8, len(resumo)), duplicates="drop"
+        )
+        tendencia = resumo.groupby("faixa", observed=True).agg(
+            ajustado=("ajustado", "mean"),
+            residuo=("residuo", "mean"),
+        )
+        ax.plot(
+            tendencia.ajustado, tendencia.residuo,
+            color="#f2b134", lw=2.5, marker="o", label="Média em faixas"
+        )
+        ax.set_title(f"{row.grupo} · {row.faixa_imc}\nn = {row.n}")
+        ax.set(
+            xlabel="Valor ajustado (US$)",
+            ylabel="Resíduo (US$)",
+            ylim=(-limite, limite),
+        )
+        ax.legend(loc="upper left")
+
+    fig.suptitle(
+        "Resíduos dos quatro modelos: ainda há estrutura não explicada",
+        fontweight="bold",
+    )
+    return fig
+
+
+fig_residuos = diagnosticar_residuos(dados_imc, resultados_imc)
+plt.show()
+```
+
+![](../../slides/assets/aula17-regressao-linear/residuos-quatro-modelos.png){fig-alt="Quatro gráficos de resíduos contra valores ajustados, um para cada combinação de tabagismo e faixa de IMC."}
+
+::: {.callout-note title="Interpretação do diagnóstico"}
+As médias em faixas ficam próximas de zero, como se espera depois de ajustar retas com intercepto. Isso não torna os resíduos aleatórios nem simétricos. Entre não fumantes, permanecem uma banda densa de resíduos levemente negativos e uma banda esparsa de resíduos positivos muito altos: o corte por IMC não explicou os dois patamares de despesas. Entre fumantes, a maior parte dos resíduos se concentra perto de zero, mas há observações isoladas com erros grandes nas duas direções.
+
+Portanto, os quatro modelos melhoram a descrição dos grupos, mas ainda omitem estrutura importante. O gráfico não identifica sozinho quais variáveis faltam nem prova que as retas sejam inadequadas para todo objetivo; ele indica onde a investigação deve continuar.
+:::
+
 ### Normalidade dos resíduos dos quatro ajustes
 
 O QQ-plot compara os quantis dos resíduos padronizados aos quantis de uma Normal padrão, com a diagonal como referência. Padronizar remove média e escala, não assimetria ou caudas pesadas.
