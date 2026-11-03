@@ -213,7 +213,7 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aulas 16–19 disponíveis. Aulas 20–26 em revisão.
+Aulas 16–19 disponíveis. Aulas 20–25 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
@@ -323,17 +323,6 @@ Representações, pipelines, vazamento e validação cruzada.
 ## KNN e prática de machine learning
 
 Distâncias, escolha de hiperparâmetros e fluxo completo de modelagem.
-
-**Material em revisão**
-:::
-:::
-::: {.g-col-12 .g-col-md-6}
-::: {.aula-card}
-### Aula 26
-
-## PCA aplicado à classificação
-
-Compressão, representação, regressão logística, KNN e ciência de dados.
 
 **Material em revisão**
 :::
