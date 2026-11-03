@@ -32,21 +32,21 @@ Eventuais alterações serão comunicadas pelo
 | 14 | **01/10/2026** | Permutação e desenho experimental | [Acessar](aulas/14-permutacao-avancada.qmd) |
 | 15 | **06/10/2026** | Poder e múltiplos testes | [Acessar](aulas/15-poder-multiplos.qmd) |
 | **Módulo 3** |  | **Modelagem e Aprendizado de Máquina** |  |
-| 16 | **08/10/2026** | Correlação | [Acessar](aulas/16-correlacao.qmd) |
+| 16 | **08/10/2026** | Correlação — parte 1 | [Acessar](aulas/16-correlacao.qmd) |
 | **Prova 1** | **13/10/2026** | **Prova 1** | — |
-| 17 | **15/10/2026** | Regressão linear simples | [Acessar](aulas/17-regressao-linear.qmd) |
+| — | **15/10/2026** | **Discussão da Prova 1** | — |
 | — | **20/10/2026** | **Sem aula** | — |
-| 18 | **22/10/2026** | Máxima verossimilhança | [Acessar](aulas/18-verossimilhanca.qmd) |
-| 19 | **27/10/2026** | Verossimilhança na regressão | [Acessar](aulas/19-verossimilhanca-regressao.qmd) |
-| 20 | **29/10/2026** | Gradiente descendente | Em revisão |
-| 21 | **03/11/2026** | Regressão linear múltipla e introdução a GLMs | Em revisão |
-| 22 | **05/11/2026** | Regressão logística | Em revisão |
-| 23 | **10/11/2026** | Regularização | Em revisão |
-| 24 | **12/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
-| 25 | **17/11/2026** | KNN e prática completa de machine learning | Em revisão |
-| 26 | **19/11/2026** | PCA e SVM aplicados | Em revisão |
-| **Prova 2** | **24/11/2026** | **Prova 2** | — |
-| **TP** | **26/11/2026** | Apresentações do projeto final | [Orientações](projeto.qmd) |
+| 16 | **22/10/2026** | Correlação — parte 2 | [Acessar](aulas/16-correlacao.qmd) |
+| 17 | **27/10/2026** | Regressão linear simples | [Acessar](aulas/17-regressao-linear.qmd) |
+| 18 | **29/10/2026** | Máxima verossimilhança | [Acessar](aulas/18-verossimilhanca.qmd) |
+| 19 | **03/11/2026** | Verossimilhança na regressão | [Acessar](aulas/19-verossimilhanca-regressao.qmd) |
+| 20 | **05/11/2026** | Gradiente descendente | Em revisão |
+| 21 | **10/11/2026** | Regressão linear múltipla e introdução a GLMs | Em revisão |
+| 22 | **12/11/2026** | Regressão logística | Em revisão |
+| 23 | **17/11/2026** | Regularização | Em revisão |
+| 24 | **19/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
+| 25 | **24/11/2026** | KNN e prática completa de machine learning | Em revisão |
+| **Prova 2** | **26/11/2026** | **Prova 2** | — |
 | **Substitutiva** | **01/12/2026** | **Prova Substitutiva** | — |
 | **Exame** | **03/12/2026** | **Exame Especial** | — |
 
