@@ -37,7 +37,7 @@ Eventuais alterações serão comunicadas pelo
 | 17 | **15/10/2026** | Regressão linear simples | [Acessar](aulas/17-regressao-linear.qmd) |
 | — | **20/10/2026** | **Sem aula** | — |
 | 18 | **22/10/2026** | Máxima verossimilhança | [Acessar](aulas/18-verossimilhanca.qmd) |
-| 19 | **27/10/2026** | Verossimilhança na regressão | Em revisão |
+| 19 | **27/10/2026** | Verossimilhança na regressão | [Acessar](aulas/19-verossimilhanca-regressao.qmd) |
 | 20 | **29/10/2026** | Gradiente descendente | Em revisão |
 | 21 | **03/11/2026** | Regressão linear múltipla e introdução a GLMs | Em revisão |
 | 22 | **05/11/2026** | Regressão logística | Em revisão |

@@ -30,7 +30,7 @@ Na Aula 18, maximizamos a compatibilidade probabilística.
 - provar a equivalência entre MLE e OLS;
 - estimar a variância dos erros;
 - esclarecer o papel — e o limite — da normalidade;
-- diagnosticar o modelo na base de seguros.
+- integrar ajuste, inferência e diagnóstico em um exemplo completo.
 
 ## Base de dados de apoio
 
@@ -238,21 +238,6 @@ loglik = constante-SSE/(2*sigma**2)
 ```
 </details>
 
-## Retas ruins acumulam erros improváveis
-
-![](assets/aula19-verossimilhanca-regressao/retas-sse.png){.wide-chart fig-alt="Três retas candidatas com somas de quadrados diferentes."}
-
-Uma reta com erros grandes simultaneamente tem SSE maior e verossimilhança gaussiana menor.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-for slope in candidate_slopes:
-    prediction = intercept+slope*x
-    sse = np.sum((y-prediction)**2)
-```
-</details>
-
 ## As derivadas são as mesmas de OLS
 
 Para os coeficientes,
@@ -407,30 +392,6 @@ $$\widehat\sigma_{MV}=11551{,}67\text{ US\$}.$$
 
 A dispersão individual é enorme diante da variação média anual prevista.
 
-## O diagnóstico contradiz o modelo simples
-
-![](assets/aula19-verossimilhanca-regressao/diagnostico-normalidade.png){.wide-chart fig-alt="Histograma assimétrico dos resíduos e resíduos separados por tabagismo."}
-
-Os resíduos são assimétricos e separados pelo tabagismo: idade sozinha não descreve a média condicional.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-sns.histplot(residuos, kde=True)
-sns.scatterplot(x=ajustado, y=residuos, hue=fumante)
-```
-</details>
-
-## O que o diagnóstico sugere?
-
-- incluir tabagismo como preditor;
-- avaliar interação entre idade e tabagismo;
-- considerar transformação de `charges`;
-- usar erros-padrão robustos se a variância não for constante;
-- investigar observações extremas e processo de coleta.
-
-Diagnóstico orienta revisão; não é ritual de aprovação automática.
-
 ## A equivalência é específica da Normal
 
 A perda quadrática surge porque
@@ -442,18 +403,6 @@ Outras distribuições geram outras perdas:
 - Laplace $\rightarrow$ perda absoluta;
 - Bernoulli $\rightarrow$ log-loss;
 - Poisson $\rightarrow$ deviance de contagens.
-
-## Modelo probabilístico escolhe a perda
-
-Máxima verossimilhança não é apenas uma técnica para “achar parâmetros”.
-
-Ela conecta:
-
-$$\text{hipótese distributiva}\longrightarrow
-\text{função de perda}\longrightarrow
-\text{estimador}.$$
-
-Essa conexão será central em modelos lineares generalizados.
 
 ## Previsão sob o modelo normal
 
@@ -481,6 +430,343 @@ $$\beta_1$$
 5. estime os parâmetros;
 6. inspecione resíduos e influência;
 7. revise média, variância ou distribuição quando necessário.
+
+## Exemplo completo: idade e despesas
+
+**Pergunta:** qual é a associação média entre idade e despesas médicas nesta amostra?
+
+$$
+Y_i=\beta_0+\beta_1\,age_i+\varepsilon_i,
+\qquad
+\varepsilon_i\overset{iid}{\sim}N(0,\sigma^2).
+$$
+
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Resposta
+
+$Y_i$: despesas médicas anuais, em US$.
+:::
+
+::: {.column width="33%"}
+### Parâmetro
+
+$\beta_1$: variação da despesa média associada a um ano de idade.
+:::
+
+::: {.column width="33%"}
+### Amostra
+
+$n=1.338$ pessoas da base de seguros.
+:::
+:::
+
+## Etapa 1: estime a reta
+
+![](assets/aula19-verossimilhanca-regressao/exemplo-completo-ajuste.png){.wide-chart fig-alt="Despesas médicas por idade, reta estimada e intervalo de confiança de 95% para a resposta média."}
+
+$$
+\widehat{charges}=3165{,}89+257{,}72\,age,
+\qquad R^2=0{,}089.
+$$
+
+Cada ano de idade está associado a US$ 257,72 adicionais na **média prevista**; idade sozinha explica apenas 8,9% da variabilidade observada.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+X = sm.add_constant(df["age"])
+ajuste = sm.OLS(df["charges"], X).fit()
+pred = ajuste.get_prediction(X_grid).summary_frame(alpha=.05)
+```
+</details>
+
+## Etapa 2: intervalo de confiança para $\beta_1$ {.smaller}
+
+O erro-padrão clássico da inclinação é
+
+$$
+\operatorname{SE}(\widehat\beta_1)
+=\sqrt{\frac{s^2}{\sum_i(x_i-\bar x)^2}}
+=22{,}50,
+\qquad
+s^2=\frac{\operatorname{SSE}}{n-2}.
+$$
+
+Com $n-2=1.336$ graus de liberdade, $t^*_{0{,}975}=1{,}962$:
+
+$$
+\widehat\beta_1\pm t^*\operatorname{SE}(\widehat\beta_1)
+=257{,}72\pm1{,}962(22{,}50)
+=[213{,}58;\ 301{,}87].
+$$
+
+Sob as hipóteses do modelo, o intervalo de 95% para a variação média associada a um ano de idade vai de **US$ 213,58 a US$ 301,87**.
+
+## Etapa 3: duas referências para testar $\beta_1$ {.smaller}
+
+Queremos avaliar se a inclinação populacional é diferente de zero:
+
+$$H_0:\beta_1=0
+\qquad\text{contra}\qquad
+H_A:\beta_1\ne0.
+$$
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Distribuição teórica
+
+Se $\sigma$ fosse conhecida, a estatística padronizada teria distribuição Normal.
+
+Como substituímos $\sigma$ por $s$,
+
+$$T\sim t_{n-2}.$$
+
+Com muitos graus de liberdade, a distribuição $t$ fica praticamente Normal.
+:::
+
+::: {.column width="50%"}
+### Bootstrap
+
+Reamostramos as linhas $(x_i,y_i)$ e recalculamos $\widehat\beta_1^*$.
+
+Como as réplicas ficam centradas em $\widehat\beta_1$, impomos $H_0$ recentralizando:
+
+$$D^*=\widehat\beta_1^*-\widehat\beta_1.$$
+:::
+:::
+
+A rota teórica usa uma distribuição deduzida do modelo; o bootstrap estima a distribuição amostral a partir dos dados, mas ainda exige observações independentes e representativas.
+
+## Quando usar cada rota? {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Teste $t$
+
+**Use quando** o modelo linear for plausível, as observações forem independentes e a variância for aproximadamente constante. Em amostras pequenas, a normalidade condicional é importante para a referência exata.
+
+**Vantagens**
+
+- cálculo rápido e fórmula transparente;
+- valor-$p$ e IC com alta resolução;
+- eficiente quando o modelo gaussiano é adequado.
+
+**Limitações**
+
+- o erro-padrão clássico é sensível à heteroscedasticidade e dependência;
+- outliers e especificação incorreta podem invalidar a interpretação.
+:::
+
+::: {.column width="50%"}
+### Bootstrap por pares
+
+**Use quando** a forma da distribuição amostral for incerta, a normalidade for questionável ou o estimador tiver fórmula de incerteza difícil, desde que as linhas sejam independentes e representativas.
+
+**Vantagens**
+
+- menos dependente de uma forma distributiva específica;
+- reproduz empiricamente assimetria e heteroscedasticidade presentes nos pares;
+- aplica-se a estimadores complexos.
+
+**Limitações**
+
+- exige mais computação e uma amostra informativa;
+- valores-$p$ extremos exigem muitas réplicas;
+- dados temporais, pareados ou agrupados exigem reamostragem própria.
+:::
+:::
+
+Bootstrap não é um conserto para confundimento, seleção ruim ou função média mal especificada. Se as duas rotas discordarem muito, investigue as hipóteses antes de escolher o resultado mais conveniente.
+
+## Etapa 3: os dois testes levam à mesma decisão {.smaller}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Teste teórico
+
+$$
+t=\frac{\widehat\beta_1-0}
+{\operatorname{SE}(\widehat\beta_1)}
+=\frac{257{,}72}{22{,}50}
+=11{,}45,
+\qquad gl=1.336,
+$$
+
+$$p=4{,}89\times10^{-29}.$$
+
+O resultado exato usa $t_{1.336}$; a aproximação Normal é praticamente idêntica nesta amostra grande.
+:::
+
+::: {.column width="50%"}
+### Teste bootstrap
+
+Com $B=20.000$ reamostragens por pares:
+
+$$\operatorname{SE}_{boot}=22{,}46,$$
+
+$$IC_{95\%,perc}=[213{,}14;300{,}76].$$
+
+Nenhum $|D^*|$ alcançou $257{,}72$. Com a correção $+1$,
+
+$$p_{boot}=\frac{0+1}{20.000+1}\approx5{,}0\times10^{-5}.$$
+:::
+:::
+
+O bootstrap confirma a decisão, mas não consegue representar numericamente um valor-$p$ da ordem de $10^{-29}$ com apenas 20.000 réplicas: sua resolução mínima é aproximadamente $1/B$.
+
+<details class="code-fold"><summary>Código do teste bootstrap</summary>
+
+```python
+boot_beta1 = []
+for _ in range(20_000):
+    amostra = df.sample(n=len(df), replace=True)
+    Xb = sm.add_constant(amostra["age"])
+    boot_beta1.append(sm.OLS(amostra["charges"], Xb).fit().params["age"])
+
+desvios_nulos = np.asarray(boot_beta1) - ajuste.params["age"]
+p_boot = (1 + np.sum(np.abs(desvios_nulos) >= abs(ajuste.params["age"]))) / 20_001
+```
+</details>
+
+Rejeitamos $H_0$: os dados fornecem evidência de associação linear entre idade e despesa média. Isso **não** demonstra causalidade nem garante que o modelo esteja bem especificado.
+
+## Etapa 4: três perguntas aos resíduos
+
+O resíduo
+
+$$e_i=y_i-\widehat y_i$$
+
+é a diferença, em dólares, entre a despesa observada e a prevista pelo modelo.
+
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### A média está correta?
+
+O gráfico de resíduos contra ajustados procura curvas, grupos ou outras estruturas ao redor de zero.
+:::
+
+::: {.column width="33%"}
+### A forma é Normal?
+
+O gráfico Q–Q compara os quantis dos resíduos com os quantis esperados de uma Normal.
+:::
+
+::: {.column width="33%"}
+### A variância é constante?
+
+O gráfico escala–localização procura mudanças sistemáticas na magnitude dos resíduos.
+:::
+:::
+
+Cada gráfico responde a uma pergunta diferente. Nenhum deles, isoladamente, “aprova” ou “reprova” toda a regressão.
+
+## Diagnóstico 1: resíduos contra valores ajustados {.smaller}
+
+![](assets/aula19-verossimilhanca-regressao/diagnostico-residuos-ajustados.png){.wide-chart fig-alt="Comparação entre uma nuvem ideal de resíduos e os resíduos observados, separados por tabagismo."}
+
+- **Ideal:** pontos sem forma reconhecível, equilibrados ao redor de zero e com dispersão semelhante ao longo do eixo horizontal.
+- **Observado:** não fumantes concentram resíduos negativos; fumantes aparecem majoritariamente acima de zero.
+- **Conclusão:** a reta baseada apenas em idade subestima sistematicamente um grupo e superestima outro. `smoker` está ausente da função média.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+sns.scatterplot(
+    x=ajuste.fittedvalues,
+    y=ajuste.resid,
+    hue=df["smoker"],
+)
+plt.axhline(0, linestyle="--")
+```
+</details>
+
+## Diagnóstico 2: gráfico Q–Q {.smaller}
+
+![](assets/aula19-verossimilhanca-regressao/diagnostico-qq.png){.wide-chart fig-alt="Comparação entre um gráfico Q-Q ideal e o gráfico Q-Q dos resíduos observados."}
+
+Ordenamos os resíduos $e_{(i)}$ e comparamos sua posição com o quantil Normal esperado
+
+$$q_i=\Phi^{-1}\!\left(\frac{i-0{,}5}{n}\right).$$
+
+- pontos próximos da diagonal indicam compatibilidade aproximada com a Normal;
+- a forte curvatura observada revela assimetria, mistura de grupos e uma cauda superior longa;
+- o Q–Q avalia **forma distributiva**; não diagnostica sozinho linearidade ou independência.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+sm.qqplot(ajuste.resid, line="s")
+```
+</details>
+
+## Diagnóstico 3: o tamanho dos erros muda? {.smaller}
+
+![](assets/aula19-verossimilhanca-regressao/diagnostico-magnitude-erros.png){.wide-chart fig-alt="Comparação entre a magnitude ideal dos erros e a observada, com tendências separadas por tabagismo."}
+
+No eixo vertical usamos o erro absoluto
+
+$$|e_i|=|y_i-\widehat y_i|,$$
+
+que mede, em dólares, o tamanho do erro sem considerar seu sinal. Se a variabilidade for semelhante para todos, a tendência deve permanecer aproximadamente horizontal e na mesma altura.
+
+Nos dados, fumantes apresentam erros sistematicamente maiores. Há **grupos com médias e variabilidades diferentes**, reforçando que o modelo de idade isolada é insuficiente.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+magnitude = np.abs(ajuste.resid)
+sns.scatterplot(x=ajuste.fittedvalues, y=magnitude, hue=df["smoker"])
+```
+</details>
+
+## Etapa 5: o diagnóstico orienta a revisão
+
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Primeiro: média
+
+Inclua tabagismo e avalie se sua associação com despesas também muda com idade ou IMC.
+:::
+
+::: {.column width="33%"}
+### Depois: distribuição
+
+Refaça os diagnósticos. Parte da não normalidade pode desaparecer quando grupos distintos deixam de ser misturados.
+:::
+
+::: {.column width="33%"}
+### Por fim: inferência
+
+Compare erro-padrão clássico, robusto e bootstrap apenas depois de formular uma média condicional defensável.
+:::
+:::
+
+O valor-$p$ responde à pergunta sobre $\beta_1$ **dentro do modelo**. Os resíduos perguntam se esse modelo representa adequadamente os dados.
+
+## Conclusão do exemplo completo
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### O que aprendemos
+
+- $\widehat\beta_1=257{,}72$ US$/ano;
+- IC 95%: $[213{,}58;301{,}87]$;
+- testes teórico e bootstrap: $p<0{,}001$;
+- há associação média positiva na amostra.
+:::
+
+::: {.column width="50%"}
+### O que precisa ser revisto
+
+- $R^2$ é apenas 8,9%;
+- tabagismo está omitido da média;
+- os resíduos contradizem a Normal simples;
+- associação não é efeito causal.
+:::
+:::
+
+O próximo ajuste deveria incluir tabagismo e outros preditores substantivos antes de usar o modelo para explicação ou previsão individual.
 
 ## Bibliografia da aula
 

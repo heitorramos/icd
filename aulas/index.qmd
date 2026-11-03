@@ -213,7 +213,7 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aulas 16–18 disponíveis. Aulas 19–26 em revisão.
+Aulas 16–19 disponíveis. Aulas 20–26 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
@@ -258,7 +258,7 @@ Modelos probabilísticos, Bernoulli, log-verossimilhança, escore e estimação.
 
 Erros normais, equivalência com mínimos quadrados, variância e diagnóstico.
 
-**Material em revisão**
+[Abrir a aula](19-verossimilhanca-regressao.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}
