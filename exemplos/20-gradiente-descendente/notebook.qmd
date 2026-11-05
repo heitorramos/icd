@@ -7,7 +7,9 @@ execute: {echo: true, warning: false, message: false}
 
 ## Objetivos
 
-Este guia mostra como minimizar numericamente a perda quadrática, primeiro com um parâmetro e depois com intercepto e inclinação. Também compara batch, SGD e mini-batch e conecta o algoritmo ao treinamento de redes neurais.
+Este guia mostra como minimizar numericamente a perda quadrática, primeiro com
+um parâmetro e depois com intercepto e inclinação. Também compara batch, SGD e
+mini-batch e verifica o resultado contra a solução OLS.
 
 ## Como estudar este capítulo
 
@@ -51,11 +53,104 @@ pd.DataFrame({"original_x": x, "padronizado_x": xz,
 
 Padronizar coloca as variáveis em escalas comparáveis. Isso não é necessário para a fórmula fechada de OLS, mas melhora a geometria da otimização iterativa.
 
+Para isolar esse efeito, mantemos a resposta padronizada nos dois casos e mudamos apenas a escala da idade. As curvas de nível representam valores iguais de $J(\beta_0,\beta_1)$; a linha laranja registra as atualizações do gradiente.
+
+```{python}
+def contour_surface(xx, intercepts, slopes):
+    beta0, beta1 = np.meshgrid(intercepts, slopes)
+    objective = (
+        np.mean(yz**2)
+        - 2*beta0*np.mean(yz)
+        - 2*beta1*np.mean(xx*yz)
+        + beta0**2
+        + 2*beta0*beta1*np.mean(xx)
+        + beta1**2*np.mean(xx**2)
+    )
+    return beta0, beta1, objective
+
+def gradient_path(xx, start, eta, steps):
+    theta = np.array(start, dtype=float)
+    history = []
+    for iteration in range(steps):
+        error = yz-(theta[0]+theta[1]*xx)
+        history.append((iteration, *theta, np.mean(error**2)))
+        gradient = np.array([-2*np.mean(error), -2*np.mean(xx*error)])
+        theta -= eta*gradient
+    return np.asarray(history)
+
+def ols_coefficients(xx):
+    design = np.column_stack([np.ones(len(xx)), xx])
+    return np.linalg.solve(design.T@design, design.T@yz)
+
+raw_intercepts = np.linspace(-1.15, 1.15, 180)
+raw_slopes = np.linspace(-.04, .055, 180)
+std_intercepts = np.linspace(-1.15, 1.15, 180)
+std_slopes = np.linspace(-.65, 1.15, 180)
+Ar, Br, Zr = contour_surface(x, raw_intercepts, raw_slopes)
+As, Bs, Zs = contour_surface(xz, std_intercepts, std_slopes)
+
+path_raw = gradient_path(x, [1, -.03], eta=.0005, steps=50000)
+path_std = gradient_path(xz, [1, -.5], eta=.2, steps=20)
+theta_raw = ols_coefficients(x)
+theta_std = ols_coefficients(xz)
+raw_marks = np.unique(np.r_[np.arange(10),
+                            [20, 50, 100, 300, 1000, 3000, 10000, 30000, 49999]])
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8))
+axes[0].contour(Ar, Br, Zr, levels=Zr.min()+np.geomspace(.002, 8, 16), cmap="Blues")
+axes[0].plot(path_raw[:, 1], path_raw[:, 2], color="#d95f02")
+axes[0].plot(path_raw[raw_marks, 1], path_raw[raw_marks, 2], "o", color="#d95f02", ms=3)
+axes[0].scatter(*theta_raw, color="#2a9d8f", s=70, label="mínimo OLS", zorder=4)
+axes[0].scatter(path_raw[0, 1], path_raw[0, 2], color="#263238", s=45, label="início", zorder=4)
+axes[0].set(xlabel=r"intercepto $\beta_0$", ylabel=r"inclinação $\beta_1$",
+            title="Sem padronização: vale estreito")
+axes[0].legend(fontsize=8)
+
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
+zoom = inset_axes(axes[0], width="40%", height="40%", loc="upper right", borderpad=.8)
+zoom.contour(Ar, Br, Zr, levels=Zr.min()+np.geomspace(.002, 8, 16), cmap="Blues")
+zoom.plot(path_raw[:12, 1], path_raw[:12, 2], "o-", color="#d95f02", ms=3)
+zoom.scatter(path_raw[0, 1], path_raw[0, 2], color="#263238", s=35, zorder=4)
+zoom.set(xlim=(.992, 1.002), ylim=(-.032, -.011), title="Primeiras 12 iterações")
+zoom.tick_params(labelsize=7)
+mark_inset(axes[0], zoom, loc1=1, loc2=4, fc="none", ec="#546e7a", lw=1)
+
+axes[1].contour(As, Bs, Zs, levels=Zs.min()+np.geomspace(.002, 4, 16), cmap="Blues")
+axes[1].plot(path_std[:, 1], path_std[:, 2], "o-", color="#d95f02", ms=3)
+axes[1].scatter(*theta_std, color="#2a9d8f", s=70, label="mínimo OLS", zorder=4)
+axes[1].scatter(path_std[0, 1], path_std[0, 2], color="#263238", s=45, label="início", zorder=4)
+axes[1].set(xlabel=r"intercepto $\beta_0$", ylabel=r"inclinação $\beta_1$",
+            title="Com padronização: caminho direto")
+axes[1].legend(fontsize=8)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+def hessian_condition_number(xx):
+    design = np.column_stack([np.ones(len(xx)), xx])
+    hessian = 2*design.T@design/len(xx)
+    return np.linalg.cond(hessian)
+
+pd.Series({
+    "idade original": hessian_condition_number(x),
+    "idade padronizada": hessian_condition_number(xz),
+}, name="número de condição da Hessiana").round(1)
+```
+
+::: {.callout-note title="Interpretação"}
+Sem padronização, uma direção da superfície é mais de 15 mil vezes mais curva que a outra. Uma taxa segura precisa ser muito pequena, e o algoritmo alterna correções na inclinação enquanto avança lentamente pelo vale. Depois da padronização, as duas direções têm curvaturas semelhantes e o caminho até o mínimo fica quase direto. As taxas dos painéis são diferentes porque usar $\eta=0{,}2$ na escala original faria o algoritmo divergir.
+:::
+
 ## Um parâmetro: regressão pela origem
 
-Considere $\widehat y_i=\beta x_i$ e
+Considere $\widehat y_i=\beta x_i$. A perda individual e o objetivo empírico são
 
-$$J(\beta)=\frac1n\sum_i(y_i-\beta x_i)^2.$$
+$$
+\rho_i(\beta)=(y_i-\beta x_i)^2,
+\qquad
+J(\beta)=\frac1n\sum_i\rho_i(\beta).
+$$
 
 A derivada é
 
@@ -109,8 +204,10 @@ fig, axes = plt.subplots(1, 2, figsize=(11, 4))
 axes[0].plot(history["iteração"], history["beta"])
 axes[0].axhline(beta_ols, color="darkorange", linestyle="--")
 axes[0].set(xlabel="iteração", ylabel="beta", title="Parâmetro")
-axes[1].semilogy(history["iteração"], history["perda"]-loss_one(beta_ols)+1e-14)
-axes[1].set(xlabel="iteração", ylabel="excesso de perda", title="Convergência")
+axes[1].plot(history["iteração"], history["perda"])
+axes[1].axhline(loss_one(beta_ols), color="darkorange", linestyle="--", label="mínimo OLS")
+axes[1].set(xlabel="iteração", ylabel=r"$J(\beta_t)$", title="A perda se estabiliza")
+axes[1].legend()
 plt.tight_layout(); plt.show()
 ```
 
@@ -164,6 +261,13 @@ def fit_batch(eta=.2, max_iter=200):
 theta_gd, hist2 = fit_batch()
 theta_gd
 ```
+
+::: {.callout-note title="Atualização simultânea"}
+A função calcula o vetor `gradient` inteiro usando o mesmo valor de `theta`.
+Somente depois executa `theta = theta - eta * gradient`, atualizando intercepto
+e inclinação juntos. Alterar um coeficiente antes de calcular o gradiente do
+outro misturaria parâmetros de duas iterações diferentes.
+:::
 
 Na escala padronizada, o intercepto é aproximadamente zero e a inclinação é aproximadamente 0,299.
 
@@ -225,28 +329,264 @@ pd.DataFrame(results)
 ```
 
 ::: {.callout-note title="Interpretação"}
-SGD atualiza com baixo custo, mas mantém ruído. Batch completo é suave, porém caro. Mini-batch é o compromisso dominante em aprendizado profundo porque combina paralelismo e atualizações frequentes.
+SGD atualiza com baixo custo, mas mantém mais ruído. Batch completo segue um
+caminho suave, porém cada atualização percorre toda a amostra. Mini-batch ocupa
+uma posição intermediária entre custo e estabilidade.
 :::
 
-## Conexão com redes neurais
+![](../../slides/assets/aula20-gradiente-descendente/caminhos-batch-sgd.png){fig-alt="A mesma superfície quadrática de perda com os caminhos do gradiente batch, mini-batch e SGD."}
 
-Um neurônio calcula $z=w^Tx+b$ e $a=\phi(z)$. Em uma rede, a propagação para frente produz previsões, a perda compara previsão e resposta, e backpropagation usa a regra da cadeia para calcular $\nabla_WJ$ e $\nabla_bJ$.
+Os três caminhos partem do mesmo ponto, usam a mesma taxa de aprendizado e
+mostram 70 atualizações. O batch completo usa a direção exata calculada na
+amostra inteira. O mini-batch estima essa direção com 64 observações. O SGD usa
+apenas uma observação e, por isso, apresenta oscilações maiores. Em uma
+execução específica, ele pode terminar longe do mínimo mesmo que suas direções
+sejam corretas em média.
 
-O otimizador então aplica uma atualização como
+## A ordem das amostras em uma época
 
-$$W_{t+1}=W_t-\eta\nabla_WJ.$$
+Considere uma permutação $\pi^{(e)}=(\pi^{(e)}_1,\ldots,\pi^{(e)}_n)$ dos índices da amostra na época $e$. Mini-batch e SGD sorteiam uma nova permutação no início de cada época. O batch completo pode ler os dados nessa ordem, mas o resultado de sua média não depende dela.
 
-Backpropagation calcula gradientes; SGD ou Adam decide como usá-los.
+```{python}
+sample_order = np.array([4, 1, 9, 2, 11, 6, 3, 12, 7, 5, 10, 8])
+positions = np.arange(len(sample_order))*1.2
+blue, green, orange = "#1f6f8b", "#2a9d8f", "#d95f02"
 
-## Limitações práticas
+fig, ax = plt.subplots(figsize=(13, 4.5))
+row_specs = [
+    ("Batch completo", 2, [blue]*12, [11], "1 atualização"),
+    ("Mini-batch ($m=4$)", 1, [blue]*4+[green]*4+[orange]*4,
+     [3, 7, 11], "3 atualizações"),
+    ("SGD ($m=1$)", 0, [orange]*12, list(range(12)), "12 atualizações"),
+]
 
-- superfícies de redes neurais não são convexas;
-- inicialização influencia o caminho;
-- gradientes podem desaparecer ou explodir;
-- perda de treino baixa não garante generalização;
-- taxa, batch, regularização e validação interagem.
+for label, y_row, colors, update_after, count_label in row_specs:
+    ax.scatter(positions, np.full(12, y_row), marker="s", s=420,
+               color=colors, edgecolor="white")
+    for x_pos, sample_id in zip(positions, sample_order):
+        ax.text(x_pos, y_row, str(sample_id), ha="center", va="center",
+                color="white", fontsize=9, fontweight="bold")
+    update_x = positions[np.asarray(update_after)]+.52
+    ax.scatter(update_x, np.full(len(update_x), y_row), marker="|",
+               s=400, color="#263238", linewidth=2)
+    ax.text(-1.05, y_row, label, ha="right", va="center",
+            fontsize=12, fontweight="bold")
+    ax.text(positions[-1]+1.1, y_row, count_label, va="center", fontsize=10)
 
-O algoritmo é simples; o comportamento do sistema completo não é.
+ax.text(positions.mean(), 2.6, "Mesma ordem embaralhada em uma época",
+        ha="center", fontsize=15)
+ax.text(positions.mean(), -.62, "A barra preta marca uma atualização dos parâmetros",
+        ha="center", fontsize=10)
+ax.set(xlim=(-2.2, positions[-1]+3), ylim=(-.8, 2.8))
+ax.axis("off")
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+No batch completo, o algoritmo lê a época inteira antes de atualizar. Com mini-batches de quatro observações, a mesma época produz três atualizações. No SGD, cada observação produz uma atualização, por isso a sequência influencia mais fortemente o caminho.
+:::
+
+O procedimento operacional fica assim:
+
+1. **Batch completo:** mantenha $\theta$ fixo enquanto calcula os gradientes das $n$ observações. Tire a média desses $n$ vetores e faça uma única atualização. Essa atualização encerra a época.
+2. **Mini-batch:** embaralhe os índices, divida-os em grupos de tamanho $m$ e mantenha $\theta$ fixo apenas dentro de cada grupo. Tire a média dos $m$ gradientes, atualize os parâmetros e passe ao grupo seguinte. Uma época termina quando todos os grupos foram processados.
+3. **SGD:** embaralhe os índices e apresente uma observação de cada vez. Calcule seu gradiente e atualize imediatamente. Depois de $n$ atualizações, todas as observações foram visitadas e a época termina. A época seguinte começa com uma nova permutação.
+
+Os métodos repetem várias épocas até atingir um critério de parada. O mini-batch ocupa a posição intermediária: usa mais observações que o SGD em cada atualização, mas atualiza com mais frequência que o batch completo.
+
+::: {.callout-note title="Convenção usada nesta aula"}
+Estamos usando épocas formadas por uma permutação sem reposição da amostra. Algumas formulações teóricas do SGD sorteiam observações com reposição; nesse caso, “época” é apenas uma convenção para contar aproximadamente $n$ sorteios.
+:::
+
+## Por que a ordem importa?
+
+No batch completo, todas as derivadas são calculadas no mesmo ponto $\theta$:
+
+$$
+g(\theta;\pi)
+=\frac1n\sum_{j=1}^n\nabla\rho_{\pi_j}(\theta)
+=\frac1n\sum_{i=1}^n\nabla\rho_i(\theta).
+$$
+
+Como a soma não depende da permutação $\pi$, a ordem de leitura não altera o gradiente completo. A atualização ocorre somente depois de calcular e tirar a média dos gradientes de todas as observações.
+
+No mini-batch, a permutação define os grupos
+
+$$
+B_{t,k}=\{\pi_{(k-1)m+1},\ldots,\pi_{km}\},
+$$
+
+e cada grupo atualiza os parâmetros antes do cálculo seguinte:
+
+$$
+\theta_{t,k+1}=\theta_{t,k}
+-\eta\frac1m\sum_{i\in B_{t,k}}\nabla\rho_i(\theta_{t,k}).
+$$
+
+Portanto, outra ordem forma outros grupos e avalia os gradientes em uma sequência diferente de valores de $\theta$. No SGD, $m=1$, então cada observação altera o ponto no qual o gradiente da próxima observação será calculado.
+
+::: {.callout-note title="Prática recomendada"}
+Em dados independentes, embaralhe novamente os índices no início de cada época do mini-batch ou do SGD. Isso evita que uma ordenação por grupo, resposta ou coleta produza sequências sistemáticas de gradientes. O batch completo não precisa ser embaralhado para produzir o mesmo gradiente. Em séries temporais, dados espaciais ou observações agrupadas, não embaralhe automaticamente: preserve a dependência relevante ou use batches compatíveis com a estrutura da coleta.
+:::
+
+## Adam: passos adaptativos por parâmetro
+
+O gradiente descendente básico aplica a mesma taxa global a todas as
+coordenadas de $\theta$. Adam, abreviação de *Adaptive Moment Estimation*,
+combina duas médias móveis para adaptar essa atualização.
+
+Para evitar colisões com $m$, já usado para o tamanho do mini-batch, e com os
+coeficientes $\beta$ da regressão, usaremos $u_t$, $s_t$, $\gamma_1$ e
+$\gamma_2$. A literatura costuma representar as mesmas quantidades por
+$m_t$, $v_t$, $\beta_1$ e $\beta_2$.
+
+Se $g_t=\nabla J(\theta_t)$, o primeiro resumo acompanha a direção média dos
+gradientes:
+
+$$
+u_t=\gamma_1u_{t-1}+(1-\gamma_1)g_t.
+$$
+
+Imagine uma bola descendo um vale. Se a inclinação aponta repetidamente para a
+mesma direção, a bola acumula velocidade. De modo semelhante, $u_t$ preserva
+parte dos gradientes anteriores e produz uma espécie de inércia.
+
+O segundo acompanha a escala recente de cada componente:
+
+$$
+s_{t,j}=\gamma_2s_{t-1,j}+(1-\gamma_2)g_{t,j}^{,2},
+$$
+
+em que $j$ identifica uma coordenada do vetor de parâmetros. Esse segundo
+resumo funciona como um freio adaptativo: direções com gradientes recentes
+maiores recebem passos relativamente menores. Assim, a bola mantém movimento
+ao longo do vale sem atravessar repetidamente suas paredes mais íngremes.
+
+Adam corrige o efeito da inicialização $u_0=s_0=0$:
+
+$$
+\widehat u_t=\frac{u_t}{1-\gamma_1^t},
+\qquad
+\widehat s_t=\frac{s_t}{1-\gamma_2^t}.
+$$
+
+Finalmente, atualiza cada parâmetro por
+
+$$
+\theta_{t+1}=\theta_t-
+\eta\frac{\widehat u_t}{\sqrt{\widehat s_t}+\varepsilon}.
+$$
+
+Aqui, $\eta$ controla a escala global do passo, $\gamma_1$ e $\gamma_2$
+controlam quanto histórico as médias preservam, e $\varepsilon$ evita uma
+divisão por zero. Valores iniciais usuais são $\eta=0{,}001$,
+$\gamma_1=0{,}9$, $\gamma_2=0{,}999$ e $\varepsilon=10^{-8}$, mas eles ainda
+podem precisar de ajuste.
+
+### Por que corrigir o viés inicial?
+
+Na primeira iteração,
+
+$$
+u_1=(1-\gamma_1)g_1,
+\qquad
+s_{1,j}=(1-\gamma_2)g_{1,j}^{,2}.
+$$
+
+Esses valores ficam próximos de zero porque as médias começaram em zero. As
+correções devolvem a escala do primeiro gradiente:
+
+$$
+\widehat u_1=g_1,
+\qquad
+\widehat s_{1,j}=g_{1,j}^{,2}.
+$$
+
+Quando $t$ aumenta, $\gamma_1^t$ e $\gamma_2^t$ tendem a zero. Por isso, a
+correção afeta principalmente o início da otimização.
+
+### Adam aplicado à mesma regressão
+
+O código abaixo ajusta o modelo com a idade na escala original e repete o
+processo com a idade padronizada. Assim, podemos comparar a convergência de
+Adam no vale estreito dos dados brutos e na geometria mais circular produzida
+pela normalização.
+
+```{python}
+#| label: adam-regressao
+#| echo: true
+def fit_adam(xx=x, yy=yz, start=(1.0, -.03), eta=.02, steps=300,
+             gamma1=.9, gamma2=.999, epsilon=1e-8):
+    theta = np.array(start, dtype=float)
+    u = np.zeros_like(theta)
+    s = np.zeros_like(theta)
+    history = []
+
+    for t in range(1, steps+1):
+        prediction = theta[0]+theta[1]*xx
+        error = yy-prediction
+        gradient = np.array([
+            -2*np.mean(error),
+            -2*np.mean(xx*error),
+        ])
+        u = gamma1*u+(1-gamma1)*gradient
+        s = gamma2*s+(1-gamma2)*gradient**2
+        u_corrected = u/(1-gamma1**t)
+        s_corrected = s/(1-gamma2**t)
+        theta -= eta*u_corrected/(np.sqrt(s_corrected)+epsilon)
+        history.append((t, *theta, np.mean((yy-theta[0]-theta[1]*xx)**2)))
+
+    return theta, pd.DataFrame(
+        history, columns=["iteração", "beta0", "beta1", "perda"]
+    )
+
+theta_adam_raw, history_adam_raw = fit_adam()
+theta_adam_std, history_adam_std = fit_adam(
+    xx=xz, start=(1.0, -.5)
+)
+X_raw = np.column_stack([np.ones(len(x)), x])
+theta_ols_raw = np.linalg.solve(X_raw.T@X_raw, X_raw.T@yz)
+X_std = np.column_stack([np.ones(len(xz)), xz])
+theta_ols_std = np.linalg.solve(X_std.T@X_std, X_std.T@yz)
+
+display(pd.DataFrame(
+    {"Adam": theta_adam_raw, "OLS": theta_ols_raw,
+     "diferença": theta_adam_raw-theta_ols_raw},
+    index=["beta0", "beta1"],
+).round(5))
+
+prediction_adam_raw = X_raw@theta_adam_raw
+prediction_ols_raw = X_raw@theta_ols_raw
+prediction_adam_std = X_std@theta_adam_std
+prediction_ols_std = X_std@theta_ols_std
+
+pd.DataFrame({
+    "entrada": ["idade original", "idade padronizada"],
+    "atualizações": [len(history_adam_raw), len(history_adam_std)],
+    "perda final": [history_adam_raw.iloc[-1]["perda"],
+                    history_adam_std.iloc[-1]["perda"]],
+    "RMSE entre previsões Adam e OLS": [
+        np.sqrt(np.mean((prediction_adam_raw-prediction_ols_raw)**2)),
+        np.sqrt(np.mean((prediction_adam_std-prediction_ols_std)**2)),
+    ],
+}).round(6)
+```
+
+![](../../slides/assets/aula20-gradiente-descendente/gd-adam.png){fig-alt="Três painéis de curvas de nível comparando gradiente descendente com a idade original, Adam com a idade original e Adam com a idade padronizada."}
+
+::: {.callout-note title="Interpretação"}
+Adam aproxima a solução OLS com menos atualizações neste exemplo porque ajusta
+o passo de cada coeficiente à escala recente de seus gradientes. Portanto, ele
+tolera melhor a diferença de escala entre o intercepto e a idade e consegue
+convergir aqui sem normalizar $x$. Isso não transforma Adam em uma escolha
+automática nem prova que normalização seja sempre dispensável. Com a idade
+padronizada, as curvas de nível ficam mais circulares e o caminho se torna mais
+direto, mesmo mantendo a mesma taxa e o mesmo número de atualizações. Adam
+mantém dois vetores extras, ainda exige uma taxa global e não substitui o
+diagnóstico de convergência. Para esta regressão simples, OLS continua sendo a
+solução de referência.
+:::
+
 
 ## O algoritmo explicado passo a passo
 
@@ -278,17 +618,6 @@ o mínimo repetidamente ou divergir.
 - **Treino melhora e validação piora:** o problema é generalização, não
   convergência computacional.
 
-Batch usa toda a base em cada passo. SGD usa uma observação e produz trajetória
-ruidosa. Mini-batch usa pequenos grupos, aproveitando processamento vetorial sem
-perder totalmente a rapidez das atualizações frequentes.
-
-## A conexão com redes neurais
-
-Em uma rede, a perda depende de muitos parâmetros encadeados. *Backpropagation*
-aplica a regra da cadeia para calcular os gradientes; o otimizador usa esses
-gradientes para atualizar os pesos. A lógica é a mesma deste exemplo, embora a
-superfície deixe de ser uma quadrática simples.
-
 ::: {.callout-warning title="Convergência não é qualidade científica"}
 Chegar a uma perda pequena mostra que o algoritmo otimizou o objetivo. Não
 garante que o modelo generalize, que os dados representem a população ou que a
@@ -301,13 +630,14 @@ relação seja causal.
 2. Explique por que subtraímos, e não somamos, o gradiente.
 3. Diferencie iteração, batch e época.
 4. Por que padronização pode acelerar convergência?
-5. Qual é a diferença entre backpropagation e gradiente descendente?
-6. Como você testaria uma implementação de GD para regressão?
+5. Diferencie batch completo, mini-batch e SGD.
+6. Qual é a função de $u_t$ e $s_t$ no Adam?
+7. Por que Adam corrige as médias móveis nas primeiras iterações?
+8. Como você testaria uma implementação de GD para regressão?
 
 ## Bibliografia
 
 - Data 100, *Principles and Techniques of Data Science*, otimização.
 - James et al., *An Introduction to Statistical Learning*.
-- Goodfellow, Bengio e Courville, *Deep Learning*, capítulos 6 e 8.
-- Géron, *Hands-On Machine Learning*, treinamento e redes neurais.
+- Kingma e Ba, *Adam: A Method for Stochastic Optimization*.
 - Ruder, *An Overview of Gradient Descent Optimization Algorithms*.

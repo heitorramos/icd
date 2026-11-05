@@ -29,7 +29,8 @@ Em modelos grandes, a solução fechada pode ser cara ou inexistente.
 - compreender taxa de aprendizado e convergência;
 - comparar batch, mini-batch e SGD;
 - reconhecer a importância da padronização;
-- conectar a mesma ideia ao treinamento de redes neurais.
+- compreender Adam como uma extensão adaptativa;
+- verificar o resultado numérico contra a solução OLS.
 
 ## Base de dados de apoio
 
@@ -54,11 +55,11 @@ O alvo é o mesmo; muda o caminho computacional.
 
 ## Por que não usar sempre a fórmula fechada?
 
-- milhões ou bilhões de parâmetros;
-- perdas sem solução algébrica;
+- bases muito grandes tornam operações matriciais diretas mais caras;
+- algumas extensões do modelo não possuem solução algébrica simples;
 - dados que chegam em fluxo;
 - matrizes grandes demais para operações diretas;
-- modelos não lineares, como redes neurais.
+- mini-batches permitem atualizar o modelo sem percorrer toda a base de uma vez.
 
 Otimização iterativa troca uma solução imediata por uma sequência de aproximações.
 
@@ -68,9 +69,13 @@ Com dados padronizados, considere
 
 $$\widehat y_i=\beta x_i.$$
 
-A perda média é
+A perda individual e o objetivo empírico são
 
-$$J(\beta)=\frac1n\sum_{i=1}^n(y_i-\beta x_i)^2.$$
+$$
+\rho_i(\beta)=(y_i-\beta x_i)^2,
+\qquad
+J(\beta)=\frac1n\sum_{i=1}^n\rho_i(\beta).
+$$
 
 Há apenas um parâmetro para visualizar.
 
@@ -81,10 +86,11 @@ Há apenas um parâmetro para visualizar.
 | $\beta$ | inclinação candidata |
 | $\widehat y_i=\beta x_i$ | previsão da observação $i$ |
 | $y_i-\beta x_i$ | resíduo candidato |
-| $J(\beta)$ | erro quadrático médio |
+| $\rho_i(\beta)$ | perda quadrática da observação $i$ |
+| $J(\beta)$ | objetivo empírico: perda quadrática média |
 | $n$ | número de observações |
 
-## A perda é uma função do parâmetro
+## O objetivo é uma função do parâmetro
 
 Para cada valor candidato de $\beta$:
 
@@ -95,7 +101,7 @@ Para cada valor candidato de $\beta$:
 
 O resultado é um ponto na curva $J(\beta)$.
 
-## Perda e derivada contam a mesma história
+## Objetivo e derivada contam a mesma história
 
 ![](assets/aula20-gradiente-descendente/perda-derivada.png){.wide-chart fig-alt="Perda quadrática convexa e sua derivada em função da inclinação."}
 
@@ -109,7 +115,7 @@ gradient = -2*np.mean(x*(y-beta*x))
 ```
 </details>
 
-## Derive a perda
+## Derive o objetivo
 
 $$
 J(\beta)=\frac1n\sum_i(y_i-\beta x_i)^2.
@@ -271,7 +277,7 @@ $$
 \end{bmatrix}.
 $$
 
-Cada componente indica como a perda muda ao variar um parâmetro.
+Cada componente indica como o objetivo $J$ muda ao variar um parâmetro.
 
 ## Atualização vetorial
 
@@ -287,11 +293,21 @@ $$\beta_{1,t+1}=\beta_{1,t}+\frac{2\eta}{n}\sum_i x_ie_i.$$
 
 ## Atualize simultaneamente
 
-Primeiro calcule ambos os gradientes usando $(\beta_{0,t},\beta_{1,t})$.
+```python
+# 1. Calcule tudo com os parâmetros antigos
+erro = y - (beta0 + beta1 * x)
+grad0 = -2 * mean(erro)
+grad1 = -2 * mean(x * erro)
 
-Depois atualize os dois parâmetros.
+# 2. Calcule os dois novos valores
+novo_beta0 = beta0 - eta * grad0
+novo_beta1 = beta1 - eta * grad1
 
-Atualizar $\beta_0$ e imediatamente usá-lo no gradiente de $\beta_1$ muda o algoritmo e introduz dependência da ordem.
+# 3. Substitua o par simultaneamente
+beta0, beta1 = novo_beta0, novo_beta1
+```
+
+Se atualizarmos $\beta_0$ antes de calcular `grad1`, o segundo gradiente usará parâmetros de duas iterações diferentes e o algoritmo dependerá da ordem das atualizações.
 
 ## A superfície de perda tem um vale
 
@@ -309,15 +325,15 @@ path.append(theta.copy())
 
 ## Padronização melhora a geometria
 
-![](assets/aula20-gradiente-descendente/padronizacao.png){.wide-chart fig-alt="Idade e despesas nas escalas originais e padronizadas."}
+![](assets/aula20-gradiente-descendente/padronizacao.png){.wide-chart fig-alt="Curvas de nível da perda e caminhos do gradiente antes e depois de padronizar a idade."}
 
-Escalas muito diferentes produzem um vale alongado e exigem taxas menores. Padronizar torna os passos mais equilibrados.
+A linha laranja mostra as atualizações desde o ponto inicial preto até o mínimo OLS verde. Sem padronização, o vale estreito exige uma taxa muito menor e produz um caminho longo. Com a idade padronizada, as curvas ficam quase circulares e o gradiente segue um caminho direto.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-xz = (x-x.mean())/x.std()
-yz = (y-y.mean())/y.std()
+path_raw = gradient_path(x,  start=[1, -.03], eta=.0005, steps=50000)
+path_std = gradient_path(xz, start=[1,  -.5], eta=.2,    steps=20)
 ```
 </details>
 
@@ -349,7 +365,7 @@ Com bases enormes, uma atualização completa pode ser cara mesmo quando cada op
 
 No SGD, escolhemos $i_t$ e usamos
 
-$$g_t=\nabla_\theta\ell_{i_t}(\theta_t),$$
+$$g_t=\nabla_\theta\rho_{i_t}(\theta_t),$$
 
 $$\theta_{t+1}=\theta_t-\eta_tg_t.$$
 
@@ -360,7 +376,7 @@ $g_t$ é ruidoso, mas barato. Em média, pode apontar na direção do gradiente 
 Para um conjunto $B_t$ de tamanho $m$:
 
 $$
-g_t=\frac1m\sum_{i\in B_t}\nabla_\theta\ell_i(\theta_t).
+g_t=\frac1m\sum_{i\in B_t}\nabla_\theta\rho_i(\theta_t).
 $$
 
 - $m=n$: batch completo;
@@ -387,15 +403,82 @@ for batch in batches:
 - **batch:** observações usadas nessa atualização;
 - **época:** uma passagem aproximadamente completa pelos dados.
 
-Com mini-batch de tamanho $m$, uma época contém cerca de $n/m$ atualizações.
+Em uma época:
 
-### Embaralhar evita padrões de ordem
+- batch completo faz **uma** atualização;
+- mini-batch de tamanho $m$ faz $\lceil n/m\rceil$ atualizações;
+- SGD faz $n$ atualizações.
 
-Se os dados estiverem ordenados por grupo, tempo ou resposta, batches consecutivos podem produzir gradientes enviesados localmente.
+## A ordem das amostras define as atualizações
 
-Embaralhar a ordem a cada época ajuda cada mini-batch a representar melhor a amostra.
+![](assets/aula20-gradiente-descendente/ordem-batch-sgd.png){.wide-chart fig-alt="A mesma sequência embaralhada é processada em uma atualização no batch completo, três atualizações em mini-batches de quatro observações e doze atualizações no SGD."}
 
-Dados temporais ou dependentes exigem mais cuidado.
+No início da próxima época, mini-batch e SGD recebem uma nova ordem embaralhada. No batch completo, a ordem não altera a média final dos gradientes.
+
+## O que acontece em uma época? {.smaller}
+
+:::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Batch completo
+
+$$g(\theta)=\frac1n\sum_{i=1}^n\nabla\rho_i(\theta)$$
+
+Calcule os $n$ gradientes no mesmo $\theta$, obtenha a média e só então atualize. Há uma atualização por época.
+:::
+::: {.column width="33%"}
+### Mini-batch
+
+Embaralhe a amostra e divida-a em grupos de tamanho $m$.
+
+Calcule a média dos gradientes de cada grupo e atualize. Uma época termina após visitar todos os grupos.
+:::
+::: {.column width="33%"}
+### SGD
+
+Embaralhe a amostra e apresente uma observação de cada vez.
+
+Atualize após cada observação. Depois de $n$ atualizações, termina uma época e uma nova ordem é sorteada.
+:::
+::::
+
+Os três métodos repetem épocas até atingir o critério de parada.
+
+## Três caminhos sobre a mesma superfície
+
+![](assets/aula20-gradiente-descendente/caminhos-batch-sgd.png){.wide-chart fig-alt="A mesma superfície quadrática de perda com os caminhos do gradiente batch, mini-batch e SGD. O batch segue um caminho suave, o mini-batch apresenta pequenas oscilações e o SGD apresenta oscilações maiores."}
+
+Os três caminhos partem do mesmo ponto, usam a mesma taxa e mostram 70 atualizações. O batch completo calcula a direção exata da amostra; mini-batch e SGD introduzem ruído porque estimam essa direção com menos observações.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+for batch_size in [n, 64, 1]:
+    path = stochastic_path(batch_size, updates=70, learning_rate=.04)
+    ax.plot(path[:, 0], path[:, 1])
+```
+</details>
+
+## Por que embaralhar mini-batches e SGD? {.smaller}
+
+:::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Ordem fixa
+
+Se os dados estiverem ordenados por grupo, resposta ou coleta, atualizações consecutivas podem apontar sistematicamente para direções parecidas.
+
+O algoritmo pode oscilar ou percorrer um caminho condicionado pela organização do arquivo.
+:::
+::: {.column width="50%"}
+### Nova permutação
+
+Uma nova permutação $\pi^{(e)}$ no início de cada época altera a composição e a sequência dos mini-batches.
+
+Isso reduz padrões de ordem, embora não elimine o ruído dos gradientes.
+:::
+::::
+
+No batch completo, permutar a soma não muda a atualização. Dados temporais ou dependentes exigem uma estratégia que preserve sua estrutura.
+
 
 ## Taxa variável ao longo do treinamento
 
@@ -407,6 +490,89 @@ Passos maiores exploram no início; passos menores estabilizam perto do mínimo.
 
 Otimizadores modernos adaptam taxas por parâmetro.
 
+## Adam adapta direção e escala {.smaller}
+
+**Adam** significa *Adaptive Moment Estimation*. Para o gradiente $g_t=\nabla J(\theta_t)$, ele mantém dois resumos:
+
+:::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Direção persistente
+
+$$u_t=\gamma_1u_{t-1}+(1-\gamma_1)g_t$$
+
+$u_t$ é uma média móvel dos gradientes. Ele funciona como a velocidade acumulada da bola: direções persistentes mantêm o movimento.
+:::
+::: {.column width="50%"}
+### Escala recente
+
+$$s_{t,j}=\gamma_2s_{t-1,j}+(1-\gamma_2)g_{t,j}^{,2}$$
+
+$s_t$ acompanha os gradientes ao quadrado em cada coordenada $j$. Ele atua como um freio adaptativo nas direções mais íngremes.
+:::
+::::
+
+**Intuição da bola rolando:** $u_t$ preserva a inércia ao longo do vale; $s_t$ impede que a bola dê passos excessivos nas direções com maior inclinação.
+
+Usamos $u_t$ e $s_t$ para evitar colisões com o tamanho do mini-batch $m$ e com os coeficientes $\beta$ da regressão.
+
+## O algoritmo de Adam {.smaller}
+
+Partindo de $u_0=s_0=0$, em cada iteração:
+
+$$
+\begin{aligned}
+g_t &= \nabla J(\theta_t),\\
+u_{t,j} &= \gamma_1u_{t-1,j}+(1-\gamma_1)g_{t,j},\\
+s_{t,j} &= \gamma_2s_{t-1,j}+(1-\gamma_2)g_{t,j}^{\,2},\\
+\widehat u_{t,j} &= \frac{u_{t,j}}{1-\gamma_1^t},
+\qquad
+\widehat s_{t,j} = \frac{s_{t,j}}{1-\gamma_2^t},\\
+\theta_{t+1,j} &= \theta_{t,j}-\eta
+\frac{\widehat u_{t,j}}{\sqrt{\widehat s_{t,j}}+\varepsilon}.
+\end{aligned}
+$$
+
+$j$ identifica um parâmetro. $\eta$ controla a escala global; $\gamma_1$ e $\gamma_2$ controlam a memória; $\varepsilon$ evita divisão por zero. Valores usuais são $0{,}001$, $0{,}9$, $0{,}999$ e $10^{-8}$, respectivamente.
+
+Na literatura, $u_t,s_t,\gamma_1,\gamma_2$ costumam aparecer como $m_t,v_t,\beta_1,\beta_2$.
+
+## A correção de viés no início
+
+Como $u_0=s_0=0$, as primeiras médias móveis ficam artificialmente próximas de zero. Na primeira iteração:
+
+$$
+u_{1,j}=(1-\gamma_1)g_{1,j},
+\qquad
+s_{1,j}=(1-\gamma_2)g_{1,j}^{\,2}.
+$$
+
+As correções recuperam a escala do primeiro gradiente:
+
+$$
+\widehat u_{1,j}=\frac{u_{1,j}}{1-\gamma_1}=g_{1,j},
+\qquad
+\widehat s_{1,j}=\frac{s_{1,j}}{1-\gamma_2}=g_{1,j}^{\,2}.
+$$
+
+O mesmo princípio corrige as iterações iniciais seguintes. Conforme $t$ cresce, $\gamma_1^t$ e $\gamma_2^t$ se aproximam de zero e a correção perde importância.
+
+## Adam tolera a entrada não normalizada
+
+![](assets/aula20-gradiente-descendente/gd-adam.png){.wide-chart fig-alt="Três painéis de curvas de nível. Os dois primeiros comparam gradiente descendente e Adam usando a idade original. O terceiro mostra Adam com a idade padronizada e uma geometria mais circular."}
+
+Os dois primeiros painéis usam a **idade na escala original**. Adam adapta separadamente os passos de $\beta_0$ e $\beta_1$ e consegue ajustar esta regressão sem normalizar a entrada. O terceiro usa a mesma taxa e 300 atualizações, mas com $x$ padronizado: o vale fica mais circular e o caminho mais direto.
+
+Isso não garante que normalização seja dispensável em qualquer problema. Ela ainda pode melhorar estabilidade e facilitar a escolha de hiperparâmetros. Para a regressão linear simples, a solução fechada continua sendo a referência.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+u = gamma1*u+(1-gamma1)*gradient
+s = gamma2*s+(1-gamma2)*gradient**2
+theta -= eta*(u/(1-gamma1**t))/(sqrt(s/(1-gamma2**t))+epsilon)
+```
+</details>
+
 ## Quiz: qual alteração reduz o ruído? {.quiz-question}
 
 - [Aumentar o tamanho do mini-batch]{.correct data-explanation="A média de mais gradientes individuais varia menos entre atualizações."}
@@ -415,98 +581,13 @@ Otimizadores modernos adaptam taxas por parâmetro.
 
 ## Gradiente descendente e máxima verossimilhança
 
-Podemos minimizar a log-verossimilhança negativa:
+Como $\ell(\theta)=\log L(\theta)$, podemos minimizar a log-verossimilhança negativa:
 
 $$J(\theta)=-\ell(\theta).$$
 
 Assim, gradiente ascendente em $\ell$ e gradiente descendente em $-\ell$ são equivalentes.
 
 Para erros normais, $-\ell$ contém a SSE.
-
-## Da regressão para uma unidade neural
-
-Um neurônio linear calcula
-
-$$z=w^Tx+b,$$
-
-que é uma regressão com vários preditores.
-
-Uma ativação produz
-
-$$a=\phi(z).$$
-
-Empilhar unidades cria uma rede neural.
-
-## A rede também minimiza uma perda
-
-Para pesos $W$ e vieses $b$,
-
-$$J(W,b)=\frac1n\sum_i\ell(y_i,f(x_i;W,b)).$$
-
-O treinamento repete:
-
-1. propagação para frente;
-2. cálculo da perda;
-3. cálculo dos gradientes;
-4. atualização dos parâmetros.
-
-## Retropropagação calcula o gradiente
-
-Backpropagation não é um otimizador.
-
-Ela aplica eficientemente a regra da cadeia para obter
-
-$$\nabla_WJ,\qquad \nabla_bJ.$$
-
-Gradiente descendente, SGD ou Adam usam esses gradientes para atualizar a rede.
-
-## A mesma regra reaparece
-
-$$
-W_{t+1}=W_t-\eta\nabla_WJ(W_t,b_t),
-$$
-
-$$
-b_{t+1}=b_t-\eta\nabla_bJ(W_t,b_t).
-$$
-
-O princípio é o mesmo da regressão; mudam o número de parâmetros e a complexidade da superfície.
-
-## Redes neurais não são convexas
-
-![](assets/aula20-gradiente-descendente/nao-convexa-rede.png){.wide-chart fig-alt="Exemplo conceitual de superfície não convexa com mínimos locais."}
-
-Gradiente zero pode indicar mínimo local, sela ou região plana. Inicialização e otimizador passam a importar muito mais.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-loss = (w**2-1.2)**2+0.15*w
-plt.plot(w, loss)
-```
-</details>
-
-## GPUs favorecem mini-batches
-
-Redes neurais usam muitas multiplicações matriciais independentes.
-
-GPUs executam essas operações em paralelo, e mini-batches organizam várias observações em matrizes.
-
-O sucesso moderno combina:
-
-- algoritmos de otimização;
-- grandes bases de dados;
-- hardware paralelo.
-
-## Adam é uma extensão, não mágica
-
-Adam combina:
-
-- média móvel dos gradientes;
-- média móvel dos gradientes ao quadrado;
-- taxas efetivas diferentes por parâmetro.
-
-Ainda assim, a atualização fundamental continua baseada em gradientes e exige validação, regularização e diagnóstico.
 
 ## Um roteiro de implementação segura
 
@@ -522,8 +603,7 @@ Ainda assim, a atualização fundamental continua baseada em gradientes e exige 
 
 - Data 100, *Principles and Techniques of Data Science*, otimização e gradiente.
 - James et al., *An Introduction to Statistical Learning*, otimização em modelos preditivos.
-- Goodfellow, Bengio e Courville, *Deep Learning*, capítulos 6 e 8.
-- Géron, *Hands-On Machine Learning*, treinamento de modelos e redes neurais.
+- Kingma e Ba, *Adam: A Method for Stochastic Optimization*.
 - Ruder, *An Overview of Gradient Descent Optimization Algorithms*.
 
 ## Síntese
@@ -533,11 +613,11 @@ Ainda assim, a atualização fundamental continua baseada em gradientes e exige 
 - taxa de aprendizado controla estabilidade e velocidade;
 - padronização melhora a geometria;
 - mini-batches viabilizam grandes bases;
-- backprop calcula gradientes em redes;
-- os mesmos princípios escalam da regressão ao aprendizado profundo.
+- Adam adapta o passo de cada parâmetro usando médias móveis;
+- a solução numérica pode ser comparada à solução analítica de mínimos quadrados.
 
 ## Próxima aula
 
 ::: {.statement}
-Gradiente descendente mostrou como ajustar parâmetros. As próximas aulas poderão usar esse mecanismo em modelos cuja resposta, perda e fronteira de decisão são mais complexas que uma reta.
+Gradiente descendente mostrou como ajustar os coeficientes de uma regressão linear. Na próxima aula, a regressão múltipla amplia o modelo para vários preditores.
 :::

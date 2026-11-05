@@ -1,6 +1,6 @@
 ---
 title: "Aula 20: Gradiente descendente"
-subtitle: "Da regressão ao treinamento de redes neurais"
+subtitle: "Otimização numérica aplicada à regressão linear"
 ---
 
 ## Materiais da aula
@@ -10,7 +10,7 @@ subtitle: "Da regressão ao treinamento de redes neurais"
 ::: {.recurso-card}
 ### Slides
 
-Gradientes, taxa de aprendizado, convergência, mini-batches e redes neurais.
+Gradientes, convergência, padronização, mini-batches, SGD e Adam.
 
 [Abrir slides](../slides/20-gradiente-descendente.qmd){.btn .btn-outline-primary}
 :::
@@ -19,7 +19,7 @@ Gradientes, taxa de aprendizado, convergência, mini-batches e redes neurais.
 ::: {.recurso-card}
 ### Material de apoio
 
-Implementação completa, resultados, testes do gradiente e interpretações.
+Explicações detalhadas, códigos executados, resultados e interpretações.
 
 [Abrir notebook](../exemplos/20-gradiente-descendente/notebook.qmd){.btn .btn-outline-primary}
 :::
@@ -41,11 +41,11 @@ Despesas médicas e idade para comparar GD, OLS e MLE.
 - implementar gradiente descendente na regressão;
 - compreender taxa de aprendizado, escala e convergência;
 - comparar batch, SGD e mini-batch;
-- relacionar gradiente, backpropagation e treinamento de redes neurais.
+- compreender Adam como uma extensão adaptativa do gradiente descendente.
 
 ## Estudo de caso
 
-A regressão idade–despesas fornece uma solução OLS conhecida para validar a implementação iterativa. A aula termina mostrando como a mesma regra de atualização escala para milhares ou milhões de pesos em redes neurais.
+A regressão idade–despesas fornece uma solução OLS conhecida para validar a implementação iterativa. As curvas de nível permitem comparar padronização, batch, mini-batch, SGD e Adam usando a mesma função de perda.
 
 ## Bibliografia da aula
 
@@ -56,6 +56,5 @@ A regressão idade–despesas fornece uma solução OLS conhecida para validar a
 
 ### Bibliografia complementar
 
-- Goodfellow, Bengio e Courville, *Deep Learning*, capítulos 6 e 8.
-- Géron, *Hands-On Machine Learning*, treinamento e redes neurais.
+- Kingma e Ba, *Adam: A Method for Stochastic Optimization*.
 - Ruder, *An Overview of Gradient Descent Optimization Algorithms*.

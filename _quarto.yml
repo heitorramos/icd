@@ -69,6 +69,7 @@ website:
             - aulas/17-regressao-linear.qmd
             - aulas/18-verossimilhanca.qmd
             - aulas/19-verossimilhanca-regressao.qmd
+            - aulas/20-gradiente-descendente.qmd
 
 format:
   html:

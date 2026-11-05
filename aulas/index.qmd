@@ -213,7 +213,7 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aulas 16–19 disponíveis. Aulas 20–25 em revisão.
+Aulas 16–20 disponíveis. Aulas 21–25 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
@@ -267,9 +267,9 @@ Erros normais, equivalência com mínimos quadrados, variância e diagnóstico.
 
 ## Gradiente descendente
 
-Otimização iterativa da regressão, mini-batches e conexão com redes neurais.
+Otimização iterativa da regressão, mini-batches, SGD e Adam.
 
-**Material em revisão**
+[Abrir a aula](20-gradiente-descendente.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}
