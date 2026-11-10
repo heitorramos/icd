@@ -38,6 +38,7 @@ website:
   sidebar:
     - title: "Aulas"
       style: docked
+      collapse-level: 1
       contents:
         - aulas/index.qmd
         - cronograma.qmd
@@ -45,32 +46,70 @@ website:
         - section: "Módulo 0 · Motivação"
           contents:
             - aulas/01-introducao.qmd
+            - text: "Material de apoio · Aula 01"
+              href: exemplos/01-introducao-dados/notebook.ipynb
             - aulas/02-causalidade.qmd
+            - text: "Material de apoio · Aula 02"
+              href: exemplos/02-experimento-ab/notebook.ipynb
         - section: "Módulo 1 · Análise Exploratória"
           contents:
             - aulas/03-tabelas-tipos.qmd
+            - text: "Material de apoio · Aula 03"
+              href: exemplos/03-tabelas-tipos/notebook.qmd
             - aulas/04-eda.qmd
+            - text: "Material de apoio · Aula 04"
+              href: exemplos/04-eda-olist/notebook.qmd
             - aulas/05-fundamentos-visualizacao.qmd
+            - text: "Material de apoio · Aula 05"
+              href: exemplos/05-fundamentos-visualizacao/notebook.qmd
             - aulas/06-boas-praticas-visualizacao.qmd
+            - text: "Material de apoio · Aula 06"
+              href: exemplos/06-boas-praticas-visualizacao/notebook.qmd
             - aulas/07-tendencias-centrais.qmd
+            - text: "Material de apoio · Aula 07"
+              href: exemplos/07-tendencias-centrais/notebook.ipynb
         - section: "Módulo 2 · Inferência Estatística"
           contents:
             - aulas/08-estimadores.qmd
             - aulas/09-risco-estimadores.qmd
+            - text: "Material de apoio · Aulas 08–09"
+              href: exemplos/08-estimadores/notebook.qmd
             - aulas/10-tcl-intervalos.qmd
+            - text: "Material de apoio · Aula 10"
+              href: exemplos/10-tcl-inferencia/notebook.qmd
             - aulas/11-testes-hipoteses.qmd
+            - text: "Material de apoio · Aula 11"
+              href: exemplos/11-testes-hipoteses/notebook.qmd
             - aulas/12-bootstrap.qmd
+            - text: "Material de apoio · Aula 12"
+              href: exemplos/12-bootstrap/notebook.qmd
             - aulas/13-testes-permutacao.qmd
             - aulas/14-permutacao-avancada.qmd
+            - text: "Material de apoio · Aulas 13–14"
+              href: exemplos/13-permutacao/notebook.qmd
             - aulas/15-poder-multiplos.qmd
+            - text: "Material de apoio · Aula 15"
+              href: exemplos/15-poder-multiplos/notebook.qmd
         - section: "Módulo 3 · Modelagem e Aprendizado de Máquina"
           contents:
             - aulas/16-correlacao.qmd
+            - text: "Material de apoio · Aula 16"
+              href: exemplos/16-correlacao/notebook.qmd
             - aulas/17-regressao-linear.qmd
+            - text: "Material de apoio · Aula 17"
+              href: exemplos/17-regressao-linear/notebook.qmd
             - aulas/18-verossimilhanca.qmd
+            - text: "Material de apoio · Aula 18"
+              href: exemplos/18-verossimilhanca/notebook.qmd
             - aulas/19-verossimilhanca-regressao.qmd
+            - text: "Material de apoio · Aula 19"
+              href: exemplos/19-verossimilhanca-regressao/notebook.qmd
             - aulas/20-gradiente-descendente.qmd
+            - text: "Material de apoio · Aula 20"
+              href: exemplos/20-gradiente-descendente/notebook.qmd
             - aulas/21-regressao-multipla.qmd
+            - text: "Material de apoio · Aula 21"
+              href: exemplos/21-regressao-multipla/notebook.qmd
 
 format:
   html:
