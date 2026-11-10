@@ -41,8 +41,8 @@ Eventuais alterações serão comunicadas pelo
 | 18 | **29/10/2026** | Máxima verossimilhança | [Acessar](aulas/18-verossimilhanca.qmd) |
 | 19 | **03/11/2026** | Verossimilhança na regressão | [Acessar](aulas/19-verossimilhanca-regressao.qmd) |
 | 20 | **05/11/2026** | Gradiente descendente | [Acessar](aulas/20-gradiente-descendente.qmd) |
-| 21 | **10/11/2026** | Regressão linear múltipla e introdução a GLMs | Em revisão |
-| 22 | **12/11/2026** | Regressão logística | Em revisão |
+| 21 | **10/11/2026** | Regressão linear múltipla | [Acessar](aulas/21-regressao-multipla.qmd) |
+| 22 | **12/11/2026** | Regressão logística e introdução a GLMs | Em revisão |
 | 23 | **17/11/2026** | Regularização | Em revisão |
 | 24 | **19/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
 | 25 | **24/11/2026** | KNN e prática completa de machine learning | Em revisão |

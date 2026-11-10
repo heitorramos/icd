@@ -26,7 +26,7 @@ Os slides são escritos em Quarto Reveal.js.
 - [Aula 18: Máxima verossimilhança](18-verossimilhanca.html)
 - [Aula 19: Verossimilhança na regressão](19-verossimilhanca-regressao.html)
 - [Aula 20: Gradiente descendente](20-gradiente-descendente.html)
-- Aula 21: Regressão linear múltipla — *em revisão*
+- [Aula 21: Regressão linear múltipla](21-regressao-multipla.html)
 - Aula 22: Regressão logística — *em revisão*
 - Aula 23: Regularização — *em revisão*
 - Aula 24: Engenharia de atributos e validação cruzada — *em revisão*

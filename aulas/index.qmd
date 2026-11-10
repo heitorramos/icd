@@ -278,9 +278,9 @@ Otimização iterativa da regressão, mini-batches, SGD e Adam.
 
 ## Regressão linear múltipla
 
-Vários preditores, notação matricial, interações e introdução a GLMs.
+Vários preditores, notação matricial, interações, colinearidade e diagnóstico.
 
-**Material em revisão**
+[Abrir a aula](21-regressao-multipla.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}
@@ -289,7 +289,7 @@ Vários preditores, notação matricial, interações e introdução a GLMs.
 
 ## Regressão logística
 
-GLM Bernoulli, logit, entropia cruzada, interpretação e avaliação.
+Introdução a GLMs, caso Bernoulli, logit, entropia cruzada e avaliação.
 
 **Material em revisão**
 :::

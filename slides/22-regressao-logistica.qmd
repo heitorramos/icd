@@ -23,7 +23,8 @@ Queremos prever um resultado binário e quantificar sua incerteza.
 ## Hoje
 
 - distinguir probabilidade prevista e decisão de classe;
-- construir a logística a partir da estrutura de um GLM;
+- introduzir a estrutura dos modelos lineares generalizados;
+- construir a regressão logística como um GLM Bernoulli;
 - experimentar funções candidatas para mapear números reais em probabilidades;
 - derivar a verossimilhança Bernoulli e a entropia cruzada;
 - interpretar coeficientes, odds e razões de odds;
@@ -81,13 +82,51 @@ podemos obter valores menores que 0 ou maiores que 1. Além disso, a variância 
 
 $$\operatorname{Var}(Y_i\mid X_i)=\pi_i(1-\pi_i).$$
 
-## Retome os três componentes do GLM
+## Modelos lineares generalizados
 
-1. **aleatório:** distribuição de $Y_i\mid X_i$;
-2. **sistemático:** $\eta_i=x_i^T\beta$;
-3. **ligação:** $g(\mu_i)=\eta_i$.
+Um GLM reúne três componentes:
 
-Para Bernoulli, $\mu_i=E[Y_i\mid X_i]=\pi_i$.
+1. **aleatório:** distribuição de $Y_i\mid X_i$ na família exponencial;
+2. **sistemático:** preditor linear $\eta_i=x_i^T\beta$;
+3. **ligação:** função $g$ tal que $g(\mu_i)=\eta_i$.
+
+$\mu_i=E[Y_i\mid X_i]$ é a média condicional.
+
+## A regressão linear normal é um GLM
+
+- distribuição: $Y_i\mid X_i\sim N(\mu_i,\sigma^2)$;
+- preditor linear: $\eta_i=x_i^T\beta$;
+- ligação identidade: $g(\mu)=\mu$.
+
+Portanto,
+
+$$\mu_i=\eta_i=x_i^T\beta.$$
+
+## Para Bernoulli, a média é uma probabilidade
+
+Se $Y_i\in\{0,1\}$, então
+
+$$
+\mu_i=E[Y_i\mid X_i]
+=P(Y_i=1\mid X_i)
+=\pi_i,
+$$
+
+com $0\le\pi_i\le1$. O preditor $x_i^T\beta$ pode assumir qualquer valor real.
+
+## A ligação adapta a escala
+
+![](assets/aula22-regressao-logistica/links-glm.png){.wide-chart fig-alt="Comparação entre a ligação identidade da regressão normal e a inversa da ligação logit para uma resposta Bernoulli."}
+
+A função de ligação conecta a média permitida pela distribuição ao preditor linear irrestrito.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+identity = eta
+inverse_logit = 1/(1+np.exp(-eta))
+```
+</details>
 
 ## O desafio é ligar $\mathbb R$ a $(0,1)$
 

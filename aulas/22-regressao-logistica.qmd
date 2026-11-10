@@ -10,7 +10,7 @@ subtitle: "Probabilidades, classificação e GLMs"
 ::: {.recurso-card}
 ### Slides
 
-GLM Bernoulli, funções candidatas, logit, verossimilhança e avaliação.
+Introdução a GLMs, caso Bernoulli, funções candidatas, logit, verossimilhança e avaliação.
 
 [Abrir slides](../slides/22-regressao-logistica.qmd){.btn .btn-outline-primary}
 :::
@@ -37,6 +37,7 @@ Medical Insurance Cost com tabagismo como resposta binária.
 
 ## Objetivos
 
+- reconhecer os componentes de um GLM e o caso normal com ligação identidade;
 - construir regressão logística como GLM Bernoulli;
 - comparar funções candidatas para mapear reais em probabilidades;
 - derivar logit, verossimilhança, log-loss e gradiente;

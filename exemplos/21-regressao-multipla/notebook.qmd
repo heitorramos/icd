@@ -1,5 +1,5 @@
 ---
-title: "Regressão linear múltipla e introdução a GLMs"
+title: "Regressão linear múltipla"
 subtitle: "Material de apoio — Aula 21"
 format: {html: {toc: true, code-fold: false, code-tools: true}}
 execute: {echo: true, warning: false, message: false}
@@ -7,7 +7,7 @@ execute: {echo: true, warning: false, message: false}
 
 ## Objetivos
 
-Este guia formula regressão múltipla em notação matricial, implementa o ajuste e interpreta seus coeficientes. Ao final, introduz os três componentes de um modelo linear generalizado para preparar a regressão logística.
+Este guia formula regressão múltipla em notação matricial, implementa o ajuste e interpreta seus coeficientes. Também discute interações, colinearidade, incerteza dos coeficientes e comparação entre modelos.
 
 ## Como estudar este capítulo
 
@@ -23,6 +23,7 @@ Usaremos [Medical Insurance Cost](https://www.kaggle.com/datasets/mosapabdelghan
 
 ```{python}
 from pathlib import Path
+from statistics import NormalDist
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -67,6 +68,26 @@ $\beta_j$ compara a média prevista após aumentar $X_j$ em uma unidade, mantend
 
 Usaremos `northeast` como referência regional e `female`, `no smoker` como referências dos indicadores binários.
 
+Como `region` possui quatro níveis, o modelo com intercepto precisa de apenas três indicadores regionais. Para a parte regional do modelo,
+
+$$
+E[Y_i\mid X_i]
+=\beta_0+\beta_{NW}D_{NW,i}
++\beta_{SE}D_{SE,i}
++\beta_{SW}D_{SW,i}
++z_i^T\gamma,
+$$
+
+em que $z_i^T\gamma$ reúne os demais preditores. Para uma observação de `northeast`, os três indicadores regionais valem zero. Assim, cada coeficiente regional mede uma diferença em relação a `northeast`, mantendo os demais preditores fixos.
+
+Se incluíssemos também $D_{NE}$, teríamos
+
+$$
+1=D_{NE,i}+D_{NW,i}+D_{SE,i}+D_{SW,i}.
+$$
+
+Portanto, a coluna do intercepto seria combinação linear exata das quatro colunas indicadoras. A remoção de uma categoria elimina essa dependência linear e permite estimar os coeficientes de forma única.
+
 ```{python}
 Xdf = pd.DataFrame({
     "age": df["age"],
@@ -108,15 +129,162 @@ O posto igual ao número de colunas confirma que os coeficientes estão identifi
 
 $$J(b)=\|y-Xb\|_2^2=(y-Xb)^T(y-Xb).$$
 
-Expandindo:
+Para expandir a perda, começamos transpondo a primeira parcela. Como $(Xb)^T=b^TX^T$,
+
+$$
+(y-Xb)^T=y^T-b^TX^T.
+$$
+
+Em seguida, aplicamos a distributividade:
+
+$$
+\begin{aligned}
+J(b)
+&=(y^T-b^TX^T)(y-Xb)\\
+&=y^Ty-y^TXb-b^TX^Ty+b^TX^TXb.
+\end{aligned}
+$$
+
+Os dois termos cruzados são iguais. De fato, $y^TXb$ é um escalar e, portanto, é igual ao seu transposto:
+
+$$
+y^TXb=(y^TXb)^T=b^TX^Ty.
+$$
+
+Assim,
 
 $$J(b)=y^Ty-2b^TX^Ty+b^TX^TXb.$$
+
+O primeiro termo, $y^Ty$, não depende de $b$. O segundo é linear em $b$ e o terceiro é quadrático em $b$. Essa forma deixa direta a derivação do gradiente.
+
+Para o termo quadrático, usamos a identidade
+
+$$
+\nabla_b(b^TAb)=(A+A^T)b.
+$$
+
+O vetor $b$ aparece duas vezes na forma quadrática. A derivada associada ao $b^T$ da esquerda contribui com $Ab$, enquanto a derivada associada ao $b$ da direita contribui com $A^Tb$. O gradiente reúne essas duas contribuições.
+
+### Exemplo com duas variáveis
+
+Considere
+
+$$
+b=
+\begin{bmatrix}b_1\\b_2\end{bmatrix},
+\qquad
+A=
+\begin{bmatrix}
+a_{11}&a_{12}\\
+a_{21}&a_{22}
+\end{bmatrix}.
+$$
+
+Expandindo a forma quadrática,
+
+$$
+b^TAb
+=a_{11}b_1^2
++(a_{12}+a_{21})b_1b_2
++a_{22}b_2^2.
+$$
+
+As derivadas parciais são
+
+$$
+\frac{\partial(b^TAb)}{\partial b_1}
+=2a_{11}b_1+(a_{12}+a_{21})b_2,
+$$
+
+$$
+\frac{\partial(b^TAb)}{\partial b_2}
+=(a_{12}+a_{21})b_1+2a_{22}b_2.
+$$
+
+Reunindo as derivadas no gradiente,
+
+$$
+\nabla_b(b^TAb)
+=
+\begin{bmatrix}
+2a_{11}&a_{12}+a_{21}\\
+a_{12}+a_{21}&2a_{22}
+\end{bmatrix}
+b
+=(A+A^T)b.
+$$
+
+Neste problema, $A=X^TX$. Como $(X^TX)^T=X^TX$, a matriz é simétrica e as duas parcelas são iguais. Portanto,
+
+$$
+\nabla_b(b^TX^TXb)=2X^TXb.
+$$
 
 Logo,
 
 $$\nabla_bJ(b)=-2X^T(y-Xb).$$
 
 O componente $j$ é $-2\sum_i x_{ij}e_i$: resíduos ponderados pela coluna $j$.
+
+### Jacobiana de uma função vetorial
+
+Para uma função com $m$ entradas e $n$ saídas,
+
+$$
+h:\mathbb R^m\to\mathbb R^n,
+\qquad
+h(u)=
+\begin{bmatrix}
+h_1(u)\\ \vdots\\ h_n(u)
+\end{bmatrix},
+$$
+
+a **Jacobiana** reúne todas as derivadas parciais:
+
+$$
+Dh(u)=
+\left[\frac{\partial h_i(u)}{\partial u_j}\right]_{i,j}
+\in\mathbb R^{n\times m}.
+$$
+
+A linha $i$ mostra como a saída $h_i$ responde às entradas. A coluna $j$ mostra como todas as saídas respondem à entrada $u_j$. Para uma pequena variação $\Delta u$, a Jacobiana fornece a aproximação linear
+
+$$
+h(u+\Delta u)\approx h(u)+Dh(u)\Delta u.
+$$
+
+Aqui, $D$ é o operador de derivação. Assim, $Dh(u)$ significa “Jacobiana da função $h$ no ponto $u$”.
+
+### Jacobianas da previsão e dos resíduos
+
+A previsão conjunta é a função vetorial
+
+$$g(b)=Xb\in\mathbb R^n.$$
+
+Como $g:\mathbb R^{p+1}\to\mathbb R^n$, sua derivada é uma matriz: a
+**Jacobiana**
+
+$$
+Dg(b)
+=\left[\frac{\partial g_i(b)}{\partial b_j}\right]_{i,j}
+=X.
+$$
+
+O vetor de resíduos candidatos é $e(b)=y-g(b)$; portanto,
+$De(b)=-X$. Aplicando a regra da cadeia ao objetivo escalar
+$J(b)=e(b)^Te(b)$,
+
+$$
+\nabla J(b)
+=2\,De(b)^Te(b)
+=-2X^T(y-Xb).
+$$
+
+::: {.callout-note title="Gradiente e Jacobiana não são o mesmo objeto"}
+$Dg(b)$ é uma matriz $n\times(p+1)$ porque $g$ é vetorial. Já
+$\nabla J(b)$ é um vetor $(p+1)\times1$ porque $J$ é escalar. Reservaremos
+$J$ para a função objetivo, $Dg(b)$ para a Jacobiana da função de previsão $g$ no ponto $b$ e $De(b)$ para a Jacobiana da função de resíduos $e$ no mesmo ponto.
+:::
 
 ## Ajuste numérico
 
@@ -130,6 +298,70 @@ coef.round(2)
 
 ::: {.callout-note title="Interpretação"}
 Mantendo os demais preditores fixos, um ano adicional de idade corresponde a cerca de US$ 256,86, uma unidade de IMC a US$ 339,19 e ser fumante a aproximadamente US$ 23.848,54 na média prevista. Essas são associações condicionais do modelo.
+:::
+
+### Ajuste completo por gradiente descendente
+
+A função abaixo minimiza o erro quadrático médio. Dividir a SSE por $n$ não altera o ponto de mínimo, mas torna a escala do gradiente menos dependente do tamanho da amostra.
+
+```{python}
+def regressao_gd(X, y, eta=0.01, max_iter=50_000, tol=1e-6):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, p = X.shape
+
+    beta = np.zeros(p)
+    historico = []
+
+    for _ in range(max_iter):
+        prediction = X @ beta
+        residual = y - prediction
+        historico.append(np.mean(residual**2))
+
+        gradient = -(2/n) * X.T @ residual
+        if np.linalg.norm(gradient) < tol:
+            break
+
+        beta = beta - eta * gradient
+
+    return beta, np.asarray(historico)
+```
+
+A primeira coluna de `X` continua sendo o intercepto. Padronizamos as demais colunas para melhorar a geometria da otimização.
+
+```{python}
+X_gd = X.copy()
+media = X_gd[:, 1:].mean(axis=0)
+desvio = X_gd[:, 1:].std(axis=0)
+X_gd[:, 1:] = (X_gd[:, 1:] - media) / desvio
+
+beta_gd, historico_gd = regressao_gd(X_gd, y)
+prediction_gd = X_gd @ beta_gd
+
+pd.Series({
+    "iterações": len(historico_gd),
+    "MSE inicial": historico_gd[0],
+    "MSE final": historico_gd[-1],
+    "RMSE final": np.sqrt(np.mean((y - prediction_gd)**2)),
+}).round(4)
+```
+
+```{python}
+mse_ols = np.mean((y - X @ beta)**2)
+
+fig, ax = plt.subplots(figsize=(9, 4.5))
+ax.plot(historico_gd / 1e6, linewidth=2.5,
+        label="gradiente descendente")
+ax.axhline(mse_ols / 1e6, color="darkorange", linestyle="--",
+           linewidth=2, label="mínimo por OLS")
+ax.set(xlabel="iteração", ylabel="MSE (milhões de US$²)")
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Todas as coordenadas de `beta` são atualizadas simultaneamente com o mesmo vetor gradiente. A curva cai rapidamente no início e se estabiliza no mesmo MSE alcançado pelo ajuste de OLS. A padronização altera a escala dos coeficientes, mas não a capacidade do modelo de reproduzir os valores ajustados por OLS.
 :::
 
 ## Valores ajustados e qualidade
@@ -163,30 +395,157 @@ O modelo múltiplo explica muito mais variação que idade isolada, sobretudo pe
 
 ## Interações
 
-Para permitir inclinações de idade distintas por tabagismo:
+Centralizamos o IMC em 30 para que o coeficiente de tabagismo compare os grupos em um valor substantivamente plausível:
+
+$$bmi_c=bmi-30.$$
+
+Para permitir inclinações de IMC distintas por tabagismo:
 
 $$
-E[Y]=\beta_0+\beta_1age+\beta_2smoker
-+\beta_3(age\times smoker)+\cdots.
+E[Y]=\beta_0+\beta_1bmi_c+\beta_2smoker
++\beta_3(bmi_c\times smoker)+\cdots.
 $$
 
 ```{python}
 X_inter = Xdf.copy()
-X_inter["age_x_smoker"] = X_inter["age"]*X_inter["smoker_yes"]
+X_inter["bmi_c"] = X_inter.pop("bmi") - 30
+X_inter["bmi_c_x_smoker"] = (
+    X_inter["bmi_c"] * X_inter["smoker_yes"]
+)
 Xi = np.column_stack([np.ones(len(df)), X_inter.to_numpy(float)])
 bi = np.linalg.lstsq(Xi, y, rcond=None)[0]
-pd.Series(bi, index=["intercepto"]+list(X_inter.columns)).loc[
-    ["age", "smoker_yes", "age_x_smoker"]
+coef_interacao = pd.Series(
+    bi, index=["intercepto"]+list(X_inter.columns)
+)
+coef_interacao.loc[
+    ["bmi_c", "smoker_yes", "bmi_c_x_smoker"]
 ].round(2)
 ```
 
+As inclinações estimadas do IMC em cada grupo são:
+
+```{python}
+pd.Series({
+    "não fumantes": coef_interacao["bmi_c"],
+    "fumantes": (
+        coef_interacao["bmi_c"]
+        + coef_interacao["bmi_c_x_smoker"]
+    ),
+}, name="US$ por unidade de IMC").round(2)
+```
+
+A melhora no ajuste é substancial:
+
+```{python}
+prediction_inter = Xi @ bi
+residual_inter = y - prediction_inter
+sst = np.sum((y - y.mean())**2)
+
+def resumo_ajuste(erro, numero_preditores):
+    sse = np.sum(erro**2)
+    r2 = 1 - sse / sst
+    r2_ajustado = 1 - (1-r2) * (len(y)-1) / (
+        len(y)-numero_preditores-1
+    )
+    return np.sqrt(np.mean(erro**2)), r2_ajustado
+
+pd.DataFrame({
+    "sem interação": resumo_ajuste(residual, X.shape[1]-1),
+    "com interação": resumo_ajuste(
+        residual_inter, Xi.shape[1]-1
+    ),
+}, index=["RMSE", "R² ajustado"]).T.round(3)
+```
+
+### Diagnóstico visual após a interação
+
+Comparamos os mesmos diagnósticos usados anteriormente: QQ-plot dos resíduos e resíduos versus valores ajustados.
+
+```{python}
+probabilidades = (np.arange(1, len(y) + 1) - 0.5) / len(y)
+quantis_teoricos = np.array([
+    NormalDist().inv_cdf(float(p)) for p in probabilidades
+])
+
+fig, axes = plt.subplots(2, 2, figsize=(11, 7),
+                         sharex="col", sharey="col")
+
+modelos = [
+    ("Sem interação", prediction, residual, "#1f6f8b"),
+    ("Com IMC × tabagismo", prediction_inter, residual_inter, "#d95f02"),
+]
+
+for linha, (nome, ajustado, erro, cor) in enumerate(modelos):
+    residuos_ordenados = np.sort(erro)
+    inclinacao, intercepto = np.polyfit(
+        quantis_teoricos, residuos_ordenados, 1
+    )
+
+    axes[linha, 0].scatter(
+        quantis_teoricos, residuos_ordenados,
+        s=8, alpha=0.45, color=cor
+    )
+    axes[linha, 0].plot(
+        quantis_teoricos,
+        intercepto + inclinacao * quantis_teoricos,
+        color="black"
+    )
+    axes[linha, 0].set_title(f"{nome}: QQ-plot")
+    axes[linha, 0].set_ylabel("resíduos ordenados")
+
+    axes[linha, 1].scatter(
+        ajustado, erro, s=8, alpha=0.28, color=cor
+    )
+    axes[linha, 1].axhline(0, color="black", linestyle="--")
+    axes[linha, 1].set_title(f"{nome}: resíduos × ajustados")
+    axes[linha, 1].set_ylabel("resíduo")
+
+axes[1, 0].set_xlabel("quantis teóricos")
+axes[1, 1].set_xlabel("valor ajustado")
+plt.tight_layout()
+plt.show()
+```
+
 ::: {.callout-note title="Interpretação"}
-Com interação, o coeficiente de idade é a inclinação entre não fumantes; `age_x_smoker` é quanto essa inclinação muda entre fumantes. Termos principais devem permanecer para preservar a hierarquia do modelo.
+Com interação, a inclinação do IMC é US$ 23,53 entre não fumantes. O termo `bmi_c_x_smoker`, US$ 1.443,10, é o acréscimo na inclinação entre fumantes. Assim, a inclinação estimada para fumantes é US$ 1.466,63 por unidade de IMC, mantendo os demais preditores fixos. O RMSE diminui de forma clara, mas o QQ-plot e o gráfico de resíduos ainda mostram desvios das hipóteses do modelo. Termos principais devem permanecer para preservar a hierarquia.
 :::
+
+### Por que manter os termos principais?
+
+Considere retirar `smoker_yes`, mas preservar a interação. O modelo passaria a ser
+
+$$
+E[Y\mid X]
+=\beta_0+\beta_1bmi_c
++\beta_3(bmi_c\times smoker)+z^T\gamma.
+$$
+
+Quando BMI = 30, temos $bmi_c=0$. Nesse ponto, tanto o termo principal do IMC quanto a interação desaparecem. O modelo seria obrigado a satisfazer
+
+$$
+E[Y\mid smoker=0,\,bmi=30]
+=E[Y\mid smoker=1,\,bmi=30],
+$$
+
+mantendo os demais preditores fixos. Essa igualdade não foi aprendida com os dados; ela foi imposta pela exclusão do termo principal de tabagismo. O princípio hierárquico evita introduzir esse tipo de restrição sem uma justificativa substantiva.
 
 ## Colinearidade
 
 Colinearidade ocorre quando colunas de $X$ são altamente relacionadas. Ela pode inflar a incerteza dos coeficientes sem destruir necessariamente a qualidade preditiva conjunta.
+
+### Colinearidade perfeita e forte
+
+Se $x_2=2x_1$, então
+
+$$
+\widehat y
+=\beta_0+\beta_1x_1+\beta_2x_2
+=\beta_0+(\beta_1+2\beta_2)x_1.
+$$
+
+Os dados conseguem identificar a combinação $\beta_1+2\beta_2$, mas não separar os dois coeficientes. Por exemplo, $(\beta_1,\beta_2)=(4,1)$ e $(2,2)$ produzem a mesma combinação, igual a 6. Nesse caso, $X^TX$ é singular.
+
+Quando $x_2\approx2x_1$, a redundância deixa de ser exata e $X^TX$ pode ser invertível. Ainda assim, pequenas mudanças na amostra podem fazer um coeficiente aumentar enquanto o outro diminui. A combinação usada nas previsões muda pouco, mas os coeficientes individuais ficam instáveis. Por isso, colinearidade é uma questão de grau, e não apenas a presença ou ausência de redundância perfeita.
 
 ```{python}
 numeric_corr = Xdf[["age", "bmi", "children"]].corr()
@@ -218,44 +577,39 @@ Cada intervalo mantém fixa a especificação do modelo e quantifica a variaçã
 
 ## Validação e complexidade
 
-Adicionar preditores nunca aumenta a SSE de treinamento. Por isso, $R^2$ não diminui. Para avaliar generalização, precisamos separar dados de treinamento e validação ou usar validação cruzada.
+Adicionar um preditor a um modelo não aumenta a SSE de treinamento. O novo modelo sempre pode reproduzir o anterior atribuindo coeficiente zero à nova variável. Por isso,
+
+$$
+R^2=1-\frac{SSE}{SST}
+$$
+
+nunca diminui quando comparamos modelos ajustados aos mesmos dados e com a mesma variável resposta. Isso não significa que todo novo preditor seja útil: ele pode reduzir a SSE apenas por se adaptar ao ruído da amostra.
+
+O **$R^2$ ajustado** corrige essa comparação pelos graus de liberdade:
+
+$$
+R^2_{\mathrm{aj}}
+=1-\frac{SSE/(n-p-1)}{SST/(n-1)}
+=1-(1-R^2)\frac{n-1}{n-p-1},
+$$
+
+em que:
+
+- $n$ é o número de observações;
+- $p$ é o número de preditores, sem contar o intercepto;
+- $n-p-1$ são os graus de liberdade residuais;
+- $n-1$ são os graus de liberdade associados à variação total.
+
+A fração $SSE/(n-p-1)$ é a variância residual estimada. Quando incluímos um preditor, a SSE pode cair, mas o denominador também perde um grau de liberdade. Assim:
+
+- se a queda da SSE for suficientemente grande, $R^2_{\mathrm{aj}}$ aumenta;
+- se o novo preditor explicar muito pouco, $R^2_{\mathrm{aj}}$ diminui;
+- em modelos muito fracos, o $R^2_{\mathrm{aj}}$ pode até ser negativo.
 
 Mais colunas podem melhorar a aproximação, mas também aumentar variância, instabilidade e risco de capturar ruído.
 
-## Ponte para modelos lineares generalizados
-
-Um GLM possui:
-
-1. componente aleatório: distribuição de $Y_i\mid X_i$ na família exponencial;
-2. componente sistemático: $\eta_i=x_i^T\beta$;
-3. função de ligação: $g(\mu_i)=\eta_i$, com $\mu_i=E[Y_i\mid X_i]$.
-
-## O modelo normal é um GLM
-
-Na regressão linear normal:
-
-$$Y_i\mid X_i\sim N(\mu_i,\sigma^2),$$
-
-$$g(\mu_i)=\mu_i=x_i^T\beta.$$
-
-O link identidade deixa a média na mesma escala do preditor linear.
-
-## Antecipação da regressão logística
-
-Para resposta binária,
-
-$$Y_i\mid X_i\sim\operatorname{Bernoulli}(\pi_i),$$
-
-$$\log\left(\frac{\pi_i}{1-\pi_i}\right)=x_i^T\beta.$$
-
-Logo,
-
-$$\pi_i=\frac{1}{1+e^{-x_i^T\beta}},$$
-
-o que garante probabilidades entre 0 e 1.
-
 ::: {.callout-note title="Interpretação"}
-A regressão logística preserva a matriz $X$ e o preditor linear $X\beta$. O que muda é a distribuição da resposta, a função de ligação e, consequentemente, a verossimilhança e a perda.
+O $R^2$ ajustado ajuda a comparar modelos com números diferentes de preditores, mas continua sendo calculado nos dados de treinamento. Para avaliar generalização, precisamos usar validação ou dados de teste.
 :::
 
 ## Como interpretar o modelo sem se perder nos coeficientes
@@ -312,12 +666,11 @@ categoria de referência ou das interações do modelo.
 3. Interprete um coeficiente indicador e uma interação.
 4. Por que mudar a categoria de referência não muda previsões?
 5. Como colinearidade afeta interpretação e previsão?
-6. Quais são os três componentes de um GLM?
+6. Por que o $R^2$ ajustado pode diminuir quando adicionamos um preditor?
 
 ## Bibliografia
 
-- James et al., *An Introduction to Statistical Learning*, capítulos 3 e 4.
+- James et al., *An Introduction to Statistical Learning*, capítulo 3.
 - Faraway, *Linear Models with R*.
 - Gelman, Hill e Vehtari, *Regression and Other Stories*.
-- Fox, *Applied Regression Analysis and Generalized Linear Models*.
-- McCullagh e Nelder, *Generalized Linear Models*.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*, regressão múltipla.

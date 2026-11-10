@@ -1,6 +1,6 @@
 ---
 title: "Regressão linear múltipla"
-subtitle: "Aula 21 — Módulo 3: vários preditores e a ponte para GLMs"
+subtitle: "Aula 21 — Módulo 3: vários preditores, interações e diagnóstico"
 author: "Heitor Ramos<br>heitor@dcc.ufmg.br"
 institute: '<div class="title-brand-lockup"><img class="brand-horizontal" src="assets/brand/dcc-ufmg-horizontal-color.png" alt="Departamento de Ciência da Computação — UFMG"></div>'
 format:
@@ -27,7 +27,7 @@ Idade está associada às despesas, mas não descreve toda a heterogeneidade.
 - interpretar coeficientes condicionais;
 - derivar perda, gradiente e equações normais;
 - discutir interação, colinearidade e diagnóstico;
-- introduzir a estrutura dos modelos lineares generalizados.
+- comparar modelos com RMSE, $R^2$ e $R^2$ ajustado.
 
 ## Base de dados de apoio
 
@@ -120,15 +120,31 @@ Então $\beta_{fumante}$ é a diferença média prevista entre fumantes e não f
 
 ## Categorias com mais de dois níveis
 
-Para quatro regiões, usamos três indicadores e escolhemos uma referência.
+Para quatro regiões, escolhemos `northeast` como referência e criamos apenas três indicadores:
 
-Com `northeast` como referência, cada coeficiente regional compara seu grupo com `northeast`.
+$$
+D_{NW},\qquad D_{SE},\qquad D_{SW}.
+$$
 
-Com intercepto e quatro indicadores regionais,
+O modelo final contém o intercepto e esses três indicadores:
 
-$$1=D_{NE}+D_{NW}+D_{SE}+D_{SW}.$$
+$$
+\begin{aligned}
+E[Y_i\mid X_i]
+&=\beta_0+\beta_{NW}D_{NW,i}
++\beta_{SE}D_{SE,i}
++\beta_{SW}D_{SW,i}\\
+&\quad+z_i^T\gamma,
+\end{aligned}
+$$
 
-Uma coluna seria combinação linear exata das outras. Remover a referência evita essa **armadilha das dummies**.
+$z_i^T\gamma$ reúne os demais preditores. Para `northeast`, os três indicadores valem zero. Cada coeficiente regional representa a diferença em relação a `northeast`, mantendo os demais preditores fixos.
+
+São **três variáveis indicadoras** e quatro coeficientes associados à codificação regional quando contamos o intercepto $\beta_0$.
+
+### Por que não usar quatro indicadores?
+
+Com intercepto, $1=D_{NE}+D_{NW}+D_{SE}+D_{SW}$. Usar os quatro criaria dependência linear perfeita. Remover a categoria de referência evita a **armadilha das dummies**.
 
 ## Matriz de projeto
 
@@ -192,21 +208,61 @@ $$
 
 O argumento mínimo é um vetor de $p+1$ coeficientes.
 
-## Expanda a perda
+## Expanda a perda {.smaller}
+
+**1. Transponha a primeira parcela**
 
 $$
-J(b)=(y-Xb)^T(y-Xb)
+(y-Xb)^T=y^T-(Xb)^T=y^T-b^TX^T.
 $$
 
+**2. Aplique a distributividade**
+
 $$
-=y^Ty-2b^TX^Ty+b^TX^TXb.
+\begin{aligned}
+J(b)&=(y^T-b^TX^T)(y-Xb)\\
+&=y^Ty-y^TXb-b^TX^Ty+b^TX^TXb.
+\end{aligned}
+$$
+
+**3. Combine os termos cruzados**
+
+Como $y^TXb$ é escalar,
+
+$$
+y^TXb=(y^TXb)^T=b^TX^Ty.
+$$
+
+Portanto,
+
+$$
+\boxed{J(b)=y^Ty-2b^TX^Ty+b^TX^TXb}.
 $$
 
 O termo $y^Ty$ não depende de $b$.
 
 ## O gradiente matricial
 
-Usando $X^TX$ simétrica:
+Para uma matriz $A$,
+
+$$
+\nabla_b(b^TAb)=(A+A^T)b.
+$$
+
+O vetor $b$ aparece duas vezes:
+
+- derivar o $b^T$ da esquerda contribui com $Ab$;
+- derivar o $b$ da direita contribui com $A^Tb$.
+
+O gradiente soma as duas contribuições.
+
+Aqui, $A=X^TX$ e $(X^TX)^T=X^TX$. Logo,
+
+$$
+\nabla_b(b^TX^TXb)=2X^TXb.
+$$
+
+Somando a derivada do termo linear:
 
 $$
 \nabla_bJ(b)=-2X^Ty+2X^TXb
@@ -214,6 +270,60 @@ $$
 $$
 
 O gradiente possui dimensão $(p+1)\times1$, igual ao vetor de parâmetros.
+
+## Jacobiana: derivada de uma função vetorial
+
+Considere uma função com $m$ entradas e $n$ saídas:
+
+$$
+h:\mathbb R^m\to\mathbb R^n,
+\qquad
+h(u)=
+\begin{bmatrix}
+h_1(u)\\ \vdots\\ h_n(u)
+\end{bmatrix}.
+$$
+
+A **Jacobiana** reúne todas as derivadas parciais:
+
+$$
+Dh(u)=
+\left[\frac{\partial h_i(u)}{\partial u_j}\right]_{i,j}
+\in\mathbb R^{n\times m}.
+$$
+
+- a linha $i$ descreve como a saída $h_i$ responde às entradas;
+- a coluna $j$ descreve como todas as saídas respondem à entrada $u_j$.
+
+Para uma pequena variação $\Delta u$,
+
+$$h(u+\Delta u)\approx h(u)+Dh(u)\Delta u.$$
+
+::: {.callout-note title="Notação"}
+$D$ é o operador de derivação. Portanto, $Dh(u)$ significa “Jacobiana da função $h$ no ponto $u$”.
+:::
+
+## Jacobianas da previsão e dos resíduos
+
+A previsão conjunta é a função vetorial
+
+$$g(b)=Xb\in\mathbb R^n.$$
+
+Sua Jacobiana em relação a $b\in\mathbb R^{p+1}$ é
+
+$$
+Dg(b)=
+\left[\frac{\partial g_i(b)}{\partial b_j}\right]_{i,j}
+=X.
+$$
+
+Como $e(b)=y-g(b)$, temos $De(b)=-X$. Pela regra da cadeia,
+
+$$\nabla J(b)=2\,De(b)^Te(b)=-2X^T(y-Xb).$$
+
+::: {.callout-note title="Notação"}
+$Dg(b)$ é a Jacobiana da função de previsão $g$ no ponto $b$. $De(b)$ é a Jacobiana da função de resíduos $e$ no mesmo ponto. Já $J$ é a função objetivo escalar e $\nabla J$ é seu gradiente.
+:::
 
 ## Cada componente tem interpretação conhecida
 
@@ -247,17 +357,6 @@ Se usarmos MSE em vez de SSE, aparece também o fator $1/n$.
 
 A escolha apenas reescala a taxa de aprendizado.
 
-## Implementação em poucas linhas
-
-```python
-prediction = X @ beta
-residual = y-prediction
-gradient = -(2/n) * X.T @ residual
-beta = beta-eta*gradient
-```
-
-Vetorização substitui laços explícitos por operações matriciais otimizadas.
-
 ## Quiz: qual dimensão do gradiente? {.quiz-question}
 
 Se $X$ tem dimensão $n\times(p+1)$, qual é a dimensão de $X^T(y-Xb)$?
@@ -289,6 +388,52 @@ Em Python:
 ```python
 beta = np.linalg.lstsq(X, y, rcond=None)[0]
 ```
+
+## Gradiente descendente para regressão múltipla {.smaller}
+
+```python
+def regressao_gd(X, y, eta=0.01,
+                 max_iter=50_000, tol=1e-6):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, p = X.shape
+
+    beta = np.zeros(p)
+    historico = []
+
+    for _ in range(max_iter):
+        prediction = X @ beta
+        residual = y - prediction
+        historico.append(np.mean(residual**2))
+
+        gradient = -(2/n) * X.T @ residual
+        if np.linalg.norm(gradient) < tol:
+            break
+
+        beta = beta - eta * gradient
+
+    return beta, np.asarray(historico)
+```
+
+A função minimiza o MSE, que possui o mesmo mínimo da SSE. A matriz $X$ já deve conter o intercepto; padronize os preditores antes do ajuste.
+
+## Convergência da função de perda
+
+![](assets/aula21-regressao-multipla/convergencia-gd.png){.wide-chart fig-alt="Erro quadrático médio ao longo das iterações do gradiente descendente, aproximando-se do mínimo obtido por OLS."}
+
+No exemplo da aula, o MSE diminui rapidamente no início e depois se estabiliza próximo ao mínimo obtido pelas equações normais.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+plt.plot(historico_gd / 1e6, label="gradiente descendente")
+plt.axhline(mse_ols / 1e6, linestyle="--", label="mínimo por OLS")
+plt.xlabel("iteração")
+plt.ylabel("MSE (milhões de US$²)")
+plt.legend()
+```
+
+</details>
 
 ## O modelo ajustado
 
@@ -357,52 +502,131 @@ residual_multiple = y-X@beta
 
 ## Interações permitem efeitos diferentes
 
-Considere
+Centralize o IMC em 30:
+
+$$bmi_c=bmi-30.$$
+
+Considere então
 
 $$
-E[Y\mid age,smoker]
-=\beta_0+\beta_1age+\beta_2smoker+\beta_3(age\times smoker).
+\begin{aligned}
+E[Y\mid X]
+&=\beta_0+\beta_1bmi_c+\beta_2smoker\\
+&\quad+\beta_3(bmi_c\times smoker)+z^T\gamma.
+\end{aligned}
 $$
 
-$\beta_3$ permite que a inclinação da idade seja diferente entre fumantes e não fumantes.
+$z^T\gamma$ reúne os demais preditores. O coeficiente $\beta_3$ permite que a inclinação do IMC seja diferente entre os grupos.
 
-## Interprete a interação por grupos
+Sem a interação, o modelo impõe a mesma inclinação do IMC aos dois grupos. Com a interação, estima uma inclinação para cada grupo.
 
-Para não fumantes ($smoker=0$):
+## Resultado do modelo com interação {.smaller}
 
-$$E[Y]=\beta_0+\beta_1age.$$
+::: {.columns}
+::: {.column width="43%"}
+| termo | estimativa |
+|---|---:|
+| `bmi_c` | 23,53 |
+| `smoker` | 22.877,28 |
+| `bmi_c × smoker` | 1.443,10 |
 
-Para fumantes ($smoker=1$):
+Como $bmi_c=0$ corresponde a BMI = 30, `smoker` compara os grupos nesse valor.
+:::
 
-$$E[Y]=(\beta_0+\beta_2)+(\beta_1+\beta_3)age.$$
+::: {.column width="57%"}
+**Não fumantes:** $smoker=0$
 
-O termo principal de idade passa a ser a inclinação no grupo de referência.
+$$
+\widehat E[Y]=\cdots+23{,}53\,bmi_c.
+$$
 
-## Não remova termos principais mecanicamente
+**Fumantes:** $smoker=1$
 
-Se o modelo contém $X_1X_2$, normalmente preservamos $X_1$ e $X_2$.
+$$
+\begin{aligned}
+\widehat E[Y]
+&=\cdots+(23{,}53+1.443{,}10)bmi_c\\
+&=\cdots+1.466{,}63\,bmi_c.
+\end{aligned}
+$$
+:::
+:::
 
-Esse princípio hierárquico mantém interpretações coerentes e evita impor que os grupos coincidam quando um preditor vale zero.
+O RMSE cai de **6.041,68** para **4.828,28**, e o $R^2$ ajustado sobe de **0,749** para **0,840**.
 
-## Colinearidade não é redundância perfeita apenas
+## A interação melhora o ajuste, mas não resolve tudo
 
-Preditores muito associados podem tornar coeficientes individuais instáveis, mesmo quando $X^TX$ ainda é invertível.
+![](assets/aula21-regressao-multipla/diagnostico-interacao.png){.wide-chart fig-alt="QQ-plots e gráficos de resíduos versus valores ajustados para os modelos sem interação e com interação entre IMC e tabagismo."}
 
-As previsões conjuntas podem permanecer razoáveis enquanto sinais e magnitudes dos coeficientes variam muito.
-
-## Colinearidade amplia a incerteza
-
-![](assets/aula21-regressao-multipla/colinearidade.png){.wide-chart fig-alt="Preditores colineares e instabilidade bootstrap dos coeficientes."}
-
-Os coeficientes compensam um ao outro ao longo de uma direção de incerteza.
+A separação entre os grupos diminui e o RMSE melhora. Ainda observamos curvatura, dispersão desigual e afastamento da reta no QQ-plot.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-for sample in bootstrap_samples:
-    beta = np.linalg.lstsq(X[sample], y[sample], rcond=None)[0]
+from statistics import NormalDist
+
+p = (np.arange(1, len(y)+1) - 0.5) / len(y)
+q = np.array([NormalDist().inv_cdf(float(pi)) for pi in p])
+
+for fitted, error in [(prediction, residual),
+                      (prediction_inter, residual_inter)]:
+    plt.scatter(q, np.sort(error))       # QQ-plot
+    plt.scatter(fitted, error)           # resíduos × ajustados
 ```
+
 </details>
+
+## Não remova termos principais mecanicamente {.smaller}
+
+Se o modelo contém $X_1X_2$, normalmente preservamos $X_1$ e $X_2$.
+
+::: {.callout-warning title="Exemplo: retirar o termo `smoker`"}
+O modelo ficaria
+
+$$
+E[Y\mid X]
+=\beta_0+\beta_1bmi_c
++\beta_3(bmi_c\times smoker)+z^T\gamma.
+$$
+
+Quando BMI = 30, temos $bmi_c=0$. Os dois termos que envolvem IMC desaparecem e o modelo impõe
+
+$$
+E[Y\mid smoker=0,\,bmi=30]
+=E[Y\mid smoker=1,\,bmi=30].
+$$
+:::
+
+Essa igualdade seria uma restrição criada pela remoção de `smoker`, e não uma conclusão aprendida com os dados.
+
+## Preditores quase redundantes já causam instabilidade {.smaller}
+
+::: {.columns}
+::: {.column width="49%"}
+::: {.callout-important title="Colinearidade perfeita"}
+Se $x_2=2x_1$,
+
+$$
+\widehat y
+=\beta_0+(\beta_1+2\beta_2)x_1.
+$$
+
+Os dados identificam apenas $\beta_1+2\beta_2$. Existem infinitos pares de coeficientes com a mesma previsão, e $X^TX$ não é invertível.
+:::
+:::
+
+::: {.column width="51%"}
+::: {.callout-warning title="Colinearidade forte"}
+Se $x_2\approx2x_1$, $X^TX$ ainda pode ser invertível.
+
+Entretanto, pequenas mudanças nos dados podem fazer $\widehat\beta_1$ aumentar e $\widehat\beta_2$ diminuir. Os coeficientes compensam um ao outro.
+
+As previsões podem permanecer semelhantes enquanto sinais e magnitudes dos coeficientes variam.
+:::
+:::
+:::
+
+Colinearidade é uma questão de grau; não começa apenas quando aparece redundância perfeita.
 
 ## Bootstrap do vetor de coeficientes
 
@@ -439,15 +663,28 @@ Mas pode:
 
 Avaliação deve usar validação ou dados de teste.
 
-## $R^2$ sempre aumenta ou permanece igual
+## $R^2$ sempre aumenta, mas o ajustado pode diminuir {.smaller}
 
 Como a SSE de treino não cresce ao adicionar preditores,
 
 $$R^2=1-\frac{SSE}{SST}$$
 
-não diminui.
+não diminui. O **$R^2$ ajustado** compara as variâncias residual e total depois de corrigir seus graus de liberdade:
 
-O $R^2$ ajustado penaliza o número de parâmetros, mas validação continua sendo mais direta para desempenho preditivo.
+$$
+R^2_{\mathrm{aj}}
+=1-\frac{SSE/(n-p-1)}{SST/(n-1)}
+=1-(1-R^2)\frac{n-1}{n-p-1}.
+$$
+
+- $n$: número de observações;
+- $p$: número de preditores, sem contar o intercepto.
+
+Ao incluir um preditor, $R^2_{\mathrm{aj}}$ só aumenta se a redução da SSE compensar a perda de um grau de liberdade. Caso contrário, diminui.
+
+::: {.callout-note title="Importante"}
+O ajuste por complexidade não substitui validação ou dados de teste para avaliar desempenho fora da amostra.
+:::
 
 ## Quiz: o que significa “controlar”? {.quiz-question}
 
@@ -457,96 +694,12 @@ Em uma regressão observacional, incluir uma variável como preditor:
 - [Garante que eliminamos todo confundimento]{data-explanation="Confundidores não medidos e especificações inadequadas continuam possíveis."}
 - [Transforma automaticamente associação em causalidade]{data-explanation="Identificação causal exige hipóteses e desenho adicionais."}
 
-## Até aqui, resposta contínua e Normal
-
-Nas Aulas 19 e 21, assumimos
-
-$$Y_i\mid X_i=x_i\sim N(\mu_i,\sigma^2),$$
-
-$$\mu_i=x_i^T\beta.$$
-
-A média pode assumir qualquer valor real, compatível com uma resposta contínua sem limites rígidos.
-
-## E se a resposta for binária?
-
-Se $Y_i\in\{0,1\}$, então
-
-$$E[Y_i\mid X_i]=P(Y_i=1\mid X_i)=\pi_i,$$
-
-com
-
-$$0\le\pi_i\le1.$$
-
-Uma combinação linear $x_i^T\beta$ não está restrita a esse intervalo.
-
-## Modelos lineares generalizados
-
-Um GLM reúne três componentes:
-
-1. **aleatório:** distribuição de $Y_i\mid X_i$ na família exponencial;
-2. **sistemático:** preditor linear $\eta_i=x_i^T\beta$;
-3. **ligação:** função $g$ tal que $g(\mu_i)=\eta_i$.
-
-$\mu_i=E[Y_i\mid X_i]$.
-
-## O modelo normal já é um GLM
-
-- componente aleatório: $Y_i\mid X_i\sim N(\mu_i,\sigma^2)$;
-- preditor linear: $\eta_i=x_i^T\beta$;
-- link identidade: $g(\mu)=\mu$.
-
-Então
-
-$$\mu_i=\eta_i=x_i^T\beta.$$
-
-## A ligação adapta a escala
-
-![](assets/aula21-regressao-multipla/links-glm.png){.wide-chart fig-alt="Link identidade gaussiano e inversa do link logit Bernoulli."}
-
-O link conecta a média permitida pela distribuição ao preditor linear irrestrito.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-
-```python
-identity = eta
-inverse_logit = 1/(1+np.exp(-eta))
-```
-</details>
-
-## Para Bernoulli, use o logit
-
-Se $Y_i\mid X_i\sim\operatorname{Bernoulli}(\pi_i)$, definimos
-
-$$
-g(\pi_i)=\log\left(\frac{\pi_i}{1-\pi_i}\right)=x_i^T\beta.
-$$
-
-A inversa é
-
-$$\pi_i=\frac{1}{1+e^{-x_i^T\beta}}.$$
-
-## O que muda e o que permanece?
-
-Permanece:
-
-- matriz de projeto $X$;
-- preditor linear $X\beta$;
-- interpretação condicional;
-- otimização por gradientes.
-
-Muda:
-
-- distribuição da resposta;
-- função de ligação;
-- verossimilhança e função de perda.
-
 ## Bibliografia da aula
 
-- James et al., *An Introduction to Statistical Learning*, capítulos 3 e 4.
+- James et al., *An Introduction to Statistical Learning*, capítulo 3.
 - Faraway, *Linear Models with R*, regressão múltipla.
 - Gelman, Hill e Vehtari, *Regression and Other Stories*, regressão com múltiplos preditores.
-- Fox, *Applied Regression Analysis and Generalized Linear Models*.
-- McCullagh e Nelder, *Generalized Linear Models*, capítulos iniciais.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*, regressão múltipla.
 
 ## Síntese
 
@@ -555,11 +708,10 @@ Muda:
 - OLS minimiza $\|y-X\beta\|^2$;
 - o gradiente é $-2X^T(y-X\beta)$;
 - indicadores, interações e colinearidade exigem interpretação cuidadosa;
-- o modelo normal com link identidade é um GLM;
-- Bernoulli com link logit conduz à regressão logística.
+- $R^2$ ajustado corrige a comparação pelos graus de liberdade.
 
 ## Próxima aula
 
 ::: {.statement}
-Na regressão logística, manteremos o preditor linear $X\beta$, mas trocaremos a resposta Normal por Bernoulli e usaremos o link logit para produzir probabilidades válidas.
+Na regressão logística, modelaremos probabilidades quando a resposta possui duas categorias.
 :::

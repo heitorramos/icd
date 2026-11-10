@@ -1,6 +1,6 @@
 ---
 title: "Aula 21: Regressão linear múltipla"
-subtitle: "Vários preditores e a ponte para GLMs"
+subtitle: "Vários preditores, interações e diagnóstico"
 ---
 
 ## Materiais da aula
@@ -10,7 +10,7 @@ subtitle: "Vários preditores e a ponte para GLMs"
 ::: {.recurso-card}
 ### Slides
 
-Notação matricial, interpretação, interações, colinearidade e introdução a GLMs.
+Notação matricial, interpretação, interações, colinearidade e comparação entre modelos.
 
 [Abrir slides](../slides/21-regressao-multipla.qmd){.btn .btn-outline-primary}
 :::
@@ -41,8 +41,7 @@ Despesas médicas com preditores quantitativos e categóricos.
 - interpretar coeficientes condicionais, indicadores e interações;
 - derivar perda, gradiente e equações normais;
 - discutir colinearidade, diagnóstico e bootstrap;
-- reconhecer o modelo linear normal como um GLM;
-- preparar a regressão logística com resposta Bernoulli e link logit.
+- comparar modelos usando RMSE, $R^2$ e $R^2$ ajustado.
 
 ## Estudo de caso
 
@@ -52,11 +51,10 @@ A base de seguros permite combinar idade, IMC, filhos, tabagismo, sexo e região
 
 ### Bibliografia principal
 
-- James et al., *An Introduction to Statistical Learning*, capítulos 3 e 4.
+- James et al., *An Introduction to Statistical Learning*, capítulo 3.
 - Faraway, *Linear Models with R*.
 
 ### Bibliografia complementar
 
 - Gelman, Hill e Vehtari, *Regression and Other Stories*.
-- Fox, *Applied Regression Analysis and Generalized Linear Models*.
-- McCullagh e Nelder, *Generalized Linear Models*.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*, regressão múltipla.

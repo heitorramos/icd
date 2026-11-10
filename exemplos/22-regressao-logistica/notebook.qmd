@@ -41,7 +41,31 @@ df.groupby("smoker")[["age", "bmi", "charges"]].agg(["count", "mean", "median", 
 Fumantes representam cerca de 20,5% da base e possuem despesas muito maiores. Isso facilita a classificação, mas `charges` pode ser posterior ao comportamento e inadequado para uma previsão prospectiva.
 :::
 
-## Da resposta binária ao GLM
+## Modelos lineares generalizados
+
+Um modelo linear generalizado mantém o preditor linear da regressão múltipla, mas permite outras distribuições para a resposta. Ele combina três componentes:
+
+1. **componente aleatório:** especifica a distribuição de $Y_i\mid X_i$ na família exponencial;
+2. **componente sistemático:** reúne os preditores em $\eta_i=x_i^T\beta$;
+3. **função de ligação:** relaciona a média condicional ao preditor linear por $g(\mu_i)=\eta_i$, em que $\mu_i=E[Y_i\mid X_i]$.
+
+### A regressão linear normal como GLM
+
+Na regressão linear,
+
+$$
+Y_i\mid X_i=x_i\sim N(\mu_i,\sigma^2)
+$$
+
+e usamos a ligação identidade:
+
+$$
+g(\mu_i)=\mu_i=\eta_i=x_i^T\beta.
+$$
+
+A média normal pode assumir qualquer valor real. Por isso, nenhuma transformação adicional é necessária entre $\mu_i$ e $\eta_i$.
+
+### Da resposta binária ao GLM Bernoulli
 
 $$Y_i\mid X_i=x_i\sim\operatorname{Bernoulli}(\pi_i),$$
 
@@ -49,7 +73,11 @@ $$\eta_i=x_i^T\beta,$$
 
 $$g(\pi_i)=\eta_i.$$
 
-Esses são, respectivamente, componente aleatório, preditor linear e função de ligação.
+Para uma Bernoulli, $E[Y_i\mid X_i]=\pi_i$. A função de ligação precisa conectar uma probabilidade restrita a $(0,1)$ ao preditor linear, que pode assumir qualquer valor real.
+
+::: {.callout-note title="Interpretação"}
+A regressão logística preserva a matriz $X$ e o preditor linear $X\beta$. A distribuição da resposta, a função de ligação, a verossimilhança e a perda mudam em relação à regressão linear normal.
+:::
 
 ## Testando funções candidatas
 

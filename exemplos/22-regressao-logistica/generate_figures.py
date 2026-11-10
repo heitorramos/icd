@@ -5,6 +5,17 @@ df=pd.read_csv(ROOT/"exemplos/16-correlacao/data/insurance.csv"); sns.set_theme(
 def save(fig,n): fig.tight_layout(); fig.savefig(OUT/n,dpi=180,bbox_inches="tight",facecolor="white"); plt.close(fig)
 eta=np.linspace(-6,6,600)
 funcs={"linear":.5+.15*eta,"degrau":(eta>=0).astype(float),"arctan":.5+np.arctan(eta)/np.pi,"logística":1/(1+np.exp(-eta))}
+
+# Identity and inverse-logit links used in the GLM introduction.
+sigmoid=1/(1+np.exp(-eta))
+fig,axes=plt.subplots(1,2,figsize=(12,4.5))
+axes[0].plot(eta,eta,lw=3,color=blue)
+axes[0].set(xlabel=r"preditor linear $\eta$",ylabel=r"média $\mu$",title="Normal: ligação identidade")
+axes[1].plot(eta,sigmoid,lw=3,color=orange)
+axes[1].axhline(.5,color="black",ls="--")
+axes[1].set(xlabel=r"preditor linear $\eta$",ylabel=r"probabilidade $\mu$",title="Bernoulli: inversa da ligação logit")
+save(fig,"links-glm.png")
+
 fig,axes=plt.subplots(2,2,figsize=(11,7),sharex=True,sharey=True)
 for ax,(name,val) in zip(axes.flat,funcs.items()): ax.plot(eta,val,lw=3,color=blue if name!="logística" else orange); ax.axhline(0,color="black",lw=.7); ax.axhline(1,color="black",lw=.7); ax.set_title(name); ax.set_ylim(-.25,1.25)
 save(fig,"funcoes-candidatas.png")
