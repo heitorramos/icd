@@ -43,6 +43,7 @@ website:
         - aulas/index.qmd
         - cronograma.qmd
         - projeto.qmd
+        # BEGIN AUTO: aulas liberadas
         - section: "Módulo 0 · Motivação"
           contents:
             - aulas/01-introducao.qmd
@@ -71,9 +72,9 @@ website:
         - section: "Módulo 2 · Inferência Estatística"
           contents:
             - aulas/08-estimadores.qmd
-            - aulas/09-risco-estimadores.qmd
-            - text: "Material de apoio · Aulas 08–09"
+            - text: "Material de apoio · Aula 08"
               href: exemplos/08-estimadores/notebook.qmd
+            - aulas/09-risco-estimadores.qmd
             - aulas/10-tcl-intervalos.qmd
             - text: "Material de apoio · Aula 10"
               href: exemplos/10-tcl-inferencia/notebook.qmd
@@ -84,9 +85,9 @@ website:
             - text: "Material de apoio · Aula 12"
               href: exemplos/12-bootstrap/notebook.qmd
             - aulas/13-testes-permutacao.qmd
-            - aulas/14-permutacao-avancada.qmd
-            - text: "Material de apoio · Aulas 13–14"
+            - text: "Material de apoio · Aula 13"
               href: exemplos/13-permutacao/notebook.qmd
+            - aulas/14-permutacao-avancada.qmd
             - aulas/15-poder-multiplos.qmd
             - text: "Material de apoio · Aula 15"
               href: exemplos/15-poder-multiplos/notebook.qmd
@@ -110,6 +111,7 @@ website:
             - aulas/21-regressao-multipla.qmd
             - text: "Material de apoio · Aula 21"
               href: exemplos/21-regressao-multipla/notebook.qmd
+        # END AUTO: aulas liberadas
 
 format:
   html:

@@ -266,6 +266,14 @@ table {
   margin-bottom: 0;
 }
 
+// Os materiais pertencem à árvore de navegação para conservar o menu lateral
+// dentro dos notebooks, mas não precisam aparecer como links para o aluno.
+#quarto-sidebar li.sidebar-item:not(.sidebar-item-section):has(
+  a.sidebar-link[href*="/exemplos/"]
+) {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .course-path {
     grid-template-columns: 1fr 1fr;
