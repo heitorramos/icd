@@ -291,7 +291,7 @@ Vários preditores, notação matricial, interações, colinearidade e diagnóst
 
 Introdução a GLMs, caso Bernoulli, logit, entropia cruzada e avaliação.
 
-**Material em revisão**
+[Abrir a aula](22-regressao-logistica.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}

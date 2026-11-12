@@ -222,9 +222,9 @@ $$
 
 Logo,
 
-$$\nabla_bJ(b)=-2X^T(y-Xb).$$
+$$\nabla_bJ(b)=2X^T(Xb-y).$$
 
-O componente $j$ é $-2\sum_i x_{ij}e_i$: resíduos ponderados pela coluna $j$.
+O componente $j$ é $2\sum_i x_{ij}(\widehat y_i-y_i)$: diferenças entre previsão e valor observado, ponderadas pela coluna $j$.
 
 ### Jacobiana de uma função vetorial
 
@@ -270,20 +270,20 @@ Dg(b)
 =X.
 $$
 
-O vetor de resíduos candidatos é $e(b)=y-g(b)$; portanto,
-$De(b)=-X$. Aplicando a regra da cadeia ao objetivo escalar
-$J(b)=e(b)^Te(b)$,
+O vetor de resíduos candidatos é $e(b)=y-g(b)$. Para manter o gradiente na forma
+**previsão menos observado**, defina $d(b)=g(b)-y=Xb-y=-e(b)$. Como elevar ao
+quadrado remove o sinal, $J(b)=e(b)^Te(b)=d(b)^Td(b)$, e $Dd(b)=X$. Aplicando a
+regra da cadeia,
 
 $$
-\nabla J(b)
-=2\,De(b)^Te(b)
-=-2X^T(y-Xb).
+\nabla J(b)=2\,Dd(b)^Td(b)=2X^T(Xb-y).
 $$
 
 ::: {.callout-note title="Gradiente e Jacobiana não são o mesmo objeto"}
 $Dg(b)$ é uma matriz $n\times(p+1)$ porque $g$ é vetorial. Já
 $\nabla J(b)$ é um vetor $(p+1)\times1$ porque $J$ é escalar. Reservaremos
-$J$ para a função objetivo, $Dg(b)$ para a Jacobiana da função de previsão $g$ no ponto $b$ e $De(b)$ para a Jacobiana da função de resíduos $e$ no mesmo ponto.
+$J$ para a função objetivo, $Dg(b)$ para a Jacobiana da previsão e $Dd(b)$ para
+a Jacobiana da discrepância $d(b)=g(b)-y$.
 :::
 
 ## Ajuste numérico
@@ -305,7 +305,7 @@ Mantendo os demais preditores fixos, um ano adicional de idade corresponde a cer
 A função abaixo minimiza o erro quadrático médio. Dividir a SSE por $n$ não altera o ponto de mínimo, mas torna a escala do gradiente menos dependente do tamanho da amostra.
 
 ```{python}
-def regressao_gd(X, y, eta=0.01, max_iter=50_000, tol=1e-6):
+def regressao_gd(X, y, learning_rate=0.01, max_iter=50_000, tol=1e-6):
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float)
     n, p = X.shape
@@ -315,14 +315,14 @@ def regressao_gd(X, y, eta=0.01, max_iter=50_000, tol=1e-6):
 
     for _ in range(max_iter):
         prediction = X @ beta
-        residual = y - prediction
-        historico.append(np.mean(residual**2))
+        difference = prediction - y
+        historico.append(np.mean(difference**2))
 
-        gradient = -(2/n) * X.T @ residual
+        gradient = (2/n) * X.T @ difference
         if np.linalg.norm(gradient) < tol:
             break
 
-        beta = beta - eta * gradient
+        beta = beta - learning_rate * gradient
 
     return beta, np.asarray(historico)
 ```
@@ -362,6 +362,199 @@ plt.show()
 
 ::: {.callout-note title="Interpretação"}
 Todas as coordenadas de `beta` são atualizadas simultaneamente com o mesmo vetor gradiente. A curva cai rapidamente no início e se estabiliza no mesmo MSE alcançado pelo ajuste de OLS. A padronização altera a escala dos coeficientes, mas não a capacidade do modelo de reproduzir os valores ajustados por OLS.
+:::
+
+### SGD para regressão múltipla
+
+No batch completo, cada atualização usa as $n$ linhas de $X$. No gradiente
+descendente estocástico, a linha $x_i^T$ e a resposta $y_i$ produzem uma
+atualização imediata:
+
+$$
+e_i=y_i-x_i^T b,
+\qquad
+g_i(b)=-2x_i e_i,
+\qquad
+b\leftarrow b-\kappa g_i(b).
+$$
+
+Aqui, $x_i$ contém o intercepto e todos os preditores da pessoa $i$, $b$ contém
+todos os coeficientes e $\kappa$ é a taxa de aprendizado. Depois de visitar as
+$n$ linhas uma vez, completamos uma época e embaralhamos a ordem novamente.
+
+```{python}
+def regressao_sgd(X, y, learning_rate=0.0005, epochs=120, seed=20261111):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, p = X.shape
+
+    beta = np.zeros(p)
+    historico = []
+    generator = np.random.default_rng(seed)
+
+    for epoch in range(epochs):
+        # Cada época apresenta todas as linhas em uma nova ordem.
+        order = generator.permutation(n)
+
+        for i in order:
+            prediction_i = X[i] @ beta
+            difference_i = prediction_i - y[i]
+
+            # Para uma observação, o gradiente tem um componente por coluna de X.
+            gradient = 2 * X[i] * difference_i
+
+            # SGD atualiza todos os coeficientes após esta única observação.
+            beta = beta - learning_rate * gradient
+
+        # A perda completa não participa do passo; serve para acompanhar o ajuste.
+        residual = y - X @ beta
+        historico.append(np.mean(residual**2))
+
+    return beta, np.asarray(historico)
+
+beta_sgd, historico_sgd = regressao_sgd(X_gd, y)
+pd.Series({
+    "épocas": len(historico_sgd),
+    "atualizações": len(historico_sgd) * len(y),
+    "MSE final": historico_sgd[-1],
+    "RMSE final": np.sqrt(historico_sgd[-1]),
+}).round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+O SGD calcula um vetor com tantos componentes quanto há coeficientes, mas usa
+somente uma linha para estimá-lo. Cada passo é barato e ruidoso. O
+embaralhamento impede que uma ordenação fixa — por exemplo, fumantes seguidos de
+não fumantes — imponha repetidamente a mesma sequência de correções.
+:::
+
+### Mini-batch para regressão múltipla
+
+O mini-batch usa um subconjunto $B$ de $m$ linhas. Mantemos $b$ fixo enquanto
+calculamos os resíduos do lote, tiramos a média de suas contribuições e só então
+atualizamos os coeficientes:
+
+$$
+g_B(b)=-\frac{2}{m}X_B^T(y_B-X_Bb),
+\qquad
+b\leftarrow b-\kappa g_B(b).
+$$
+
+$X_B$ e $y_B$ contêm apenas as linhas do lote. Se o último lote da época tiver
+menos de $m$ observações, o denominador deve ser sua quantidade real de linhas.
+
+```{python}
+def regressao_minibatch(
+    X, y, batch_size=64, learning_rate=0.01, epochs=120, seed=20261111
+):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, p = X.shape
+
+    beta = np.zeros(p)
+    historico = []
+    generator = np.random.default_rng(seed)
+
+    for epoch in range(epochs):
+        # O embaralhamento muda a composição dos lotes em cada época.
+        order = generator.permutation(n)
+
+        for start in range(0, n, batch_size):
+            batch_ids = order[start:start + batch_size]
+            X_batch = X[batch_ids]
+            y_batch = y[batch_ids]
+
+            prediction = X_batch @ beta
+            difference = prediction - y_batch
+
+            # Média das contribuições das observações presentes neste lote.
+            gradient = (2 / len(batch_ids)) * X_batch.T @ difference
+
+            # Uma atualização por lote, sempre simultânea em todos os coeficientes.
+            beta = beta - learning_rate * gradient
+
+        residual = y - X @ beta
+        historico.append(np.mean(residual**2))
+
+    return beta, np.asarray(historico)
+
+beta_minibatch, historico_minibatch = regressao_minibatch(X_gd, y)
+pd.Series({
+    "épocas": len(historico_minibatch),
+    "lotes por época": int(np.ceil(len(y) / 64)),
+    "MSE final": historico_minibatch[-1],
+    "RMSE final": np.sqrt(historico_minibatch[-1]),
+}).round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+O produto `X_batch.T @ residual` acumula simultaneamente as contribuições para
+intercepto, idade, IMC, número de filhos e todos os indicadores categóricos. O
+mini-batch reduz parte da oscilação do SGD sem esperar a leitura da base inteira
+para fazer uma atualização.
+:::
+
+### Comparação com batch completo e OLS
+
+Como os coeficientes de `beta_gd`, `beta_sgd` e `beta_minibatch` correspondem à
+matriz padronizada `X_gd`, calculamos também a solução OLS nessa mesma escala.
+Comparar diretamente esses coeficientes com os do primeiro ajuste, feito na
+escala original, seria incorreto; os valores ajustados, porém, são equivalentes.
+
+```{python}
+beta_ols_padronizado = np.linalg.lstsq(X_gd, y, rcond=None)[0]
+
+comparacao_otimizadores = []
+for metodo, coeficientes in {
+    "OLS (lstsq)": beta_ols_padronizado,
+    "batch completo": beta_gd,
+    "mini-batch (m=64)": beta_minibatch,
+    "SGD (m=1)": beta_sgd,
+}.items():
+    residual = y - X_gd @ coeficientes
+    comparacao_otimizadores.append({
+        "método": metodo,
+        "MSE": np.mean(residual**2),
+        "RMSE": np.sqrt(np.mean(residual**2)),
+        "distância até OLS": np.linalg.norm(
+            coeficientes - beta_ols_padronizado
+        ),
+    })
+
+pd.DataFrame(comparacao_otimizadores).set_index("método").round(4)
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 4.5))
+epochs_to_compare = min(
+    len(historico_sgd), len(historico_minibatch), len(historico_gd) - 1
+)
+data_passes = np.arange(1, epochs_to_compare + 1)
+
+# historico_gd[0] é a perda antes da primeira atualização batch.
+ax.plot(data_passes, historico_gd[1:epochs_to_compare + 1] / 1e6,
+        label="batch completo", linewidth=2.4)
+ax.plot(data_passes, historico_minibatch[:epochs_to_compare] / 1e6,
+        label="mini-batch", linewidth=2)
+ax.plot(data_passes, historico_sgd[:epochs_to_compare] / 1e6,
+        label="SGD", linewidth=1.7, alpha=.85)
+ax.axhline(mse_ols / 1e6, color="black", linestyle="--",
+           linewidth=1.5, label="mínimo OLS")
+ax.set(xlabel="passagens completas pela amostra",
+       ylabel="MSE (milhões de US$²)")
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+Os três algoritmos procuram o mesmo mínimo da perda quadrática. Batch completo
+produz uma trajetória suave; mini-batch faz mais atualizações por época com
+ruído moderado; SGD atualiza após cada pessoa e oscila mais. A distância até OLS
+mostra que “terminar uma época” não é critério suficiente de convergência: taxa,
+número de épocas e tolerância precisam ser avaliados junto com a curva da perda.
+O eixo horizontal compara a mesma quantidade de dados processados: uma passagem
+completa pela amostra em cada método.
 :::
 
 ## Valores ajustados e qualidade
@@ -662,7 +855,7 @@ categoria de referência ou das interações do modelo.
 ## Questões de revisão
 
 1. Explique as dimensões de $X$, $\beta$, $y$ e $\nabla J$.
-2. Derive $\nabla J=-2X^T(y-X\beta)$.
+2. Derive $\nabla J=2X^T(X\beta-y)$ e explique por que o algoritmo subtrai esse vetor.
 3. Interprete um coeficiente indicador e uma interação.
 4. Por que mudar a categoria de referência não muda previsões?
 5. Como colinearidade afeta interpretação e previsão?

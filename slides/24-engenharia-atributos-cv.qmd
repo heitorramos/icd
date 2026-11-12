@@ -367,9 +367,9 @@ for k in range(5):
 Para pipeline candidata $m$,
 
 $$\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K
-\frac1{|I_k|}\sum_{i\in I_k}L(y_i,\widehat f_m^{(-k)}(x_i)).$$
+\frac1{|I_k|}\sum_{i\in I_k}\rho(y_i,\widehat f_m^{(-k)}(x_i)).$$
 
-$\widehat f_m^{(-k)}$ é ajustada sem a parte $k$; $L$ é a perda escolhida.
+$\widehat f_m^{(-k)}$ é ajustada sem a parte $k$; $\rho$ é a perda escolhida.
 
 ## Todo o ajuste ocorre dentro de cada repetição
 

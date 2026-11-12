@@ -16,172 +16,164 @@ execute: {enabled: false, echo: false}
 
 ## Quando a resposta é uma classe
 
-Queremos prever um resultado binário e quantificar sua incerteza.
+Queremos prever um resultado binário e quantificar a incerteza dessa previsão.
 
-> Regressão logística modela uma probabilidade condicional usando um preditor linear.
+> A regressão logística modela uma probabilidade condicional usando um preditor linear.
 
-## Hoje
+## Roteiro da aula
 
-- distinguir probabilidade prevista e decisão de classe;
-- introduzir a estrutura dos modelos lineares generalizados;
 - construir a regressão logística como um GLM Bernoulli;
-- experimentar funções candidatas para mapear números reais em probabilidades;
-- derivar a verossimilhança Bernoulli e a entropia cruzada;
-- interpretar coeficientes, odds e razões de odds;
-- avaliar discriminação, calibração e limiares.
+- relacionar logit, função logística e odds;
+- obter a entropia cruzada a partir da verossimilhança;
+- ajustar os coeficientes por gradiente descendente;
+- separar probabilidade prevista, limiar e classe;
+- concluir com um exemplo completo usando treino e teste.
 
 ## Base de dados de apoio
 
-Continuaremos com **Medical Insurance Cost**, do Kaggle:
+Usaremos **Medical Insurance Cost**, do Kaggle:
 
+- cada linha representa uma pessoa segurada;
 - resposta $Y$: fumante (`smoker=yes`);
 - preditores: idade, IMC e despesas;
 - 1.338 pessoas, das quais 274 fumantes;
 - exemplo didático e descritivo, não um sistema para inferir comportamento pessoal.
 
-## Uma tarefa supervisionada binária
+## Resposta binária e probabilidade condicional
 
 Codificamos
 
-$$Y_i=\begin{cases}1,&\text{fumante}\\0,&\text{não fumante.}\end{cases}$$
+$$
+Y_i=\begin{cases}
+1,&\text{fumante},\\
+0,&\text{não fumante}.
+\end{cases}
+$$
 
-Queremos estimar
+Para os atributos $X_i=x_i$, queremos estimar
 
-$$\pi_i=P(Y_i=1\mid X_i=x_i).$$
+$$
+\pi_i=P(Y_i=1\mid X_i=x_i).
+$$
 
-## A base apresenta sobreposição
+$i$ identifica a pessoa e $\pi_i$ é sua probabilidade condicional de pertencer à classe 1.
 
-![](assets/aula22-regressao-logistica/base-probabilidades.png){.wide-chart fig-alt="Resposta binária contra despesas e distribuições das probabilidades previstas."}
+## Probabilidade antes da classe
 
-Classes não precisam ser perfeitamente separáveis para estimarmos probabilidades úteis.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-```python
-plt.scatter(charges, smoker+jitter)
-sns.histplot(data=probabilities, x="p", hue="classe")
-```
-</details>
-
-## Classificação começa com probabilidade
-
-O modelo produz $\widehat\pi_i\in[0,1]$.
+O modelo produz uma probabilidade $\widehat\pi_i\in[0,1]$.
 
 Uma regra posterior pode declarar
 
-$$\widehat y_i=\mathbb 1(\widehat\pi_i\ge c),$$
+$$
+\widehat y_i=\mathbb 1(\widehat\pi_i\ge c),
+$$
 
-em que $c$ é um limiar escolhido segundo os custos da decisão.
+em que $c$ é o limiar e $\mathbb 1(\cdot)$ vale 1 quando a condição é verdadeira.
 
-## Por que não regressão linear?
+Mudar $c$ altera a decisão, mas não reestima o modelo.
+
+## Por que a regressão linear falha?
 
 Se usarmos
 
-$$\widehat\pi_i=x_i^T\beta,$$
-
-podemos obter valores menores que 0 ou maiores que 1. Além disso, a variância Bernoulli depende da média:
-
-$$\operatorname{Var}(Y_i\mid X_i)=\pi_i(1-\pi_i).$$
-
-## Modelos lineares generalizados
-
-Um GLM reúne três componentes:
-
-1. **aleatório:** distribuição de $Y_i\mid X_i$ na família exponencial;
-2. **sistemático:** preditor linear $\eta_i=x_i^T\beta$;
-3. **ligação:** função $g$ tal que $g(\mu_i)=\eta_i$.
-
-$\mu_i=E[Y_i\mid X_i]$ é a média condicional.
-
-## A regressão linear normal é um GLM
-
-- distribuição: $Y_i\mid X_i\sim N(\mu_i,\sigma^2)$;
-- preditor linear: $\eta_i=x_i^T\beta$;
-- ligação identidade: $g(\mu)=\mu$.
-
-Portanto,
-
-$$\mu_i=\eta_i=x_i^T\beta.$$
-
-## Para Bernoulli, a média é uma probabilidade
-
-Se $Y_i\in\{0,1\}$, então
-
 $$
-\mu_i=E[Y_i\mid X_i]
-=P(Y_i=1\mid X_i)
-=\pi_i,
+\widehat\pi_i=x_i^T\beta,
 $$
 
-com $0\le\pi_i\le1$. O preditor $x_i^T\beta$ pode assumir qualquer valor real.
+podemos obter valores menores que 0 ou maiores que 1. Além disso, para uma resposta Bernoulli,
 
-## A ligação adapta a escala
+$$
+\operatorname{Var}(Y_i\mid X_i)=\pi_i(1-\pi_i),
+$$
 
-![](assets/aula22-regressao-logistica/links-glm.png){.wide-chart fig-alt="Comparação entre a ligação identidade da regressão normal e a inversa da ligação logit para uma resposta Bernoulli."}
+portanto a variância depende da própria média.
 
-A função de ligação conecta a média permitida pela distribuição ao preditor linear irrestrito.
+## Componentes de um GLM
+
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Componente aleatório
+
+Distribuição de $Y_i\mid X_i$ na família exponencial.
+:::
+
+::: {.column width="33%"}
+### Componente sistemático
+
+Preditor linear
+
+$$\eta_i=x_i^T\beta.$$
+:::
+
+::: {.column width="33%"}
+### Função de ligação
+
+$$g(\mu_i)=\eta_i,$$
+
+com $\mu_i=E[Y_i\mid X_i]$.
+:::
+:::
+
+::: {.callout-note title="Por que a família exponencial?"}
+O nome descreve uma **forma matemática**, não apenas a distribuição exponencial. Essa família inclui Normal, Bernoulli, Binomial, Poisson e Gamma. Nela, média, variância e verossimilhança têm uma estrutura comum, permitindo mudar o tipo de resposta sem abandonar o mesmo arcabouço de estimação dos GLMs.
+:::
+
+## Normal e Bernoulli no mesmo quadro
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Regressão linear
+
+$$Y_i\mid X_i\sim N(\mu_i,\sigma^2)$$
+
+$$g(\mu_i)=\mu_i=\eta_i=x_i^T\beta$$
+
+A ligação identidade mantém a média em $\mathbb R$.
+:::
+
+::: {.column width="50%"}
+### Regressão logística
+
+$$Y_i\mid X_i\sim\operatorname{Bernoulli}(\pi_i)$$
+
+$$
+\begin{aligned}
+g(\pi_i)&=\log\!\left(\frac{\pi_i}{1-\pi_i}\right)\\
+&=\eta_i=x_i^T\beta
+\end{aligned}
+$$
+
+A ligação conecta $(0,1)$ a $\mathbb R$.
+:::
+:::
+
+## A função de ligação adapta a escala
+
+![](assets/aula22-regressao-logistica/links-glm.png){.wide-chart fig-alt="Ligação identidade da regressão normal e inversa da ligação logit para uma resposta Bernoulli."}
+
+A distribuição define os valores possíveis para a média. A ligação permite usar o mesmo preditor linear em respostas com domínios diferentes.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
 identity = eta
-inverse_logit = 1/(1+np.exp(-eta))
+inverse_logit = 1 / (1 + np.exp(-eta))
 ```
 </details>
 
-## O desafio é ligar $\mathbb R$ a $(0,1)$
+## Funções candidatas para uma probabilidade
 
-O preditor linear
+![](assets/aula22-regressao-logistica/funcoes-candidatas.png){.wide-chart .aula22-chart-compact fig-alt="Funções linear, degrau, arctan e logística usadas como mapas de números reais para probabilidades."}
 
-$$\eta=x^T\beta$$
-
-pode assumir qualquer valor real. Precisamos de uma função inversa de ligação
-
-$$h:\mathbb R\rightarrow(0,1),\qquad \pi=h(\eta).$$
-
-### Podemos “plugar” uma função linear
-
-$$h(\eta)=a+b\eta.$$
-
-Vantagem: simples.
-
-Problema: não respeita automaticamente $0\le h(\eta)\le1$.
-
-Recortar previsões nos extremos destrói suavidade e não produz um modelo probabilístico coerente.
-
-### Podemos “plugar” um degrau
-
-$$h(\eta)=\mathbb 1(\eta\ge0).$$
-
-Vantagem: sempre retorna 0 ou 1.
-
-Problemas: não fornece probabilidades graduais e sua derivada é zero quase em toda parte.
-
-### Podemos “plugar” qualquer CDF contínua
-
-Uma função de distribuição acumulada satisfaz
-
-$$0\le F(\eta)\le1,$$
-
-é crescente e possui limites 0 e 1.
-
-Exemplos:
-
-- Normal: link probit;
-- logística: link logit;
-- valor extremo: link complementary log-log.
-
-## Compare funções candidatas
-
-![](assets/aula22-regressao-logistica/funcoes-candidatas.png){.wide-chart fig-alt="Funções linear, degrau, arctan e logística como mapas para probabilidade."}
-
-A logística é suave, monotônica, limitada e possui interpretação em odds.
+A função linear viola os limites, e o degrau não produz probabilidades graduais. CDFs contínuas respeitam os limites; a logística também oferece uma interpretação em odds.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
+
 ```python
-linear = .5+.15*eta
+linear = .5 + .15 * eta
 step = eta >= 0
-arctan_link = .5+np.arctan(eta)/np.pi
-logistic = 1/(1+np.exp(-eta))
+arctan_link = .5 + np.arctan(eta) / np.pi
+logistic = 1 / (1 + np.exp(-eta))
 ```
 </details>
 
@@ -191,378 +183,534 @@ $$
 \sigma(\eta)=\frac{1}{1+e^{-\eta}}.
 $$
 
-- $\eta\to-\infty\Rightarrow\sigma(\eta)\to0$;
-- $\eta=0\Rightarrow\sigma(\eta)=0{,}5$;
-- $\eta\to+\infty\Rightarrow\sigma(\eta)\to1$.
+![](assets/aula22-regressao-logistica/sigmoides.png){.wide-chart .aula22-chart-compact fig-alt="Curvas logísticas com diferentes inclinações."}
 
-## Coeficientes movem a sigmoide
-
-![](assets/aula22-regressao-logistica/sigmoides.png){.wide-chart fig-alt="Curvas logísticas com diferentes inclinações."}
-
-Maior magnitude da inclinação torna a transição mais rápida na escala do preditor.
+$\sigma(0)=0{,}5$. A magnitude dos coeficientes controla a rapidez da transição na escala dos atributos.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
+
 ```python
 for beta in [.5, 1, 2]:
-    plt.plot(eta, 1/(1+np.exp(-beta*eta)))
+    plt.plot(eta, 1 / (1 + np.exp(-beta * eta)))
 ```
 </details>
 
-## Odds transformam probabilidade
+## Odds e log-odds
 
 Para $0<\pi<1$,
 
-$$\operatorname{odds}=\frac{\pi}{1-\pi}.$$
-
-| $\pi$ | odds |
-|---:|---:|
-| 0,20 | 0,25 |
-| 0,50 | 1 |
-| 0,80 | 4 |
-
-Odds comparam chance de sucesso e fracasso.
-
-### Log-odds remove a restrição positiva
-
 $$
+\operatorname{odds}=\frac{\pi}{1-\pi},
+\qquad
 \operatorname{logit}(\pi)=\log\left(\frac{\pi}{1-\pi}\right).
 $$
 
-O logit mapeia $(0,1)$ em toda a reta real.
+| $\pi$ | odds | interpretação |
+|---:|---:|---|
+| 0,20 | 0,25 | um sucesso para quatro fracassos |
+| 0,50 | 1 | chances iguais |
+| 0,80 | 4 | quatro sucessos para um fracasso |
 
-Assim podemos impor uma relação linear nessa escala.
+O logit transforma odds positivas em qualquer número real.
+
+## A logística é a inversa do logit
+
+Partimos de $\eta=\operatorname{logit}(\pi)$ e isolamos $\pi$:
+
+$$
+\begin{aligned}
+\eta&=\log\left(\frac{\pi}{1-\pi}\right)\\
+e^\eta&=\frac{\pi}{1-\pi}\\
+e^\eta(1-\pi)&=\pi\\
+e^\eta&=\pi(1+e^\eta)\\
+\pi&=\frac{e^\eta}{1+e^\eta}
+=\frac{1}{1+e^{-\eta}}
+=\sigma(\eta).
+\end{aligned}
+$$
+
+Assim, $\operatorname{logit}:(0,1)\to\mathbb R$ e $\sigma:\mathbb R\to(0,1)$ desfazem uma à outra.
 
 ## O modelo logístico
 
-$$Y_i\mid X_i=x_i\sim\operatorname{Bernoulli}(\pi_i),$$
+$$
+Y_i\mid X_i=x_i\sim\operatorname{Bernoulli}(\pi_i),
+$$
 
-$$\log\left(\frac{\pi_i}{1-\pi_i}\right)=x_i^T\beta.$$
+$$
+\eta_i=x_i^T\beta,
+\qquad
+\pi_i=\sigma(\eta_i)=\frac{1}{1+e^{-\eta_i}}.
+$$
 
-Esses são o componente aleatório, a ligação e o preditor linear do GLM.
-
-## Inverta o link
-
-Se $\eta_i=x_i^T\beta$, então
-
-$$e^{\eta_i}=\frac{\pi_i}{1-\pi_i}.$$
-
-Resolvendo para $\pi_i$:
-
-$$\pi_i=\frac{e^{\eta_i}}{1+e^{\eta_i}}=\frac1{1+e^{-\eta_i}}.$$
-
-### O que significa cada termo?
-
-| símbolo | significado |
-|---|---|
-| $Y_i$ | resposta binária |
-| $\pi_i$ | probabilidade condicional de classe 1 |
-| $x_i^T\beta$ | preditor linear |
-| $g(\pi)=\operatorname{logit}(\pi)$ | função de ligação |
-| $\sigma(\eta)$ | inversa do link |
+$x_i$ contém os atributos da pessoa, $\beta$ contém os coeficientes e $\pi_i$ é a probabilidade condicional de $Y_i=1$.
 
 ## Quiz: por que não usar um degrau? {.quiz-question}
 
-- [Porque ele não produz probabilidades graduais e dificulta otimização por gradientes]{.correct data-explanation="O degrau é descontínuo e sua derivada é zero quase sempre."}
-- [Porque ele pode produzir valores maiores que 1]{data-explanation="O degrau retorna apenas 0 ou 1."}
-- [Porque classificação nunca usa limiares]{data-explanation="Limiar é usado depois da probabilidade prevista."}
+- [Porque ele não produz probabilidades graduais e dificulta a otimização por gradientes]{.correct data-explanation="O degrau é descontínuo e sua derivada é zero quase sempre."}
+- [Porque ele pode produzir valores maiores que 1]{data-explanation="O degrau retorna somente 0 ou 1."}
+- [Porque classificadores nunca usam limiares]{data-explanation="O limiar pode ser aplicado depois que o modelo estima a probabilidade."}
 
-## Verossimilhança de uma observação
+## Verossimilhança Bernoulli
 
-Para $y_i\in\{0,1\}$,
+Para $y_i\in\{0,1\}$, uma única expressão cobre os dois resultados:
 
 $$
-P(Y_i=y_i\mid x_i)=\pi_i^{y_i}(1-\pi_i)^{1-y_i}.
+P(Y_i=y_i\mid x_i)
+=\pi_i^{y_i}(1-\pi_i)^{1-y_i}.
 $$
-
-Se $y_i=1$, a contribuição é $\pi_i$; se $y_i=0$, é $1-\pi_i$.
-
-## Verossimilhança conjunta
 
 Sob independência condicional,
 
 $$
 L(\beta)=\prod_{i=1}^n
 \pi_i^{y_i}(1-\pi_i)^{1-y_i},
+\qquad
+\pi_i=\sigma(x_i^T\beta).
 $$
 
-com
+$L(\beta)$ mede a compatibilidade dos coeficientes com todos os rótulos observados.
 
-$$\pi_i=\sigma(x_i^T\beta).$$
+## Log-verossimilhança e entropia cruzada
 
-## Log-verossimilhança
+Tomar o log transforma o produto em soma:
 
 $$
-\ell(\beta)=\sum_i
+\ell(\beta)=\sum_{i=1}^n
 \left[y_i\log\pi_i+(1-y_i)\log(1-\pi_i)\right].
 $$
 
-Maximizá-la encontra os coeficientes que tornam os rótulos observados mais compatíveis com o modelo.
-
-## Entropia cruzada é a perda negativa
+Minimizamos a log-verossimilhança negativa média:
 
 $$
-J(\beta)=-\frac1n\ell(\beta)
-=-\frac1n\sum_i
-\left[y_i\log\pi_i+(1-y_i)\log(1-\pi_i)\right].
+J(\beta)=-\frac{1}{n}\ell(\beta).
 $$
 
-Também é chamada log-loss binária.
+$J$ também recebe os nomes **entropia cruzada binária** e **log-loss**.
 
 ## A perda depende da classe observada
 
 ![](assets/aula22-regressao-logistica/perda-logistica.png){.wide-chart fig-alt="Log-loss para observações das classes 1 e 0."}
 
-Previsões confiantes e erradas recebem penalidade muito grande.
+Previsões confiantes e corretas têm perda pequena. Previsões confiantes e erradas recebem penalidade muito grande.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
+
 ```python
 loss_y1 = -np.log(p)
-loss_y0 = -np.log(1-p)
+loss_y0 = -np.log(1 - p)
 ```
 </details>
 
-## A derivada da sigmoide
+## Derivada da função logística
+
+Para $\pi=\sigma(\eta)=(1+e^{-\eta})^{-1}$,
 
 $$
-\sigma'(\eta)=\sigma(\eta)[1-\sigma(\eta)].
+\begin{aligned}
+\frac{d\pi}{d\eta}
+&=-(1+e^{-\eta})^{-2}(-e^{-\eta})\\
+&=\frac{e^{-\eta}}{(1+e^{-\eta})^2}\\
+&=\underbrace{\frac{1}{1+e^{-\eta}}}_{\pi}
+\underbrace{\frac{e^{-\eta}}{1+e^{-\eta}}}_{1-\pi}
+=\pi(1-\pi).
+\end{aligned}
 $$
 
-Essa identidade simplifica a regra da cadeia na derivação do gradiente.
+A derivada é maior perto de $\pi=0{,}5$ e diminui quando a probabilidade se aproxima de 0 ou 1.
 
-## O gradiente tem forma familiar
-
-Se $\pi=\sigma(X\beta)$,
+## Regra da cadeia na log-loss {.smaller}
 
 $$
-\nabla J(\beta)=\frac1nX^T(\pi-y).
+\frac{\partial j_i}{\partial\beta_j}
+=
+\frac{\partial j_i}{\partial\pi_i}
+\frac{\partial\pi_i}{\partial\eta_i}
+\frac{\partial\eta_i}{\partial\beta_j}.
 $$
 
-Compare com regressão linear:
+::: {.columns}
+::: {.column width="57%"}
+### Perda e função logística
 
-$$\nabla J_{OLS}\propto X^T(\widehat y-y).$$
+$$
+j_i=-\left[y_i\log\pi_i+(1-y_i)\log(1-\pi_i)\right].
+$$
 
-## Cada componente do gradiente
+$$
+\begin{aligned}
+\frac{\partial j_i}{\partial\pi_i}
+&=-\left[\frac{y_i}{\pi_i}
+-\frac{1-y_i}{1-\pi_i}\right]\\
+&=-\frac{y_i}{\pi_i}+\frac{1-y_i}{1-\pi_i},\\[4pt]
+\frac{\partial\pi_i}{\partial\eta_i}
+&=\pi_i(1-\pi_i).
+\end{aligned}
+$$
+:::
+
+::: {.column width="43%"}
+### Preditor linear
+
+$$
+\eta_i=\beta_0+\sum_{k=1}^p\beta_kx_{ik}.
+$$
+
+O único termo que depende de $\beta_j$ é $\beta_jx_{ij}$. Portanto,
+
+$$
+\frac{\partial\eta_i}{\partial\beta_j}
+=x_{ij}.
+$$
+:::
+:::
+
+## Gradiente da log-loss
+
+Substituindo os três fatores,
+
+$$
+\begin{aligned}
+\frac{\partial j_i}{\partial\beta_j}
+&=\left[-\frac{y_i}{\pi_i}+\frac{1-y_i}{1-\pi_i}\right]
+\pi_i(1-\pi_i)x_{ij}\\
+&=\left[-y_i(1-\pi_i)+(1-y_i)\pi_i\right]x_{ij}\\
+&=x_{ij}(\pi_i-y_i).
+\end{aligned}
+$$
+
+Como $J(\beta)=n^{-1}\sum_i j_i(\beta)$,
 
 $$
 \frac{\partial J}{\partial\beta_j}
-=\frac1n\sum_i x_{ij}(\pi_i-y_i).
-$$
-
-O erro agora é probabilidade prevista menos classe observada, ponderado pelo atributo $j$.
-
-## Gradiente descendente
-
-$$
-\beta_{t+1}=\beta_t-\eta\frac1nX^T(\pi_t-y),
-$$
-
-$$\pi_t=\sigma(X\beta_t).$$
-
-Não há solução fechada análoga às equações normais; usamos otimização iterativa.
-
-## A perda converge
-
-![](assets/aula22-regressao-logistica/convergencia-logistica.png){.wide-chart fig-alt="Entropia cruzada ao longo das iterações."}
-
-Na formulação apresentada nesta aula, a perda é convexa nos coeficientes.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-```python
-prob = sigmoid(X @ beta)
-gradient = X.T @ (prob-y)/n
-beta -= eta*gradient
-```
-</details>
-
-## Interprete o intercepto
-
-Quando todos os preditores valem zero,
-
-$$\beta_0=\log\left(\frac{\pi_0}{1-\pi_0}\right).$$
-
-Logo,
-
-$$\pi_0=\sigma(\beta_0).$$
-
-Centralizar preditores pode tornar esse cenário mais interpretável.
-
-## Interprete um coeficiente em log-odds
-
-Mantendo os demais preditores fixos, aumentar $X_j$ em uma unidade altera
-
-$$\operatorname{logit}(\pi)$$
-
-em $\beta_j$ unidades.
-
-Essa escala é aditiva, mas pouco intuitiva.
-
-## Exponencie para obter razão de odds
-
-$$e^{\beta_j}$$
-
-é o fator multiplicativo nas odds associado a uma unidade adicional de $X_j$, mantendo os demais fixos.
-
-- $e^{\beta_j}>1$: odds aumentam;
-- $e^{\beta_j}<1$: odds diminuem;
-- $e^{\beta_j}=1$: odds não mudam.
-
-## Odds ratio não é risco relativo
-
-$$OR=\frac{\pi_1/(1-\pi_1)}{\pi_0/(1-\pi_0)},
+=\frac1n\sum_{i=1}^n x_{ij}(\pi_i-y_i),
 \qquad
-RR=\frac{\pi_1}{\pi_0}.
+\nabla J(\beta)=\frac1nX^T(\pi-y).
 $$
 
-Eles se aproximam quando o evento é raro, mas podem divergir muito para probabilidades altas.
-
-## Efeito em probabilidade não é constante
+## Ajuste por gradiente descendente
 
 $$
-\frac{\partial\pi}{\partial x_j}
-=\beta_j\pi(1-\pi).
+\beta_{t+1}
+=\beta_t-\kappa\nabla J(\beta_t)
+=\beta_t-\kappa\frac{1}{n}X^T(\pi_t-y),
+\qquad
+\pi_t=\sigma(X\beta_t).
 $$
 
-O mesmo $\beta_j$ produz mudança pequena perto de 0 ou 1 e maior perto de 0,5.
+O gradiente aponta para o crescimento mais rápido de $J$; o sinal de subtração produz a **descida do gradiente**. Aqui, $\kappa>0$ é a taxa de aprendizado, enquanto $\eta_i=x_i^T\beta$ fica reservado ao preditor linear do GLM.
 
-## O modelo da base
+![](assets/aula22-regressao-logistica/convergencia-logistica.png){.wide-chart .aula22-chart-compact fig-alt="Entropia cruzada ao longo das iterações do gradiente descendente."}
 
-Com preditores padronizados:
-
-$$
-\operatorname{logit}(\widehat\pi)
-=-3{,}61-1{,}22z_{age}-1{,}77z_{bmi}+4{,}12z_{charges}.
-$$
-
-Despesas são fortemente associadas ao rótulo, mas podem ocorrer depois do comportamento que tentamos prever.
-
-### Predição não elimina cuidado temporal
-
-Usar `charges` para inferir tabagismo pode ser descritivamente eficaz, porém inadequado para uma decisão anterior às despesas.
-
-Features devem estar disponíveis no momento real da previsão e ser eticamente justificáveis.
-
-## Probabilidade e classe são objetos distintos
-
-O modelo produz $\widehat\pi$.
-
-O limiar $c$ incorpora custos:
-
-$$\widehat y=1\quad\text{se}\quad\widehat\pi\ge c.$$
-
-Mudar $c$ não reestima o modelo.
-
-## Limiar altera os erros
-
-![](assets/aula22-regressao-logistica/limiares.png){.wide-chart fig-alt="Sensibilidade e especificidade em função do limiar."}
-
-Não existe limiar universalmente correto; depende do custo de falsos positivos e falsos negativos.
+Na formulação sem regularização, a log-loss é convexa em $\beta$. Não existe solução fechada análoga às equações normais.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
+
 ```python
-prediction = probability >= threshold
-sensitivity = TP/(TP+FN)
-specificity = TN/(TN+FP)
-```
-</details>
-
-## Matriz de confusão
-
-| | previsto 0 | previsto 1 |
-|---|---:|---:|
-| real 0 | TN | FP |
-| real 1 | FN | TP |
-
-Cada métrica resume uma combinação diferente dessas quatro contagens.
-
-## Métricas principais
-
-$$\text{sensibilidade}=TP/(TP+FN),$$
-
-$$\text{especificidade}=TN/(TN+FP),$$
-
-$$\text{precisão}=TP/(TP+FP).$$
-
-A acurácia pode esconder desempenho ruim em classes desbalanceadas.
-
-## Discriminação não é calibração
-
-- **discriminação:** ordenar positivos acima de negativos;
-- **calibração:** previsões de 0,7 ocorrerem aproximadamente 70% das vezes.
-
-Um modelo pode discriminar bem e produzir probabilidades mal calibradas.
-
-## Avalie a calibração
-
-![](assets/aula22-regressao-logistica/calibracao.png){.wide-chart fig-alt="Probabilidades previstas contra frequências observadas."}
-
-Pontos próximos da diagonal indicam concordância entre probabilidade e frequência.
-
-<details class="code-fold"><summary>Código do gráfico</summary>
-```python
-calibration = data.groupby(probability_bins).agg(predicted=("p","mean"), observed=("y","mean"))
+probability = sigmoid(X @ beta)
+gradient = X.T @ (probability - y) / n
+beta = beta - learning_rate * gradient
 ```
 </details>
 
 ## Quiz: coeficiente positivo implica o quê? {.quiz-question}
 
-- [As odds aumentam, mantendo os demais preditores fixos]{.correct data-explanation="A razão de odds por unidade é exp(beta), maior que 1 quando beta é positivo."}
+- [As odds aumentam, mantendo os outros preditores fixos]{.correct data-explanation="A razão de odds por unidade é exp(beta), maior que 1 quando beta é positivo."}
 - [A probabilidade aumenta sempre pela mesma quantidade]{data-explanation="O efeito em probabilidade depende do ponto da sigmoide."}
-- [O efeito é necessariamente causal]{data-explanation="A interpretação do modelo é condicional e associativa sem hipóteses causais adicionais."}
+- [O efeito é necessariamente causal]{data-explanation="A interpretação é condicional e associativa sem hipóteses causais adicionais."}
 
-## Separação pode impedir MLE finito
+## Limitações antes da aplicação
 
-Se uma combinação de preditores separa perfeitamente as classes, a verossimilhança pode continuar aumentando quando $\|\beta\|\to\infty$.
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Separação
 
-Coeficientes enormes e falhas de convergência são sinais de separação completa ou quase completa.
+Classes perfeitamente separadas podem levar os coeficientes a magnitudes crescentes sem MLE finito.
+:::
 
-## Casos não lineares
+::: {.column width="33%"}
+### Forma funcional
 
-O preditor é linear nos parâmetros, mas pode incluir transformações:
+O preditor é linear nos coeficientes. Curvaturas exigem atributos transformados.
+:::
 
-$$\eta=\beta_0+\beta_1x+\beta_2x^2,$$
+::: {.column width="33%"}
+### Mais de duas classes
 
-splines, interações ou outras features.
+Respostas multiclasse podem usar decomposições binárias ou regressão multinomial com *softmax*.
+:::
+:::
 
-A sigmoide transforma qualquer $\eta$ em probabilidade válida.
+## Inserindo não linearidade {.nonlinear-logit}
 
-## Multiclasse exige extensão
+A função logística não muda; transformamos os atributos do preditor.
 
-Para mais de duas classes:
+![](assets/aula22-regressao-logistica/fronteira-nao-linear.png){.wide-chart .aula22-nonlinear-chart fig-alt="A mesma base classificada por uma regressão logística com fronteira linear e por outra com termos quadráticos e fronteira curva."}
 
-- one-vs-rest ajusta um classificador por classe;
-- regressão multinomial/softmax modela as classes conjuntamente.
+::: {.columns .concept-cards}
+::: {.column width="40%"}
+### Entrada original
 
-Aula atual: Bernoulli e duas classes.
+$\phi_L(x)=(1,x_1,x_2)$ e $\eta=\beta^T\phi_L(x)$.
 
-## O que permanece dos GLMs?
+A fronteira $\eta=0$ é uma reta.
+:::
 
-- componente aleatório: Bernoulli;
-- componente sistemático: $X\beta$;
-- ligação: logit;
-- estimação: máxima verossimilhança;
-- otimização: gradientes;
-- diagnóstico: resíduos, calibração e desempenho fora da amostra.
+::: {.column width="60%"}
+### Atributos transformados
+
+$\phi_Q(x)=(1,x_1,x_2,x_1^2,x_1x_2,x_2^2)$ e
+$\eta=\beta^T\phi_Q(x)$.
+
+A fronteira é curva no espaço original $(x_1,x_2)$.
+:::
+:::
+
+**Ideia-chave:** $\beta$ permanece linear; $\phi(x)$ cria a curvatura.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+Phi_linear = np.column_stack([np.ones(n), x1, x2])
+Phi_quadratic = np.column_stack([
+    np.ones(n), x1, x2, x1**2, x1*x2, x2**2
+])
+
+beta_linear = fit_logistic(Phi_linear, y)
+beta_quadratic = fit_logistic(Phi_quadratic, y)
+```
+</details>
+
+## Multiclasse por decomposição binária {.multiclass-overview}
+
+Para $K>2$, podemos reutilizar o classificador logístico binário de duas maneiras.
+
+| Critério | One-vs-all | One-vs-one |
+|---|---|---|
+| **Construção** | classe $k$ contra a união das demais | um classificador para cada par de classes |
+| **Decisão** | maior escore ou probabilidade | classe com mais votos |
+| **Número de modelos** | $K$ | $\binom{K}{2}=K(K-1)/2$ |
+| **Treinamento** | geralmente mais rápido | tende a ficar mais lento quando $K$ cresce |
+| **Classes desbalanceadas** | mais exposto: “todos” pode dominar a classe positiva | em geral menos exposto por comparar apenas duas classes; ainda pode exigir pesos ou reamostragem |
+
+Com $K=4$: **4 modelos** no one-vs-all e **6 modelos** no one-vs-one. O *softmax* é uma alternativa direta.
+
+## Exemplo completo: pergunta e protocolo
+
+**Pergunta didática:** idade, IMC e despesas distinguem registros de fumantes e não fumantes?
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Treino: 80%
+
+**1.070 pessoas.**
+
+Serve para estimar padronização e coeficientes.
+:::
+
+::: {.column width="50%"}
+### Teste: 20%
+
+**268 pessoas**, incluindo 55 fumantes.
+
+Serve apenas para a avaliação final do exemplo.
+:::
+:::
+
+Não usaremos validação cruzada nesta aula.
+
+## Etapa 1: divisão 80/20 e preparação
+
+A divisão preserva aproximadamente a proporção das classes. Média e desvio padrão vêm somente do treino.
+
+```python
+train_ids, test_ids = stratified_split(y, test_size=.20, seed=20261111)
+
+mean = X_raw[train_ids].mean(axis=0)
+sd = X_raw[train_ids].std(axis=0)
+
+X_train = (X_raw[train_ids] - mean) / sd
+X_test = (X_raw[test_ids] - mean) / sd
+```
+
+Usar informações do teste na padronização contaminaria a avaliação.
+
+## Etapa 2: ajuste somente no treino
+
+```python
+beta = np.zeros(X_train.shape[1])
+
+for iteration in range(3000):
+    p_train = sigmoid(X_train @ beta)
+    gradient = X_train.T @ (p_train - y_train) / len(y_train)
+    beta = beta - .15 * gradient
+```
+
+O algoritmo nunca consulta $y_{test}$ durante o ajuste. Ao final, preservamos $\widehat\beta$ e aplicamos a mesma padronização aos dados de teste.
+
+## Etapa 3: probabilidades no teste
+
+![](assets/aula22-regressao-logistica/exemplo-ajuste-teste.png){.wide-chart fig-alt="Entropia cruzada no conjunto de treino e distribuições das probabilidades previstas no conjunto de teste para fumantes e não fumantes."}
+
+A perda do treino se estabiliza. No teste, as probabilidades separam bem a maioria das classes, mas ainda existe sobreposição perto do limiar 0,5.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+p_test = sigmoid(X_test @ beta)
+plt.semilogy(history)
+sns.histplot(x=p_test, hue=y_test, element="step")
+```
+</details>
+
+## Etapa 4: limiar e matriz de confusão
+
+Com $c=0{,}5$,
+
+$$
+\widehat y_i=\mathbb 1(\widehat\pi_i\ge0{,}5).
+$$
+
+![](assets/aula22-regressao-logistica/exemplo-confusao-metricas.png){.wide-chart .aula22-chart-small fig-alt="Matriz de confusão e métricas do modelo logístico no conjunto de teste."}
+
+O modelo acerta a maioria dos registros, mas os 8 falsos negativos mostram que acurácia sozinha não descreve todos os erros.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+prediction = p_test >= .5
+tn, fp, fn, tp = confusion_counts(y_test, prediction)
+```
+</details>
+
+## Etapa 5: métricas no conjunto de teste
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Acurácia
+
+$$\frac{TP+TN}{n}=0{,}959$$
+:::
+
+::: {.column width="50%"}
+### Sensibilidade (revocação) {.metric-title-compact}
+
+$$\frac{TP}{TP+FN}=0{,}855$$
+:::
+:::
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Especificidade
+
+$$\frac{TN}{TN+FP}=0{,}986$$
+:::
+
+::: {.column width="50%"}
+### Precisão
+
+$$\frac{TP}{TP+FP}=0{,}940$$
+:::
+:::
+
+## Etapa 6: o limiar redistribui os erros {.threshold-analysis}
+
+![](assets/aula22-regressao-logistica/exemplo-limiar.png){.wide-chart .aula22-threshold-chart fig-alt="Sensibilidade, especificidade e precisão para diferentes limiares, com destaque para o limiar 0,5."}
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Reduzir $c$
+
+Mais pessoas são classificadas como fumantes: a **sensibilidade aumenta**, mas surgem mais falsos positivos.
+:::
+
+::: {.column width="50%"}
+### Aumentar $c$
+
+Exigimos evidência maior para prever fumante: a **especificidade aumenta**, mas surgem mais falsos negativos.
+:::
+:::
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+for threshold in thresholds:
+    prediction = p_test >= threshold
+    sensitivity, specificity, precision = metrics(y_test, prediction)
+```
+</details>
+
+## Etapa 7: calibração das probabilidades {.calibration-analysis}
+
+![](assets/aula22-regressao-logistica/exemplo-calibracao.png){.wide-chart .aula22-calibration-chart fig-alt="Gráfico de calibração em seis grupos, acompanhado de uma ampliação dos quatro grupos com probabilidades muito baixas."}
+
+Cada círculo resume cerca de 45 pessoas: $x$ é a probabilidade média prevista e $y$ é a proporção observada de fumantes.
+
+**Brier:** $n_{test}^{-1}\sum_i(\widehat\pi_i-y_i)^2=0{,}025$. G1–G4 se sobrepõem na visão completa porque estão próximos de $(0,0)$; o painel ampliado os separa.
+
+<details class="code-fold"><summary>Código do gráfico</summary>
+
+```python
+calibration_data["faixa"] = pd.qcut(
+    calibration_data["p"].rank(method="first"), 6
+)
+calibration = calibration_data.groupby("faixa").agg(
+    probabilidade_média=("p", "mean"),
+    proporção_observada=("y", "mean"),
+    n=("y", "size"),
+)
+```
+</details>
+
+## Etapa 8: leitura dos erros
+
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Falsos negativos: 8
+
+O modelo atribuiu probabilidade abaixo de 0,5 a oito fumantes.
+
+Se deixar de identificar a classe 1 for caro, o limiar 0,5 pode ser alto demais.
+:::
+
+::: {.column width="50%"}
+### Falsos positivos: 3
+
+Três não fumantes receberam probabilidade acima de 0,5.
+
+Reduzir falsos negativos geralmente aumenta esse número.
+:::
+:::
+
+O diagnóstico deve ligar cada tipo de erro à consequência concreta da decisão.
+
+## O que o estudo de caso autoriza concluir?
+
+- o modelo separou bem as classes nesta divisão 80/20;
+- o desempenho depende do limiar e da métrica escolhida;
+- `charges` carrega forte informação sobre tabagismo após as despesas existirem;
+- o resultado não demonstra causalidade;
+- usar despesas para inferir comportamento em uma aplicação real exigiria justificativa temporal, ética e legal.
+
+O exemplo ensina o fluxo de classificação. Ele não propõe um sistema de decisão sobre pessoas.
 
 ## Bibliografia da aula
 
-- James et al., *An Introduction to Statistical Learning*, capítulo 4.
-- Gelman, Hill e Vehtari, *Regression and Other Stories*, regressão logística.
-- Fox, *Applied Regression Analysis and Generalized Linear Models*.
-- McCullagh e Nelder, *Generalized Linear Models*.
-- Data 100, classificação e regressão logística.
+- James et al., *An Introduction to Statistical Learning*, capítulo 4: classificação e regressão logística.
+- Gelman, Hill e Vehtari, *Regression and Other Stories*: interpretação e modelagem de respostas binárias.
+- Fox, *Applied Regression Analysis and Generalized Linear Models*: estrutura de GLMs.
+- McCullagh e Nelder, *Generalized Linear Models*: formulação clássica.
+- Data 100: classificação, limiares e avaliação probabilística.
 
-## Síntese
+## Síntese e próxima aula
 
-- respostas binárias têm média igual a probabilidade;
-- um link conecta essa média ao preditor linear;
-- várias CDFs são possíveis; o logit oferece interpretação em odds;
-- a verossimilhança Bernoulli produz entropia cruzada;
-- o gradiente é $X^T(\pi-y)/n$;
-- probabilidade, limiar e classe são etapas distintas;
-- discriminação e calibração avaliam propriedades diferentes.
-
-## Próxima aula
+- a Bernoulli define a resposta e sua média $\pi$;
+- o logit conecta a probabilidade ao preditor linear;
+- a verossimilhança produz a entropia cruzada;
+- o gradiente ajusta todos os coeficientes;
+- o modelo produz probabilidades, e o limiar produz classes;
+- treino e teste separam ajuste e avaliação.
 
 ::: {.statement}
-**Regularização:** como controlar a complexidade, estabilizar coeficientes e melhorar a generalização de modelos lineares e logísticos.
+**Próxima aula:** regularização para controlar a complexidade e estabilizar os coeficientes.
 :::

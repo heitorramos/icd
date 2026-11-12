@@ -68,14 +68,14 @@ def contour_surface(xx, intercepts, slopes):
     )
     return beta0, beta1, objective
 
-def gradient_path(xx, start, eta, steps):
+def gradient_path(xx, start, learning_rate, steps):
     theta = np.array(start, dtype=float)
     history = []
     for iteration in range(steps):
-        error = yz-(theta[0]+theta[1]*xx)
-        history.append((iteration, *theta, np.mean(error**2)))
-        gradient = np.array([-2*np.mean(error), -2*np.mean(xx*error)])
-        theta -= eta*gradient
+        difference = (theta[0]+theta[1]*xx)-yz
+        history.append((iteration, *theta, np.mean(difference**2)))
+        gradient = np.array([2*np.mean(difference), 2*np.mean(xx*difference)])
+        theta -= learning_rate*gradient
     return np.asarray(history)
 
 def ols_coefficients(xx):
@@ -89,8 +89,8 @@ std_slopes = np.linspace(-.65, 1.15, 180)
 Ar, Br, Zr = contour_surface(x, raw_intercepts, raw_slopes)
 As, Bs, Zs = contour_surface(xz, std_intercepts, std_slopes)
 
-path_raw = gradient_path(x, [1, -.03], eta=.0005, steps=50000)
-path_std = gradient_path(xz, [1, -.5], eta=.2, steps=20)
+path_raw = gradient_path(x, [1, -.03], learning_rate=.0005, steps=50000)
+path_std = gradient_path(xz, [1, -.5], learning_rate=.2, steps=20)
 theta_raw = ols_coefficients(x)
 theta_std = ols_coefficients(xz)
 raw_marks = np.unique(np.r_[np.arange(10),
@@ -139,7 +139,7 @@ pd.Series({
 ```
 
 ::: {.callout-note title="Interpretação"}
-Sem padronização, uma direção da superfície é mais de 15 mil vezes mais curva que a outra. Uma taxa segura precisa ser muito pequena, e o algoritmo alterna correções na inclinação enquanto avança lentamente pelo vale. Depois da padronização, as duas direções têm curvaturas semelhantes e o caminho até o mínimo fica quase direto. As taxas dos painéis são diferentes porque usar $\eta=0{,}2$ na escala original faria o algoritmo divergir.
+Sem padronização, uma direção da superfície é mais de 15 mil vezes mais curva que a outra. Uma taxa segura precisa ser muito pequena, e o algoritmo alterna correções na inclinação enquanto avança lentamente pelo vale. Depois da padronização, as duas direções têm curvaturas semelhantes e o caminho até o mínimo fica quase direto. As taxas dos painéis são diferentes porque usar $\kappa=0{,}2$ na escala original faria o algoritmo divergir.
 :::
 
 ## Um parâmetro: regressão pela origem
@@ -154,14 +154,14 @@ $$
 
 A derivada é
 
-$$J'(\beta)=-\frac2n\sum_i x_i(y_i-\beta x_i).$$
+$$J'(\beta)=\frac2n\sum_i x_i(\beta x_i-y_i).$$
 
 ```{python}
 def loss_one(beta):
     return np.mean((yz-beta*xz)**2)
 
 def grad_one(beta):
-    return -2*np.mean(xz*(yz-beta*xz))
+    return 2*np.mean(xz*(beta*xz-yz))
 
 beta_ols = np.sum(xz*yz)/np.sum(xz**2)
 pd.Series({"beta_OLS": beta_ols, "gradiente_em_OLS": grad_one(beta_ols)})
@@ -173,17 +173,17 @@ Como as duas variáveis estão padronizadas, a inclinação OLS é a correlaçã
 
 ## Implementação do gradiente descendente
 
-$$\beta_{t+1}=\beta_t-\eta J'(\beta_t).$$
+$$\beta_{t+1}=\beta_t-\kappa J'(\beta_t).$$
 
 ```{python}
-def gradient_descent_one(beta0=-0.7, eta=.25, max_iter=100, tol=1e-10):
+def gradient_descent_one(beta0=-0.7, learning_rate=.25, max_iter=100, tol=1e-10):
     beta = beta0
     history = []
     for iteration in range(max_iter):
         loss = loss_one(beta)
         gradient = grad_one(beta)
         history.append((iteration, beta, loss, gradient))
-        beta_new = beta-eta*gradient
+        beta_new = beta-learning_rate*gradient
         if abs(beta_new-beta) < tol:
             beta = beta_new
             break
@@ -215,9 +215,9 @@ plt.tight_layout(); plt.show()
 
 ```{python}
 summary = []
-for eta in [.02, .25, .9, 1.05]:
-    beta, hist = gradient_descent_one(eta=eta, max_iter=80, tol=0)
-    summary.append({"eta": eta, "beta_final": beta,
+for learning_rate in [.02, .25, .9, 1.05]:
+    beta, hist = gradient_descent_one(learning_rate=learning_rate, max_iter=80, tol=0)
+    summary.append({"taxa_aprendizado": learning_rate, "beta_final": beta,
                     "perda_final": loss_one(beta),
                     "menor_perda": hist.perda.min()})
 pd.DataFrame(summary)
@@ -234,28 +234,30 @@ Agora
 $$J(\beta_0,\beta_1)=\frac1n\sum_i(y_i-\beta_0-\beta_1x_i)^2,$$
 
 $$
-\nabla J=-\frac2n
+\nabla J=\frac2n
 \begin{bmatrix}
-\sum_i e_i\\
-\sum_i x_ie_i
+\sum_i d_i\\
+\sum_i x_id_i
 \end{bmatrix}.
 $$
+
+Aqui, $d_i=\widehat y_i-y_i$ mantém a convenção **previsão menos observado**.
 
 ```{python}
 def loss_grad(theta, xx=xz, yy=yz):
     prediction = theta[0]+theta[1]*xx
-    error = yy-prediction
-    loss = np.mean(error**2)
-    gradient = np.array([-2*np.mean(error), -2*np.mean(xx*error)])
+    difference = prediction-yy
+    loss = np.mean(difference**2)
+    gradient = np.array([2*np.mean(difference), 2*np.mean(xx*difference)])
     return loss, gradient
 
-def fit_batch(eta=.2, max_iter=200):
+def fit_batch(learning_rate=.2, max_iter=200):
     theta = np.zeros(2)
     out = []
     for t in range(max_iter):
         loss, gradient = loss_grad(theta)
         out.append((t, *theta, loss, np.linalg.norm(gradient)))
-        theta = theta-eta*gradient
+        theta = theta-learning_rate*gradient
     return theta, pd.DataFrame(out, columns=["iteração","beta0","beta1","perda","norma_grad"])
 
 theta_gd, hist2 = fit_batch()
@@ -264,7 +266,7 @@ theta_gd
 
 ::: {.callout-note title="Atualização simultânea"}
 A função calcula o vetor `gradient` inteiro usando o mesmo valor de `theta`.
-Somente depois executa `theta = theta - eta * gradient`, atualizando intercepto
+Somente depois executa `theta = theta - learning_rate * gradient`, atualizando intercepto
 e inclinação juntos. Alterar um coeficiente antes de calcular o gradiente do
 outro misturaria parâmetros de duas iterações diferentes.
 :::
@@ -308,30 +310,148 @@ Gradient checking detecta sinais trocados, fatores esquecidos e erros de indexa�
 
 ## Batch, SGD e mini-batch
 
+O código de `fit_batch` calculou o gradiente médio com **todas** as observações
+e só então atualizou os parâmetros. Agora vamos escrever separadamente as duas
+alternativas que fazem mais de uma atualização por época. A separação deixa
+explícita uma diferença importante: SGD e mini-batch não são apenas o mesmo
+laço com nomes diferentes; eles usam quantidades diferentes de informação para
+escolher cada passo.
+
+### Gradiente descendente estocástico (SGD)
+
+No SGD, uma observação produz um gradiente e uma atualização. Para a observação
+$i$, usamos
+
+$$
+g_i(\theta)=\nabla_\theta\rho_i(\theta),
+\qquad
+\theta\leftarrow\theta-\kappa g_i(\theta),
+$$
+
+em que $\rho_i(\theta)$ é a perda quadrática da observação $i$, $\theta$ é o
+vetor $(\beta_0,\beta_1)^\top$ e $\kappa$ é a taxa de aprendizado. Uma época
+termina depois que todas as $n$ observações foram visitadas uma vez.
+
 ```{python}
-def fit_minibatch(batch_size, eta=.04, epochs=30):
-    theta = np.zeros(2); records = []
+def fit_sgd(learning_rate=.01, epochs=30, seed=20261111):
+    theta = np.zeros(2)
+    records = []
+    generator = np.random.default_rng(seed)
+
     for epoch in range(epochs):
-        ids = rng.permutation(len(xz))
-        for start in range(0, len(ids), batch_size):
-            ii = ids[start:start+batch_size]
-            _, gradient = loss_grad(theta, xz[ii], yz[ii])
-            theta -= eta*gradient
+        # Uma nova ordem evita repetir sempre a mesma sequência de passos.
+        order = generator.permutation(len(xz))
+
+        for i in order:
+            # Os colchetes mantêm x e y como vetores de uma observação.
+            _, gradient = loss_grad(theta, xz[[i]], yz[[i]])
+
+            # SGD atualiza imediatamente: uma observação, uma atualização.
+            theta = theta - learning_rate * gradient
+
+        # Avaliamos a perda completa apenas para acompanhar a convergência.
         records.append((epoch, *theta, loss_grad(theta)[0]))
+
     return theta, pd.DataFrame(records, columns=["época","beta0","beta1","perda"])
 
-results = []
-for batch in [1, 64, len(xz)]:
-    theta, hist = fit_minibatch(batch)
-    results.append({"batch": batch, "beta0": theta[0], "beta1": theta[1],
-                    "perda": loss_grad(theta)[0]})
-pd.DataFrame(results)
+theta_sgd, history_sgd = fit_sgd()
+pd.Series({
+    "beta0_SGD": theta_sgd[0],
+    "beta1_SGD": theta_sgd[1],
+    "perda_final": history_sgd.iloc[-1]["perda"],
+    "atualizações": 30 * len(xz),
+})
 ```
 
 ::: {.callout-note title="Interpretação"}
-SGD atualiza com baixo custo, mas mantém mais ruído. Batch completo segue um
-caminho suave, porém cada atualização percorre toda a amostra. Mini-batch ocupa
-uma posição intermediária entre custo e estabilidade.
+Cada gradiente do SGD é barato, mas representa apenas uma observação. Por isso,
+os passos oscilam em torno da direção média da amostra. O algoritmo ainda
+precisa completar várias épocas: visitar um único ponto por vez não significa
+treinar com apenas um ponto.
+:::
+
+### Gradiente descendente em mini-batches
+
+No mini-batch, a atualização usa a média dos gradientes de um grupo $B$ com
+$m$ observações:
+
+$$
+g_B(\theta)=\frac1m\sum_{i\in B}\nabla_\theta\rho_i(\theta),
+\qquad
+\theta\leftarrow\theta-\kappa g_B(\theta).
+$$
+
+O valor de $\theta$ permanece fixo durante o cálculo dos $m$ gradientes que
+formam a média. A atualização ocorre somente depois que o lote foi processado.
+
+```{python}
+def fit_minibatch(batch_size=64, learning_rate=.04, epochs=30, seed=20261111):
+    theta = np.zeros(2)
+    records = []
+    generator = np.random.default_rng(seed)
+
+    for epoch in range(epochs):
+        # Embaralhamos antes de formar os lotes da nova época.
+        order = generator.permutation(len(xz))
+
+        for start in range(0, len(order), batch_size):
+            batch_ids = order[start:start + batch_size]
+
+            # loss_grad devolve a média dos gradientes dentro deste lote.
+            _, gradient = loss_grad(theta, xz[batch_ids], yz[batch_ids])
+
+            # Uma atualização por lote, não uma atualização por observação.
+            theta = theta - learning_rate * gradient
+
+        records.append((epoch, *theta, loss_grad(theta)[0]))
+
+    return theta, pd.DataFrame(
+        records, columns=["época", "beta0", "beta1", "perda"]
+    )
+
+theta_minibatch, history_minibatch = fit_minibatch(batch_size=64)
+pd.Series({
+    "beta0_mini_batch": theta_minibatch[0],
+    "beta1_mini_batch": theta_minibatch[1],
+    "perda_final": history_minibatch.iloc[-1]["perda"],
+    "atualizações_por_época": int(np.ceil(len(xz) / 64)),
+})
+```
+
+::: {.callout-note title="Interpretação"}
+O mini-batch suaviza parte do ruído do SGD porque cada direção resume várias
+observações, mas atualiza os parâmetros antes de percorrer toda a amostra. O
+último lote pode ter menos de 64 elementos; dividir pela quantidade realmente
+presente no lote, como `loss_grad` faz com `np.mean`, evita dar peso incorreto a
+essa atualização.
+:::
+
+### Comparação usando a mesma regressão
+
+Para comparar os três métodos, executamos novamente o batch completo e reunimos
+as estimativas com a solução OLS. As taxas de aprendizado não precisam ser
+iguais: o ruído e a frequência das atualizações mudam com o tamanho do lote.
+
+```{python}
+theta_batch, history_batch = fit_batch(learning_rate=.2, max_iter=200)
+
+comparison = pd.DataFrame(
+    [theta_ols, theta_batch, theta_minibatch, theta_sgd],
+    index=["OLS", "batch completo", "mini-batch (m=64)", "SGD (m=1)"],
+    columns=["beta0", "beta1"],
+)
+comparison["perda na amostra completa"] = [
+    loss_grad(theta)[0] for theta in comparison[["beta0", "beta1"]].to_numpy()
+]
+comparison.round(5)
+```
+
+::: {.callout-note title="Interpretação"}
+Batch completo segue um caminho suave, porém cada atualização percorre toda a
+amostra. SGD faz atualizações baratas e ruidosas. Mini-batch ocupa uma posição
+intermediária entre custo e estabilidade. Como a perda desta regressão é
+convexa, os três métodos se aproximam do mesmo mínimo OLS quando a taxa, o número
+de épocas e o critério de parada são adequados.
 :::
 
 ![](../../slides/assets/aula20-gradiente-descendente/caminhos-batch-sgd.png){fig-alt="A mesma superfície quadrática de perda com os caminhos do gradiente batch, mini-batch e SGD."}
@@ -420,7 +540,7 @@ e cada grupo atualiza os parâmetros antes do cálculo seguinte:
 
 $$
 \theta_{t,k+1}=\theta_{t,k}
--\eta\frac1m\sum_{i\in B_{t,k}}\nabla\rho_i(\theta_{t,k}).
+-\kappa\frac1m\sum_{i\in B_{t,k}}\nabla\rho_i(\theta_{t,k}).
 $$
 
 Portanto, outra ordem forma outros grupos e avalia os gradientes em uma sequência diferente de valores de $\theta$. No SGD, $m=1$, então cada observação altera o ponto no qual o gradiente da próxima observação será calculado.
@@ -474,12 +594,12 @@ Finalmente, atualiza cada parâmetro por
 
 $$
 \theta_{t+1}=\theta_t-
-\eta\frac{\widehat u_t}{\sqrt{\widehat s_t}+\varepsilon}.
+\kappa\frac{\widehat u_t}{\sqrt{\widehat s_t}+\varepsilon}.
 $$
 
-Aqui, $\eta$ controla a escala global do passo, $\gamma_1$ e $\gamma_2$
+Aqui, $\kappa$ controla a escala global do passo, $\gamma_1$ e $\gamma_2$
 controlam quanto histórico as médias preservam, e $\varepsilon$ evita uma
-divisão por zero. Valores iniciais usuais são $\eta=0{,}001$,
+divisão por zero. Valores iniciais usuais são $\kappa=0{,}001$,
 $\gamma_1=0{,}9$, $\gamma_2=0{,}999$ e $\varepsilon=10^{-8}$, mas eles ainda
 podem precisar de ajuste.
 
@@ -515,7 +635,7 @@ pela normalização.
 ```{python}
 #| label: adam-regressao
 #| echo: true
-def fit_adam(xx=x, yy=yz, start=(1.0, -.03), eta=.02, steps=300,
+def fit_adam(xx=x, yy=yz, start=(1.0, -.03), learning_rate=.02, steps=300,
              gamma1=.9, gamma2=.999, epsilon=1e-8):
     theta = np.array(start, dtype=float)
     u = np.zeros_like(theta)
@@ -524,16 +644,16 @@ def fit_adam(xx=x, yy=yz, start=(1.0, -.03), eta=.02, steps=300,
 
     for t in range(1, steps+1):
         prediction = theta[0]+theta[1]*xx
-        error = yy-prediction
+        difference = prediction-yy
         gradient = np.array([
-            -2*np.mean(error),
-            -2*np.mean(xx*error),
+            2*np.mean(difference),
+            2*np.mean(xx*difference),
         ])
         u = gamma1*u+(1-gamma1)*gradient
         s = gamma2*s+(1-gamma2)*gradient**2
         u_corrected = u/(1-gamma1**t)
         s_corrected = s/(1-gamma2**t)
-        theta -= eta*u_corrected/(np.sqrt(s_corrected)+epsilon)
+        theta -= learning_rate*u_corrected/(np.sqrt(s_corrected)+epsilon)
         history.append((t, *theta, np.mean((yy-theta[0]-theta[1]*xx)**2)))
 
     return theta, pd.DataFrame(
@@ -600,11 +720,11 @@ Gradiente descendente repete uma ideia simples:
 4. **Calcular o gradiente.** Ele informa em qual direção a perda aumenta mais
    rapidamente para cada parâmetro.
 5. **Andar na direção contrária.** Atualizamos
-   $\beta\leftarrow\beta-\eta\nabla J(\beta)$.
+   $\beta\leftarrow\beta-\kappa\nabla J(\beta)$.
 6. **Repetir até estabilizar.** Monitoramos perda, gradiente e mudanças nos
    parâmetros.
 
-$\eta$ é a taxa de aprendizado. Ela controla o tamanho do passo, não a direção.
+$\kappa$ é a taxa de aprendizado. Ela controla o tamanho do passo, não a direção.
 Se for muito pequena, o algoritmo demora; se for muito grande, pode ultrapassar
 o mínimo repetidamente ou divergir.
 

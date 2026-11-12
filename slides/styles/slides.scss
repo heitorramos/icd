@@ -608,6 +608,12 @@ $link-color: #0f6b78;
   margin-top: 0;
 }
 
+// Mantém nomes alternativos de métricas na mesma linha sem reduzir os demais cartões.
+.reveal .columns.concept-cards > .column h3.metric-title-compact {
+  font-size: 0.82em;
+  white-space: nowrap;
+}
+
 // Cartões compactos usados para comparar métodos de estimação na Aula 09.
 .reveal .columns.concept-cards.estimation-methods {
   font-size: 0.88em;
@@ -659,6 +665,26 @@ $link-color: #0f6b78;
 .reveal section > img.r-stretch.wide-chart {
   max-height: 27.5rem !important;
   max-width: min(96%, 48rem) !important;
+}
+
+// Gráficos da Aula 22 acompanhados por equações, interpretação e código.
+// A altura menor mantém todos os elementos visíveis sem rolagem vertical.
+.reveal section > img.aula22-chart-compact,
+.reveal section > img.r-stretch.aula22-chart-compact {
+  height: auto !important;
+  max-height: 18rem !important;
+  max-width: min(94%, 46rem) !important;
+  object-fit: contain;
+  width: auto !important;
+}
+
+.reveal section > img.aula22-chart-small,
+.reveal section > img.r-stretch.aula22-chart-small {
+  height: auto !important;
+  max-height: 17rem !important;
+  max-width: min(94%, 46rem) !important;
+  object-fit: contain;
+  width: auto !important;
 }
 
 // Painel triplo da Aula 10: ocupa toda a largura útil sem ultrapassar o slide.
@@ -1349,6 +1375,107 @@ $link-color: #0f6b78;
 
 .reveal .comparison-table table {
   font-size: 0.8em;
+}
+
+// Comparação compacta das decomposições multiclasse na Aula 22.
+.reveal .multiclass-overview table {
+  font-size: 0.64em;
+  line-height: 1.14;
+  margin: 0.4rem auto 0.55rem;
+}
+
+.reveal .multiclass-overview table th,
+.reveal .multiclass-overview table td {
+  padding: 0.28em 0.42em;
+  vertical-align: middle;
+}
+
+.reveal .multiclass-overview p {
+  margin: 0.35em 0;
+}
+
+// Expansão de atributos e fronteira não linear na Aula 22.
+.reveal .nonlinear-logit .concept-cards {
+  font-size: 0.62em;
+  margin: 0.1rem 0 0.15rem;
+}
+
+.reveal .nonlinear-logit .concept-cards .column {
+  min-height: 3.8rem;
+  padding: 0.32rem 0.55rem;
+}
+
+.reveal .nonlinear-logit .concept-cards h3 {
+  font-size: 1.05em;
+  margin: 0 0 0.1em;
+}
+
+.reveal .nonlinear-logit .concept-cards p {
+  margin: 0.12em 0;
+}
+
+.reveal .nonlinear-logit .aula22-nonlinear-chart {
+  display: block;
+  margin: 0.15rem auto 0.2rem;
+  max-height: 11.5rem;
+  width: auto;
+}
+
+.reveal .nonlinear-logit > p {
+  margin: 0.12em 0;
+}
+
+.reveal .nonlinear-logit h2 {
+  margin-bottom: 0.2em;
+}
+
+.reveal .aula22-threshold-chart {
+  display: block;
+  margin: 0.1rem auto;
+  max-height: 11.2rem;
+  width: auto;
+}
+
+.reveal .aula22-calibration-chart {
+  display: block;
+  margin: 0.1rem auto;
+  max-height: 8.8rem;
+  width: auto;
+}
+
+.reveal .threshold-analysis .concept-cards {
+  font-size: 0.64em;
+  margin: 0.15rem 0;
+}
+
+.reveal .threshold-analysis .concept-cards .column {
+  min-height: 4rem;
+  padding: 0.4rem 0.65rem;
+}
+
+.reveal .threshold-analysis .concept-cards h3 {
+  font-size: 1.08em;
+  margin: 0 0 0.12em;
+}
+
+.reveal .threshold-analysis .concept-cards p,
+.reveal .threshold-analysis > p,
+.reveal .calibration-analysis > p {
+  margin: 0.18em 0;
+}
+
+.reveal .threshold-analysis > p {
+  font-size: 0.74em;
+}
+
+.reveal .calibration-analysis > p {
+  font-size: 0.66em;
+  margin: 0.1em 0;
+}
+
+.reveal .calibration-analysis h2 {
+  font-size: 1.35em;
+  margin-bottom: 0.15em;
 }
 
 .reveal .before-after {

@@ -37,7 +37,7 @@ A Aula 08 concentra-se em amostragem, distribuição amostral, viés, variância
 # 1. Download da base
 
 O dataset está disponível no Kaggle sob licença CC0. Em um ambiente novo,
-instale `kagglehub`, `pandas`, `numpy`, `matplotlib`, `seaborn` e `scipy`.
+instale `kagglehub`, `pandas`, `numpy`, `matplotlib` e `seaborn`.
 
 ```{python}
 import kagglehub
@@ -57,10 +57,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from scipy.stats import trim_mean
 
 sns.set_theme(style="whitegrid", context="notebook")
 rng = np.random.default_rng(20260824)
+
+def media_aparada(valores, proporcao=0.10):
+    ordenados = np.sort(np.asarray(valores))
+    corte = int(np.floor(proporcao * len(ordenados)))
+    if 2 * corte >= len(ordenados):
+        raise ValueError("A proporção remove todas as observações.")
+    return ordenados[corte:len(ordenados) - corte].mean()
 
 csv_files = sorted(Path(path).rglob("penguins_size.csv"))
 if not csv_files:
@@ -353,14 +359,14 @@ $e=0$ significa acerto. Suponha que uma subestimação custe três vezes mais qu
 uma superestimação de mesma magnitude. Uma perda possível é
 
 $$
-L(e)=
+\rho(e)=
 \begin{cases}
 3e^2, & e<0,\\
 e^2, & e\geq 0.
 \end{cases}
 $$
 
-Por exemplo, $L(-2)=12$, enquanto $L(2)=4$. A magnitude do erro é a mesma,
+Por exemplo, $\rho(-2)=12$, enquanto $\rho(2)=4$. A magnitude do erro é a mesma,
 mas sua consequência não é.
 
 Considere agora os três valores $1$, $2$ e $3$. Sob perda quadrática simétrica,
@@ -369,16 +375,16 @@ entre $2$ e $3$ superestima os valores $1$ e $2$, mas subestima o valor $3$.
 Portanto, sua perda total é
 
 $$
-R(a)=(a-1)^2+(a-2)^2+3(a-3)^2,
+J(a)=(a-1)^2+(a-2)^2+3(a-3)^2,
 \qquad 2<a<3,
 $$
 
-em que $R(a)$ é o risco empírico, isto é, a soma das perdas nos três valores.
+em que $J(a)$ é o objetivo empírico, isto é, a soma das perdas nos três valores.
 Derivando em relação à estimativa $a$,
 
 $$
 \begin{aligned}
-R'(a)
+J'(a)
 &=2(a-1)+2(a-2)+6(a-3)\\
 &=10a-24.
 \end{aligned}
@@ -412,7 +418,7 @@ def calcular_estimativas(valores, n=20, repeticoes=5000):
         "média": amostras.mean(axis=1),
         "mediana": np.median(amostras, axis=1),
         "média aparada 10%": np.array([
-            trim_mean(amostra, proportiontocut=0.10)
+            media_aparada(amostra, proporcao=0.10)
             for amostra in amostras
         ]),
     }
@@ -498,7 +504,7 @@ A máxima verossimilhança começa com um modelo probabilístico
 $f(x\mid\theta)$. Para dados independentes, a verossimilhança é
 
 $$
-\mathcal L(\theta;x_1,\ldots,x_n)
+L(\theta;x_1,\ldots,x_n)
 =\prod_{i=1}^{n}f(x_i\mid\theta).
 $$
 
@@ -508,7 +514,7 @@ escolhe
 
 $$
 \widehat\theta_{MV}
-=\arg\max_{\theta}\mathcal L(\theta;x_1,\ldots,x_n).
+=\arg\max_{\theta}L(\theta;x_1,\ldots,x_n).
 $$
 
 Seu objetivo é encontrar o valor do parâmetro sob o qual os dados observados são
@@ -522,10 +528,10 @@ Outra possibilidade é escolher diretamente o valor que minimiza uma penalizaç�
 
 $$
 \widehat\theta
-=\arg\min_a\sum_{i=1}^{n}L(a,x_i),
+=\arg\min_a\sum_{i=1}^{n}\rho(a,x_i),
 $$
 
-em que $a$ é um valor candidato e $L(a,x_i)$ é o custo de representar $x_i$ por
+em que $a$ é um valor candidato e $\rho(a,x_i)$ é o custo de representar $x_i$ por
 $a$. Sob perda quadrática, o ótimo é a média; sob perda absoluta, é a mediana.
 O objetivo aqui é alinhar a estimativa ao tipo de erro relevante para a decisão.
 Mínimos quadrados, estudados posteriormente em regressão, seguem essa lógica.
@@ -558,13 +564,17 @@ posteriori segundo uma perda. Essa abordagem não será formalizada nesta aula.
 
 Para escolher um centro $a$ pela perda quadrática,
 
-$$L(a)=\sum_{i=1}^n(x_i-a)^2.$$
+$$
+\rho(a,x_i)=(x_i-a)^2,
+\qquad
+J(a)=\sum_{i=1}^n\rho(a,x_i)=\sum_{i=1}^n(x_i-a)^2.
+$$
 
 Derivando:
 
-$$L'(a)=2\sum_{i=1}^n(a-x_i)=2\left(na-\sum_i x_i\right).$$
+$$J'(a)=2\sum_{i=1}^n(a-x_i)=2\left(na-\sum_i x_i\right).$$
 
-A condição $L'(a)=0$ fornece $a=\bar x$. Como $L''(a)=2n>0$, a média é o mínimo global.
+A condição $J'(a)=0$ fornece $a=\bar x$. Como $J''(a)=2n>0$, a média é o mínimo global.
 
 ## Perda absoluta, MAE e mediana
 

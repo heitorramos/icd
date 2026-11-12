@@ -42,7 +42,7 @@ Eventuais alterações serão comunicadas pelo
 | 19 | **03/11/2026** | Verossimilhança na regressão | [Acessar](aulas/19-verossimilhanca-regressao.qmd) |
 | 20 | **05/11/2026** | Gradiente descendente | [Acessar](aulas/20-gradiente-descendente.qmd) |
 | 21 | **10/11/2026** | Regressão linear múltipla | [Acessar](aulas/21-regressao-multipla.qmd) |
-| 22 | **12/11/2026** | Regressão logística e introdução a GLMs | Em revisão |
+| 22 | **12/11/2026** | Regressão logística e introdução a GLMs | [Acessar](aulas/22-regressao-logistica.qmd) |
 | 23 | **17/11/2026** | Regularização | Em revisão |
 | 24 | **19/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
 | 25 | **24/11/2026** | KNN e prática completa de machine learning | Em revisão |

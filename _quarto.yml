@@ -111,6 +111,9 @@ website:
             - aulas/21-regressao-multipla.qmd
             - text: "Material de apoio · Aula 21"
               href: exemplos/21-regressao-multipla/notebook.qmd
+            - aulas/22-regressao-logistica.qmd
+            - text: "Material de apoio · Aula 22"
+              href: exemplos/22-regressao-logistica/notebook.qmd
         # END AUTO: aulas liberadas
 
 format:

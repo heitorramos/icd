@@ -306,7 +306,7 @@ for n in [20, 100, 500]:
 Para Bernoulli, a informação observada é
 
 $$
-J(\widehat p)=-\ell''(\widehat p)
+\mathcal I_{\mathrm{obs}}(\widehat p)=-\ell''(\widehat p)
 =\frac{S}{\widehat p^2}+\frac{n-S}{(1-\widehat p)^2}
 =\frac{n}{\widehat p(1-\widehat p)}.
 $$
@@ -314,14 +314,14 @@ $$
 Na base, $n=1338$, $S=274$ e $\widehat p=0{,}2048$:
 
 $$
-J(\widehat p)\approx8216{,}30,
+\mathcal I_{\mathrm{obs}}(\widehat p)\approx8216{,}30,
 \qquad
-\operatorname{EP}(\widehat p)\approx\frac{1}{\sqrt{J(\widehat p)}}
+\operatorname{EP}(\widehat p)\approx\frac{1}{\sqrt{\mathcal I_{\mathrm{obs}}(\widehat p)}}
 =0{,}0110.
 $$
 
 ::: {.callout-note title="Interpretação"}
-A proporção estimada é **20,48%**, com erro-padrão de aproximadamente **1,10 ponto percentual**. Uma curva mais acentuada perto do máximo produz maior $J$ e menor incerteza local.
+A proporção estimada é **20,48%**, com erro-padrão de aproximadamente **1,10 ponto percentual**. Uma curva mais acentuada perto do máximo produz maior $\mathcal I_{\mathrm{obs}}$ e menor incerteza local.
 :::
 
 ## Estimação não valida automaticamente o modelo

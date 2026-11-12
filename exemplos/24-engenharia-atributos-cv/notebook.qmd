@@ -233,9 +233,9 @@ Consultar o teste repetidamente adapta decisões a ele e destrói sua função d
 Divida os índices de desenvolvimento em $K$ conjuntos disjuntos $I_1,\ldots,I_K$. Para pipeline candidata $m$,
 
 $$\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K\frac1{|I_k|}
-\sum_{i\in I_k}L(y_i,\widehat f_m^{(-k)}(x_i)).$$
+\sum_{i\in I_k}\rho(y_i,\widehat f_m^{(-k)}(x_i)).$$
 
-$\widehat f_m^{(-k)}$ é ajustada sem $I_k$; $L$ é a perda; $|I_k|$ é o tamanho da parte de validação.
+$\widehat f_m^{(-k)}$ é ajustada sem $I_k$; $\rho$ é a perda; $|I_k|$ é o tamanho da parte de validação.
 
 ## Implementação do ajuste Ridge
 

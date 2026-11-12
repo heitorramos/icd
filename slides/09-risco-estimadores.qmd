@@ -87,8 +87,10 @@ Qual valor representa melhor o grupo?
 Uma função de perda atribui um custo à diferença entre estimativa e observação:
 
 $$
-L(\widehat{\theta},x)
+\rho(\widehat{\theta},x)
 $$
+
+Usaremos $\rho$ para a **perda individual**. Mais adiante, $L$ ficará reservado para a verossimilhança.
 
 Duas escolhas comuns:
 
@@ -117,42 +119,42 @@ Escolhemos uma estimativa $a$ para representar $x_1=1$, $x_2=2$ e $x_3=3$.
 Com perda quadrática simétrica,
 
 $$
-R(a)=\sum_{i=1}^{3}(a-x_i)^2,
-\qquad R'(a)=2(a-1)+2(a-2)+2(a-3)=6a-12.
+J(a)=\sum_{i=1}^{3}(a-x_i)^2,
+\qquad J'(a)=2(a-1)+2(a-2)+2(a-3)=6a-12.
 $$
 
-Portanto, $R'(a)=0$ em $a^*=2$, a média dos dados.
+Portanto, $J'(a)=0$ em $a^*=2$, a média dos dados.
 
 Agora, suponha que **subestimar** ($a<x$) custe três vezes mais:
 
 $$
-L(a,x)=
+\rho(a,x)=
 \begin{cases}
 3(a-x)^2, & a<x,\\
 (a-x)^2, & a\geq x.
 \end{cases}
 \qquad
-R(a)=\sum_{i=1}^{3}L(a,x_i).
+J(a)=\sum_{i=1}^{3}\rho(a,x_i).
 $$
 
 No intervalo $2<a<3$, $a$ superestima 1 e 2, mas subestima 3. Por isso,
 
 $$
 \begin{aligned}
-R(a)&=(a-1)^2+(a-2)^2+3(a-3)^2,\\
-R'(a)&=2(a-1)+2(a-2)+6(a-3)=10a-24.
+J(a)&=(a-1)^2+(a-2)^2+3(a-3)^2,\\
+J'(a)&=2(a-1)+2(a-2)+6(a-3)=10a-24.
 \end{aligned}
 $$
 
 Assim,
 
 $$
-R'(a)=0
+J'(a)=0
 \quad\Longrightarrow\quad
 a^*=\frac{24}{10}=2{,}4.
 $$
 
-A solução é coerente com o intervalo assumido, pois $2<2{,}4<3$. Como cada parcela de $R(a)$ é convexa, esse ponto estacionário é o **mínimo global**. O ótimo sobe de 2 para 2,4: aceitamos erros um pouco maiores para 1 e 2 a fim de reduzir a subestimação mais cara de 3.
+A solução é coerente com o intervalo assumido, pois $2<2{,}4<3$. Como cada parcela de $J(a)$ é convexa, esse ponto estacionário é o **mínimo global**. O ótimo sobe de 2 para 2,4: aceitamos erros um pouco maiores para 1 e 2 a fim de reduzir a subestimação mais cara de 3.
 :::
 
 <details class="code-fold">
@@ -555,7 +557,7 @@ O **risco** é a perda esperada ao repetir a amostragem:
 
 $$
 R(\widehat{\theta},\theta)
-=E\left[L(\widehat{\theta},\theta)\right]
+=E\left[\rho(\widehat{\theta},\theta)\right]
 $$
 
 Para perda quadrática:

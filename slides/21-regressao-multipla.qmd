@@ -266,7 +266,7 @@ Somando a derivada do termo linear:
 
 $$
 \nabla_bJ(b)=-2X^Ty+2X^TXb
-=-2X^T(y-Xb).
+=2X^T(Xb-y).
 $$
 
 O gradiente possui dimensão $(p+1)\times1$, igual ao vetor de parâmetros.
@@ -317,12 +317,12 @@ Dg(b)=
 =X.
 $$
 
-Como $e(b)=y-g(b)$, temos $De(b)=-X$. Pela regra da cadeia,
+O resíduo usual é $e(b)=y-g(b)$. Para escrever o gradiente sem um sinal externo, defina a discrepância oposta $d(b)=g(b)-y=Xb-y=-e(b)$. Como $Dd(b)=X$, pela regra da cadeia,
 
-$$\nabla J(b)=2\,De(b)^Te(b)=-2X^T(y-Xb).$$
+$$\nabla J(b)=2X^T(Xb-y).$$
 
 ::: {.callout-note title="Notação"}
-$Dg(b)$ é a Jacobiana da função de previsão $g$ no ponto $b$. $De(b)$ é a Jacobiana da função de resíduos $e$ no mesmo ponto. Já $J$ é a função objetivo escalar e $\nabla J$ é seu gradiente.
+$Dg(b)$ é a Jacobiana da previsão e $Dd(b)$ é a Jacobiana da discrepância **previsão menos observado**. Já $J$ é a função objetivo escalar e $\nabla J$ é seu gradiente.
 :::
 
 ## Cada componente tem interpretação conhecida
@@ -331,17 +331,17 @@ Para $j=0,\ldots,p$:
 
 $$
 \frac{\partial J}{\partial b_j}
-=-2\sum_{i=1}^n x_{ij}(y_i-\widehat y_i).
+=2\sum_{i=1}^n x_{ij}(\widehat y_i-y_i).
 $$
 
-Cada derivada soma resíduos ponderados pela coluna $j$ de $X$.
+Cada derivada soma as diferenças **previsão menos observado**, ponderadas pela coluna $j$ de $X$.
 
 ### O intercepto cabe na mesma fórmula
 
 Na coluna $j=0$, $x_{i0}=1$. Portanto,
 
 $$
-\frac{\partial J}{\partial b_0}=-2\sum_ie_i.
+\frac{\partial J}{\partial b_0}=2\sum_i(\widehat y_i-y_i).
 $$
 
 No ótimo com intercepto, $\sum_i e_i=0$.
@@ -349,17 +349,17 @@ No ótimo com intercepto, $\sum_i e_i=0$.
 ## Gradiente descendente vetorizado
 
 $$
-b_{t+1}=b_t-\eta\nabla J(b_t)
-=b_t+2\eta X^T(y-Xb_t).
+b_{t+1}=b_t-\kappa\nabla J(b_t)
+=b_t-2\kappa X^T(Xb_t-y).
 $$
 
 Se usarmos MSE em vez de SSE, aparece também o fator $1/n$.
 
-A escolha apenas reescala a taxa de aprendizado.
+A escolha apenas reescala a taxa de aprendizado. O gradiente aponta para o crescimento de $J$; subtraí-lo é o que produz a descida.
 
 ## Quiz: qual dimensão do gradiente? {.quiz-question}
 
-Se $X$ tem dimensão $n\times(p+1)$, qual é a dimensão de $X^T(y-Xb)$?
+Se $X$ tem dimensão $n\times(p+1)$, qual é a dimensão de $X^T(Xb-y)$?
 
 - [$(p+1)\times1$]{.correct data-explanation="X transposta tem dimensão (p+1)×n e multiplica um vetor n×1."}
 - [$n\times1$]{data-explanation="Essa é a dimensão do vetor de resíduos antes da multiplicação por X transposta."}
@@ -369,7 +369,7 @@ Se $X$ tem dimensão $n\times(p+1)$, qual é a dimensão de $X^T(y-Xb)$?
 
 No mínimo,
 
-$$X^T(y-X\widehat\beta)=0,$$
+$$X^T(X\widehat\beta-y)=0,$$
 
 portanto
 
@@ -392,7 +392,7 @@ beta = np.linalg.lstsq(X, y, rcond=None)[0]
 ## Gradiente descendente para regressão múltipla {.smaller}
 
 ```python
-def regressao_gd(X, y, eta=0.01,
+def regressao_gd(X, y, learning_rate=0.01,
                  max_iter=50_000, tol=1e-6):
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -403,14 +403,14 @@ def regressao_gd(X, y, eta=0.01,
 
     for _ in range(max_iter):
         prediction = X @ beta
-        residual = y - prediction
-        historico.append(np.mean(residual**2))
+        difference = prediction - y
+        historico.append(np.mean(difference**2))
 
-        gradient = -(2/n) * X.T @ residual
+        gradient = (2/n) * X.T @ difference
         if np.linalg.norm(gradient) < tol:
             break
 
-        beta = beta - eta * gradient
+        beta = beta - learning_rate * gradient
 
     return beta, np.asarray(historico)
 ```
@@ -706,7 +706,7 @@ Em uma regressão observacional, incluir uma variável como preditor:
 - regressão múltipla modela médias condicionais com vários preditores;
 - $X\beta$ reúne todas as previsões;
 - OLS minimiza $\|y-X\beta\|^2$;
-- o gradiente é $-2X^T(y-X\beta)$;
+- o gradiente é $2X^T(X\beta-y)$ e deve ser subtraído para produzir a descida;
 - indicadores, interações e colinearidade exigem interpretação cuidadosa;
 - $R^2$ ajustado corrige a comparação pelos graus de liberdade.
 

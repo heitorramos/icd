@@ -10,7 +10,7 @@ subtitle: "Probabilidades, classificação e GLMs"
 ::: {.recurso-card}
 ### Slides
 
-Introdução a GLMs, caso Bernoulli, funções candidatas, logit, verossimilhança e avaliação.
+GLMs, caso Bernoulli, logit, verossimilhança e um exemplo completo com divisão 80/20 em treino e teste.
 
 [Abrir slides](../slides/22-regressao-logistica.qmd){.btn .btn-outline-primary}
 :::
@@ -19,7 +19,7 @@ Introdução a GLMs, caso Bernoulli, funções candidatas, logit, verossimilhan�
 ::: {.recurso-card}
 ### Material de apoio
 
-Derivações, implementação por gradiente, resultados e interpretações.
+Derivações, implementação por gradiente e avaliação detalhada no conjunto de teste.
 
 [Abrir notebook](../exemplos/22-regressao-logistica/notebook.qmd){.btn .btn-outline-primary}
 :::
@@ -43,11 +43,11 @@ Medical Insurance Cost com tabagismo como resposta binária.
 - derivar logit, verossimilhança, log-loss e gradiente;
 - interpretar coeficientes em log-odds e razões de odds;
 - separar probabilidade, limiar e decisão;
-- avaliar discriminação e calibração.
+- avaliar matriz de confusão, métricas, limiares e calibração em uma divisão 80/20.
 
 ## Estudo de caso
 
-O tabagismo é modelado a partir de idade, IMC e despesas. O exemplo mostra boa separação, mas também permite discutir disponibilidade temporal das features e limites éticos de inferir características pessoais.
+O tabagismo é modelado a partir de idade, IMC e despesas. Uma divisão estratificada reserva 80% das observações para o ajuste e 20% para a avaliação final. O exemplo mostra boa separação, mas também permite discutir disponibilidade temporal dos atributos e limites éticos de inferir características pessoais.
 
 ## Bibliografia da aula
 

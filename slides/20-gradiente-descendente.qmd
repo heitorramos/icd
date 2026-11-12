@@ -110,8 +110,8 @@ O resultado é um ponto na curva $J(\beta)$.
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-loss = np.mean((y-beta*x)**2)
-gradient = -2*np.mean(x*(y-beta*x))
+loss = np.mean((beta*x-y)**2)
+gradient = 2*np.mean(x*(beta*x-y))
 ```
 </details>
 
@@ -121,14 +121,14 @@ $$
 J(\beta)=\frac1n\sum_i(y_i-\beta x_i)^2.
 $$
 
-Pela regra da cadeia,
+Como $(y_i-\beta x_i)^2=(\beta x_i-y_i)^2$, escrevemos a diferença como **previsão menos observado**. Pela regra da cadeia,
 
 $$
 \frac{dJ}{d\beta}
-=-\frac2n\sum_i x_i(y_i-\beta x_i).
+=\frac2n\sum_i x_i(\beta x_i-y_i).
 $$
 
-O fator $x_i$ aparece porque $d(y_i-\beta x_i)/d\beta=-x_i$.
+O fator $x_i$ aparece porque $d(\beta x_i-y_i)/d\beta=x_i$.
 
 ## O sinal indica para onde caminhar
 
@@ -141,11 +141,11 @@ Por isso caminhamos na direção **oposta** à derivada.
 ## A regra de atualização
 
 $$
-\beta_{t+1}=\beta_t-\eta\,J'(\beta_t).
+\beta_{t+1}=\beta_t-\kappa\,J'(\beta_t).
 $$
 
 - $t$: índice da iteração;
-- $\eta>0$: taxa de aprendizado;
+- $\kappa>0$: taxa de aprendizado;
 - $J'(\beta_t)$: inclinação local da perda;
 - $-J'$: direção de descida.
 
@@ -154,20 +154,21 @@ $$
 Dado $\beta_t$:
 
 1. $\widehat y_i=\beta_tx_i$;
-2. $e_i=y_i-\widehat y_i$;
-3. $g_t=-2n^{-1}\sum_i x_ie_i$;
-4. $\beta_{t+1}=\beta_t-\eta g_t$.
+2. $d_i=\widehat y_i-y_i$;
+3. $g_t=2n^{-1}\sum_i x_id_i$;
+4. $\beta_{t+1}=\beta_t-\kappa g_t$.
 
 Repetimos até um critério de parada.
 
 ## O algoritmo
 
 ```text
-escolha beta e eta
+escolha beta e taxa_aprendizado
 para t = 0, 1, 2, ...:
     previsao = beta * x
-    gradiente = -2 * media(x * (y - previsao))
-    beta_novo = beta - eta * gradiente
+    diferenca = previsao - y
+    gradiente = 2 * media(x * diferenca)
+    beta_novo = beta - taxa_aprendizado * gradiente
     pare se a mudança for suficientemente pequena
 ```
 
@@ -216,8 +217,8 @@ Gradiente descendente aproxima iterativamente essa solução.
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-for eta in [.05, .45, 1.05]:
-    beta -= eta*gradient(beta)
+for learning_rate in [.05, .45, 1.05]:
+    beta -= learning_rate*gradient(beta)
 ```
 </details>
 
@@ -270,38 +271,40 @@ $$
 \partial J/\partial\beta_0\\
 \partial J/\partial\beta_1
 \end{bmatrix}
-=-\frac2n
+=\frac2n
 \begin{bmatrix}
-\sum_i e_i\\
-\sum_i x_ie_i
+\sum_i d_i\\
+\sum_i x_id_i
 \end{bmatrix}.
 $$
+
+Aqui, $d_i=\widehat y_i-y_i$ é a diferença **previsão menos observado**.
 
 Cada componente indica como o objetivo $J$ muda ao variar um parâmetro.
 
 ## Atualização vetorial
 
 $$
-\theta_{t+1}=\theta_t-\eta\nabla J(\theta_t).
+\theta_{t+1}=\theta_t-\kappa\nabla J(\theta_t).
 $$
 
 Explicitamente:
 
-$$\beta_{0,t+1}=\beta_{0,t}+\frac{2\eta}{n}\sum_i e_i,$$
+$$\beta_{0,t+1}=\beta_{0,t}-\frac{2\kappa}{n}\sum_i d_i,$$
 
-$$\beta_{1,t+1}=\beta_{1,t}+\frac{2\eta}{n}\sum_i x_ie_i.$$
+$$\beta_{1,t+1}=\beta_{1,t}-\frac{2\kappa}{n}\sum_i x_id_i.$$
 
 ## Atualize simultaneamente
 
 ```python
 # 1. Calcule tudo com os parâmetros antigos
-erro = y - (beta0 + beta1 * x)
-grad0 = -2 * mean(erro)
-grad1 = -2 * mean(x * erro)
+diferenca = (beta0 + beta1 * x) - y
+grad0 = 2 * mean(diferenca)
+grad1 = 2 * mean(x * diferenca)
 
 # 2. Calcule os dois novos valores
-novo_beta0 = beta0 - eta * grad0
-novo_beta1 = beta1 - eta * grad1
+novo_beta0 = beta0 - learning_rate * grad0
+novo_beta1 = beta1 - learning_rate * grad1
 
 # 3. Substitua o par simultaneamente
 beta0, beta1 = novo_beta0, novo_beta1
@@ -318,7 +321,7 @@ O gradiente é perpendicular às curvas de nível e aponta para o crescimento ma
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-theta = theta-eta*gradient(theta)
+theta = theta-learning_rate*gradient(theta)
 path.append(theta.copy())
 ```
 </details>
@@ -332,8 +335,8 @@ A linha laranja mostra as atualizações desde o ponto inicial preto até o mín
 <details class="code-fold"><summary>Código do gráfico</summary>
 
 ```python
-path_raw = gradient_path(x,  start=[1, -.03], eta=.0005, steps=50000)
-path_std = gradient_path(xz, start=[1,  -.5], eta=.2,    steps=20)
+path_raw = gradient_path(x,  start=[1, -.03], learning_rate=.0005, steps=50000)
+path_std = gradient_path(xz, start=[1,  -.5], learning_rate=.2,    steps=20)
 ```
 </details>
 
@@ -367,7 +370,7 @@ No SGD, escolhemos $i_t$ e usamos
 
 $$g_t=\nabla_\theta\rho_{i_t}(\theta_t),$$
 
-$$\theta_{t+1}=\theta_t-\eta_tg_t.$$
+$$\theta_{t+1}=\theta_t-\kappa_tg_t.$$
 
 $g_t$ é ruidoso, mas barato. Em média, pode apontar na direção do gradiente completo.
 
@@ -482,9 +485,9 @@ No batch completo, permutar a soma não muda a atualização. Dados temporais ou
 
 ## Taxa variável ao longo do treinamento
 
-Uma estratégia comum é reduzir $\eta_t$:
+Uma estratégia comum é reduzir $\kappa_t$:
 
-$$\eta_t=\frac{\eta_0}{1+kt}.$$
+$$\kappa_t=\frac{\kappa_0}{1+kt}.$$
 
 Passos maiores exploram no início; passos menores estabilizam perto do mínimo.
 
@@ -527,12 +530,12 @@ s_{t,j} &= \gamma_2s_{t-1,j}+(1-\gamma_2)g_{t,j}^{\,2},\\
 \widehat u_{t,j} &= \frac{u_{t,j}}{1-\gamma_1^t},
 \qquad
 \widehat s_{t,j} = \frac{s_{t,j}}{1-\gamma_2^t},\\
-\theta_{t+1,j} &= \theta_{t,j}-\eta
+\theta_{t+1,j} &= \theta_{t,j}-\kappa
 \frac{\widehat u_{t,j}}{\sqrt{\widehat s_{t,j}}+\varepsilon}.
 \end{aligned}
 $$
 
-$j$ identifica um parâmetro. $\eta$ controla a escala global; $\gamma_1$ e $\gamma_2$ controlam a memória; $\varepsilon$ evita divisão por zero. Valores usuais são $0{,}001$, $0{,}9$, $0{,}999$ e $10^{-8}$, respectivamente.
+$j$ identifica um parâmetro. $\kappa$ controla a escala global; $\gamma_1$ e $\gamma_2$ controlam a memória; $\varepsilon$ evita divisão por zero. Valores usuais são $0{,}001$, $0{,}9$, $0{,}999$ e $10^{-8}$, respectivamente.
 
 Na literatura, $u_t,s_t,\gamma_1,\gamma_2$ costumam aparecer como $m_t,v_t,\beta_1,\beta_2$.
 
@@ -569,7 +572,7 @@ Isso não garante que normalização seja dispensável em qualquer problema. Ela
 ```python
 u = gamma1*u+(1-gamma1)*gradient
 s = gamma2*s+(1-gamma2)*gradient**2
-theta -= eta*(u/(1-gamma1**t))/(sqrt(s/(1-gamma2**t))+epsilon)
+theta -= learning_rate*(u/(1-gamma1**t))/(sqrt(s/(1-gamma2**t))+epsilon)
 ```
 </details>
 

@@ -23,7 +23,7 @@ def save(fig,name):
 beta_star=np.sum(xz*yz)/np.sum(xz*xz)
 b=np.linspace(-.8,1.4,500)
 loss=np.array([np.mean((yz-v*xz)**2) for v in b])
-grad=np.array([-2*np.mean(xz*(yz-v*xz)) for v in b])
+grad=np.array([2*np.mean(xz*(v*xz-yz)) for v in b])
 fig,axes=plt.subplots(1,2,figsize=(12,4.5)); axes[0].plot(b,loss,lw=3,color=blue); axes[0].axvline(beta_star,ls="--",color=orange); axes[0].set(xlabel=r"$\beta$",ylabel="MSE",title="Perda convexa")
 axes[1].plot(b,grad,lw=3,color=green); axes[1].axhline(0,color="black"); axes[1].axvline(beta_star,ls="--",color=orange); axes[1].set(xlabel=r"$\beta$",ylabel=r"$dJ/d\beta$",title="O sinal aponta a direção")
 save(fig,"perda-derivada.png")
@@ -31,12 +31,12 @@ save(fig,"perda-derivada.png")
 def gd1(lr,steps=25,start=-.7):
     bb=start; hist=[]
     for t in range(steps):
-        ll=np.mean((yz-bb*xz)**2); gg=-2*np.mean(xz*(yz-bb*xz)); hist.append((t,bb,ll,gg)); bb-=lr*gg
+        ll=np.mean((bb*xz-yz)**2); gg=2*np.mean(xz*(bb*xz-yz)); hist.append((t,bb,ll,gg)); bb-=lr*gg
     return np.array(hist)
 
 fig,axes=plt.subplots(1,3,figsize=(13,4),sharey=True)
 for ax,lr in zip(axes,[.05,.45,1.05]):
-    h=gd1(lr,18); ax.plot(b,loss,color="#bbbbbb",lw=2); ax.plot(h[:,1],h[:,2],"o-",color=orange,lw=2,ms=4); ax.set_title(fr"$\eta={lr}$"); ax.set_xlabel(r"$\beta$")
+    h=gd1(lr,18); ax.plot(b,loss,color="#bbbbbb",lw=2); ax.plot(h[:,1],h[:,2],"o-",color=orange,lw=2,ms=4); ax.set_title(fr"$\kappa={lr}$"); ax.set_xlabel(r"$\beta$")
 axes[0].set_ylabel("MSE"); save(fig,"taxas-aprendizado.png")
 
 # 2D contour and path
@@ -44,9 +44,9 @@ def mse(a,bb): return np.mean((yz-a-bb*xz)**2)
 aa=np.linspace(-1,1,180); bb=np.linspace(-.5,1.1,180); A,B=np.meshgrid(aa,bb); Z=np.vectorize(mse)(A,B)
 theta=np.array([.9,-.35]); path=[]; lr=.22
 for t in range(24):
-    pred=theta[0]+theta[1]*xz; g=np.array([-2*np.mean(yz-pred),-2*np.mean(xz*(yz-pred))]); path.append(theta.copy()); theta-=lr*g
+    pred=theta[0]+theta[1]*xz; difference=pred-yz; g=np.array([2*np.mean(difference),2*np.mean(xz*difference)]); path.append(theta.copy()); theta-=lr*g
 path=np.array(path)
-fig,ax=plt.subplots(figsize=(8,5.5)); cs=ax.contour(A,B,Z,levels=18,cmap="Blues"); ax.clabel(cs,inline=True,fontsize=7); ax.plot(path[:,0],path[:,1],"o-",color=orange,lw=2,ms=4); ax.scatter([0],[beta_star],s=100,color=green,zorder=4); ax.set(xlabel=r"intercepto padronizado $\alpha$",ylabel=r"inclinação $\beta$",title="Gradiente descendente percorre a superfície de perda"); save(fig,"contorno-caminho.png")
+fig,ax=plt.subplots(figsize=(8,5.5)); cs=ax.contour(A,B,Z,levels=18,cmap="Blues"); ax.clabel(cs,inline=True,fontsize=7); ax.plot(path[:,0],path[:,1],"o-",color=orange,lw=2,ms=4); ax.scatter([0],[beta_star],s=100,color=green,zorder=4); ax.set(xlabel=r"intercepto padronizado $\beta_0$",ylabel=r"inclinação $\beta_1$",title="Gradiente descendente percorre a superfície de perda"); save(fig,"contorno-caminho.png")
 
 # convergence and OLS
 h=gd1(.25,50)
@@ -60,7 +60,7 @@ def train(batch,epochs=35,lr=.04):
     for epoch in range(epochs):
         ids=rng.permutation(len(xz))
         for k in range(0,len(ids),batch):
-            ii=ids[k:k+batch]; pred=th[0]+th[1]*xz[ii]; g=np.array([-2*np.mean(yz[ii]-pred),-2*np.mean(xz[ii]*(yz[ii]-pred))]); th-=lr*g
+            ii=ids[k:k+batch]; pred=th[0]+th[1]*xz[ii]; difference=pred-yz[ii]; g=np.array([2*np.mean(difference),2*np.mean(xz[ii]*difference)]); th-=lr*g
         out.append((epoch,mse(*th),*th))
     return np.array(out)
 fig,ax=plt.subplots(figsize=(9,5))
@@ -87,10 +87,10 @@ def stochastic_path(batch_size, updates=70, learning_rate=.04, seed=20261104):
             cursor += batch_size
 
         prediction = theta[0] + theta[1] * xz[indices]
-        error = yz[indices] - prediction
+        difference = prediction - yz[indices]
         gradient = np.array([
-            -2 * np.mean(error),
-            -2 * np.mean(xz[indices] * error),
+            2 * np.mean(difference),
+            2 * np.mean(xz[indices] * difference),
         ])
         theta -= learning_rate * gradient
         history.append(theta.copy())
@@ -171,15 +171,15 @@ def loss_surface(xx, intercepts, slopes):
     )
     return intercept_grid, slope_grid, values
 
-def gradient_path(xx, start, eta, steps):
+def gradient_path(xx, start, learning_rate, steps):
     theta = np.array(start, dtype=float)
     history = []
     for iteration in range(steps):
         prediction = theta[0]+theta[1]*xx
-        error = yz-prediction
-        history.append((iteration, *theta, np.mean(error**2)))
-        gradient = np.array([-2*np.mean(error), -2*np.mean(xx*error)])
-        theta -= eta*gradient
+        difference = prediction-yz
+        history.append((iteration, *theta, np.mean(difference**2)))
+        gradient = np.array([2*np.mean(difference), 2*np.mean(xx*difference)])
+        theta -= learning_rate*gradient
     return np.array(history)
 
 raw_intercepts = np.linspace(-1.15, 1.15, 220)
@@ -197,8 +197,8 @@ theta_std = np.linalg.solve(
     np.column_stack([np.ones(len(xz)), xz]).T @ np.column_stack([np.ones(len(xz)), xz]),
     np.column_stack([np.ones(len(xz)), xz]).T @ yz,
 )
-path_raw = gradient_path(x, [1, -.03], eta=.0005, steps=50000)
-path_std = gradient_path(xz, [1, -.5], eta=.2, steps=20)
+path_raw = gradient_path(x, [1, -.03], learning_rate=.0005, steps=50000)
+path_std = gradient_path(xz, [1, -.5], learning_rate=.2, steps=20)
 raw_marks = np.unique(np.r_[np.arange(10), [20, 50, 100, 300, 1000, 3000, 10000, 30000, 49999]])
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.2))
@@ -249,7 +249,7 @@ axes[1].legend(loc="upper left", fontsize=10)
 save(fig,"padronizacao.png")
 
 # Adam on the same unstandardized regression surface
-def adam_path(xx, start, eta=.02, steps=300, gamma1=.9, gamma2=.999,
+def adam_path(xx, start, learning_rate=.02, steps=300, gamma1=.9, gamma2=.999,
               epsilon=1e-8):
     theta = np.array(start, dtype=float)
     first_moment = np.zeros_like(theta)
@@ -258,17 +258,17 @@ def adam_path(xx, start, eta=.02, steps=300, gamma1=.9, gamma2=.999,
 
     for step in range(1, steps+1):
         prediction = theta[0]+theta[1]*xx
-        error = yz-prediction
+        difference = prediction-yz
         gradient = np.array([
-            -2*np.mean(error),
-            -2*np.mean(xx*error),
+            2*np.mean(difference),
+            2*np.mean(xx*difference),
         ])
-        history.append((step-1, *theta, np.mean(error**2)))
+        history.append((step-1, *theta, np.mean(difference**2)))
         first_moment = gamma1*first_moment+(1-gamma1)*gradient
         second_moment = gamma2*second_moment+(1-gamma2)*gradient**2
         corrected_first = first_moment/(1-gamma1**step)
         corrected_second = second_moment/(1-gamma2**step)
-        theta -= eta*corrected_first/(np.sqrt(corrected_second)+epsilon)
+        theta -= learning_rate*corrected_first/(np.sqrt(corrected_second)+epsilon)
 
     return np.asarray(history)
 

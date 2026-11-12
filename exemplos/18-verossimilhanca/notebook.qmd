@@ -167,7 +167,7 @@ pd.Series({
 A **informação observada** é a curvatura negativa da log-verossimilhança calculada no estimador:
 
 $$
-J(\widehat p)
+\mathcal I_{\mathrm{obs}}(\widehat p)
 =-\ell''(\widehat p)
 =\frac{S}{\widehat p^2}+\frac{n-S}{(1-\widehat p)^2}.
 $$
@@ -175,16 +175,16 @@ $$
 Como $S=n\widehat p$ e $n-S=n(1-\widehat p)$, obtemos
 
 $$
-J(\widehat p)=\frac{n}{\widehat p(1-\widehat p)}.
+\mathcal I_{\mathrm{obs}}(\widehat p)=\frac{n}{\widehat p(1-\widehat p)}.
 $$
 
 No exemplo da base,
 
 $$
-J(\widehat p)\approx8216{,}30,
+\mathcal I_{\mathrm{obs}}(\widehat p)\approx8216{,}30,
 \qquad
 \operatorname{EP}(\widehat p)
-\approx\frac{1}{\sqrt{J(\widehat p)}}
+\approx\frac{1}{\sqrt{\mathcal I_{\mathrm{obs}}(\widehat p)}}
 \approx0{,}0110.
 $$
 
