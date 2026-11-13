@@ -6,7 +6,7 @@ subtitle: "Probabilidades, classificação e GLMs"
 ## Materiais da aula
 
 ::: {.grid .recursos-grid}
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6 .g-col-xl-3}
 ::: {.recurso-card}
 ### Slides
 
@@ -15,7 +15,7 @@ GLMs, caso Bernoulli, logit, verossimilhança e um exemplo completo com divisão
 [Abrir slides](../slides/22-regressao-logistica.qmd){.btn .btn-outline-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6 .g-col-xl-3}
 ::: {.recurso-card}
 ### Material de apoio
 
@@ -24,13 +24,22 @@ Derivações, implementação por gradiente e avaliação detalhada no conjunto 
 [Abrir notebook](../exemplos/22-regressao-logistica/notebook.qmd){.btn .btn-outline-primary}
 :::
 :::
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6 .g-col-xl-3}
 ::: {.recurso-card}
 ### Base de dados de apoio
 
 Medical Insurance Cost com tabagismo como resposta binária.
 
 [Abrir base no Kaggle](https://www.kaggle.com/datasets/mosapabdelghany/medical-insurance-cost-dataset){.btn .btn-outline-primary}
+:::
+:::
+::: {.g-col-12 .g-col-md-6 .g-col-xl-3}
+::: {.recurso-card}
+### Conteúdo dinâmico
+
+Explore a função logística, o efeito do limiar e fronteiras de decisão não lineares.
+
+[Abrir atividades](22-regressao-logistica-dinamico.qmd){.btn .btn-outline-primary}
 :::
 :::
 :::

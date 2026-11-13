@@ -1,0 +1,214 @@
+.dynamic-lab {
+  --dynamic-blue: #0f6b78;
+  --dynamic-orange: #d95f02;
+  --dynamic-red: #b42318;
+  --dynamic-green: #237a57;
+  margin: 1.25rem 0 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #d7e1e5;
+  border-top: 0.35rem solid var(--dynamic-blue);
+  border-radius: 0.85rem;
+  background: #fbfdfd;
+  box-shadow: 0 0.25rem 1rem rgb(23 50 77 / 8%);
+}
+
+.dynamic-controls {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.dynamic-controls-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dynamic-controls-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dynamic-controls-one {
+  grid-template-columns: minmax(16rem, 28rem);
+}
+
+.dynamic-controls label {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  color: #17324d;
+  font-weight: 600;
+}
+
+.dynamic-controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--dynamic-blue);
+}
+
+.dynamic-controls select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #b9c8ce;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #1f2a33;
+}
+
+.dynamic-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.dynamic-stats > div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.6rem;
+  background: #edf4f5;
+  text-align: center;
+}
+
+.dynamic-stats span {
+  color: #5d6b75;
+  font-size: 0.88rem;
+}
+
+.dynamic-stats strong {
+  color: #17324d;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dynamic-chart {
+  display: block;
+  width: 100%;
+  min-height: 18rem;
+  margin: 0.75rem 0 0;
+  overflow: visible;
+}
+
+.dynamic-chart text {
+  fill: #5d6b75;
+  font-family: "Atkinson Hyperlegible", "Source Sans Pro", Arial, sans-serif;
+  font-size: 13px;
+}
+
+.dynamic-chart .axis {
+  fill: none;
+  stroke: #71838c;
+  stroke-width: 1.4;
+}
+
+.dynamic-chart .grid-line {
+  stroke: #d9e2e6;
+  stroke-width: 1;
+}
+
+.dynamic-chart .main-curve {
+  fill: none;
+  stroke: var(--dynamic-blue);
+  stroke-width: 4;
+}
+
+.dynamic-chart .guide-line {
+  fill: none;
+  stroke: #455761;
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+}
+
+.dynamic-chart .active-point {
+  fill: var(--dynamic-orange);
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.dynamic-chart .class-zero {
+  fill: var(--dynamic-blue);
+}
+
+.dynamic-chart .class-one-mark {
+  fill: none;
+  stroke: var(--dynamic-orange);
+  stroke-width: 4;
+}
+
+.dynamic-chart .wrong-mark {
+  stroke: var(--dynamic-red);
+  stroke-width: 4;
+}
+
+.dynamic-interpretation,
+.dynamic-equation {
+  margin: 0.75rem auto 0;
+  text-align: center;
+}
+
+.dynamic-interpretation {
+  max-width: 58rem;
+  color: #455761;
+}
+
+.dynamic-equation {
+  color: #17324d;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+}
+
+.threshold-results {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(24rem, 1.4fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.confusion-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  text-align: center;
+}
+
+.confusion-matrix > div {
+  display: grid;
+  min-height: 2.7rem;
+  place-items: center;
+  background: #edf3f5;
+  font-variant-numeric: tabular-nums;
+}
+
+.confusion-matrix > div:nth-child(5),
+.confusion-matrix > div:nth-child(9) {
+  background: #dcefe7;
+  color: #135a3d;
+  font-weight: 700;
+}
+
+.confusion-matrix > div:nth-child(6),
+.confusion-matrix > div:nth-child(8) {
+  background: #f9e1df;
+  color: #8f1d14;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .dynamic-controls-three,
+  .dynamic-controls-two,
+  .dynamic-stats,
+  .threshold-results {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-controls-one {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-lab {
+    padding: 0.9rem;
+  }
+
+  .dynamic-chart {
+    min-height: 14rem;
+  }
+}
