@@ -37,7 +37,7 @@ Medical Insurance Cost com tabagismo como resposta binária.
 ::: {.recurso-card}
 ### Conteúdo dinâmico
 
-Explore a função logística, o efeito do limiar e fronteiras de decisão não lineares.
+Use um simulador integrado e explore a função logística, o efeito do limiar e fronteiras não lineares.
 
 [Abrir atividades](22-regressao-logistica-dinamico.qmd){.btn .btn-outline-primary}
 :::

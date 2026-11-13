@@ -1,6 +1,6 @@
 ---
 title: "Conteúdo dinâmico: Regressão logística"
-subtitle: "Três laboratórios para explorar probabilidades, decisões e fronteiras"
+subtitle: "Um simulador integrado e três laboratórios de exploração"
 toc: false
 format:
   html:
@@ -13,7 +13,90 @@ As atividades abaixo complementam a Aula 22. Altere os controles, observe como o
 
 [Voltar para a Aula 22](22-regressao-logistica.qmd){.btn .btn-outline-primary}
 
-## 1. Da função linear à probabilidade
+## 1. Simulador integrado: probabilidade, limiar e decisão
+
+Considere uma triagem fictícia baseada em um biomarcador denominado **Troponina-X**. Para cada paciente, o modelo estima $P(Y=1\mid X=x)$ e o limiar $c$ transforma essa probabilidade em uma decisão. Toda a análise abaixo — pontos, matriz de confusão e métricas — responde simultaneamente às suas escolhas.
+
+::: {.callout-important title="Exemplo exclusivamente didático"}
+Os pacientes, o biomarcador e os custos mencionados no simulador são sintéticos. A atividade ilustra decisões estatísticas e não representa um protocolo médico.
+:::
+
+```{=html}
+<div id="integrated-lab" class="dynamic-lab integrated-lab">
+  <div class="integrated-toolbar">
+    <div>
+      <strong>Coorte sintética com 60 pacientes</strong>
+      <span>Curva logística: η = −4,2 + 0,85x</span>
+    </div>
+    <button id="integrated-new-cohort" type="button" class="btn btn-outline-primary">Gerar nova coorte</button>
+  </div>
+
+  <div class="integrated-presets" aria-label="Cenários de limiar">
+    <button type="button" class="btn btn-sm btn-outline-primary integrated-preset" data-threshold="0.20">Triagem sensível: 0,20</button>
+    <button type="button" class="btn btn-sm btn-outline-primary integrated-preset" data-threshold="0.50">Limiar intermediário: 0,50</button>
+    <button type="button" class="btn btn-sm btn-outline-primary integrated-preset" data-threshold="0.80">Alta especificidade: 0,80</button>
+  </div>
+
+  <div class="integrated-layout">
+    <div class="integrated-main">
+      <div class="integrated-heading">
+        <div>
+          <strong>Curva logística e pacientes</strong>
+          <span>Passe o cursor ou toque em um ponto para inspecioná-lo.</span>
+        </div>
+        <div class="integrated-legend" aria-label="Legenda">
+          <span><i class="legend-dot legend-positive"></i>Real 1</span>
+          <span><i class="legend-dot legend-negative"></i>Real 0</span>
+          <span><i class="legend-dot legend-error"></i>Erro</span>
+        </div>
+      </div>
+      <div id="integrated-canvas-wrapper" class="canvas-wrapper">
+        <canvas id="integrated-sigmoid-chart" role="img" aria-label="Curva logística, pacientes sintéticos e limiar de decisão"></canvas>
+        <div id="integrated-tooltip" class="integrated-tooltip" hidden></div>
+      </div>
+      <label class="integrated-slider-label" for="integrated-threshold">
+        <span>Limiar de decisão <em>c</em></span>
+        <strong id="integrated-threshold-label">0,50</strong>
+      </label>
+      <input id="integrated-threshold" type="range" min="0.05" max="0.95" step="0.01" value="0.50">
+      <div class="integrated-slider-scale"><span>0,05</span><span>0,50</span><span>0,95</span></div>
+    </div>
+
+    <div class="integrated-side" aria-live="polite">
+      <div>
+        <div class="integrated-section-title">
+          <strong>Matriz de confusão</strong>
+          <span id="integrated-accuracy">Acurácia: 0,0%</span>
+        </div>
+        <div class="integrated-matrix" aria-label="Matriz de confusão do simulador integrado">
+          <div></div><div>Predito 1</div><div>Predito 0</div>
+          <div>Real 1</div><div><small>VP</small><strong id="integrated-tp">0</strong></div><div><small>FN</small><strong id="integrated-fn">0</strong></div>
+          <div>Real 0</div><div><small>FP</small><strong id="integrated-fp">0</strong></div><div><small>VN</small><strong id="integrated-tn">0</strong></div>
+        </div>
+      </div>
+      <div class="integrated-metrics">
+        <div><span>Precisão</span><strong id="integrated-precision">0,0%</strong><i><b id="integrated-precision-bar"></b></i></div>
+        <div><span>Revocação (sensibilidade)</span><strong id="integrated-recall">0,0%</strong><i><b id="integrated-recall-bar"></b></i></div>
+        <div><span>F1-score</span><strong id="integrated-f1">0,0%</strong></div>
+      </div>
+      <div>
+        <div class="integrated-section-title"><strong>Precisão e revocação por limiar</strong></div>
+        <div class="tradeoff-wrapper">
+          <canvas id="integrated-tradeoff-chart" role="img" aria-label="Precisão e revocação para diferentes limiares"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="integrated-feedback" class="integrated-feedback" aria-live="polite"></div>
+</div>
+```
+
+::: {.callout-tip title="Desafios"}
+Primeiro, tente zerar os falsos negativos e observe o custo em falsos positivos. Depois faça o contrário: procure um limiar sem falsos positivos e acompanhe a queda da revocação. Por que nenhum limiar é universalmente “correto”?
+:::
+
+## 2. Da função linear à probabilidade
 
 O preditor linear pode assumir qualquer valor real. A função logística transforma esse valor em uma probabilidade entre 0 e 1:
 
@@ -50,7 +133,7 @@ $$
 Mude o sinal de $\beta_1$. O que acontece com a direção da curva? Depois, mantenha $x$ e $\beta_1$ fixos e altere somente $\beta_0$.
 :::
 
-## 2. Laboratório de limiar
+## 3. Laboratório de limiar
 
 O modelo estima probabilidades. A classe prevista só aparece depois que escolhemos um limiar $c$:
 
@@ -88,7 +171,7 @@ Os pontos abaixo representam casos fictícios. A posição horizontal é a proba
 Encontre um limiar que não produza falsos positivos. O que acontece com a revocação? Depois procure um limiar que detecte todos os casos da classe 1.
 :::
 
-## 3. Fronteiras não lineares
+## 4. Fronteiras não lineares
 
 A regressão logística é linear nos coeficientes, mas pode receber atributos transformados. Assim, uma fronteira reta no espaço transformado pode se tornar curva no espaço original.
 
@@ -119,6 +202,7 @@ Ative os termos quadráticos e altere sua força. O modelo deixou de ser uma reg
 
 - a função logística converte o preditor linear em probabilidade;
 - o limiar transforma probabilidades em decisões e redistribui os tipos de erro;
+- precisão, revocação e F1 respondem de maneiras diferentes à mudança do limiar;
 - transformações nos atributos permitem fronteiras curvas sem abandonar a regressão logística.
 
 <script src="../site/js/aula22-dinamico.js" defer></script>
