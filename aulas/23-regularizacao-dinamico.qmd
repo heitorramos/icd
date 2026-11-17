@@ -1,0 +1,136 @@
+---
+title: "Conteúdo dinâmico: Regularização"
+subtitle: "Quatro laboratórios para explorar flexibilidade, penalização e estabilidade"
+toc: false
+format:
+  html:
+    css: ../site/styles/aula23-dinamico.css
+resources:
+  - ../site/js/aula23-dinamico.js
+---
+
+As atividades abaixo complementam a Aula 23. Altere os controles e observe como cada escolha modifica o ajuste, os coeficientes e a capacidade de generalização do modelo.
+
+[Voltar para a Aula 23](23-regularizacao.qmd){.btn .btn-outline-primary}
+
+## 1. Da subaprendizagem à sobreaprendizagem
+
+O grau do polinômio controla a flexibilidade. Um modelo simples demais não acompanha a estrutura dos dados; um modelo excessivamente flexível aprende também as oscilações particulares da amostra.
+
+```{=html}
+<div id="complexity-lab" class="regularization-lab">
+  <div class="lab-controls lab-controls-two">
+    <label for="complexity-degree">Grau do polinômio: <strong id="complexity-degree-value">3</strong>
+      <input id="complexity-degree" type="range" min="1" max="12" step="1" value="3">
+    </label>
+    <button id="complexity-resample" type="button" class="btn btn-outline-primary">Gerar nova amostra</button>
+  </div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Erro de treino</span><strong id="complexity-train-mse">—</strong></div>
+    <div><span>Erro de validação</span><strong id="complexity-valid-mse">—</strong></div>
+    <div><span>Diagnóstico</span><strong id="complexity-status">—</strong></div>
+  </div>
+  <svg id="complexity-chart" class="regularization-chart" viewBox="0 0 820 390" role="img" aria-label="Amostra, curva verdadeira e ajuste polinomial para o grau escolhido"></svg>
+  <p id="complexity-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Comece com grau 1, aumente-o lentamente e compare os dois erros. O menor erro de treino identifica necessariamente o melhor modelo para novos dados?
+:::
+
+## 2. O que o parâmetro $\lambda$ faz no Ridge?
+
+Mantemos um polinômio de grau 12 e alteramos apenas a intensidade da penalização $L_2$. Quando $\lambda$ aumenta, coeficientes grandes ficam mais caros e a curva tende a se tornar mais suave.
+
+```{=html}
+<div id="ridge-lab" class="regularization-lab">
+  <div class="lab-controls lab-controls-one">
+    <label for="ridge-lambda">Penalização Ridge λ: <strong id="ridge-lambda-value">0</strong>
+      <input id="ridge-lambda" type="range" min="0" max="10" step="1" value="0">
+    </label>
+  </div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Norma dos coeficientes</span><strong id="ridge-coef-norm">—</strong></div>
+    <div><span>Erro de treino</span><strong id="ridge-train-mse">—</strong></div>
+    <div><span>Erro de validação</span><strong id="ridge-valid-mse">—</strong></div>
+  </div>
+  <svg id="ridge-chart" class="regularization-chart" viewBox="0 0 820 390" role="img" aria-label="Ajuste polinomial Ridge para diferentes valores de lambda"></svg>
+  <p id="ridge-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Observe os dois extremos: com penalização quase nula, a curva reage fortemente à amostra; com penalização muito grande, quase toda a flexibilidade desaparece. Procure uma região intermediária.
+:::
+
+## 3. Geometria de Lasso e Ridge
+
+As curvas representam níveis da função de perda. A solução regularizada é o ponto da região permitida que alcança a menor curva de nível possível. Os vértices da região $L_1$ tornam mais provável que a solução encontre um eixo e zere um coeficiente.
+
+```{=html}
+<div id="geometry-lab" class="regularization-lab">
+  <div class="lab-controls lab-controls-two">
+    <label for="geometry-penalty">Tipo de restrição
+      <select id="geometry-penalty">
+        <option value="l1">L1 — Lasso</option>
+        <option value="l2">L2 — Ridge</option>
+      </select>
+    </label>
+    <label for="geometry-radius">Raio da região permitida: <strong id="geometry-radius-value">0,9</strong>
+      <input id="geometry-radius" type="range" min="0.4" max="3.2" step="0.1" value="0.9">
+    </label>
+  </div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Coeficiente β₁</span><strong id="geometry-beta1">—</strong></div>
+    <div><span>Coeficiente β₂</span><strong id="geometry-beta2">—</strong></div>
+    <div><span>Resultado</span><strong id="geometry-status">—</strong></div>
+  </div>
+  <svg id="geometry-chart" class="regularization-chart geometry-chart" viewBox="0 0 720 520" role="img" aria-label="Curvas de nível da perda e regiões permitidas pelas restrições L1 e L2"></svg>
+  <p id="geometry-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Compare $L_1$ e $L_2$ usando o mesmo raio. Em qual caso a solução toca um eixo? Aumente o raio até que a restrição quase deixe de alterar a solução.
+:::
+
+## 4. Colinearidade: previsões estáveis, coeficientes instáveis
+
+Dois preditores quase redundantes permitem muitas divisões semelhantes do efeito entre $\beta_1$ e $\beta_2$. Reamostragens da mesma base podem, então, produzir coeficientes muito diferentes. O gráfico mostra as estimativas obtidas em 36 amostras bootstrap.
+
+```{=html}
+<div id="collinearity-lab" class="regularization-lab">
+  <div class="lab-controls lab-controls-two">
+    <label for="collinearity-rho">Correlação entre os preditores: <strong id="collinearity-rho-value">0,90</strong>
+      <input id="collinearity-rho" type="range" min="0" max="0.99" step="0.01" value="0.90">
+    </label>
+    <button id="collinearity-resample" type="button" class="btn btn-outline-primary">Gerar nova base</button>
+  </div>
+  <div class="method-legend" aria-label="Métodos comparados">
+    <span><i class="method-dot method-ols"></i>OLS</span>
+    <span><i class="method-dot method-ridge"></i>Ridge</span>
+    <span><i class="method-dot method-lasso"></i>Lasso</span>
+  </div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Instabilidade OLS</span><strong id="collinearity-ols-instability">—</strong></div>
+    <div><span>Instabilidade Ridge</span><strong id="collinearity-ridge-instability">—</strong></div>
+    <div><span>Zeros no Lasso</span><strong id="collinearity-lasso-zeros">—</strong></div>
+  </div>
+  <svg id="collinearity-chart" class="regularization-chart" viewBox="0 0 720 520" role="img" aria-label="Estimativas bootstrap dos coeficientes por OLS, Ridge e Lasso"></svg>
+  <p id="collinearity-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Leve a correlação para perto de 1 e compare o espalhamento dos três métodos. O Lasso precisa sempre escolher o mesmo preditor entre dois quase equivalentes?
+:::
+
+## Síntese
+
+- complexidade reduz viés, mas pode aumentar variância;
+- $\lambda$ controla o compromisso entre ajuste e tamanho dos coeficientes;
+- a geometria de $L_1$ favorece soluções esparsas, enquanto $L_2$ contrai os coeficientes suavemente;
+- sob colinearidade, Ridge tende a estabilizar a divisão do efeito e Lasso pode selecionar apenas um entre preditores equivalentes.
+
+<script src="../site/js/aula23-dinamico.js" defer></script>

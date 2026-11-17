@@ -1,0 +1,211 @@
+.regularization-lab {
+  --reg-blue: #0f6b78;
+  --reg-orange: #d95f02;
+  --reg-red: #b42318;
+  --reg-green: #237a57;
+  --reg-purple: #7252a3;
+  margin: 1.25rem 0 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #d7e1e5;
+  border-top: 0.35rem solid var(--reg-blue);
+  border-radius: 0.85rem;
+  background: #fbfdfd;
+  box-shadow: 0 0.25rem 1rem rgb(23 50 77 / 8%);
+}
+
+.lab-controls {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.lab-controls-two {
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.65fr);
+}
+
+.lab-controls-one {
+  grid-template-columns: minmax(16rem, 34rem);
+}
+
+.lab-controls label {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  color: #17324d;
+  font-weight: 600;
+}
+
+.lab-controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--reg-blue);
+}
+
+.lab-controls select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #b9c8ce;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #1f2a33;
+}
+
+.lab-controls button {
+  justify-self: start;
+}
+
+.lab-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.lab-stats > div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.6rem;
+  background: #edf4f5;
+  text-align: center;
+}
+
+.lab-stats span {
+  color: #5d6b75;
+  font-size: 0.88rem;
+}
+
+.lab-stats strong {
+  color: #17324d;
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.regularization-chart {
+  display: block;
+  width: 100%;
+  min-height: 20rem;
+  margin: 0.75rem 0 0;
+  overflow: visible;
+}
+
+.geometry-chart {
+  width: min(100%, 46rem);
+  margin-inline: auto;
+}
+
+.regularization-chart text {
+  fill: #5d6b75;
+  font-family: "Atkinson Hyperlegible", "Source Sans Pro", Arial, sans-serif;
+  font-size: 13px;
+}
+
+.regularization-chart .axis {
+  fill: none;
+  stroke: #71838c;
+  stroke-width: 1.4;
+}
+
+.regularization-chart .grid-line {
+  fill: none;
+  stroke: #d9e2e6;
+  stroke-width: 1;
+}
+
+.regularization-chart .true-curve {
+  fill: none;
+  stroke: #455761;
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
+}
+
+.regularization-chart .fit-curve {
+  fill: none;
+  stroke: var(--reg-orange);
+  stroke-width: 4;
+}
+
+.regularization-chart .sample-point {
+  fill: var(--reg-blue);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.regularization-chart .loss-contour {
+  fill: none;
+  stroke: #9aa9b1;
+  stroke-width: 1.5;
+}
+
+.regularization-chart .constraint-region {
+  fill: rgb(15 107 120 / 13%);
+  stroke: var(--reg-blue);
+  stroke-width: 3;
+}
+
+.regularization-chart .unconstrained-point {
+  fill: #455761;
+}
+
+.regularization-chart .solution-point {
+  fill: var(--reg-orange);
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.lab-interpretation {
+  max-width: 60rem;
+  margin: 0.75rem auto 0;
+  color: #455761;
+  text-align: center;
+}
+
+.method-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 0 0 0.75rem;
+  color: #455761;
+}
+
+.method-legend span {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.method-dot {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.method-ols {
+  border-radius: 50%;
+  background: var(--reg-red);
+}
+
+.method-ridge {
+  background: var(--reg-blue);
+}
+
+.method-lasso {
+  background: var(--reg-purple);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+@media (max-width: 760px) {
+  .lab-controls-two,
+  .lab-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .regularization-lab {
+    padding: 1rem;
+  }
+
+  .regularization-chart {
+    min-height: 16rem;
+  }
+}
