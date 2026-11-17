@@ -3,8 +3,7 @@
 
 Uma aula é considerada liberada quando seu card em ``aulas/index.qmd`` contém
 um link ``Abrir a aula``. Antes de cada renderização, o cronograma recebe o link
-correspondente e o menu lateral passa a incluir o hotsite e a associação interna
-com seu material de apoio.
+correspondente e o menu lateral passa a incluir o hotsite da aula.
 """
 
 from __future__ import annotations
@@ -23,9 +22,6 @@ CARD_RE = re.compile(
     flags=re.MULTILINE | re.DOTALL,
 )
 LINK_RE = re.compile(r"\[Abrir a aula\]\(([^)]+\.qmd)\)")
-MATERIAL_RE = re.compile(
-    r"\]\(\.\./(exemplos/[^)]+/notebook\.(?:qmd|ipynb))\)"
-)
 SIDEBAR_START = "        # BEGIN AUTO: aulas liberadas\n"
 SIDEBAR_END = "        # END AUTO: aulas liberadas\n"
 MODULOS = (
@@ -80,24 +76,6 @@ def sincronizar_cronograma(texto: str, liberadas: dict[int, str]) -> str:
     return "".join(linhas_atualizadas)
 
 
-def material_de_apoio(numero: int, aula: str) -> str:
-    """Encontra e valida o material de apoio vinculado ao hotsite da aula."""
-    arquivo_aula = ROOT / "aulas" / aula
-    match = MATERIAL_RE.search(arquivo_aula.read_text(encoding="utf-8"))
-    if not match:
-        raise ValueError(
-            f"Aula {numero:02d} liberada sem link para material de apoio: "
-            f"aulas/{aula}"
-        )
-
-    material = match.group(1)
-    if not (ROOT / material).is_file():
-        raise FileNotFoundError(
-            f"Material de apoio da Aula {numero:02d} não existe: {material}"
-        )
-    return material
-
-
 def bloco_sidebar(liberadas: dict[int, str]) -> str:
     """Gera os módulos do menu a partir dos cards efetivamente liberados."""
     cobertas = {numero for _, numeros in MODULOS for numero in numeros}
@@ -107,8 +85,6 @@ def bloco_sidebar(liberadas: dict[int, str]) -> str:
         raise ValueError(f"Aulas liberadas sem módulo configurado: {lista}")
 
     linhas: list[str] = []
-    materiais_incluidos: set[str] = set()
-
     for titulo, numeros in MODULOS:
         aulas_do_modulo = [numero for numero in numeros if numero in liberadas]
         if not aulas_do_modulo:
@@ -127,13 +103,6 @@ def bloco_sidebar(liberadas: dict[int, str]) -> str:
                 )
 
             linhas.append(f"            - aulas/{aula}\n")
-            material = material_de_apoio(numero, aula)
-            if material not in materiais_incluidos:
-                linhas.append(
-                    f'            - text: "Material de apoio · Aula {numero:02d}"\n'
-                )
-                linhas.append(f"              href: {material}\n")
-                materiais_incluidos.add(material)
 
     return "".join(linhas)
 

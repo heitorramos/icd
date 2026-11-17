@@ -93,6 +93,95 @@ Ao expandir o quadrado, os termos cruzados somem porque $E[\varepsilon]=0$ e $E[
 Regularização deliberadamente aumenta viés ao contrair coeficientes. A aposta é reduzir mais a variância, diminuindo o erro total fora da amostra.
 :::
 
+## Subajuste, ajuste adequado e sobreajuste
+
+![](../../slides/assets/aula23-regularizacao/subajuste-ajuste-sobreajuste.png){fig-alt="Curvas de viés ao quadrado, variância e erro esperado fora da amostra ao longo da complexidade, com as regiões de subajuste, ajuste adequado e sobreajuste."}
+
+Quando o modelo tem flexibilidade insuficiente, ele não consegue representar a estrutura relevante dos dados. Esse **subajuste** produz viés alto. Em geral, tanto o erro de treino quanto o erro de validação permanecem altos.
+
+À medida que a complexidade aumenta, o viés tende a diminuir. Existe uma faixa em que o modelo representa o padrão sem reagir excessivamente às particularidades da amostra. Chamamos essa região de **ajuste adequado**: ela corresponde ao menor erro esperado em dados que não participaram do ajuste.
+
+Se continuarmos aumentando a flexibilidade, o modelo pode aprender flutuações aleatórias do conjunto de treino. Nesse **sobreajuste**, o erro de treino ainda cai, mas o erro de validação cresce porque o ajuste muda muito quando a amostra muda. A variância passa a dominar.
+
+::: {.callout-note title="Como diagnosticar"}
+O erro de treino, sozinho, não distingue um ajuste adequado de um sobreajuste. Precisamos estimar o desempenho fora da amostra com dados de validação ou com um procedimento de reamostragem. O ponto de menor erro depende da quantidade de dados, do ruído, dos atributos, da perda e do método de ajuste.
+:::
+
+## Viés e variância em modelos concretos
+
+![](../../slides/assets/aula23-regularizacao/vies-variancia.png){fig-alt="Ajustes polinomiais de graus 1, 2 e 12 em várias amostras, identificados por seus níveis de viés e variância."}
+
+Cada curva clara corresponde ao modelo ajustado em uma amostra diferente. A linha colorida mais espessa é a média desses ajustes. A linha preta tracejada representa a função verdadeira usada na simulação.
+
+- **Grau 1:** as curvas ficam próximas umas das outras, indicando baixa variância. Entretanto, a média dos ajustes não acompanha a curvatura verdadeira. O modelo tem alto viés.
+- **Grau 2:** a média dos ajustes acompanha a função verdadeira e as curvas individuais permanecem próximas. Nesse exemplo, viés e variância são baixos.
+- **Grau 12:** a média pode ficar próxima da função verdadeira, mas os ajustes individuais mudam muito quando a amostra muda. O modelo tem alta variância.
+
+::: {.callout-note title="Leitura visual"}
+Viés aparece como uma distância sistemática entre a média dos ajustes e a função verdadeira. Variância aparece como dispersão entre os ajustes obtidos em amostras diferentes.
+:::
+
+## Por que regularizar?
+
+Modelos estatísticos são aproximações. Como sintetizou George E. P. Box, “todos os modelos estão errados, mas alguns são úteis”. A utilidade, neste contexto, depende de o modelo capturar uma estrutura que continue funcionando fora da amostra usada no ajuste.
+
+Aumentar a flexibilidade amplia o conjunto de padrões que o modelo consegue representar. Isso pode reduzir o viés, mas também permite que o ajuste reaja a ruídos e particularidades da amostra. Por esse motivo, minimizar apenas o erro de treinamento favorece modelos cada vez mais complexos.
+
+**Regularização** modifica o critério de ajuste: além de cobrar erro nas previsões, ela cobra complexidade. O modelo passa a aceitar um pequeno aumento do erro de treino quando essa troca produz coeficientes mais estáveis e melhor desempenho em novos dados.
+
+::: {.callout-note title="Ideia central"}
+Regularizar não significa procurar o modelo mais simples possível. Procuramos a complexidade que oferece o melhor compromisso entre aproximação e estabilidade.
+:::
+
+### Exemplo na base Insurance: controlando a flexibilidade
+
+![](../../slides/assets/aula23-regularizacao/insurance-flexibilidade-regularizacao.png){fig-alt="Na base Insurance, um polinômio de grau 12 sem penalização produz uma curva muito flexível, enquanto Ridge contrai os coeficientes e produz um ajuste mais estável."}
+
+Para tornar o efeito visível, usamos o recorte de pessoas não fumantes e construímos termos polinomiais da idade até o grau 12. Os dois painéis partem exatamente da mesma base de atributos. A diferença está no critério de otimização.
+
+- Sem penalização, todos os coeficientes ficam livres para reduzir o erro de treinamento. A curva reage a flutuações locais da amostra e piora no conjunto de validação.
+- Com Ridge, a otimização cobra magnitudes grandes. Os termos continuam disponíveis, mas sua influência é contraída, produzindo uma curva mais estável e menor erro de validação.
+
+Esse exemplo mostra que regularização não precisa mudar a representação inicial. Ela controla quanta flexibilidade o processo de ajuste efetivamente utiliza.
+
+#### Vários valores de $\lambda$
+
+![](../../slides/assets/aula23-regularizacao/insurance-varios-lambdas.png){fig-alt="Seis regressões polinomiais de grau 12 na base Insurance, com penalização L2 crescente. A curva passa de muito oscilante para excessivamente rígida."}
+
+O grau do polinômio permanece igual a 12 em todos os painéis. Alteramos apenas a intensidade da penalização $L_2$:
+
+- em $\lambda=0$, recuperamos mínimos quadrados sem regularização e a curva reage fortemente às flutuações do treino;
+- à medida que $\lambda$ aumenta, coeficientes grandes ficam mais caros e a curva se torna mais suave;
+- perto do melhor valor de validação, a redução de variância compensa o pequeno aumento de viés;
+- valores excessivos de $\lambda$ contraem demais os coeficientes e produzem subajuste.
+
+::: {.callout-note title="Como escolher"}
+Não escolhemos $\lambda$ pela aparência da curva nem pelo erro de treinamento. Comparamos valores em dados de validação e preservamos o conjunto de teste para a avaliação final da pipeline escolhida.
+:::
+
+### Seleção direta com $L_0$
+
+Na base Insurance, o conjunto inicial pode conter atributos originais, potências e interações:
+
+$$\phi(x)=(\text{age},\text{bmi},\text{smoker},\text{age}^2,
+\text{bmi}^2,\text{age}\times\text{smoker},\ldots).$$
+
+Escrevemos o modelo como
+
+$$\widehat y_i=\beta_0+\sum_{j=1}^{p}\beta_j\phi_j(x_i).$$
+
+A quantidade
+
+$$\|\beta\|_0=\sum_{j=1}^{p}\mathbb 1(\beta_j\neq0)$$
+
+conta quantos coeficientes são diferentes de zero. A restrição $\|\beta\|_0\le k$ permite no máximo $k$ termos e força os demais coeficientes a zero. Apesar do nome tradicional, $L_0$ não é uma norma matemática.
+
+A formulação é conceitualmente simples, mas exige procurar entre
+
+$$\sum_{r=0}^{k}{p\choose r}$$
+
+subconjuntos. Esse custo combinatório motiva penalizações mais tratáveis. Ridge reduz continuamente os coeficientes. Lasso, apresentado adiante, pode produzir zeros exatos sem enumerar explicitamente todos os subconjuntos.
+
 ## Construção de atributos
 
 Criaremos termos polinomiais e interações. Essa expansão é propositalmente redundante para revelar o efeito da regularização.
@@ -157,25 +246,117 @@ $$\|\beta\|_0=\sum_j\mathbb 1(\beta_j\ne0),\qquad
 
 $L_0$ conta termos e exige busca combinatória; $L_1$ produz Lasso; $L_2$ produz Ridge.
 
+## Geometria das restrições $L_0$, $L_1$ e $L_2$
+
+Uma forma útil de interpretar a regularização é separar a perda da região permitida:
+
+$$\min_\beta L(\beta)\qquad\text{sujeito a}\qquad P(\beta)\le t.$$
+
+$L(\beta)$ é a perda do modelo, $P(\beta)$ mede a complexidade dos coeficientes e $t$ controla o tamanho da região permitida. As curvas de nível reúnem coeficientes com a mesma perda. A solução restrita aparece quando a menor curva de nível alcançável toca essa região.
+
+![](../../slides/assets/aula23-regularizacao/geometria-l0-l1-l2.png){fig-alt="Curvas de nível de uma perda quadrática tocando os conjuntos permitidos por L0, L1 e L2. No painel L1, a solução aparece no vértice direito do losango e beta 2 é igual a zero."}
+
+- **$L_0$ com $\|\beta\|_0\le1$:** permite no máximo um coeficiente não nulo. Em duas dimensões, o conjunto permitido é a união dos eixos. $L_0$ conta coeficientes e não satisfaz os requisitos de uma norma.
+- **$L_1$:** a região é um losango. Neste exemplo, a primeira curva de nível alcançável toca o vértice $(2,0)$. Portanto, $\widehat\beta_1=2$ e $\widehat\beta_2=0$: o Lasso remove a segunda direção do modelo.
+- **$L_2$:** a região tem borda suave. O contato normalmente ocorre fora dos eixos, contraindo os coeficientes sem zerá-los exatamente.
+
+::: {.callout-note title="Leitura da figura"}
+A estrela marca o mínimo sem restrição. O ponto preto marca o melhor coeficiente permitido. No painel $L_1$, a ponta do losango está alinhada com uma curva de nível antes que qualquer ponto da aresta seja alcançado. Essa geometria explica por que o Lasso pode produzir zeros exatos. A regularização não altera as curvas de nível da perda nessa interpretação; ela limita quais pontos podem ser escolhidos.
+:::
+
+## Outros valores de $p$
+
+Para $p\ge1$, definimos a norma
+
+$$\|\beta\|_p=\left(\sum_{j=1}^m|\beta_j|^p\right)^{1/p},$$
+
+em que $m$ é o número de coeficientes penalizados. Valores diferentes de $p$ produzem geometrias diferentes.
+
+![](../../slides/assets/aula23-regularizacao/familia-lp-bolas.png){fig-alt="Regiões unitárias para p igual a um meio, três meios, quatro e infinito."}
+
+- **$p=1/2$:** a expressão é uma quase-norma, não uma norma. A região não convexa possui pontas pronunciadas sobre os eixos e favorece soluções esparsas, mas a otimização pode ter mínimos locais.
+- **$p=3/2$:** a região é convexa e suave. Os coeficientes são contraídos, mas zeros exatos deixam de ser típicos.
+- **$p=4$:** a região se aproxima de uma caixa e penaliza combinações com coordenadas grandes de modo diferente de Ridge.
+- **$p=\infty$:** $\|\beta\|_\infty=\max_j|\beta_j|$. A restrição limita diretamente o maior coeficiente em módulo.
+
+::: {.callout-note title="Por que $L_1$ e $L_2$ aparecem com maior frequência?"}
+Ambas produzem problemas convexos. Ridge oferece suavidade e estabilidade; Lasso acrescenta a possibilidade de seleção. Penalizações com $p<1$ podem gerar modelos ainda mais esparsos, mas exigem algoritmos e cuidados adicionais porque o problema deixa de ser convexo.
+:::
+
 ## Derivação de Ridge
 
 Para
 
-$$J(\beta)=\frac1n(y-X\beta)^T(y-X\beta)+\lambda\beta^T\beta,$$
+$$J(\beta)=\frac1n(y-X\beta)^T(y-X\beta)+\lambda\beta^TD\beta,$$
 
-o gradiente é
+em que $D=\operatorname{diag}(0,1,\ldots,1)$ quando a primeira coluna de $X$ é o intercepto, o gradiente é
 
-$$\nabla J(\beta)=-\frac2nX^T(y-X\beta)+2\lambda\beta.$$
+$$\nabla J(\beta)=\frac2nX^T(X\beta-y)+2\lambda D\beta.$$
+
+O zero na primeira posição de $D$ impede que a penalização contraia o intercepto. Nas demais coordenadas, o termo $2\lambda\beta_j$ aponta na direção do sinal de $\beta_j$. Como o gradiente é subtraído na atualização, essa parcela move o coeficiente em direção a zero.
 
 Igualando a zero:
 
-$$X^TX\beta+n\lambda\beta=X^Ty,$$
+$$X^TX\beta+n\lambda D\beta=X^Ty,$$
 
 portanto
 
-$$\widehat\beta^{ridge}=(X^TX+n\lambda I)^{-1}X^Ty.$$
+$$\widehat\beta^{ridge}=(X^TX+n\lambda D)^{-1}X^Ty.$$
 
-$I$ é a identidade $p\times p$. Adicionar $n\lambda I$ eleva os autovalores da matriz, melhorando o condicionamento.
+$D=\operatorname{diag}(0,1,\ldots,1)$ mantém o intercepto fora da penalização e adiciona $n\lambda$ apenas às demais entradas diagonais. Se o modelo não tiver intercepto, ou se todas as coordenadas forem penalizadas, então $D=I$.
+
+### Gradiente descendente com Ridge
+
+A implementação abaixo reescreve o gradiente descendente da Aula 21. A parcela do MSE permanece igual; acrescentamos o gradiente da penalização e registramos a função objetivo completa.
+
+```{python}
+def ridge_gd(X, y, lambda_, learning_rate=0.01,
+             max_iter=50_000, tol=1e-6):
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n, p = X.shape
+
+    beta = np.zeros(p)
+    penaliza = np.ones(p)
+    penaliza[0] = 0
+    historico = []
+
+    for _ in range(max_iter):
+        erro = X @ beta - y
+        grad_mse = (2 / n) * X.T @ erro
+        grad_ridge = 2 * lambda_ * penaliza * beta
+        gradiente = grad_mse + grad_ridge
+
+        perda = np.mean(erro**2)
+        perda += lambda_ * np.sum((penaliza * beta)**2)
+        historico.append(perda)
+
+        if np.linalg.norm(gradiente) < tol:
+            break
+        beta = beta - learning_rate * gradiente
+
+    return beta, np.asarray(historico)
+```
+
+No material numérico, `X_train` não contém o intercepto porque `y_train` foi centrado. Para testar a versão geral da função, acrescentamos uma coluna de 1:
+
+```{python}
+X_train_gd = np.column_stack([np.ones(len(X_train)), X_train])
+beta_ridge_gd, historico_ridge_gd = ridge_gd(
+    X_train_gd, y_train, lambda_=0.01, learning_rate=0.01
+)
+
+pd.Series({
+    "iterações": len(historico_ridge_gd),
+    "objetivo_inicial": historico_ridge_gd[0],
+    "objetivo_final": historico_ridge_gd[-1],
+    "norma_coeficientes": np.linalg.norm(beta_ridge_gd[1:]),
+}).round(3)
+```
+
+::: {.callout-note title="Interpretação"}
+Todas as coordenadas são atualizadas simultaneamente. O intercepto participa do gradiente do MSE, mas não de `grad_ridge`. Se $\lambda$ aumentar, a parcela de contração ganha mais peso em cada atualização.
+:::
 
 ## Ajuste Ridge
 
@@ -261,13 +442,90 @@ pd.DataFrame({"z": z, "S(z, 0.5)": soft_threshold(z, .5)})
 O intervalo em torno de zero é colapsado para zero. Essa é a origem algorítmica da esparsidade do Lasso. Com atributos correlacionados, a solução requer otimização iterativa e a seleção pode variar entre amostras.
 :::
 
+## Exemplo sintético: preditores quase repetidos
+
+Considere uma variável latente $z$ e dois preditores que medem quase a mesma informação:
+
+$$x_1=z+\delta_1,\qquad x_2=z+\delta_2,\qquad y=6z+\varepsilon.$$
+
+$\delta_1$ e $\delta_2$ são pequenos erros de medição e $\varepsilon$ é o ruído da resposta. Como $x_1$ e $x_2$ são quase iguais, várias combinações de $\beta_1$ e $\beta_2$ produzem previsões semelhantes. Repetiremos a coleta 300 vezes para observar como cada método reparte o efeito entre os dois coeficientes.
+
+```{python}
+def lasso_coordinate_descent(X, y, lambda_, max_iter=20_000, tol=1e-9):
+    """Minimiza ||y-X beta||²/(2n) + lambda_ ||beta||_1."""
+    n, p = X.shape
+    beta = np.zeros(p)
+    scale = np.sum(X**2, axis=0) / n
+
+    for _ in range(max_iter):
+        previous = beta.copy()
+        for j in range(p):
+            partial_residual = y - X @ beta + X[:, j] * beta[j]
+            score = X[:, j] @ partial_residual / n
+            beta[j] = soft_threshold(score, lambda_) / scale[j]
+        if np.max(np.abs(beta - previous)) < tol:
+            break
+    return beta
+
+synthetic_rng = np.random.default_rng(20261117)
+coefs = {"OLS": [], "Ridge": [], "Lasso": []}
+
+for _ in range(300):
+    z = synthetic_rng.normal(size=60)
+    x1 = z + synthetic_rng.normal(scale=0.03, size=60)
+    x2 = z + synthetic_rng.normal(scale=0.03, size=60)
+    X = np.column_stack([x1, x2])
+    X = (X - X.mean(axis=0)) / X.std(axis=0)
+    y_synthetic = 6*z + synthetic_rng.normal(scale=1.2, size=60)
+    y_synthetic = y_synthetic - y_synthetic.mean()
+
+    coefs["OLS"].append(np.linalg.lstsq(X, y_synthetic, rcond=None)[0])
+    coefs["Ridge"].append(
+        np.linalg.solve(X.T@X/60 + 0.25*np.eye(2), X.T@y_synthetic/60)
+    )
+    coefs["Lasso"].append(
+        lasso_coordinate_descent(X, y_synthetic, lambda_=0.35)
+    )
+
+coefs = {method: np.asarray(values) for method, values in coefs.items()}
+summary = []
+for method, values in coefs.items():
+    summary.append({
+        "método": method,
+        "DP(beta_1)": values[:, 0].std(),
+        "DP(beta_2)": values[:, 1].std(),
+        "DP(beta_1 + beta_2)": values.sum(axis=1).std(),
+        "amostras com algum zero": np.mean(np.isclose(values, 0).any(axis=1)),
+    })
+
+pd.DataFrame(summary).set_index("método").round(3)
+```
+
+```{python}
+fig, axes = plt.subplots(1, 3, figsize=(12, 3.8), sharex=True, sharey=True)
+colors = {"OLS": "#d95f02", "Ridge": "#2a9d8f", "Lasso": "#6a3d9a"}
+for ax, method in zip(axes, ["OLS", "Ridge", "Lasso"]):
+    values = coefs[method]
+    ax.scatter(values[:, 0], values[:, 1], alpha=.32, s=20, color=colors[method])
+    ax.axline((0, 6), (6, 0), color="gray", linestyle="--")
+    ax.axhline(0, color="gray", linewidth=.8)
+    ax.axvline(0, color="gray", linewidth=.8)
+    ax.set(title=method, xlabel=r"$\widehat\beta_1$", xlim=(-14, 20), ylim=(-14, 20))
+axes[0].set_ylabel(r"$\widehat\beta_2$")
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-note title="Interpretação"}
+OLS estima razoavelmente bem a contribuição conjunta $\beta_1+\beta_2$, mas pequenas mudanças na amostra alteram muito a divisão entre os dois coeficientes. Ridge acrescenta estabilidade e reparte o peso de forma mais equilibrada. Lasso favorece soluções sobre os eixos: em muitas amostras, um coeficiente se torna zero. Qual preditor permanece pode mudar porque os dois carregam quase a mesma informação.
+:::
+
 ## Elastic Net
 
 Elastic Net usa
 
-$$P(\beta)=\alpha\|\beta\|_1+\frac{1-\alpha}{2}\|\beta\|_2^2.$$
+$$P(\beta)=\alpha\|\beta\|_1+(1-\alpha)\left(\frac12\|\beta\|_2^2\right).$$
 
-$\lambda$ controla a força total; $\alpha$ controla a mistura. A parcela $L_1$ permite zeros e a parcela $L_2$ estabiliza grupos de preditores correlacionados.
+$\lambda$ controla a força total e $\alpha$ controla a mistura. Os pesos são $\alpha$ e $1-\alpha$; o fator $1/2$ pertence à penalização Ridge e simplifica sua derivada. A parcela $L_1$ permite zeros e a parcela $L_2$ estabiliza grupos de preditores correlacionados.
 
 ## Regularização na regressão logística
 
@@ -286,7 +544,28 @@ Na separação perfeita, a verossimilhança logística pode favorecer coeficient
 
 Regularização não corrige variáveis omitidas, mudança de distribuição, rótulos enviesados ou vazamento. Ela produz estimativas deliberadamente enviesadas; intervalos e testes clássicos de OLS não devem ser reutilizados ingenuamente após seleção ou penalização.
 
-Para previsão, reporte validação e desempenho final. Para inferência, descreva a seleção e use um procedimento compatível com ela.
+O procedimento adequado depende do objetivo:
+
+- **previsão:** escolha transformações e $\lambda$ por validação e reporte o
+  desempenho da pipeline completa em dados de teste. A incerteza preditiva pode
+  ser estudada repetindo toda a pipeline em reamostragens;
+- **inferência planejada:** quando a pergunta envolve um coeficiente específico,
+  prefira definir previamente o modelo e usar um método inferencial compatível
+  com esse planejamento;
+- **seleção seguida de inferência:** use uma amostra para selecionar variáveis e
+  ajustar $\lambda$ e outra para estimar o modelo final, ou empregue métodos
+  especializados, como inferência pós-seleção e *debiased Lasso*.
+
+Selecionar variáveis com Lasso e reajustar OLS **nos mesmos dados** não recupera
+automaticamente a validade dos erros-padrão e valores-$p$: o modelo final já foi
+escolhido usando as flutuações daquela amostra. A divisão de dados simplifica a
+justificativa, embora reduza a precisão por reservar menos observações para cada
+etapa.
+
+::: {.callout-note title="Regra prática"}
+Para previsão, valide a pipeline em dados novos. Para inferência, separe seleção
+e teste ou use um procedimento que incorpore explicitamente a seleção.
+:::
 
 ## Regularização passo a passo
 
@@ -351,3 +630,4 @@ ser validada em conjunto.
 - Hastie, Tibshirani e Friedman, *The Elements of Statistical Learning*, capítulos 3 e 7.
 - Deisenroth, Faisal e Ong, *Mathematics for Machine Learning*, capítulo 9.
 - Data 100, capítulos sobre engenharia de atributos e regularização.
+- Box, “Science and Statistics”, *Journal of the American Statistical Association*, 1976.

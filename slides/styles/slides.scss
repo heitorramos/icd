@@ -667,6 +667,235 @@ $link-color: #0f6b78;
   max-width: min(96%, 48rem) !important;
 }
 
+// Comparação dos três graus polinomiais da Aula 23: o painel é muito largo e
+// precisa usar toda a área horizontal para manter pontos e curvas legíveis.
+.reveal section > img.aula23-complexity-large,
+.reveal section > img.r-stretch.aula23-complexity-large {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.15rem !important;
+  max-height: 29rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+.reveal .complexity-comparison-slide > p {
+  margin: 0.12rem 0;
+}
+
+// Painel triplo de viés–variância da Aula 23: usa toda a largura útil para
+// tornar legíveis as curvas de cada regime de flexibilidade.
+.reveal section > img.aula23-bias-variance-large,
+.reveal section > img.r-stretch.aula23-bias-variance-large {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.2rem !important;
+  max-height: 25rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+// Curvas e regiões de ajuste da Aula 23: reserva espaço para os três cartões
+// conceituais sem reduzir a legibilidade dos rótulos do gráfico.
+.reveal section > img.aula23-fit-regimes-large,
+.reveal section > img.r-stretch.aula23-fit-regimes-large {
+  display: block;
+  height: auto !important;
+  margin: 0 auto 0.12rem !important;
+  max-height: 20.5rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+.reveal .columns.concept-cards.fit-regime-cards {
+  font-size: 0.72em;
+  gap: 0.8rem;
+}
+
+.reveal .columns.concept-cards.fit-regime-cards > .column {
+  padding: 0.45rem 0.72rem;
+}
+
+.reveal .columns.concept-cards.fit-regime-cards > .column h3 {
+  font-size: 0.92em;
+  margin-bottom: 0.18rem;
+}
+
+.reveal .columns.concept-cards.fit-regime-cards > .column p {
+  margin-bottom: 0.2rem;
+  margin-top: 0.2rem;
+}
+
+// Transição conceitual da Aula 23 entre generalização e regularização.
+.reveal .regularization-motivation .columns {
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1rem;
+}
+
+.reveal .regularization-motivation .column:first-child {
+  font-size: 0.9em;
+}
+
+.reveal .regularization-motivation .column:first-child h3 {
+  color: #17324d;
+  margin-bottom: 0.65rem;
+}
+
+.reveal .regularization-motivation .column:first-child li {
+  margin-bottom: 0.75rem;
+}
+
+.reveal .regularization-quote {
+  background: #f3f7f8;
+  border-left: 0.36rem solid #d95f02;
+  border-radius: 0.55rem;
+  color: #17324d;
+  font-size: 1.18em;
+  font-style: italic;
+  font-weight: 650;
+  line-height: 1.25;
+  padding: 1.2rem 1.25rem;
+}
+
+.reveal .regularization-quote span {
+  color: #52687a;
+  display: block;
+  font-size: 0.62em;
+  font-style: normal;
+  font-weight: 500;
+  margin-top: 0.8rem;
+}
+
+.reveal .regularization-motivation .callout {
+  margin-top: 1.2rem;
+}
+
+// Comparação de flexibilidade e formulação L0 na Aula 23.
+.reveal section > img.aula23-insurance-flexibility,
+.reveal section > img.r-stretch.aula23-insurance-flexibility {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.3rem !important;
+  max-height: 25rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+.reveal section > img.aula23-lambda-grid,
+.reveal section > img.r-stretch.aula23-lambda-grid {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.2rem !important;
+  max-height: 29rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+.reveal .lambda-flexibility-slide > p:last-of-type {
+  font-size: 0.82em;
+  margin-top: 0.15rem;
+}
+
+.reveal .ridge-gd-code-slide pre {
+  font-size: 0.68em;
+}
+
+.reveal .ridge-gd-code-slide pre code {
+  font-size: 1em;
+  line-height: 1.18;
+  max-height: 31rem;
+  overflow-y: auto;
+}
+
+.reveal .ridge-gd-code-slide > p:last-of-type {
+  font-size: 0.82em;
+  margin-top: 0.2rem;
+}
+
+.reveal .correlated-regularization-slide > p:first-of-type {
+  font-size: 0.78em;
+  margin-bottom: 0.15rem;
+}
+
+.reveal .correlated-regularization-slide .aula23-correlated-comparison {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 29rem;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.reveal .correlated-regularization-slide > p:last-of-type {
+  font-size: 0.72em;
+  margin-top: 0.12rem;
+}
+
+.reveal .ridge-lasso-table-slide table {
+  font-size: 0.78em;
+}
+
+.reveal .penalty-geometry-slide > p:first-of-type,
+.reveal .lp-family-slide > p:first-of-type {
+  font-size: 0.76em;
+  margin-bottom: 0.12rem;
+}
+
+.reveal .penalty-geometry-slide .aula23-penalty-geometry {
+  display: block;
+  width: 66%;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.reveal .lp-family-slide .aula23-lp-family {
+  display: block;
+  width: 64%;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.reveal .penalty-geometry-slide > p:last-of-type {
+  font-size: 0.70em;
+  margin: 0.08rem 0;
+}
+
+.reveal .penalty-geometry-slide details,
+.reveal .lp-family-slide details {
+  font-size: 0.58em;
+  margin-top: 0.08rem;
+}
+
+.reveal .columns.concept-cards.lzero-selection-cards {
+  font-size: 0.76em;
+  gap: 1rem;
+  margin-top: 0.7rem;
+}
+
+.reveal .columns.concept-cards.lzero-selection-cards > .column {
+  padding: 0.55rem 0.8rem;
+}
+
+.reveal .columns.concept-cards.lzero-selection-cards > .column h3 {
+  font-size: 0.95em;
+  margin-bottom: 0.35rem;
+}
+
+.reveal .columns.concept-cards.lzero-selection-cards > .column p {
+  margin-bottom: 0.3rem;
+  margin-top: 0.3rem;
+}
+
 // Gráficos da Aula 22 acompanhados por equações, interpretação e código.
 // A altura menor mantém todos os elementos visíveis sem rolagem vertical.
 .reveal section > img.aula22-chart-compact,
