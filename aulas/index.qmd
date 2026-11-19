@@ -213,7 +213,7 @@ Alternativas por bootstrap, planejamento de poder, FWER, FDR e correções.
 ::: {.modulo-cabecalho}
 ## Módulo 3 · Modelagem e aprendizado de máquina
 
-Aulas 16–23 disponíveis. Aulas 24–25 em revisão.
+Aulas 16–24 disponíveis. Aula 25 em revisão.
 :::
 
 ::: {.grid .aulas-grid}
@@ -313,7 +313,7 @@ Viés–variância, Ridge, Lasso, Elastic Net, validação e estabilidade.
 
 Representações, pipelines, vazamento e validação cruzada.
 
-**Material em revisão**
+[Abrir a aula](24-engenharia-atributos-cv.qmd){.btn .btn-primary}
 :::
 :::
 ::: {.g-col-12 .g-col-md-6}

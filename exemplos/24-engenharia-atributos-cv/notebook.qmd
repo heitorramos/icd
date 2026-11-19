@@ -84,6 +84,44 @@ $$\widehat y=\beta_0+\phi(x)^T\beta.$$
 
 $\mathcal X$ é o espaço original, que pode conter texto e categorias; $\phi_j(x)$ é o atributo transformado $j$; $\beta_j$ é seu coeficiente. O modelo pode ser não linear em $x$ e continuar linear nos parâmetros.
 
+### Da observação bruta ao vetor numérico
+
+Considere três anúncios descritos por categorias, uma contagem e uma coluna que pode estar ausente. A transformação $\phi$ não cria novas observações. Ela preserva as linhas e modifica a forma como cada anúncio é representado.
+
+```{python}
+raw_example = pd.DataFrame({
+    "room_type": ["Entire home/apt", "Private room", "Shared room"],
+    "neighbourhood_group": ["Manhattan", "Brooklyn", "Queens"],
+    "minimum_nights": [3, 1, 7],
+    "reviews_per_month": [1.2, np.nan, 0.4],
+})
+raw_example
+```
+
+Uma possível representação combina indicadores de categoria, transformação logarítmica e um indicador de ausência:
+
+```{python}
+phi_example = pd.DataFrame({
+    "room_private": (raw_example["room_type"] == "Private room").astype(int),
+    "room_shared": (raw_example["room_type"] == "Shared room").astype(int),
+    "region_Manhattan": (raw_example["neighbourhood_group"] == "Manhattan").astype(int),
+    "log1p_minimum_nights": np.log1p(raw_example["minimum_nights"]),
+    "reviews_missing": raw_example["reviews_per_month"].isna().astype(int),
+})
+phi_example.round(2)
+```
+
+Para a primeira linha, por exemplo,
+
+$$
+\phi(x_1)=(0,\;0,\;1,\;\log(1+3),\;0)^T
+          =(0,\;0,\;1,\;1{,}39,\;0)^T.
+$$
+
+::: {.callout-note title="Interpretação"}
+Cada coluna da nova matriz corresponde a uma decisão de representação. `room_private` e `room_shared` evitam impor uma ordem artificial aos tipos de acomodação; `log1p_minimum_nights` comprime diferenças grandes; `reviews_missing` informa ao modelo que a avaliação mensal não estava disponível. O significado dessas colunas vem do problema, embora alguns parâmetros da transformação precisem ser aprendidos apenas no conjunto de treino.
+:::
+
 ## Transformações numéricas
 
 Para números não negativos e assimétricos, uma possibilidade é
@@ -228,20 +266,108 @@ Se $T$ consulta validação ou teste, a avaliação usa informação que não es
 
 Consultar o teste repetidamente adapta decisões a ele e destrói sua função de avaliação final.
 
-## Validação cruzada formal
+## Validação cruzada passo a passo
 
-Divida os índices de desenvolvimento em $K$ conjuntos disjuntos $I_1,\ldots,I_K$. Para pipeline candidata $m$,
+No exemplo visual dos slides, queremos escolher o grau de um polinômio para
+representar a relação entre um atributo numérico $x$ e uma resposta $y$. O
+procedimento é:
 
-$$\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K\frac1{|I_k|}
-\sum_{i\in I_k}\rho(y_i,\widehat f_m^{(-k)}(x_i)).$$
+1. separar o teste e não consultá-lo durante as escolhas;
+2. dividir o conjunto de desenvolvimento em cinco partes;
+3. treinar em quatro partes e validar na parte restante;
+4. repetir até que cada parte tenha sido usada para validação;
+5. comparar a média e a variação dos cinco erros de cada grau.
 
-$\widehat f_m^{(-k)}$ é ajustada sem $I_k$; $\rho$ é a perda; $|I_k|$ é o tamanho da parte de validação.
+```{python}
+demo_rng = np.random.default_rng(20261118)
+demo_x = np.linspace(-1, 1, 55)
+demo_y = 7.8 + 1.3*demo_x - 3.0*demo_x**2 + demo_rng.normal(0, 0.28, len(demo_x))
 
-## Implementação do ajuste Ridge
+fig, axes = plt.subplots(1, 3, figsize=(12, 3.5), sharex=True, sharey=True)
+grid = np.linspace(-1.05, 1.05, 300)
+for ax, degree in zip(axes, [1, 2, 10]):
+    coef = np.polyfit(demo_x, demo_y, degree)
+    ax.scatter(demo_x, demo_y, s=16, alpha=.65)
+    ax.plot(grid, np.polyval(coef, grid), linewidth=2.5)
+    ax.set_title(f"grau {degree}")
+    ax.set_xlabel("atributo x")
+axes[0].set_ylabel("resposta y")
+plt.tight_layout(); plt.show()
+```
 
-Usaremos uma pequena penalização para estabilidade numérica. A Aula 23 derivou
+O ajuste de grau 1 é rígido demais; o de grau 10 acompanha oscilações que podem
+ser apenas ruído. A validação verifica qual deles prevê melhor observações que
+não participaram do ajuste.
+
+<details>
+<summary>Notação matemática opcional</summary>
+
+Se $I_1,\ldots,I_K$ são as partes e $\rho$ é a perda, o erro médio da pipeline
+candidata $m$ é
+
+$$
+\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K\frac1{|I_k|}
+\sum_{i\in I_k}\rho\!\left(y_i,\widehat f_m^{(-k)}(x_i)\right).
+$$
+
+$\widehat f_m^{(-k)}$ é o modelo ajustado sem a parte $k$; $|I_k|$ é o número de
+observações usadas naquela validação. A equação apenas escreve a média dos erros
+que o procedimento visual calculou.
+
+</details>
+
+## Comparando os graus
+
+Para acompanhar exatamente a sequência numérica dos slides, considere três
+modelos candidatos: $M_1$ usa grau 1, $M_2$ usa grau 2 e $M_3$ usa grau 3. Os
+cinco MSEs de validação são:
+
+```{python}
+fold_mse = pd.DataFrame({
+    "M1: grau 1": [0.045, 0.046, 0.043, 0.042, 0.045],
+    "M2: grau 2": [0.040, 0.040, 0.048, 0.040, 0.040],
+    "M3: grau 3": [0.055, 0.052, 0.053, 0.050, 0.055],
+}, index=[f"parte {k}" for k in range(1, 6)])
+fold_mse
+```
+
+O terceiro fold ilustra por que não devemos decidir por uma única divisão:
+$M_1$ obtém 0,043 e vence $M_2$, que obtém 0,048. Nos outros quatro folds,
+$M_2$ é melhor.
+
+```{python}
+fold_summary = pd.DataFrame({
+    "MSE médio": fold_mse.mean(),
+    "desvio entre partes": fold_mse.std(ddof=1),
+})
+fold_summary.round(4)
+```
+
+::: {.callout-note title="Interpretação"}
+As médias são 0,0442, 0,0416 e 0,0530. Portanto, escolhemos $M_2$. Em seguida,
+descartamos os cinco ajustes intermediários, reajustamos um único modelo de grau
+2 em todo o conjunto de desenvolvimento e somente então calculamos o MSE no
+teste guardado. O teste não participa da escolha.
+:::
+
+No exemplo de uma única separação apresentado antes da validação cruzada, os
+MSEs eram 0,044 no treino, 0,045 na validação e 0,046 no teste. Esses valores
+próximos sugerem boa generalização, mas o MSE de teste só pode ser interpretado
+honestamente porque não foi usado para escolher o grau.
+
+## Uma função simples de ajuste
+
+Para comparar as representações do Airbnb, usamos regressão com uma pequena
+penalização Ridge apenas para tornar a solução numericamente estável. A função
+aprende média, escala e coeficientes no treino; depois aplica exatamente esses
+valores à validação.
+
+<details>
+<summary>Forma matricial usada pela função</summary>
 
 $$\widehat\beta=(X^TX+n\lambda I)^{-1}X^Ty.$$
+
+</details>
 
 ```{python}
 def ridge_predict(X_train, y_train, X_valid, lam=1e-3):

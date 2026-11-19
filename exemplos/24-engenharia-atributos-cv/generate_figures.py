@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -23,9 +25,20 @@ def save(fig, name):
 
 
 # Descriptive view
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.7))
+fig, axes = plt.subplots(1, 2, figsize=(14, 7.2))
 sns.boxplot(data=df, x="room_type", y="price", hue="neighbourhood_group", showfliers=False, ax=axes[0])
-axes[0].tick_params(axis="x", rotation=18); axes[0].set_title("Preço depende do tipo e da região")
+axes[0].tick_params(axis="x", rotation=12)
+axes[0].set(title="Preço depende do tipo e da região", xlabel="tipo de quarto", ylabel="preço")
+sns.move_legend(
+    axes[0],
+    "upper center",
+    bbox_to_anchor=(0.5, -0.30),
+    ncol=3,
+    title="região",
+    frameon=False,
+    fontsize=10,
+    title_fontsize=10,
+)
 sample = df.sample(7000, random_state=7)
 sc = axes[1].scatter(sample.longitude, sample.latitude, c=np.log1p(sample.price), s=7, alpha=.45, cmap="viridis")
 axes[1].set(title="Localização contém estrutura", xlabel="longitude", ylabel="latitude")
@@ -105,7 +118,11 @@ for k,valid in enumerate(folds):
         scores[name].append(np.sqrt(np.mean((y[valid]-pred)**2)))
 
 fig,ax=plt.subplots(figsize=(9,5)); positions=np.arange(len(scores)); vals=[scores[k] for k in scores]
-ax.boxplot(vals,tick_labels=list(scores),showmeans=True); ax.set(ylabel="RMSE em validação",title="Representações devem ser comparadas fora da amostra"); ax.tick_params(axis="x",rotation=15)
+try:
+    ax.boxplot(vals, tick_labels=list(scores), showmeans=True)
+except TypeError:
+    ax.boxplot(vals, labels=list(scores), showmeans=True)
+ax.set(ylabel="RMSE em validação",title="Representações devem ser comparadas fora da amostra"); ax.tick_params(axis="x",rotation=15)
 save(fig,"comparacao-features-cv.png")
 
 # Fold diagram as matrix
@@ -115,5 +132,46 @@ for i in range(5):
     for j in range(5): ax.text(j,i,"Val." if i==j else "Treino",ha="center",va="center",color="white" if i==j else "#18324a",fontsize=12)
 ax.set_xticks(range(5),[f"P{i+1}" for i in range(5)]); ax.set_yticks(range(5),[f"Ajuste {i+1}" for i in range(5)])
 save(fig,"kfold-esquema.png")
+
+# Visual cross-validation example: choosing polynomial complexity
+demo_rng = np.random.default_rng(20261118)
+demo_x = np.linspace(-1, 1, 55)
+demo_y = 7.8 + 1.3 * demo_x - 3.0 * demo_x**2 + demo_rng.normal(0, 0.28, len(demo_x))
+demo_grid = np.linspace(-1.05, 1.05, 300)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.6), sharex=True, sharey=True)
+for ax, degree, color, label in zip(
+    axes,
+    [1, 2, 10],
+    [ORANGE, GREEN, PURPLE],
+    ["simples demais", "equilíbrio", "flexível demais"],
+):
+    coef = np.polyfit(demo_x, demo_y, degree)
+    ax.scatter(demo_x, demo_y, s=25, alpha=0.68, color=BLUE, edgecolor="white", linewidth=0.4)
+    ax.plot(demo_grid, np.polyval(coef, demo_grid), color=color, linewidth=3)
+    ax.set_title(f"grau {degree}: {label}")
+    ax.set_xlabel("atributo x")
+axes[0].set_ylabel("resposta y")
+fig.suptitle("Três modelos podem explicar os mesmos dados de treino", y=1.03, fontsize=19, weight="bold")
+save(fig, "modelos-polinomiais.png")
+
+# Numerical values preserved from the original didactic ice-cream example.
+validation_mse = np.array([0.3250, 0.0451, 0.0454, 0.0453, 0.0463,
+                           0.0467, 0.0472, 0.0475, 0.0481, 0.0478])
+degrees_original = np.arange(1, 11)
+fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.6))
+axes[0].plot(degrees_original, validation_mse, marker="o", linewidth=2.6, color=BLUE)
+axes[0].scatter([2], [validation_mse[1]], s=130, color=GREEN, edgecolor="white", linewidth=2, zorder=4)
+axes[0].set(xlabel="grau do polinômio", ylabel="MSE de validação",
+            title="Visão completa")
+axes[0].set_xticks(degrees_original)
+axes[1].plot(degrees_original[1:], validation_mse[1:], marker="o", linewidth=2.6, color=BLUE)
+axes[1].scatter([2], [validation_mse[1]], s=130, color=GREEN, edgecolor="white", linewidth=2, zorder=4)
+axes[1].set(xlabel="grau do polinômio", ylabel="MSE de validação",
+            title="Ampliação dos graus 2 a 10")
+axes[1].set_xticks(degrees_original[1:])
+axes[1].set_ylim(0.0445, 0.0490)
+fig.suptitle("O erro de validação favorece o grau 2", y=1.03, fontsize=19, weight="bold")
+save(fig, "validacao-mse-polinomios.png")
 
 print(pd.DataFrame(scores).agg(["mean","std"]).T.round(4))

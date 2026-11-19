@@ -667,6 +667,383 @@ $link-color: #0f6b78;
   max-width: min(96%, 48rem) !important;
 }
 
+// Visão descritiva da Aula 24: o painel duplo precisa ocupar toda a largura
+// para manter os boxplots, o mapa e suas legendas legíveis.
+.reveal section > img.aula24-base-large,
+.reveal section > img.r-stretch.aula24-base-large {
+  display: block;
+  height: auto !important;
+  margin: 0.05rem auto 0.15rem !important;
+  max-height: 29.5rem !important;
+  max-width: 100% !important;
+  object-fit: contain;
+  width: 100% !important;
+}
+
+// Transformação de atributos na Aula 24: conecta a tabela heterogênea à
+// matriz numérica sem reduzir a legibilidade das colunas.
+.reveal .feature-transform-diagram {
+  align-items: center;
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: minmax(0, 0.95fr) 8rem minmax(0, 1.12fr);
+  margin: 0.75rem auto 0.7rem;
+  width: 100%;
+}
+
+.reveal .feature-table h3 {
+  color: #17324d;
+  font-size: 0.9em;
+  margin: 0 0 0.55rem;
+  text-align: center;
+}
+
+.reveal .feature-table table {
+  border-collapse: separate;
+  border-spacing: 0.12rem;
+  font-size: 0.58em;
+  margin: 0;
+  width: 100%;
+}
+
+.reveal .feature-table th,
+.reveal .feature-table td {
+  border: 0;
+  padding: 0.95rem 0.42rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.reveal .feature-table th {
+  background: #0f6b78;
+  color: #fff;
+  font-weight: 700;
+}
+
+.reveal .feature-table td {
+  background: #eaf2f4;
+  color: #17324d;
+}
+
+.reveal .feature-table-model th {
+  background: #9a7530;
+}
+
+.reveal .feature-table-model td {
+  background: #f1eadb;
+}
+
+.reveal .feature-transform-operator {
+  align-items: center;
+  color: #455761;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.58em;
+  gap: 0.2rem;
+  line-height: 1.28;
+  text-align: center;
+}
+
+.reveal .feature-transform-phi {
+  color: #d95f02;
+  font-family: Georgia, serif;
+  font-size: 3em;
+  font-style: italic;
+  line-height: 0.8;
+}
+
+.reveal .feature-transform-arrow {
+  color: #0f6b78;
+  font-size: 4.2em;
+  font-weight: 600;
+  line-height: 0.65;
+}
+
+.reveal .feature-transform-slide blockquote {
+  border-left-color: #d95f02;
+  font-size: 0.82em;
+  margin: 0.6rem auto 0;
+  max-width: 88%;
+}
+
+// Sequência visual de validação cruzada da Aula 24.
+.reveal .cv-real-world {
+  align-items: stretch;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 0.65fr auto 1.6fr;
+  margin: 1.5rem auto 0.8rem;
+  max-width: 43rem;
+}
+
+.reveal .cv-real-data,
+.reveal .cv-real-dev,
+.reveal .cv-real-test {
+  align-items: center;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem;
+  text-align: center;
+}
+
+.reveal .cv-real-data {
+  background: #f0f3f4;
+  border-top: 0.3rem solid #778991;
+}
+
+.reveal .cv-real-arrow {
+  align-items: center;
+  color: #48636f;
+  display: flex;
+  font-size: 1.5em;
+}
+
+.reveal .cv-real-split {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 4fr 1fr;
+}
+
+.reveal .cv-real-dev {
+  background: #e8f3f5;
+  border-top: 0.3rem solid #1f6f8b;
+}
+
+.reveal .cv-real-test {
+  background: #fff2e7;
+  border-top: 0.3rem solid #d95f02;
+}
+
+.reveal .cv-mse-cards,
+.reveal .cv-mean-cards {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 1.4rem auto 0.8rem;
+  max-width: 45rem;
+}
+
+.reveal .cv-mse-card,
+.reveal .cv-mean-card {
+  background: #f5f8f9;
+  border: 1px solid #cfdde1;
+  border-radius: 0.5rem;
+  border-top: 0.3rem solid #1f6f8b;
+  min-height: 9.3rem;
+  padding: 0.9rem;
+  text-align: center;
+}
+
+.reveal .cv-mse-card.valid {
+  border-top-color: #2a9d8f;
+}
+
+.reveal .cv-mse-card.test {
+  border-top-color: #d95f02;
+}
+
+.reveal .cv-mse-card strong,
+.reveal .cv-mean-card strong {
+  color: #17324d;
+  display: block;
+  font-size: 1.05em;
+  margin-bottom: 0.25rem;
+}
+
+.reveal .cv-folds {
+  display: grid;
+  gap: 0.48rem;
+  margin: 1.15rem auto 0.7rem;
+  max-width: 45rem;
+}
+
+.reveal .cv-folds.cv-single-fold {
+  margin-top: 2.1rem;
+}
+
+.reveal .cv-fold-row {
+  display: grid;
+  gap: 0.16rem;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.reveal .cv-fold-row span {
+  align-items: center;
+  border-radius: 0.22rem;
+  display: flex;
+  font-size: 0.72em;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0.35rem 0.2rem;
+}
+
+.reveal .cv-fold-row .train {
+  background: #dcebf0;
+  border: 1px solid #83acba;
+  color: #17324d;
+}
+
+.reveal .cv-fold-row .valid {
+  background: #dff0e7;
+  border: 1px solid #76aa8a;
+  color: #174f36;
+  font-weight: 700;
+}
+
+.reveal .cv-holdout-diagram {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: 4fr 1fr;
+  margin: 2.2rem auto 1rem;
+  max-width: 43rem;
+}
+
+.reveal .cv-holdout-dev,
+.reveal .cv-holdout-test {
+  align-items: center;
+  border-radius: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 9rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.reveal .cv-holdout-dev {
+  background: #e8f3f5;
+  border-top: 0.32rem solid #1f6f8b;
+  color: #17324d;
+}
+
+.reveal .cv-holdout-test {
+  background: #fff2e7;
+  border-top: 0.32rem solid #d95f02;
+  color: #7a3609;
+}
+
+.reveal .cv-holdout-diagram strong {
+  font-size: 1.12em;
+  margin-bottom: 0.45rem;
+}
+
+.reveal .cv-candidate-row {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 2rem auto 1rem;
+  max-width: 44rem;
+}
+
+.reveal .cv-candidate-row.three-candidates {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 36rem;
+}
+
+.reveal .cv-candidate {
+  background: #f5f8f9;
+  border: 1px solid #cfdde1;
+  border-radius: 0.45rem;
+  border-top: 0.28rem solid #2a9d8f;
+  min-height: 6rem;
+  padding: 0.9rem 0.55rem;
+  text-align: center;
+}
+
+.reveal .cv-candidate:nth-child(4) {
+  border-top-color: #9aaab0;
+}
+
+.reveal .cv-candidate strong {
+  color: #17324d;
+  font-size: 1.08em;
+}
+
+.reveal .cv-mse-slide table {
+  font-size: 0.78em;
+  margin: 0.8rem auto 0.65rem;
+  max-width: 42rem;
+  width: 88%;
+}
+
+.reveal .cv-mse-slide table th {
+  background: #17324d;
+  color: #fff;
+}
+
+.reveal .cv-mse-slide table th,
+.reveal .cv-mse-slide table td {
+  padding: 0.42rem 0.75rem;
+  text-align: center;
+}
+
+.reveal .cv-mse-slide table tbody tr:nth-child(odd) {
+  background: #f2f6f7;
+}
+
+.reveal .cv-mse-slide mark {
+  background: #ffe1b8;
+  border-radius: 0.22rem;
+  color: #7a3609;
+  font-weight: 700;
+  padding: 0.08rem 0.3rem;
+}
+
+.reveal .cv-mean-card {
+  min-height: 8.2rem;
+}
+
+.reveal .cv-mean-card.winner {
+  background: #e7f5ed;
+  border: 2px solid #2a9d8f;
+  border-top: 0.38rem solid #2a9d8f;
+  transform: translateY(-0.35rem);
+}
+
+.reveal .cv-final-flow {
+  align-items: stretch;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  margin: 2rem auto 1rem;
+  max-width: 46rem;
+}
+
+.reveal .cv-flow-stage {
+  background: #f5f8f9;
+  border: 1px solid #cfdde1;
+  border-radius: 0.5rem;
+  border-top: 0.3rem solid #1f6f8b;
+  min-height: 7.5rem;
+  padding: 1rem 0.75rem;
+  text-align: center;
+}
+
+.reveal .cv-flow-stage:nth-child(3) {
+  border-top-color: #2a9d8f;
+}
+
+.reveal .cv-flow-stage:nth-child(5) {
+  border-top-color: #d95f02;
+}
+
+.reveal .cv-flow-stage strong {
+  color: #17324d;
+  display: block;
+  font-size: 1.05em;
+  margin-bottom: 0.35rem;
+}
+
+.reveal .cv-flow-arrow {
+  align-items: center;
+  color: #48636f;
+  display: flex;
+  font-size: 1.35em;
+  justify-content: center;
+}
+
 // Comparação dos três graus polinomiais da Aula 23: o painel é muito largo e
 // precisa usar toda a área horizontal para manter pontos e curvas legíveis.
 .reveal section > img.aula23-complexity-large,

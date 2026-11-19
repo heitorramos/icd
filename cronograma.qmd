@@ -44,7 +44,7 @@ Eventuais alterações serão comunicadas pelo
 | 21 | **10/11/2026** | Regressão linear múltipla | [Acessar](aulas/21-regressao-multipla.qmd) |
 | 22 | **12/11/2026** | Regressão logística e introdução a GLMs | [Acessar](aulas/22-regressao-logistica.qmd) |
 | 23 | **17/11/2026** | Regularização | [Acessar](aulas/23-regularizacao.qmd) |
-| 24 | **19/11/2026** | Engenharia de atributos e validação cruzada | Em revisão |
+| 24 | **19/11/2026** | Engenharia de atributos e validação cruzada | [Acessar](aulas/24-engenharia-atributos-cv.qmd) |
 | 25 | **24/11/2026** | KNN e prática completa de machine learning | Em revisão |
 | **Prova 2** | **26/11/2026** | **Prova 2** | — |
 | **Substitutiva** | **01/12/2026** | **Prova Substitutiva** | — |

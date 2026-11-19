@@ -53,60 +53,82 @@ Cada observação representa um anúncio. Colunas importantes:
 
 ## Preço depende de representação e contexto
 
-![](assets/aula24-engenharia-atributos-cv/base-descritiva.png){.wide-chart fig-alt="Preço por tipo de quarto e região, e mapa de anúncios colorido pelo log do preço."}
+![](assets/aula24-engenharia-atributos-cv/base-descritiva.png){.aula24-base-large fig-alt="Preço por tipo de quarto e região, e mapa de anúncios colorido pelo log do preço."}
 
 Tipo de quarto, região e posição espacial carregam informações complementares.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
-sns.boxplot(data=df, x="room_type", y="price", hue="neighbourhood_group")
-plt.scatter(df.longitude, df.latitude, c=np.log1p(df.price))
+fig, axes = plt.subplots(1, 2)
+sns.boxplot(data=df, x="room_type", y="price", hue="neighbourhood_group", ax=axes[0])
+sns.move_legend(axes[0], "upper center", bbox_to_anchor=(0.5, -0.30), ncol=3)
+axes[1].scatter(df.longitude, df.latitude, c=np.log1p(df.price))
 ```
 </details>
 
-## O modelo enxerga uma matriz
+## Da tabela à matriz de atributos {.feature-transform-slide}
 
-Uma transformação de atributos é uma função
+```{=html}
+<div class="feature-transform-diagram" role="img" aria-label="Três anúncios na tabela original são transformados em uma matriz numérica com indicadores, logaritmo e indicador de ausência.">
+  <div class="feature-table feature-table-raw">
+    <h3>Tabela original <em>X</em></h3>
+    <table>
+      <thead>
+        <tr><th>tipo</th><th>região</th><th>mín. noites</th><th>avaliações/mês</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>apartamento</td><td>Manhattan</td><td>3</td><td>1,2</td></tr>
+        <tr><td>quarto privado</td><td>Brooklyn</td><td>1</td><td>ausente</td></tr>
+        <tr><td>quarto compartilhado</td><td>Queens</td><td>7</td><td>0,4</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-$$\phi:\mathcal X\rightarrow\mathbb R^p,$$
+  <div class="feature-transform-operator" aria-hidden="true">
+    <span class="feature-transform-phi">φ</span>
+    <span class="feature-transform-arrow">⟶</span>
+    <span>one-hot encoding<br>log(1 + noites)<br>indicador de ausência</span>
+  </div>
 
-que leva uma observação bruta $x\in\mathcal X$ ao vetor
+  <div class="feature-table feature-table-model">
+    <h3>Matriz de atributos <em>Φ(X)</em></h3>
+    <table>
+      <thead>
+        <tr><th>privado</th><th>compart.</th><th>Manhattan</th><th>log(1+n)</th><th>aval. ausente</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>0</td><td>1</td><td>1,39</td><td>0</td></tr>
+        <tr><td>1</td><td>0</td><td>0</td><td>0,69</td><td>1</td></tr>
+        <tr><td>0</td><td>1</td><td>0</td><td>2,08</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+```
 
-$$\phi(x)=(\phi_1(x),\ldots,\phi_p(x))^T.$$
+> Cada linha continua representando o mesmo anúncio. A transformação muda as coordenadas disponíveis para o modelo.
 
-$p$ é o número de atributos produzidos.
+## O algoritmo continua o mesmo
 
-## A relação continua linear nos parâmetros
+A transformação troca a matriz $X$ por uma nova matriz $\Phi(X)$:
 
-Após transformar $x$,
+$$
+\widehat y=\beta_0+\Phi(X)\beta.
+$$
 
-$$\widehat y=\beta_0+\sum_{j=1}^p\beta_j\phi_j(x)=\beta_0+\phi(x)^T\beta.$$
+- uma coluna pode permanecer como está;
+- categorias podem virar indicadores;
+- atributos podem ser transformados ou combinados.
 
-O modelo pode ser não linear em $x$ e continuar linear em $\beta$.
+Os coeficientes continuam sendo ajustados pelos mesmos métodos das aulas anteriores.
 
-Isso preserva os métodos de ajuste das aulas anteriores.
-
-Para uma coluna que já possui significado e escala adequados,
-
-$$\phi_j(x_j)=x_j.$$
-
-Engenharia de atributos não exige alterar tudo. Cada transformação deve responder a uma necessidade substantiva ou estatística.
-
-## Transformações podem corrigir assimetria
-
-Para valores não negativos,
-
-$$z=\log(1+x)$$
-
-comprime diferenças grandes e preserva $x=0$.
-
-Ela pode ser útil para preços, contagens e tempos de espera assimétricos.
-
-## O log muda a geometria da resposta
+## Transformações mudam a escala
 
 ![](assets/aula24-engenharia-atributos-cv/transformacao-log.png){.wide-chart fig-alt="Distribuição do preço antes e depois da transformação log1p."}
 
-O log reduz a dominância da cauda direita; não torna automaticamente o modelo correto.
+Para valores não negativos, $\log(1+x)$ comprime diferenças grandes e preserva $x=0$.
+
+O log reduz a dominância da cauda direita, mas não torna automaticamente o modelo correto.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
@@ -115,44 +137,30 @@ sns.histplot(np.log1p(df["price"]))
 ```
 </details>
 
-## Polinômios criam curvatura
+## Polinômios criam novos atributos
 
-Para um atributo $x$,
-
-$$\phi(x)=(x,x^2,\ldots,x^d)^T.$$
-
-Então
-
-$$E[Y\mid x]=\beta_0+\beta_1x+\cdots+\beta_dx^d.$$
-
-$d$ controla a flexibilidade e deve ser escolhido fora do treino.
-
-## A matriz muda, não o algoritmo básico
-
-Para grau 3,
+Um polinômio de grau 3 troca uma coluna por
 
 $$
-\Phi=
-\begin{bmatrix}
-1&x_1&x_1^2&x_1^3\\
-\vdots&\vdots&\vdots&\vdots\\
-1&x_n&x_n^2&x_n^3
-\end{bmatrix}.
+x\quad\longmapsto\quad (1,\;x,\;x^2,\;x^3).
 $$
 
-Substituímos $X$ por $\Phi$ no ajuste linear.
+O modelo passa a ajustar
 
-## Interações permitem efeitos condicionais
+$$
+\widehat y=\beta_0+\beta_1x+\beta_2x^2+\beta_3x^3.
+$$
 
-Com duas variáveis,
+O grau controla a flexibilidade. A validação ajudará a escolher um grau que funcione em novos dados.
 
-$$E[Y\mid x_1,x_2]=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_1x_2.$$
+## Interações combinam atributos
 
-O efeito de $x_1$ é
+Uma interação entre tipo de quarto e região permite que a diferença entre acomodações varie pela cidade:
 
-$$\frac{\partial E[Y\mid x]}{\partial x_1}=\beta_1+\beta_3x_2.$$
-
-Logo, ele depende do valor de $x_2$.
+$$
+\widehat y=\beta_0+\beta_1\,\text{quarto}+\beta_2\,\text{região}
++\beta_3(\text{quarto}\times\text{região}).
+$$
 
 ## Tipo de quarto interage com região
 
@@ -167,23 +175,19 @@ sns.pointplot(data=median.reset_index(), x="neighbourhood_group", y="price", hue
 ```
 </details>
 
-## Categorias não são números comuns
+## Categorias viram colunas indicadoras
 
-Codificar regiões como Brooklyn = 1, Manhattan = 2 e Queens = 3 imporia:
+Codificar Brooklyn = 1, Manhattan = 2 e Queens = 3 criaria uma ordem e distâncias que não existem.
 
-- uma ordem inexistente;
-- distâncias artificiais;
-- o mesmo incremento entre categorias consecutivas.
+Com one-hot encoding, cada categoria recebe uma coluna:
 
-Para categorias nominais, usamos indicadores.
+| região | Brooklyn | Manhattan | Queens |
+|---|---:|---:|---:|
+| Manhattan | 0 | 1 | 0 |
+| Brooklyn | 1 | 0 | 0 |
+| Queens | 0 | 0 | 1 |
 
-## One-hot encoding cria indicadores
-
-Para categorias $c_1,\ldots,c_K$,
-
-$$z_k=\mathbb 1(x=c_k).$$
-
-Cada coluna responde se a observação pertence à categoria $k$. Não há ordem ou distância implícita.
+Cada linha apenas indica a qual grupo pertence.
 
 ## Uma categoria vira referência
 
@@ -204,28 +208,27 @@ summary.unstack().plot(kind="bar")
 ```
 </details>
 
-## Categorias ordinais preservam ordem
+## Valores ausentes exigem uma decisão {.compact-slide}
 
-Uma variável como `baixo < médio < alto` possui ordenação, mas as distâncias continuam desconhecidas.
+::: {.columns .concept-cards}
+::: {.column width="33%"}
+### Entender
 
-Opções:
+O valor não foi coletado, não se aplica ou depende do comportamento observado?
+:::
+::: {.column width="33%"}
+### Representar
 
-- indicadores separados;
-- escores ordenados, quando a distância é defensável;
-- codificações monotônicas em modelos que as suportam.
+Podemos imputar um valor, criar um indicador de ausência ou remover a linha.
+:::
+::: {.column width="33%"}
+### Verificar
 
-Conhecimento de domínio decide a representação.
+A remoção ou imputação alterou grupos importantes da base?
+:::
+:::
 
-## Ausência é um processo, não apenas um vazio
-
-Um valor pode faltar porque:
-
-- não foi coletado;
-- não se aplica;
-- depende do comportamento observado;
-- houve falha no sistema.
-
-Antes de imputar, pergunte por que ele está ausente.
+Conhecimento do domínio orienta a escolha.
 
 ## Ausência de avaliações é frequente
 
@@ -239,56 +242,28 @@ missing_rate = df[["last_review", "reviews_per_month", "name", "host_name"]].isn
 ```
 </details>
 
-## Imputação e indicador respondem perguntas distintas
+## Texto também precisa virar números
 
-Podemos construir
+Uma representação simples usa uma coluna por palavra e registra sua presença ou contagem.
 
-$$x_j^{imp}=\begin{cases}x_j,&\text{observado}\\m_j,&\text{ausente}\end{cases}$$
+Também podemos extrair do título do anúncio:
 
-e
-
-$$r_j=\mathbb 1(x_j\text{ está ausente}).$$
-
-$m_j$ é, por exemplo, a mediana aprendida no treino; $r_j$ preserva o sinal de ausência.
-
-Excluir observações pode ser razoável quando a ausência é rara e não sistemática.
-
-Se a probabilidade de remoção depende da resposta ou do grupo, a amostra restante pode mudar. Sempre reporte quantas linhas e quais grupos foram afetados.
-
-## Datas podem gerar atributos cíclicos
-
-De uma data extraímos ano, mês, dia da semana ou tempo desde um evento.
-
-Para mês $m\in\{1,\ldots,12\}$:
-
-$$s=\sin(2\pi m/12),\qquad c=\cos(2\pi m/12).$$
-
-Assim dezembro permanece próximo de janeiro.
-
-## Texto começa com uma representação
-
-Bag-of-words usa uma coluna por termo:
-
-$$x_{ij}=\text{contagem do termo }j\text{ no documento }i.$$
-
-TF-IDF reduz o peso de termos muito frequentes. Representações modernas usam embeddings, mas o princípio permanece: texto precisa virar vetor.
-
-## Atributos simples de texto também ajudam
-
-No título do anúncio podemos extrair:
-
-- tamanho do texto;
-- presença de palavras definidas pelo domínio;
-- número de símbolos ou dígitos;
+- comprimento do texto;
+- presença de palavras importantes;
+- quantidade de símbolos ou dígitos;
 - idioma provável.
 
-São atributos interpretáveis, mas podem capturar práticas de plataforma que mudam no tempo.
+Bag-of-words, TF-IDF e embeddings seguem o mesmo princípio: o modelo recebe vetores, não texto bruto.
 
-## Identificadores raramente generalizam
+## Domínio também decide o que remover
 
-`id` e `host_id` podem permitir memorização sem aprender uma relação transferível.
+Nem toda coluna disponível deve entrar no modelo.
 
-Um identificador só deve entrar quando há uma justificativa para repetir entidades e quando a divisão de dados respeita essa estrutura.
+- `id` e `host_id` podem incentivar memorização;
+- informação posterior à previsão cria vazamento;
+- atributos instáveis podem desaparecer quando a plataforma muda.
+
+Engenharia de atributos também significa excluir colunas sem justificativa para generalizar.
 
 ## Quiz: codificando regiões {.quiz-question}
 
@@ -296,62 +271,149 @@ Um identificador só deve entrar quando há uma justificativa para repetir entid
 - [Atribuir números de 1 a 5 em ordem alfabética]{data-explanation="A codificação cria distâncias artificiais."}
 - [Usar apenas o código postal como número contínuo]{data-explanation="Códigos postais são identificadores geográficos, não medidas lineares."}
 
-## Vazamento transforma informação futura em atributo
+## Vazamento usa informação do futuro
 
-Há vazamento quando uma feature usa informação indisponível no momento da previsão ou deriva direta ou indiretamente da resposta.
+Há vazamento quando um atributo usa informação indisponível no momento da previsão ou deriva direta ou indiretamente da resposta.
 
 Exemplo: usar avaliações publicadas depois da data em que o preço deveria ser previsto.
 
 O desempenho parece excelente, mas não pode ser reproduzido em produção.
 
-## Transformações também aprendem parâmetros
-
-Imputação aprende $m_j$; padronização aprende $\bar x_j$ e $s_j$; vocabulário aprende quais termos existem.
-
-Esses parâmetros devem ser estimados apenas com dados de treinamento e depois aplicados sem reajuste à validação e ao teste.
-
 ## Pipeline mantém a ordem correta
 
-$$x\xrightarrow{\text{imputar}}x^{imp}
-\xrightarrow{\text{codificar}}z
-\xrightarrow{\text{padronizar}}\widetilde z
-\xrightarrow{\text{modelo}}\widehat y.$$
+::: {.cv-final-flow}
+::: {.cv-flow-stage}
+**1. Aprender no treino**
 
-Uma pipeline reúne transformação e modelo em um único procedimento ajustável.
+Imputação, categorias e escala
+:::
+::: {.cv-flow-arrow}
+$\longrightarrow$
+:::
+::: {.cv-flow-stage}
+**2. Aplicar sem reaprender**
 
-## Escolher atributos também é ajustar o modelo
+Validação e teste
+:::
+::: {.cv-flow-arrow}
+$\longrightarrow$
+:::
+::: {.cv-flow-stage}
+**3. Prever**
 
-Decidir usar log, polinômios, interações ou categorias altera a classe de funções considerada.
+Mesmo modelo e mesma representação
+:::
+:::
 
-Logo, comparar representações pelo erro de treino é otimista. Precisamos medir cada pipeline em dados que não participaram de seu ajuste.
+Pré-processar toda a base antes da divisão produz vazamento.
 
-## Treino, validação e teste têm papéis distintos
+## Como escolher a representação?
 
-- **treino:** estima transformações e parâmetros;
-- **validação:** compara representações e hiperparâmetros;
-- **teste:** estima o desempenho final após todas as escolhas.
+![](assets/aula24-engenharia-atributos-cv/modelos-polinomiais.png){.wide-chart fig-alt="Mesmos dados ajustados por polinômios de graus 1, 2 e 10."}
+
+O erro de treino favorece modelos muito flexíveis. Precisamos verificar o desempenho em observações que não participaram do ajuste.
+
+## O futuro não participa das escolhas
+
+::: {.cv-real-world}
+::: {.cv-real-data}
+**Todos os dados**
+:::
+::: {.cv-real-arrow}
+$\longrightarrow$
+:::
+::: {.cv-real-split}
+::: {.cv-real-dev}
+**Desenvolvimento**
+
+Treino + validação representam o passado e o presente.
+:::
+::: {.cv-real-test}
+**Teste**
+
+Representa observações futuras ainda não conhecidas.
+:::
+:::
+:::
+
+> Nunca escolha atributos, grau ou parâmetros olhando para o teste.
+
+## Uma validação ajuda a escolher o grau
+
+![](assets/aula24-engenharia-atributos-cv/validacao-mse-polinomios.png){.wide-chart fig-alt="MSE de validação para polinômios de graus 1 a 10, com o grau 2 destacado."}
+
+O grau 2 apresenta o menor MSE de validação. A ampliação mostra diferenças que seriam invisíveis na escala completa.
+
+## Cada conjunto responde a uma pergunta
+
+::: {.cv-mse-cards}
+::: {.cv-mse-card .train}
+**Treino**
+
+MSE **0,044**
+
+Quão bem o modelo ajusta os dados usados para estimar os coeficientes?
+:::
+::: {.cv-mse-card .valid}
+**Validação**
+
+MSE **0,045**
+
+Qual grau devemos escolher?
+:::
+::: {.cv-mse-card .test}
+**Teste**
+
+MSE **0,046**
+
+Como o modelo escolhido generaliza?
+:::
+:::
+
+Valores próximos são esperados quando a representação generaliza bem.
+
+## Primeiro, reserve o teste
+
+::: {.cv-holdout-diagram}
+::: {.cv-holdout-dev}
+**Desenvolvimento — 80%**
+
+Treino e validação cruzada
+:::
+::: {.cv-holdout-test}
+**Teste — 20%**
+
+Guardado até o final
+:::
+:::
 
 Consultar repetidamente o teste o transforma em validação.
 
-## Uma única validação depende da divisão
+## Um candidato: quatro partes treinam
 
-Com poucos dados, mudar quais observações ficaram na validação pode alterar a conclusão.
+Considere primeiro o **modelo $M_2$**, com polinômio de grau 2.
 
-Validação cruzada reutiliza o conjunto de desenvolvimento em várias divisões, mantendo o teste separado.
+```{=html}
+<div class="cv-folds cv-single-fold" role="img" aria-label="Quatro partes usadas para treino e a quinta para validação.">
+  <div class="cv-fold-row"><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="valid">Validação</span></div>
+</div>
+```
 
-## Validação cruzada em $K$ partes
+O MSE é calculado somente na parte verde, que não participou daquele ajuste.
 
-Particione os índices de desenvolvimento em conjuntos disjuntos
+## Reveze a parte de validação
 
-$$I_1,\ldots,I_K,\qquad \bigcup_{k=1}^K I_k=\{1,\ldots,n\}.$$
+```{=html}
+<div class="cv-folds" role="img" aria-label="Cinco ajustes de validação cruzada; em cada linha uma parte diferente é usada para validação.">
+  <div class="cv-fold-row"><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="valid">Validação</span></div>
+  <div class="cv-fold-row"><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="valid">Validação</span><span class="train">Treino</span></div>
+  <div class="cv-fold-row"><span class="train">Treino</span><span class="train">Treino</span><span class="valid">Validação</span><span class="train">Treino</span><span class="train">Treino</span></div>
+  <div class="cv-fold-row"><span class="train">Treino</span><span class="valid">Validação</span><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span></div>
+  <div class="cv-fold-row"><span class="valid">Validação</span><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span><span class="train">Treino</span></div>
+</div>
+```
 
-Na repetição $k$, valide em $I_k$ e treine nos demais índices.
-
-## Cada observação valida uma vez
-
-![](assets/aula24-engenharia-atributos-cv/kfold-esquema.png){.wide-chart fig-alt="Matriz com cinco ajustes, cada um usando uma parte diferente para validação."}
-
-Os modelos intermediários servem para estimar desempenho, não são o modelo final entregue.
+Cada observação valida uma vez e treina quatro vezes. O teste permanece guardado.
 
 <details class="code-fold"><summary>Código do gráfico</summary>
 ```python
@@ -362,33 +424,109 @@ for k in range(5):
 ```
 </details>
 
-## A perda de validação cruzada
+## Repita para cada candidato
 
-Para pipeline candidata $m$,
+::: {.cv-candidate-row .three-candidates}
+::: {.cv-candidate}
+**$M_1$: grau 1**
 
-$$\widehat R_{CV}(m)=\frac1K\sum_{k=1}^K
-\frac1{|I_k|}\sum_{i\in I_k}\rho(y_i,\widehat f_m^{(-k)}(x_i)).$$
+cinco MSEs
+:::
+::: {.cv-candidate}
+**$M_2$: grau 2**
 
-$\widehat f_m^{(-k)}$ é ajustada sem a parte $k$; $\rho$ é a perda escolhida.
+cinco MSEs
+:::
+::: {.cv-candidate}
+**$M_3$: grau 3**
 
-## Todo o ajuste ocorre dentro de cada repetição
+cinco MSEs
+:::
+:::
 
-Em cada parte:
+O mesmo conjunto de partes deve ser usado para comparar os três modelos.
 
-1. aprenda imputação, categorias e escala no treino;
-2. transforme treino e validação com esses parâmetros;
-3. ajuste o modelo no treino transformado;
-4. calcule a perda na validação.
+## Cada combinação produz um MSE {.cv-mse-slide}
 
-Pré-processar antes das partes causa vazamento.
+| parte | $M_1$: grau 1 | $M_2$: grau 2 | $M_3$: grau 3 |
+|---:|---:|---:|---:|
+| 1 | 0,045 | **0,040** | 0,055 |
+| 2 | 0,046 | **0,040** | 0,052 |
+| 3 | **0,043** | 0,048 | 0,053 |
+| 4 | 0,042 | **0,040** | 0,050 |
+| 5 | 0,045 | **0,040** | 0,055 |
 
-## A média responde; a dispersão adverte
+Em cada linha, o menor valor identifica o candidato que venceu naquele fold.
 
-Além de $\widehat R_{CV}$, observe a variação das perdas entre partes.
+## Nem todo fold escolhe o mesmo modelo {.cv-mse-slide}
 
-Uma média pequena com grande dispersão indica que o desempenho depende fortemente das observações escolhidas ou de grupos específicos.
+| parte | $M_1$: grau 1 | $M_2$: grau 2 | $M_3$: grau 3 |
+|---:|---:|---:|---:|
+| 1 | 0,045 | **0,040** | 0,055 |
+| 2 | 0,046 | **0,040** | 0,052 |
+| 3 | **0,043** | <mark>0,048</mark> | 0,053 |
+| 4 | 0,042 | **0,040** | 0,050 |
+| 5 | 0,045 | **0,040** | 0,055 |
 
-## Representações competem fora da amostra
+No fold 3, $M_1$ vence $M_2$. Essa instabilidade é esperada: as partes contêm observações diferentes.
+
+## A média decide: $M_2$ é o melhor
+
+::: {.cv-mean-cards}
+::: {.cv-mean-card}
+**$M_1$: grau 1**
+
+MSE médio
+
+**0,0442**
+:::
+::: {.cv-mean-card .winner}
+**$M_2$: grau 2**
+
+MSE médio
+
+**0,0416**
+:::
+::: {.cv-mean-card}
+**$M_3$: grau 3**
+
+MSE médio
+
+**0,0530**
+:::
+:::
+
+Escolhemos o menor erro médio, não o vencedor de um fold isolado.
+
+## Reajuste $M_2$ e só então use o teste
+
+::: {.cv-final-flow}
+::: {.cv-flow-stage}
+**Escolher**
+
+$M_2$ pela validação cruzada
+:::
+::: {.cv-flow-arrow}
+$\longrightarrow$
+:::
+::: {.cv-flow-stage}
+**Reajustar**
+
+$M_2$ em todo o desenvolvimento
+:::
+::: {.cv-flow-arrow}
+$\longrightarrow$
+:::
+::: {.cv-flow-stage}
+**Avaliar**
+
+MSE final no teste guardado
+:::
+:::
+
+Os cinco modelos intermediários são descartados; serviram apenas para escolher a complexidade.
+
+## O mesmo vale para os atributos do Airbnb
 
 ![](assets/aula24-engenharia-atributos-cv/comparacao-features-cv.png){.wide-chart fig-alt="Distribuições de RMSE em cinco partes para quatro conjuntos crescentes de atributos."}
 
@@ -401,40 +539,24 @@ for feature_set in candidates:
 ```
 </details>
 
-## O resultado também ensina sobre o problema
+Categorias produzem o maior ganho; interações acrescentam uma melhora menor. Engenharia de atributos é uma hipótese testável.
 
-- localização numérica isolada não representa todas as diferenças urbanas;
-- tipo de quarto e região explicam grande parte do preço;
-- transformações simples ajudam pouco neste conjunto;
-- interações capturam diferenças condicionais adicionais.
+## A divisão deve imitar o uso real {.compact-slide}
 
-Engenharia de atributos é uma hipótese testável sobre representação.
+::: {.columns .concept-cards}
+::: {.column width="50%"}
+### Tempo
 
-## Depois de escolher, reajuste no desenvolvimento
+Treine no passado e valide no futuro.
+:::
+::: {.column width="50%"}
+### Grupos repetidos
 
-Escolhida a pipeline $m^*$:
+Mantenha observações da mesma pessoa, anfitrião ou hospital na mesma parte.
+:::
+:::
 
-1. reúna novamente todos os dados de desenvolvimento;
-2. reajuste transformação e modelo do zero;
-3. avalie uma única vez no teste;
-4. reporte a métrica e todas as escolhas realizadas.
-
-## Partições aleatórias exigem observações intercambiáveis
-
-K-fold aleatório pressupõe que as partes representam aproximadamente o mesmo mecanismo gerador.
-
-Se há tempo, pessoas repetidas, hospitais ou cidades, misturar observações relacionadas entre treino e validação pode produzir otimismo.
-
-$K=5$ ou $10$ são escolhas comuns; valores maiores aproximam o tamanho do treino final, mas elevam o custo. Não há um $K$ ótimo universal.
-
-## A estrutura dos dados define a divisão
-
-- **temporal:** treinar no passado e validar no futuro;
-- **grupos:** manter todas as observações de uma pessoa ou entidade na mesma parte;
-- **classes raras:** preservar aproximadamente suas proporções;
-- **dados espaciais:** considerar separação por regiões.
-
-O esquema deve simular o uso real do modelo.
+Misturar observações relacionadas pode produzir uma avaliação otimista.
 
 ## Quiz: onde ajustar a imputação? {.quiz-question}
 
@@ -454,7 +576,7 @@ O esquema deve simular o uso real do modelo.
 - transformações incorporam hipóteses e conhecimento de domínio;
 - categorias, ausências, datas e textos exigem representações próprias;
 - pipelines impedem inconsistência e vazamento;
-- validação cruzada compara pipelines sem consumir o teste;
+- validação cruzada reveza quais dados avaliam cada candidato;
 - a divisão deve reproduzir a dependência e o futuro relevantes.
 
 ## Próxima aula

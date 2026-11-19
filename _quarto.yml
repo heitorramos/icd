@@ -75,6 +75,7 @@ website:
             - aulas/21-regressao-multipla.qmd
             - aulas/22-regressao-logistica.qmd
             - aulas/23-regularizacao.qmd
+            - aulas/24-engenharia-atributos-cv.qmd
         # END AUTO: aulas liberadas
 
 format:
