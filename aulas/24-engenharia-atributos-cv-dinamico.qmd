@@ -1,0 +1,181 @@
+---
+title: "Conteúdo dinâmico: Engenharia de atributos"
+subtitle: "Quatro laboratórios sobre representação, vazamento e validação"
+toc: false
+format:
+  html:
+    css: ../site/styles/aula24-dinamico.css
+resources:
+  - ../site/js/aula24-dinamico.js
+---
+
+As atividades abaixo complementam a Aula 24. Modifique uma decisão de cada vez e observe como a representação dos dados e o desenho da validação alteram o que o modelo aprende — e o que podemos concluir sobre seu desempenho.
+
+[Voltar para a Aula 24](24-engenharia-atributos-cv.qmd){.btn .btn-outline-primary}
+
+## 1. Da observação bruta ao vetor numérico
+
+Um algoritmo recebe números, não o significado original das colunas. Escolha um anúncio e observe como a função de atributos $\phi(x)$ transforma categorias, ausências e uma variável assimétrica em um vetor numérico.
+
+```{=html}
+<div id="feature-lab" class="feature-lab">
+  <div class="feature-controls feature-controls-three">
+    <label for="feature-room">Tipo de acomodação
+      <select id="feature-room">
+        <option value="entire">Apartamento inteiro</option>
+        <option value="private" selected>Quarto privativo</option>
+        <option value="shared">Quarto compartilhado</option>
+      </select>
+    </label>
+    <label for="feature-region">Região
+      <select id="feature-region">
+        <option value="bronx">Bronx</option>
+        <option value="brooklyn">Brooklyn</option>
+        <option value="manhattan" selected>Manhattan</option>
+        <option value="queens">Queens</option>
+        <option value="staten">Staten Island</option>
+      </select>
+    </label>
+    <label for="feature-reviews">Avaliações por mês
+      <select id="feature-reviews">
+        <option value="missing" selected>Ausente</option>
+        <option value="0.4">0,4</option>
+        <option value="1.8">1,8</option>
+        <option value="4.2">4,2</option>
+      </select>
+    </label>
+  </div>
+  <div class="feature-controls feature-controls-three">
+    <label for="feature-nights">Estadia mínima: <strong id="feature-nights-value">30 noites</strong>
+      <input id="feature-nights" type="range" min="1" max="90" step="1" value="30">
+    </label>
+    <label class="feature-check" for="feature-log">
+      <input id="feature-log" type="checkbox" checked>
+      Aplicar log(1 + noites)
+    </label>
+    <label class="feature-check" for="feature-missing-indicator">
+      <input id="feature-missing-indicator" type="checkbox" checked>
+      Criar indicador de ausência
+    </label>
+  </div>
+  <div class="feature-flow" aria-live="polite">
+    <div class="feature-raw">
+      <strong>Observação original</strong>
+      <dl id="feature-raw-values"></dl>
+    </div>
+    <div class="feature-arrow" aria-hidden="true"><span>φ</span><b>→</b></div>
+    <div class="feature-vector-wrap">
+      <div class="feature-vector-title"><strong>Vetor produzido</strong><span id="feature-dimension">p = 0</span></div>
+      <div id="feature-vector" class="feature-vector"></div>
+    </div>
+  </div>
+  <p id="feature-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Escolha as categorias de referência — quarto compartilhado e Staten Island — e observe que seus indicadores ficam todos iguais a zero. Isso não significa ausência de informação: a categoria é representada pelo intercepto e pela comparação com as demais.
+:::
+
+## 2. Vazamento: quando a validação participa da transformação
+
+Neste exemplo sintético, cada bairro é codificado pela média do preço de seus anúncios. No procedimento correto, a média usada para codificar uma parte de validação é calculada somente com o treino daquele fold. No procedimento com vazamento, a resposta da própria validação ajuda a construir o atributo.
+
+```{=html}
+<div id="leakage-lab" class="feature-lab">
+  <div class="feature-controls feature-controls-two">
+    <label for="leakage-size">Anúncios por bairro: <strong id="leakage-size-value">3</strong>
+      <input id="leakage-size" type="range" min="2" max="12" step="1" value="3">
+    </label>
+    <button id="leakage-resample" type="button" class="btn btn-outline-primary">Gerar novos preços</button>
+  </div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>MSE sem vazamento</span><strong id="leakage-correct-mse">—</strong></div>
+    <div><span>MSE com vazamento</span><strong id="leakage-leaky-mse">—</strong></div>
+    <div><span>Otimismo artificial</span><strong id="leakage-gap">—</strong></div>
+  </div>
+  <svg id="leakage-chart" class="feature-chart" viewBox="0 0 760 330" role="img" aria-label="Comparação do erro de validação com e sem vazamento"></svg>
+  <p id="leakage-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Use poucos anúncios por bairro. Por que deixar a própria observação influenciar a média do bairro reduz tanto o erro aparente? Aumente o número de anúncios e verifique se a vantagem indevida diminui.
+:::
+
+## 3. K-fold passo a passo
+
+Percorra as cinco divisões usadas no exemplo da aula. Em cada etapa, quatro partes treinam o modelo e uma parte mede o MSE. Os cinco modelos intermediários servem apenas para estimar o desempenho da alternativa; depois da escolha, o modelo é reajustado com todo o conjunto de desenvolvimento.
+
+```{=html}
+<div id="cv-lab" class="feature-lab">
+  <div class="feature-controls feature-controls-two">
+    <label for="cv-model">Modelo acompanhado
+      <select id="cv-model">
+        <option value="m1">M1 — polinômio de grau 1</option>
+        <option value="m2" selected>M2 — polinômio de grau 2</option>
+        <option value="m3">M3 — polinômio de grau 3</option>
+      </select>
+    </label>
+    <div class="cv-buttons">
+      <button id="cv-previous" type="button" class="btn btn-outline-primary">Parte anterior</button>
+      <button id="cv-next" type="button" class="btn btn-primary">Próxima parte</button>
+    </div>
+  </div>
+  <div id="cv-fold-strip" class="cv-fold-strip" aria-label="Partes de treino e validação"></div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Parte de validação</span><strong id="cv-current-fold">1 de 5</strong></div>
+    <div><span>MSE desta parte</span><strong id="cv-current-mse">—</strong></div>
+    <div><span>Média acumulada</span><strong id="cv-partial-mean">—</strong></div>
+  </div>
+  <svg id="cv-chart" class="feature-chart" viewBox="0 0 820 350" role="img" aria-label="MSE de cada parte para o modelo selecionado"></svg>
+  <div id="cv-model-summary" class="cv-model-summary" aria-live="polite"></div>
+  <p id="cv-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+No terceiro fold, M1 vence M2: 0,043 contra 0,048. Ainda assim, M2 apresenta a menor média ao final das cinco partes. Uma única divisão poderia levar à escolha oposta.
+:::
+
+## 4. A divisão deve representar o uso futuro
+
+As células representam observações de seis anfitriões em cinco momentos. Compare três estratégias. A melhor divisão não é universal: ela depende de saber se o modelo será aplicado a novas observações intercambiáveis, a períodos futuros ou a anfitriões ainda não observados.
+
+```{=html}
+<div id="split-lab" class="feature-lab">
+  <div class="feature-controls feature-controls-one">
+    <label for="split-strategy">Estratégia de validação
+      <select id="split-strategy">
+        <option value="random">K-fold aleatório</option>
+        <option value="time">Divisão temporal</option>
+        <option value="group">Divisão por anfitrião</option>
+      </select>
+    </label>
+  </div>
+  <div class="split-legend" aria-label="Legenda">
+    <span><i class="split-train"></i>Treino</span>
+    <span><i class="split-valid"></i>Validação</span>
+  </div>
+  <div id="split-grid" class="split-grid" role="img" aria-label="Observações distribuídas entre treino e validação"></div>
+  <div class="lab-stats" aria-live="polite">
+    <div><span>Anfitriões nos dois lados</span><strong id="split-overlap">—</strong></div>
+    <div><span>Treino posterior à validação</span><strong id="split-lookahead">—</strong></div>
+    <div><span>Pergunta simulada</span><strong id="split-question">—</strong></div>
+  </div>
+  <p id="split-interpretation" class="lab-interpretation" aria-live="polite"></p>
+</div>
+```
+
+::: {.callout-tip title="Experimente"}
+Escolha a divisão temporal e depois a divisão por anfitrião. Cada uma elimina um tipo diferente de dependência entre treino e validação. Qual delas corresponde a prever anúncios futuros de anfitriões já conhecidos? E a receber um anfitrião totalmente novo?
+:::
+
+## Síntese
+
+- a função $\phi$ transforma uma observação bruta em uma representação numérica;
+- uma transformação que aprende parâmetros deve ser ajustada somente com o treino;
+- validação cruzada agrega várias divisões e reduz a dependência de uma separação particular;
+- a estratégia de divisão deve reproduzir a forma como o modelo encontrará dados novos.
+
+<script src="../site/js/aula24-dinamico.js" defer></script>
